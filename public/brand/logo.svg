@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 120" fill="none">
+  <!-- Gradient Definition -->
+  <defs>
+    <linearGradient id="brandGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#D4AF37" />
+      <stop offset="100%" stop-color="#0A66C2" />
+    </linearGradient>
+  </defs>
+
+  <!-- Logo Mark -->
+  <g transform="translate(10, 10)">
+    <!-- Base geometric forms for 'K' and ascending spark -->
+    <path d="M 20 10 L 20 90" stroke="url(#brandGradient)" stroke-width="12" stroke-linecap="round" />
+    <path d="M 20 50 L 60 10" stroke="url(#brandGradient)" stroke-width="12" stroke-linecap="round" />
+    <path d="M 40 30 L 80 90" stroke="url(#brandGradient)" stroke-width="12" stroke-linecap="round" />
+    <!-- Spark / Star aspect -->
+    <circle cx="85" cy="15" r="6" fill="#D4AF37" />
+    <circle cx="95" cy="5" r="4" fill="#0A66C2" />
+  </g>
+
+  <!-- Typography -->
+  <g transform="translate(130, 75)">
+    <!-- Kalmeron -->
+    <text x="0" y="0" font-family="'Geist Sans', -apple-system, sans-serif" font-weight="700" font-size="48" fill="#FFFFFF" letter-spacing="-1">
+      Kalmeron
+    </text>
+    <!-- Two -->
+    <text x="215" y="0" font-family="'Geist Sans', -apple-system, sans-serif" font-weight="400" font-size="48" fill="url(#brandGradient)">
+      Two
+    </text>
+  </g>
+</svg>

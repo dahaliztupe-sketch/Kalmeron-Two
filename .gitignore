@@ -1,0 +1,16 @@
+node_modules/
+.next/
+coverage/
+.DS_Store
+*.log
+.env*
+!.env.example
+
+# Environment variables
+.env*.local
+
+# Turbo
+.turbo
+
+# Next.js
+out/
