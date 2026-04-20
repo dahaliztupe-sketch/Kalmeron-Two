@@ -56,21 +56,36 @@ async function synthesizerNode(state: typeof AgentState.State) {
   };
 }
 
-// Mock other nodes
-const ideaValidatorNode = async (state: typeof AgentState.State) => ({ intermediateResults: { ...state.intermediateResults, ideaValidator: "Idea validated." } });
-const planBuilderNode = async (state: typeof AgentState.State) => ({ intermediateResults: { ...state.intermediateResults, planBuilder: "Plan built." } });
-const cfoAgentNode = async (state: typeof AgentState.State) => ({ intermediateResults: { ...state.intermediateResults, cfoAgent: "CFO analysis done." } });
-const legalGuideNode = async (state: typeof AgentState.State) => ({ intermediateResults: { ...state.intermediateResults, legalGuide: "Legal guide processed." } });
+import { AgentRegistry } from '../agents/registry'; // Added import
 
-const marketingAgentNode = crewToLangGraphNode(marketingCrew, 'marketingAgent');
+// Node implementation
+const codeInterpreterNode = async (state: typeof AgentState.State) => {
+  const result = await AgentRegistry["code-interpreter"].action.execute({
+    task: state.task.includes('تحليل') ? 'analyze' : 'execute',
+    code: state.task,
+    userId: 'user-123',
+  });
+  return { intermediateResults: { ...state.intermediateResults, codeInterpreter: result } };
+};
 
-// بناء الرسم البياني
-const workflow = new StateGraph(AgentState)
-  .addNode('router', routerNode as any)
-  .addNode('ideaValidator', ideaValidatorNode as any)
-  .addNode('planBuilder', planBuilderNode as any)
+// ... inside routerNode
+  else if (task.includes('تسويق')) targetAgent = 'marketingAgent';
+  else if (task.includes('تحليل ملف') || task.includes('تشغيل كود') || task.includes('excel')) targetAgent = 'codeInterpreter';
+  
+  // Hybrid logic: determine if local or cloud
+  const processingMode = (complexity === 'simple' || task.length < 100) ? 'local' : 'cloud';
+
+  return {
+    currentAgent: targetAgent,
+    complexity,
+    processingMode,
+  };
+}
+
+// ... inside workflow builder
   .addNode('cfoAgent', cfoAgentNode as any)
   .addNode('legalGuide', legalGuideNode as any)
+  .addNode('codeInterpreter', codeInterpreterNode as any)
   .addNode('marketingAgent', marketingAgentNode as any)
   .addNode('synthesizer', synthesizerNode as any)
   .addEdge('__start__', 'router')
@@ -79,6 +94,7 @@ const workflow = new StateGraph(AgentState)
   .addEdge('planBuilder', 'synthesizer')
   .addEdge('cfoAgent', 'synthesizer')
   .addEdge('legalGuide', 'synthesizer')
+  .addEdge('codeInterpreter', 'synthesizer')
   .addEdge('marketingAgent', 'synthesizer')
   .addEdge('synthesizer', '__end__');
 

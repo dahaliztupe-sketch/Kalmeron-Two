@@ -9,6 +9,7 @@ import { generatePersonas } from '@/src/ai/agents/persona-generator/agent';
 import { simulateFocusGroup } from '@/src/ai/agents/interview-simulator/agent';
 import { analyzeInterviewResults } from '@/src/ai/agents/insights-analyzer/agent';
 import { legalGuideAction } from '@/src/ai/agents/legal-guide/agent';
+import { codeInterpreterAgent } from '@/src/ai/agents/code-interpreter/agent';
 
 export const AgentRegistry = {
   "idea-validator": {
@@ -22,6 +23,17 @@ export const AgentRegistry = {
     description: "مرشد قانوني متخصص في التشريعات المصرية للشركات الناشئة",
     inputSchema: z.object({ query: z.string() }),
     action: legalGuideAction,
+  },
+  "code-interpreter": {
+    name: "code-interpreter",
+    description: "متخصص في تنفيذ الأكواد وتحليل الملفات (Excel, CSV, JSON)",
+    inputSchema: z.object({
+      task: z.enum(['execute', 'analyze']),
+      code: z.string().optional(),
+      fileUrl: z.string().optional(),
+      userId: z.string(),
+    }),
+    action: codeInterpreterAgent,
   },
   "plan-builder": {
     name: "plan-builder",
