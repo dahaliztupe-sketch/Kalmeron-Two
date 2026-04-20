@@ -5,19 +5,9 @@ import createNextIntlPlugin from 'next-intl/plugin';
 const withNextIntl = createNextIntlPlugin('./i18n/request.ts');
 
 const nextConfig: NextConfig = {
-  cacheComponents: true, // Placeholder for requested feature
+  // reactCompiler disabled - requires babel-plugin-react-compiler
   experimental: {
-    reactCompiler: true,
     optimizePackageImports: ['lucide-react', '@radix-ui/react-icons'],
-    turbo: {
-      useSwc: true,
-      rules: {
-        '*.svg': {
-          loaders: ['@svgr/webpack'],
-          as: '*.js',
-        },
-      },
-    },
   },
   logging: {
     fetches: {
@@ -26,9 +16,6 @@ const nextConfig: NextConfig = {
   },
   reactStrictMode: true,
   compress: true,
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
   typescript: {
     ignoreBuildErrors: false,
   },
@@ -49,7 +36,7 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  output: 'standalone',
+  // output: 'standalone' disabled for Replit compatibility
   transpilePackages: ['motion'],
   webpack: (config, {dev}) => {
     if (dev && process.env.DISABLE_HMR === 'true') {
