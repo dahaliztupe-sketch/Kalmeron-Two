@@ -110,10 +110,54 @@
     "/users/{userId}/threads/{threadId}/messages/{messageId}": {
       "schema": { "$ref": "#/entities/Message" },
       "description": "Messages within a chat thread."
-    }
+    },
     "/users/{userId}/memories/{memoryId}": {
       "schema": { "$ref": "#/entities/UserMemory" },
       "description": "User's session memories."
+    },
+    "/user_credits/{userId}": {
+      "schema": {
+        "title": "CreditWallet",
+        "description": "User credit wallet and usage limits",
+        "type": "object",
+        "properties": {
+          "userId": { "type": "string" },
+          "dailyBalance": { "type": "number" },
+          "monthlyBalance": { "type": "number" },
+          "lifetimeEarned": { "type": "number" },
+          "lifetimeConsumed": { "type": "number" },
+          "dailyLimit": { "type": "number" },
+          "monthlyLimit": { "type": "number" },
+          "dailyResetAt": { "type": "string" },
+          "monthlyResetAt": { "type": "string" },
+          "rolledOverCredits": { "type": "number" },
+          "lastUpdated": { "type": "string" }
+        },
+        "required": ["userId", "dailyBalance", "monthlyBalance", "dailyLimit", "monthlyLimit"]
+      },
+      "description": "User's credits and limits management."
+    },
+    "/credit_transactions/{transactionId}": {
+      "schema": {
+        "title": "CreditTransaction",
+        "description": "Log of credit usage and accumulation",
+        "type": "object",
+        "properties": {
+          "userId": { "type": "string" },
+          "type": { "type": "string" },
+          "amount": { "type": "number" },
+          "source": { "type": "string" },
+          "agentName": { "type": "string" },
+          "modelUsed": { "type": "string" },
+          "tokensConsumed": { "type": "number" },
+          "costCents": { "type": "number" },
+          "timestamp": { "type": "string" },
+          "remainingDaily": { "type": "number" },
+          "remainingMonthly": { "type": "number" }
+        },
+        "required": ["userId", "type", "amount", "timestamp"]
+      },
+      "description": "History of credit transactions."
     },
     "/knowledge_base/{docId}": {
       "schema": {

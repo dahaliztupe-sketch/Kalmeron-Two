@@ -2,15 +2,48 @@ import { NextResponse } from 'next/server';
 import xss from 'xss';
 import { intelligentOrchestrator } from '@/src/ai/orchestrator/supervisor';
 import { HumanMessage } from '@langchain/core/messages';
+import { CreditManager } from '@/src/lib/billing/credit-manager';
+import { trackAgentUsage } from '@/src/lib/billing/usage-tracker';
+import { adminAuth } from '@/src/lib/firebase-admin';
 
 export async function POST(req: Request) {
   try {
     const { messages, isGuest, threadId, uiContext } = await req.json();
     
+    // 0. Auth context (Admin SDK to get UID from token if available, or use a provided one)
+    // For this prototype, we'll try to get it from headers or a cookie if provided, 
+    // but typically it's better to verify the JWT.
+    const authHeader = req.headers.get('Authorization');
+    let userId = 'guest-system';
+    
+    if (authHeader?.startsWith('Bearer ')) {
+      const token = authHeader.split(' ')[1];
+      try {
+        const decoded = await adminAuth.verifyIdToken(token);
+        userId = decoded.uid;
+      } catch (e) {
+        console.warn("Invalid token, defaulting to guest");
+      }
+    }
+
+    // 1. Credit Check (Skip for system/dev if needed, but here we enforce)
+    const creditManager = new CreditManager(userId);
+    // Base cost for supervisor interaction
+    const cost = 5; 
+    
+    if (userId !== 'guest-system') {
+      const creditResult = await creditManager.consumeCredits(cost, 'Supervisor', 'gemini-3.1-flash');
+      if (!creditResult.success) {
+        return NextResponse.json({ 
+          error: 'Insufficient credits', 
+          message: creditResult.message,
+          suggestion: 'ترقية الحساب أو شراء أرصدة إضافية من صفحة الفوترة.'
+        }, { status: 402 });
+      }
+    }
+
     // Get last user message
     const lastMessage = messages[messages.length - 1];
-
-    // 1. Security: Input Sanitization (منع هجمات XSS)
     const rawContent = lastMessage?.content || '';
     const cleanMessage = xss(rawContent);
 
@@ -18,31 +51,34 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Message cannot be empty.' }, { status: 400 });
     }
 
-    // Convert messages to Langchain format
     const langchainMessages = messages.map((m: any) => 
-       new HumanMessage(xss(m.content)) // Simplified for this prototype
+       new HumanMessage(xss(m.content))
     );
 
-    // 2. Intelligent Routing (توجيه المنسق الذكي)
-    // نمرر سياق الغلاف (Context Envelope) مع الرسالة
+    // 2. Intelligent Routing
     const result = await intelligentOrchestrator.invoke(
       {
         messages: langchainMessages,
         isGuest: !!isGuest,
         messageCount: isGuest ? messages.length : 0,
-        uiContext: uiContext || {}, // غلاف السياق: أين يتواجد المستخدم في المنصة؟
+        uiContext: uiContext || {},
       },
       {
-        configurable: { thread_id: threadId || 'temp-guest-thread' },
+        configurable: { thread_id: threadId || `thread-${userId}` },
       }
     );
 
     const AIResponse = result.messages[result.messages.length - 1];
 
-    // Simple JSON fallback if not streaming for guest/supervisor prototype
+    // 3. Usage Tracking (OpenMeter)
+    if (userId !== 'guest-system') {
+      await trackAgentUsage(userId, 'Supervisor', 'gemini-3.1-flash', 1000); // Approximate tokens
+      await creditManager.checkAndNotifyThreshold();
+    }
+
     return NextResponse.json({
       text: AIResponse.content,
-      intent: result.intent, // للشفافية التحليلية
+      intent: result.intent,
     });
   } catch (error: any) {
     console.error("Chat API Error:", error);

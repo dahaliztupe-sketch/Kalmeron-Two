@@ -56,5 +56,18 @@ service cloud.firestore {
     match /passkeys/{userId} {
       allow read, write: if isOwner(userId);
     }
+
+    // Billing Logic (Immutable via client)
+    match /user_credits/{userId} {
+      allow read: if isOwner(userId);
+      allow write: if false; // System-only updates via CreditManager (Admin SDK)
+    }
+
+    match /credit_transactions/{transactionId} {
+      // Users can only view their own transactions, no bulk reads without filter
+      allow list: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow get: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow write: if false; // System-only logs
+    }
   }
 }
