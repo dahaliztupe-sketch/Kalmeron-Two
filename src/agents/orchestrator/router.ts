@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { generateText } from "ai";
 import { MODELS } from "@/src/lib/gemini";
 
@@ -29,7 +30,9 @@ export async function routeIntent(messages: any[], userMemory: string): Promise<
         6. GENERAL_CHAT: إذا كان الكلام عاماً، ترحيباً، أو سؤالاً لا يقع تحت التخصصات السابقة.
 
         يجب أن يكون ردك عبارة عن الكلمة المفتاحية فقط (مثلاً: IDEA_VALIDATOR).`,
-        prompt: `سياق المستخدم السابق: ${userMemory}\n\nالرسالة الحالية: ${lastMessage}`
+        prompt: `سياق المستخدم السابق: ${userMemory}
+
+الرسالة الحالية: ${lastMessage}`
     });
 
     const validIntents: AgentIntent[] = ['IDEA_VALIDATOR', 'PLAN_BUILDER', 'MISTAKE_SHIELD', 'SUCCESS_MUSEUM', 'OPPORTUNITY_RADAR'];

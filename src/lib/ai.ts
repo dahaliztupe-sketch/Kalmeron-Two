@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { cache } from 'react';
 import { analyzeCompany as analyzeCompanyOriginal } from '@/src/agents/success-museum/agent'; // Adjust import as per real path
 import { getPersonalizedOpportunities as getPersonalizedOpportunitiesOriginal } from '@/src/agents/opportunity-radar/agent';

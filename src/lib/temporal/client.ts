@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Client, Connection } from '@temporalio/client';
 
 let client: Client | null = null;

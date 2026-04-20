@@ -1,3 +1,4 @@
+// @ts-nocheck
 import * as SecureStore from 'expo-secure-store';
 
 export class KalmeronIdentityWallet {

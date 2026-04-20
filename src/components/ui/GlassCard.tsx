@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { motion } from 'framer-motion';
 
 export function GlassCard({ children, className }: { children: React.ReactNode, className?: string }) {

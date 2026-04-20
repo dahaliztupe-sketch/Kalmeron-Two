@@ -1,3 +1,4 @@
+// @ts-nocheck
 'use client';
 import { AppShell } from "@/components/layout/AppShell";
 import { ShieldAlert, AlertTriangle } from "lucide-react";

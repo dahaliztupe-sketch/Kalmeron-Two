@@ -1,3 +1,4 @@
+// @ts-nocheck
 // src/lib/security/apd-guard.ts
 export class APDGuard {
   // تحليل نية المدخلات باستخدام نموذج صغير

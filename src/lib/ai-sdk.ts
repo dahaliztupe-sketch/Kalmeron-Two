@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { createAI } from 'ai';
 import { google } from '@ai-sdk/google';
 

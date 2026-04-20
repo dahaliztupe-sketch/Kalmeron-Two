@@ -16,7 +16,7 @@ import Loading from "@/app/loading";
 import Image from "next/image";
 
 export function AppShell({ children }: { children: React.ReactNode }) {
-  const { user, dbUser, loading, signInWithGoogle, logout } = useAuth();
+  const { user, dbUser, loading, signInWithGoogle, signOut: logout } = useAuth();
   const { language, setLanguage, t } = useLanguage();
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -33,7 +33,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <div className="z-10 text-center max-w-2xl px-8 space-y-12">
           <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, ease: "circOut" }}>
             <div className="flex justify-center mb-12">
-                <Image src="/brand/logo.svg" alt="Kalmeron Two Logo" width={220} height={55} className="h-14 w-auto" priority />
+                <Image src="/logo.jpg" alt="Kalmeron AI Logo" width={120} height={120} className="h-24 w-24 rounded-2xl shadow-[0_0_40px_rgba(138,43,226,0.5)]" priority />
             </div>
             <h2 className="text-6xl md:text-8xl font-black tracking-tighter mb-8 text-white leading-none">
                 {language === 'ar' ? 'اصنع عظمة.' : 'Create Greatness.'}
@@ -84,7 +84,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setMobileMenuOpen(true)}>
                 <Menu className="h-6 w-6 text-white" />
             </Button>
-            <Image src="/brand/logo.svg" alt="Logo" width={140} height={35} className="h-8 w-auto md:hidden" />
+            <Image src="/logo.jpg" alt="Logo" width={140} height={35} className="h-8 w-auto md:hidden" />
           </div>
           
           <div className="flex items-center gap-4">
@@ -145,7 +145,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                     className="w-full max-w-[280px] bg-[#0A0A0F] h-full shadow-2xl relative p-8 flex flex-col"
                   >
                         <div className="flex justify-between items-center mb-10">
-                            <Image src="/brand/logo.svg" alt="Logo" width={140} height={35} className="h-8 w-auto" />
+                            <Image src="/logo.jpg" alt="Logo" width={140} height={35} className="h-8 w-auto" />
                             <Button variant="ghost" size="icon" onClick={() => setMobileMenuOpen(false)}>
                                 <X className="h-6 w-6 text-white" />
                             </Button>

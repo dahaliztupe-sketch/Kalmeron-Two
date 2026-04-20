@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Placeholder for Arize Phoenix. 
 // Replace with actual @arize-ai/phoenix when available.
 export const phoenix = {

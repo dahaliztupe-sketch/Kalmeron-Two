@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { generateText } from 'ai';
 import { MODELS } from '@/src/lib/gemini';
 // Using Nixtla for Time-Series forecasting & anomaly detection

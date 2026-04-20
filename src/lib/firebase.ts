@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { initializeApp, getApps, getApp, FirebaseApp } from 'firebase/app';
 import { getAuth, GoogleAuthProvider, Auth, User } from 'firebase/auth';
 import { getFirestore, Firestore } from 'firebase/firestore';

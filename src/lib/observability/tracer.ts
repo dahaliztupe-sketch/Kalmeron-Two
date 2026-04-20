@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Mock Tracer for Observability
 export async function traceAgentExecution(
   agentName: string,

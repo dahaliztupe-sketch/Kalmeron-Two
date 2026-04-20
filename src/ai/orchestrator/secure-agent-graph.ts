@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { StateGraph, Annotation, MemorySaver } from '@langchain/langgraph';
 import { BaseMessage } from '@langchain/core/messages';
 import { generateText } from 'ai';

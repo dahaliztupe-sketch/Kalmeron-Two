@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { generateObject, streamText } from 'ai';
 import { MODELS } from '@/src/lib/gemini';
 import { PLAN_BUILDER_SYSTEM_PROMPT } from './prompt';

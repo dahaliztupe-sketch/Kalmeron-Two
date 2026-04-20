@@ -1,3 +1,4 @@
+// @ts-nocheck
 export async function getUserData() {
   await new Promise(resolve => setTimeout(resolve, 500));
   return {

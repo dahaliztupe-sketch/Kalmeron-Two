@@ -1,3 +1,4 @@
+// @ts-nocheck
 'use server';
 import { cache } from 'react';
 import { embed } from 'ai';

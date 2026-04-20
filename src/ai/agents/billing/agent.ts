@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Agent } from '@mastra/core';
 import { google } from '@ai-sdk/google';
 

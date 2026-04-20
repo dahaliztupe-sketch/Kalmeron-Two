@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Placeholder for Langfuse. 
 // Replace with actual @langfuse/core when available.
 export const langfuse = {

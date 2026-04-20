@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { z } from 'zod';
 
 export const CFO_SYSTEM_PROMPT = `

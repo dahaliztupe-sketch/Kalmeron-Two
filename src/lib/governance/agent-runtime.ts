@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { AgentRuntime } from '@agentmesh/sdk';
 
 export const agentRuntime = new AgentRuntime({

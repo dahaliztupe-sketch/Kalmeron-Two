@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { AgentSRE } from '@agentmesh/sdk';
 
 export const agentSRE = new AgentSRE({

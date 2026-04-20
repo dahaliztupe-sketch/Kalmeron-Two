@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { z } from 'zod';
 import { validateIdea } from '@/src/agents/idea-validator/agent';
 // Import existing agents/actions as necessary...

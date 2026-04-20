@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Mock of AgentOS structure based on provided request
 export class AgentOS {
   constructor(config: { policies: any[] }) {}

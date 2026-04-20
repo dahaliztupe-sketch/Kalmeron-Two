@@ -19,7 +19,7 @@ export async function POST(req: Request) {
     if (authHeader?.startsWith('Bearer ')) {
       const token = authHeader.split(' ')[1];
       try {
-        const decoded = await adminAuth.verifyIdToken(token);
+        const decoded = await adminAuth.verifyIdToken(token!);
         userId = decoded.uid;
       } catch (e) {
         console.warn("Invalid token, defaulting to guest");
@@ -77,7 +77,7 @@ export async function POST(req: Request) {
     }
 
     return NextResponse.json({
-      text: AIResponse.content,
+      text: AIResponse?.content ?? '',
       intent: result.intent,
     });
   } catch (error: any) {

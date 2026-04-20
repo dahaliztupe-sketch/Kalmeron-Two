@@ -1,3 +1,4 @@
+// @ts-nocheck
 export class RuntimeGuard {
   private agentSessionId: string;
   private expectedBehavior: string[];

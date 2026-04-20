@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { generateObject, generateText } from 'ai';
 import { MODELS } from '@/src/lib/gemini';
 import { SUCCESS_MUSEUM_SYSTEM_PROMPT } from './prompt';

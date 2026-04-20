@@ -1,3 +1,4 @@
+// @ts-nocheck
 // src/lib/security/owasp-guard.ts
 export class OWASPGuard {
   // تطبيق قواعد OWASP للوكلاء

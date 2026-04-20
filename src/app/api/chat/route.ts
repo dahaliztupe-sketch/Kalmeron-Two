@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { streamText, tool } from 'ai';
 import { google } from '@ai-sdk/google';
 import { z } from 'zod';

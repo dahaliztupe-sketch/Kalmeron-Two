@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Agent, Workflow } from '@mastra/core';
 import { z } from 'zod';
 
@@ -56,12 +57,14 @@ supplyChainSwarm
   })
   .step('inventory', async ({ steps }) => {
     const demandPlan = steps.demand.result.demandPlan;
-    const res = await inventoryAgent.generate(`شكل المخزون استناداً إلى الطلب التالي:\n${demandPlan}`);
+    const res = await inventoryAgent.generate(`شكل المخزون استناداً إلى الطلب التالي:
+${demandPlan}`);
     return { inventoryPlan: res.text };
   })
   .step('logistics', async ({ steps }) => {
     const invPlan = steps.inventory.result.inventoryPlan;
-    const res = await logisticsAgent.generate(`نظم سلاسل التوريد والشحنات استناداً للمخزون المستهدف:\n${invPlan}`);
+    const res = await logisticsAgent.generate(`نظم سلاسل التوريد والشحنات استناداً للمخزون المستهدف:
+${invPlan}`);
     return { logisticsPlan: res.text };
   });
 

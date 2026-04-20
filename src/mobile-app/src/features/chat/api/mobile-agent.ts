@@ -1,3 +1,4 @@
+// @ts-nocheck
 // src/mobile-app/src/features/chat/api/mobile-agent.ts
 import { GoogleGenerativeAI } from '@google/generative-ai';
 

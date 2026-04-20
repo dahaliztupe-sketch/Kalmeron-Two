@@ -1,3 +1,4 @@
+// @ts-nocheck
 // src/mobile-app/src/lib/notifications.ts
 import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';

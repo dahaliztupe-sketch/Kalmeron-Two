@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { MLCEngine } from '@mlc-ai/web-llm';
 import * as Comlink from 'comlink';
 

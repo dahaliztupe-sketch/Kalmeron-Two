@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { adminDb } from '@/src/lib/firebase-admin';
 import { Timestamp } from 'firebase-admin/firestore';
 

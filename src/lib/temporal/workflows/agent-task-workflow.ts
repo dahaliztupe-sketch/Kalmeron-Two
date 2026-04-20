@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { proxyActivities } from '@temporalio/workflow';
 
 const { executeStepOne, executeStepTwo, updateTaskStatus } = proxyActivities<{

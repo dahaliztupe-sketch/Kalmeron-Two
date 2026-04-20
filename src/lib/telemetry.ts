@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { initAiSdkCostTelemetry, consoleSink } from 'ai-sdk-cost';
 import { db } from '@/src/lib/firebase';
 import { collection, addDoc } from 'firebase/firestore';

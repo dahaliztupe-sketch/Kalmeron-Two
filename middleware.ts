@@ -9,7 +9,8 @@ export async function middleware(request: NextRequest) {
   const url = request.nextUrl;
   
   // 1. Global Edge Routing / Location-Aware Adaptation
-  const country = request.geo?.country || request.headers.get('x-vercel-ip-country') || 'Unknown';
+  // request.geo is Vercel-specific; on Replit we fall back to headers only
+  const country = request.headers.get('x-vercel-ip-country') || request.headers.get('cf-ipcountry') || 'Unknown';
   
   const response = NextResponse.next();
   response.headers.set('x-kalmeron-country', country);

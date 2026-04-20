@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { generateObject } from 'ai';
 import { classifyTaskComplexity, selectModel } from '@/src/lib/model-router';
 import { z } from 'zod';

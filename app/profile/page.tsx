@@ -12,7 +12,7 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
 export default function ProfilePage() {
-  const { dbUser, logout, user } = useAuth();
+  const { dbUser, signOut: logout, user } = useAuth();
   const [isDeleting, setIsDeleting] = useState(false);
   const router = useRouter();
   const dir = "rtl";

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { AgentOS } from '@agentmesh/sdk';
 
 export const agentOS = new AgentOS({

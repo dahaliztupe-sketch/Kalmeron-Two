@@ -21,7 +21,7 @@ export function Sidebar() {
   return (
     <div className="w-64 bg-[#0A0A0F]/95 backdrop-blur-xl border-l border-white/[0.05] flex flex-col h-screen fixed top-0 right-0 z-40 hidden md:flex">
       <div className="p-10 flex justify-center">
-          <Image src="/brand/logo.svg" alt="Kalmeron Two" width={160} height={40} className="w-auto h-auto transition-all hover:scale-[1.02]" />
+          <Image src="/logo.jpg" alt="Kalmeron Two" width={160} height={40} className="w-auto h-auto transition-all hover:scale-[1.02]" />
       </div>
       <nav className="flex-1 px-6 space-y-1.5">
         {navItems.map((item) => {

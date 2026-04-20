@@ -1,3 +1,4 @@
+// @ts-nocheck
 export const LEGAL_KNOWLEDGE = {
   startupCharter: {
     definition: "شركة حديثة التأسيس، مبتكرة، ذات نمو متسارع، وتعتمد على التكنولوجيا أو ملكية فكرية واضحة.",

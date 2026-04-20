@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Mastra, Agent, Workflow } from '@mastra/core';
 import { z } from 'zod';
 

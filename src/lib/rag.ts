@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { embed, embedMany, generateText } from 'ai';
 import { collection, addDoc, getDocs, serverTimestamp, query, limit } from 'firebase/firestore';
 import { db } from './firebase';

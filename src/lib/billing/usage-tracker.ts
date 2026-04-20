@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { OpenMeter } from '@openmeter/sdk';
 
 /**

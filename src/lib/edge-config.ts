@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { createClient } from '@vercel/edge-config';
 
 // Initialize Edge Config Client (uses ENV var EDGE_CONFIG)

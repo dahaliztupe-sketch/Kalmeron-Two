@@ -1,3 +1,4 @@
+"use client";
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -11,8 +12,6 @@ export default function AdminDashboard() {
   ]);
 
   const handleDeleteUser = async (userId: string) => {
-    // Note: In real production, this function would call a secure Firebase Admin API route
-    // to perform the deletion across Firestore, Auth, and logs.
     setUsers(users.filter(u => u.id !== userId));
     toast.success("تم حذف بيانات المستخدم نهائياً.");
   };
@@ -29,14 +28,22 @@ export default function AdminDashboard() {
         <CardHeader><CardTitle>إدارة المستخدمين (حق النسيان)</CardTitle></CardHeader>
         <CardContent>
           <Table>
-            <TableHeader><TableRow><TableHead>الاسم</TableHead><TableHead>البريد</TableHead><TableHead>الإجراء</TableHead></TableRow></TableHeader>
+            <TableHeader>
+              <TableRow>
+                <TableHead>الاسم</TableHead>
+                <TableHead>البريد</TableHead>
+                <TableHead>الإجراء</TableHead>
+              </TableRow>
+            </TableHeader>
             <TableBody>
               {users.map(user => (
                 <TableRow key={user.id}>
                   <TableCell>{user.name}</TableCell>
                   <TableCell>{user.email}</TableCell>
                   <TableCell>
-                    <Button variant="destructive" size="sm" onClick={() => handleDeleteUser(user.id)}>حذف نهائي</Button>
+                    <Button variant="destructive" size="sm" onClick={() => handleDeleteUser(user.id)}>
+                      حذف نهائي
+                    </Button>
                   </TableCell>
                 </TableRow>
               ))}

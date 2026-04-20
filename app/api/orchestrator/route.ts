@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
     const lastMessage = result.messages[result.messages.length - 1];
     
     return NextResponse.json({
-      response: lastMessage.content,
+      response: lastMessage?.content ?? '',
       agentsUsed: Object.keys(result.intermediateResults || {}),
     });
   } catch (error: any) {

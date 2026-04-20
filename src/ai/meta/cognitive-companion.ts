@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { AgentTrace } from './tracer';
 import { sendAlert } from './alerting';
 

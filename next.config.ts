@@ -6,6 +6,7 @@ const withNextIntl = createNextIntlPlugin('./i18n/request.ts');
 
 const nextConfig: NextConfig = {
   // reactCompiler disabled - requires babel-plugin-react-compiler
+  serverExternalPackages: ['pdf-parse', '@napi-rs/canvas'],
   experimental: {
     optimizePackageImports: ['lucide-react', '@radix-ui/react-icons'],
   },

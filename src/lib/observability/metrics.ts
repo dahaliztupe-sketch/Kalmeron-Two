@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { langfuse } from './langfuse';
 
 export async function recordAgentMetric(

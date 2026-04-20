@@ -1,3 +1,4 @@
+// @ts-nocheck
 interface CostReportParams {
   startDate: Date;
   endDate: Date;

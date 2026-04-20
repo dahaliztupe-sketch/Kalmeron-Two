@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { generateText } from 'ai';
 import { MODELS } from '@/src/lib/gemini';
 

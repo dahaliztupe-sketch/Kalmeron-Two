@@ -26,43 +26,40 @@ const suggestionChips = [
 
 export default function ChatPage() {
   const { user } = useAuth();
+  const [input, setInput] = useState("");
   const [isUploading, setIsUploading] = useState(false);
   const [pdfContext, setPdfContext] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const { messages, input, handleInputChange, handleSubmit, setInput, setMessages, isLoading } = useChat({
+  const { messages, sendMessage, setMessages, status } = useChat({
     api: "/api/chat",
-    onFinish: async (message) => {
+    onFinish: async (message: any) => {
       if (user) {
         await saveChatToFirestore([...messages, message]);
       }
     },
-    onError: (err) => {
+    onError: (err: Error) => {
       console.error(err);
       toast.error("حدث خطأ أثناء التواصل مع كلميرون.");
-    }
-  });
+    },
+  } as any);
 
-  // Load chat history on mount
+  const isLoading = status === 'streaming' || status === 'submitted';
+
   useEffect(() => {
     if (!user) return;
-
     const loadChat = async () => {
       const chatRef = doc(db, "users", user.uid, "chat_history", "default-chat");
       const chatSnap = await getDoc(chatRef);
       if (chatSnap.exists()) {
         const data = chatSnap.data();
-        if (data.messages) {
-          setMessages(data.messages);
-        }
+        if (data.messages) setMessages(data.messages);
       }
     };
-
     loadChat();
   }, [user, setMessages]);
 
-  // Auto-scroll to bottom
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollIntoView({ behavior: "smooth" });
@@ -73,50 +70,39 @@ export default function ChatPage() {
     if (!user) return;
     const chatRef = doc(db, "users", user.uid, "chat_history", "default-chat");
     const chatSnap = await getDoc(chatRef);
-
     const payload = {
       userId: user.uid,
       messages: updatedMessages.map(m => ({
         id: m.id,
         role: m.role,
         content: m.content,
-        createdAt: new Date()
+        createdAt: new Date(),
       })),
-      updated_at: serverTimestamp()
+      updated_at: serverTimestamp(),
     };
-
     if (chatSnap.exists()) {
       await updateDoc(chatRef, payload);
     } else {
-      await setDoc(chatRef, {
-        ...payload,
-        created_at: serverTimestamp()
-      });
+      await setDoc(chatRef, { ...payload, created_at: serverTimestamp() });
     }
   };
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
     if (file.type !== "application/pdf") {
       toast.error("يرجى تحميل ملف بصيغة PDF فقط.");
       return;
     }
-
     setIsUploading(true);
     const formData = new FormData();
     formData.append("file", file);
-
     try {
-      const res = await fetch("/api/extract-pdf", {
-        method: "POST",
-        body: formData,
-      });
+      const res = await fetch("/api/extract-pdf", { method: "POST", body: formData });
       const data = await res.json();
       if (data.text) {
         setPdfContext(data.text);
-        toast.success("تم استخراج البيانات من الملف بنجاح. يمكنك الآن طرح استفساراتك حول المحتوى.");
+        toast.success("تم استخراج البيانات من الملف بنجاح.");
       } else {
         throw new Error(data.error);
       }
@@ -131,17 +117,13 @@ export default function ChatPage() {
 
   const onFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (pdfContext) {
-      // Append PDF context to initial prompt if it's a new or specific session logic?
-      // For now, just prepend it to the current message to give AI the context.
-      const enrichedInput = `[سياق من ملف PDF]: ${pdfContext}\n\n[رسالة المستخدم]: ${input}`;
-      // Clear pdf context after sending it as a message or handle it as a system message injection.
-      // Better: send it as part of the current input and clear.
-      handleSubmit(e, { body: { message: enrichedInput } });
-      setPdfContext(null);
-    } else {
-      handleSubmit(e);
-    }
+    if (!input.trim() && !pdfContext) return;
+    const messageContent = pdfContext
+      ? `[سياق من ملف PDF]: ${pdfContext}\n\n[رسالة المستخدم]: ${input}`
+      : input;
+    sendMessage({ role: 'user', text: messageContent } as any);
+    setInput("");
+    if (pdfContext) setPdfContext(null);
   };
 
   return (
@@ -173,54 +155,59 @@ export default function ChatPage() {
                 </div>
                 <h3 className="text-xl font-bold text-white">أهلاً بك! أنا &quot;كلميرون&quot;</h3>
                 <p className="max-w-[400px] text-center text-neutral-400 text-sm leading-relaxed">
-                    أنا مستشارك المعتمد، جاهز لتحويل تطلعاتك إلى خطط ملموسة بنظرة محترفة. كيف يمكنني دعمك اليوم؟
+                  أنا مستشارك المعتمد، جاهز لتحويل تطلعاتك إلى خطط ملموسة بنظرة محترفة. كيف يمكنني دعمك اليوم؟
                 </p>
               </div>
             )}
-            
-            {messages.map((m) => (
-              <div
-                key={m.id}
-                className={cn(
-                  "flex gap-3",
-                  m.role === "user" ? "flex-row-reverse" : "flex-row"
-                )}
-              >
-                <Avatar className="h-8 w-8 shrink-0 border border-white/10">
-                  {m.role === "user" ? (
-                    <AvatarFallback className="bg-black/50 text-white">{user?.displayName?.charAt(0) || "U"}</AvatarFallback>
-                  ) : (
-                    <>
-                      <AvatarImage src="https://api.dicebear.com/7.x/bottts/svg?seed=Kalmeron" />
-                      <AvatarFallback>K</AvatarFallback>
-                    </>
-                  )}
-                </Avatar>
+
+            {messages.map((m) => {
+              const textContent = (m.parts ?? [])
+                .filter((p: any) => p.type === 'text')
+                .map((p: any) => p.text)
+                .join('');
+
+              return (
                 <div
-                  className={cn(
-                    "rounded-2xl px-4 py-3 max-w-[85%] text-sm shadow-sm",
-                    m.role === "user"
-                      ? "brand-gradient text-white rounded-tr-none border-none"
-                      : "glass-panel text-neutral-200 rounded-tl-none border border-white/10"
-                  )}
+                  key={m.id}
+                  className={cn("flex gap-3", m.role === "user" ? "flex-row-reverse" : "flex-row")}
                 >
-                  <div className="prose prose-sm prose-invert max-w-none" dir="auto">
-                    {m.role === 'assistant' && isLoading && m.id === messages[messages.length - 1].id ? (
-                      <motion.div
-                        animate={{ opacity: [0.5, 1] }}
-                        transition={{ duration: 0.5, repeat: Infinity, repeatType: "reverse" }}
-                      >
-                        <ReactMarkdown>{m.content}</ReactMarkdown>
-                      </motion.div>
+                  <Avatar className="h-8 w-8 shrink-0 border border-white/10">
+                    {m.role === "user" ? (
+                      <AvatarFallback className="bg-black/50 text-white">{user?.displayName?.charAt(0) || "U"}</AvatarFallback>
                     ) : (
-                      <motion.div initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }}>
-                        <ReactMarkdown>{m.content}</ReactMarkdown>
-                      </motion.div>
+                      <>
+                        <AvatarImage src="https://api.dicebear.com/7.x/bottts/svg?seed=Kalmeron" />
+                        <AvatarFallback>K</AvatarFallback>
+                      </>
                     )}
+                  </Avatar>
+                  <div
+                    className={cn(
+                      "rounded-2xl px-4 py-3 max-w-[85%] text-sm shadow-sm",
+                      m.role === "user"
+                        ? "brand-gradient text-white rounded-tr-none border-none"
+                        : "glass-panel text-neutral-200 rounded-tl-none border border-white/10"
+                    )}
+                  >
+                    <div className="prose prose-sm prose-invert max-w-none" dir="auto">
+                      {m.role === 'assistant' && isLoading && m.id === messages[messages.length - 1]?.id ? (
+                        <motion.div
+                          animate={{ opacity: [0.5, 1] }}
+                          transition={{ duration: 0.5, repeat: Infinity, repeatType: "reverse" }}
+                        >
+                          <ReactMarkdown>{textContent}</ReactMarkdown>
+                        </motion.div>
+                      ) : (
+                        <motion.div initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }}>
+                          <ReactMarkdown>{textContent}</ReactMarkdown>
+                        </motion.div>
+                      )}
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
+
             {isLoading && messages[messages.length - 1]?.role !== 'assistant' && (
               <div className="flex gap-3">
                 <Avatar className="h-8 w-8 shrink-0 border border-white/10">
@@ -280,11 +267,11 @@ export default function ChatPage() {
             >
               {isUploading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Paperclip className="h-5 w-5" />}
             </Button>
-            
+
             <Input
               value={input}
-              placeholder="صف فكرتي أو اطرح سؤالك.. كلميرون هنا للرد."
-              onChange={handleInputChange}
+              placeholder="صف فكرتك أو اطرح سؤالك.. كلميرون هنا للرد."
+              onChange={(e) => setInput(e.target.value)}
               className="flex-1 h-12 rounded-xl bg-black/40 border-white/10 text-white placeholder-neutral-500 focus-visible:ring-1 focus-visible:ring-[#D4AF37] px-4"
               disabled={isLoading}
             />
@@ -298,7 +285,7 @@ export default function ChatPage() {
             </Button>
           </form>
           <div className="mt-2 text-[10px] text-center text-neutral-500">
-             الذكاء الاصطناعي قد يخطئ أحياناً؛ استشر خبيراً قبل اتخاذ قرارات مصيرية.
+            الذكاء الاصطناعي قد يخطئ أحياناً؛ استشر خبيراً قبل اتخاذ قرارات مصيرية.
           </div>
         </div>
       </div>

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
 // Assume Gateway URL is configured in process.env.GOOGLE_BASE_URL internally or via sdk

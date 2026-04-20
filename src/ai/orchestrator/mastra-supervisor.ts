@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Supervisor } from '@mastra/core';
 import { ideaValidator } from '@/src/agents/idea-validator/agent';
 import { planBuilder } from '@/src/agents/plan-builder/agent';

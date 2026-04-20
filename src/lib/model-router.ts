@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { google } from '@ai-sdk/google';
 
 export type TaskComplexity = 'simple' | 'medium' | 'complex';

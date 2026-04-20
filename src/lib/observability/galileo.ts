@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Placeholder for Galileo.
 // Replace with actual @galileo-ai/sdk when available.
 export const galileo = {

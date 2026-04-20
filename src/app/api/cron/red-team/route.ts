@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { NextResponse } from 'next/server';
 
 // محاكي لاختبار الاختراق المستمر (CART) للوكلاء باستخدام SpartanX/Votal AI

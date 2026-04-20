@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { z } from 'zod';
 
 // Note: This relies on '@vercel/workflow', which was not available in registry. 

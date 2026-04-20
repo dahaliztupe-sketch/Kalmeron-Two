@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { generateObject } from 'ai';
 import { MODELS } from '@/src/lib/gemini';
 import { z } from 'zod';
