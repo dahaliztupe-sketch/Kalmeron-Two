@@ -39,7 +39,7 @@ export default function SupplyChainDashboard() {
              </div>
              <p className="text-sm text-neutral-400 mb-4">يعتمد على Gemini 3.1 Pro لمراجعة الأنماط الموسمية للمنتجات.</p>
              <div className="bg-neutral-950 rounded p-3 text-xs text-green-400 font-mono">
-               > أحدث تقرير: +15% طلب متوقع على المنتجات التقنية في الربع القادم.
+               {`>`} أحدث تقرير: +15% طلب متوقع على المنتجات التقنية في الربع القادم.
              </div>
           </div>
 
@@ -51,7 +51,7 @@ export default function SupplyChainDashboard() {
              </div>
              <p className="text-sm text-neutral-400 mb-4">يراقب النواقص الزائدة وتكاليف التخزين لتقديم مستويات خدمة أفضل من 98%.</p>
              <div className="bg-neutral-950 rounded p-3 text-xs text-amber-400 font-mono">
-               > تنبيه: المنتج #205 المخزون أقل من النسبة الآمنة (Safety Stock). يتم نقل شحنات...
+               {`>`} تنبيه: المنتج #205 المخزون أقل من النسبة الآمنة (Safety Stock). يتم نقل شحنات...
              </div>
           </div>
 
@@ -63,7 +63,7 @@ export default function SupplyChainDashboard() {
              </div>
              <p className="text-sm text-neutral-400 mb-4">Disruption Management - يتعقب الشحنات عالمياً ويبحث عن تعطيلات الطرق.</p>
              <div className="bg-neutral-950 rounded p-3 text-xs text-rose-400 font-mono">
-               > مسار بديل مقترح: شحنة X5 لتجنب إغلاقات الميناء الحالية، يوفر 3 أيام.
+               {`>`} مسار بديل مقترح: شحنة X5 لتجنب إغلاقات الميناء الحالية، يوفر 3 أيام.
              </div>
           </div>
         </div>

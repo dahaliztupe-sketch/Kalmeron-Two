@@ -1,0 +1,8 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/red-team",
+      "schedule": "0 2 * * *" 
+    }
+  ]
+}

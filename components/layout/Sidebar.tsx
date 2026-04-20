@@ -3,7 +3,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/src/lib/utils";
 import Image from "next/image";
-import { LayoutDashboard, MessageSquareText, Lightbulb, Target, ShieldAlert, Sparkles, Settings, FileText } from "lucide-react";
+import { LayoutDashboard, MessageSquareText, Lightbulb, Target, ShieldAlert, Sparkles, Settings, FileText, Network } from "lucide-react";
 
 const navItems = [
   { href: "/dashboard", label: "لوحة التحكم", icon: LayoutDashboard },
@@ -12,7 +12,7 @@ const navItems = [
   { href: "/plan", label: "خطة العمل", icon: FileText },
   { href: "/opportunities", label: "رادار الفرص", icon: Target },
   { href: "/mistake-shield", label: "حارس الأخطاء", icon: ShieldAlert },
-  { href: "/success-museum", label: "متحف النجاح", icon: Sparkles },
+  { href: "/p3-hub", label: "مراقبة الوكلاء (P3)", icon: Network },
 ];
 
 export function Sidebar() {

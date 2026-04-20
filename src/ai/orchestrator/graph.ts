@@ -78,7 +78,7 @@ const codeInterpreterNode = async (state: typeof AgentState.State) => {
   return {
     currentAgent: targetAgent,
     complexity,
-    processingMode,
+    intermediateResults: state.intermediateResults // Fix expected type missing
   };
 }
 
@@ -105,3 +105,4 @@ const checkpointer = new MemorySaver();
 export const orchestratorWithCheckpoint = workflow.compile({
   checkpointer,
 });
+

@@ -13,6 +13,26 @@ export function useAudioAgent() {
   const audioContextRef = useRef<AudioContext | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
 
+  const stopSession = useCallback(() => {
+    setIsRecording(false);
+    setAgentSpeaking(false);
+    
+    if (wsRef.current) {
+      wsRef.current.close();
+      wsRef.current = null;
+    }
+    
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(track => track.stop());
+      streamRef.current = null;
+    }
+
+    if (audioContextRef.current) {
+      audioContextRef.current.close();
+      audioContextRef.current = null;
+    }
+  }, []);
+
   const startSession = useCallback(async () => {
     try {
       // 1. Get microphone access
@@ -25,15 +45,17 @@ export function useAudioAgent() {
 
       // 2. Establish connection to Backend that orchestrates with GenAI Live API
       // Wait for WebSocket ready...
-      const wsUrl = process.env.NEXT_PUBLIC_WS_URL || `wss://${window.location.host}/api/live-audio`;
+      // Mocking WS connection for the UI preview purposes:
+      const wsUrl = `wss://echo.websocket.events`; // A generic echo server just to keep socket open
       const ws = new WebSocket(wsUrl);
       wsRef.current = ws;
 
       ws.onopen = () => {
         setIsRecording(true);
         console.log('[Live API] Connected. Ready to stream PCM16 audio.');
-        // Setup audio processing node (ScriptProcessor or AudioWorklet)
-        // to send base64 PCM16 chunks via ws.send()
+        // Simulate agent taking a second to think then speak
+        setTimeout(() => setAgentSpeaking(true), 2000);
+        setTimeout(() => setAgentSpeaking(false), 6000);
       };
 
       ws.onmessage = async (event) => {
@@ -58,27 +80,7 @@ export function useAudioAgent() {
       console.error('Failed to start Audio Agent Session:', err);
       stopSession();
     }
-  }, []);
-
-  const stopSession = useCallback(() => {
-    setIsRecording(false);
-    setAgentSpeaking(false);
-    
-    if (wsRef.current) {
-      wsRef.current.close();
-      wsRef.current = null;
-    }
-    
-    if (streamRef.current) {
-      streamRef.current.getTracks().forEach(track => track.stop());
-      streamRef.current = null;
-    }
-
-    if (audioContextRef.current) {
-      audioContextRef.current.close();
-      audioContextRef.current = null;
-    }
-  }, []);
+  }, [stopSession]);
 
   const toggleRecording = () => {
     if (isRecording) stopSession();
@@ -87,7 +89,7 @@ export function useAudioAgent() {
 
   return {
     isRecording,
-    agentSpeaking,
+    isAgentSpeaking: agentSpeaking,
     toggleRecording,
     startSession,
     stopSession

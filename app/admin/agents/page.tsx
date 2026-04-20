@@ -30,7 +30,7 @@ export default function AdminAgentsHub() {
                  <span className="text-xs bg-green-500/10 text-green-400 px-2 py-1 rounded">مستقر</span>
               </div>
               <div className="bg-neutral-950 p-4 rounded-lg font-mono text-sm text-neutral-300">
-                > آخر الفحوصات (Amplitude): تم رصد زيادة +12% في النشاط.
+                {`>`} آخر الفحوصات (Amplitude): تم رصد زيادة +12% في النشاط.
                 <br/><span className="text-neutral-500">تم الإرسال لـ Slack...</span>
               </div>
            </div>
@@ -45,7 +45,7 @@ export default function AdminAgentsHub() {
                  <span className="text-xs bg-green-500/10 text-green-400 px-2 py-1 rounded">متوافق (EU AI Act)</span>
               </div>
               <div className="bg-neutral-950 p-4 rounded-lg font-mono text-sm text-neutral-300">
-                > تدقيق تلقائي RAG Pipeline: مكتمل. 
+                {`>`} تدقيق تلقائي RAG Pipeline: مكتمل. 
                 <br/><span className="text-neutral-500">تم تأكيد عزل بيانات PII والتوافق مع GDPR.</span>
               </div>
            </div>
@@ -60,7 +60,7 @@ export default function AdminAgentsHub() {
                  <span className="text-xs bg-amber-500/10 text-amber-400 px-2 py-1 rounded">يحتاج تدخل</span>
               </div>
               <div className="bg-amber-950/20 border border-amber-900/50 p-4 rounded-lg font-mono text-sm text-amber-300/80">
-                > تم تحليل 1050 جلسة إعادة (Decipher).
+                {`>`} تم تحليل 1050 جلسة إعادة (Decipher).
                 <br/>! تحذير: رصد Rage Clicks في صفحة التسجيل (معدل ارتداد 3%).
               </div>
            </div>
@@ -75,8 +75,8 @@ export default function AdminAgentsHub() {
                  <span className="text-xs bg-green-500/10 text-green-400 px-2 py-1 rounded">محمي</span>
               </div>
               <div className="bg-neutral-950 p-4 rounded-lg font-mono text-sm text-neutral-300">
-                > فحص ثغرات (API Dependencies): اجتياز.
-                <br/>> تقرير VistaroAI: لا يوجد تهديدات استباقية (Prompt Injection).
+                {`>`} فحص ثغرات (API Dependencies): اجتياز.
+                <br/>{`>`} تقرير VistaroAI: لا يوجد تهديدات استباقية (Prompt Injection).
               </div>
            </div>
 
