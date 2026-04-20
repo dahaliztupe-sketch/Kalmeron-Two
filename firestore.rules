@@ -7,67 +7,48 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
-    // Helper functions
-    function isSignedIn() {
-      return request.auth != null;
-    }
-    function isOwner(userId) {
-      return isSignedIn() && request.auth.uid == userId;
-    }
-    function isVerified() {
-      // Ensure the user email is verified to prevent spoofing
-      return request.auth.token.email_verified == true;
+    // --- Hardened Helpers ---
+    function isSignedIn() { return request.auth != null; }
+    function isValidId(id) { return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$'); }
+    function isOwner(userId) { return isSignedIn() && request.auth.uid == userId; }
+    function isVerified() { return request.auth.token.email_verified == true; }
+    function incoming() { return request.resource.data; }
+    function existing() { return resource.data; }
+    function isValidTask(data) {
+        return data.keys().hasAll(['taskId', 'name', 'description', 'status', 'priority', 'createdBy', 'assignee', 'createdAt', 'updatedAt'])
+            && data.taskId is string && data.taskId.size() <= 128
+            && data.name is string && data.name.size() <= 256
+            && data.description is string && data.description.size() <= 5000
+            && data.status in ['pending', 'in_progress', 'completed', 'failed', 'awaiting_human']
+            && data.priority in ['low', 'medium', 'high', 'critical']
+            && data.assignee is string;
     }
 
-    // Users Collection (Strict Separation of PII)
+    // --- User Collections ---
     match /users/{userId} {
-      // Only the user can read or write their own general profile
       allow read, update: if isOwner(userId);
-      // Ensure creation forces ID match
-      allow create: if isOwner(userId) && request.resource.data.keys().hasAll(['email']);
+      allow create: if isOwner(userId) && incoming().keys().hasAll(['email']);
       
-      // PII subcollection (Address, Phone, strictly isolated)
-      match /private/info {
-        allow read, write: if isOwner(userId);
+      // Tasks sub-collection (Relational Master Gate: User profile)
+      match /tasks/{taskId} {
+        allow list: if isOwner(userId) && resource.data.createdBy == request.auth.uid;
+        allow get: if isOwner(userId) && resource.data.createdBy == request.auth.uid;
+        
+        allow create: if isOwner(userId) && isValidId(taskId) && isValidTask(incoming()) 
+                      && incoming().createdBy == request.auth.uid;
+        
+        allow update: if isOwner(userId) && isValidTask(incoming())
+                      && incoming().taskId == existing().taskId
+                      && existing().status != 'completed'; // Immortal state check
+
+        allow delete: if isOwner(userId);
       }
     }
-
-    // Ideas / Projects
-    match /ideas/{ideaId} {
-      // Users can only query/list their own ideas
-      allow list: if isSignedIn() && resource.data.userId == request.auth.uid;
-      allow get: if isSignedIn() && resource.data.userId == request.auth.uid;
-      
-      allow create: if isSignedIn() 
-                    && request.resource.data.userId == request.auth.uid
-                    && request.resource.data.keys().hasAll(['ideaDescription', 'userId'])
-                    && request.resource.data.ideaDescription is string
-                    && request.resource.data.ideaDescription.size() <= 10000;
-                    
-      // Prevent ownership hijacking during update
-      allow update: if isSignedIn() 
-                    && resource.data.userId == request.auth.uid
-                    && request.resource.data.userId == resource.data.userId;
-                    
-      allow delete: if isSignedIn() && resource.data.userId == request.auth.uid;
-    }
-
-    // WebAuthn Passkeys data
-    match /passkeys/{userId} {
-      allow read, write: if isOwner(userId);
-    }
-
+    
     // Billing Logic (Immutable via client)
     match /user_credits/{userId} {
       allow read: if isOwner(userId);
-      allow write: if false; // System-only updates via CreditManager (Admin SDK)
-    }
-
-    match /credit_transactions/{transactionId} {
-      // Users can only view their own transactions, no bulk reads without filter
-      allow list: if isSignedIn() && resource.data.userId == request.auth.uid;
-      allow get: if isSignedIn() && resource.data.userId == request.auth.uid;
-      allow write: if false; // System-only logs
+      allow write: if false; 
     }
   }
 }

@@ -80,12 +80,36 @@
         "updatedAt": { "type": "string" }
       },
       "required": ["summary", "updatedAt"]
+    },
+    "Task": {
+      "title": "Task",
+      "description": "Task management data",
+      "type": "object",
+      "properties": {
+        "taskId": { "type": "string" },
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "status": { "type": "string", "enum": ["pending", "in_progress", "completed", "failed", "awaiting_human"] },
+        "priority": { "type": "string", "enum": ["low", "medium", "high", "critical"] },
+        "createdBy": { "type": "string" },
+        "assignee": { "type": "string" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" },
+        "dueDate": { "type": "string" },
+        "parentTaskId": { "type": "string" },
+        "workflowId": { "type": "string" }
+      },
+      "required": ["taskId", "name", "description", "status", "priority", "createdBy", "assignee", "createdAt", "updatedAt"]
     }
   },
   "firestore": {
     "/users/{userId}": {
       "schema": { "$ref": "#/entities/User" },
       "description": "User profiles. Top-level."
+    },
+    "/users/{userId}/tasks/{taskId}": {
+      "schema": { "$ref": "#/entities/Task" },
+      "description": "User tasks."
     },
     "/users/{userId}/memory": {
       "schema": { "$ref": "#/entities/UserMemory" },
