@@ -119,6 +119,50 @@ NextIntlClientProvider
 - `app/privacy/page.tsx` — محدّثة بالتفاصيل الكاملة لقانون 151 + آلية طلب الحذف
 - `app/profile/page.tsx` — تحتوي على زر "حذف حسابي (الحق في النسيان)" 
 
+## Kalmeron Two — Organization Layer (April 21, 2026)
+
+The platform now has a 3-layer "Operating System" structure under `src/ai/organization/`:
+
+### Governance Layer
+- `src/ai/organization/governance/orchestrator.ts` — Global Orchestrator (Supervisor + Hub-and-Spoke). `planOrchestration()` uses LITE model for cheap routing; `orchestrate()` runs departments in parallel or sequential mode and tracks tasks.
+
+### Execution Layer — 8 Departments (`src/ai/organization/departments/`)
+Each department has an orchestrator + specialists, all built on `@mastra/core` Agent:
+
+| Department | Orchestrator | Specialists |
+|---|---|---|
+| `marketing/` | Marketing Orchestrator | market_research, customer_profiling, acquisition_strategist, ads_campaign_manager, content_creator, seo_manager |
+| `product/` | Product Orchestrator | product_manager, system_architect, mvp_developer, devops_engineer, qa_manager, ux_optimization |
+| `finance/` | Finance Orchestrator | financial_modeling, investor_relations, valuation_expert, legal_compliance, equity_manager |
+| `sales/` | Sales Orchestrator | sales_strategy_developer, founder_led_sales_coach, lead_qualifier, sales_pitch_deck_creator, sales_pipeline_analyst |
+| `support/` | Support Orchestrator | support_identity_expert, knowledge_base_builder, ticket_manager, csat_analyst |
+| `hr/` | HR Orchestrator | org_structure_designer, job_description_writer, company_culture_expert, operations_manager, process_optimizer |
+| `legal/` | Legal Orchestrator | founders_agreement_advisor, ip_protection_expert, data_privacy_compliance_auditor, contract_drafter, investment_agreement_specialist |
+| `monitoring/` | Monitoring Orchestrator | agent_health_monitor, cost_tracker, security_auditor, compliance_checker, performance_analyst, alert_dispatcher |
+
+Model tiering applied per-agent: routine/classification → LITE, general → FLASH, complex/legal/financial → PRO.
+
+### Compliance & Monitoring Layer
+- `src/ai/organization/compliance/monitor.ts` — `recordInvocation()` tracks per-agent invocations/failures/latency/cost; `dispatchAlert()` records alerts; daily cost budget check at 80% / 100% (`COST_DAILY_LIMIT_USD`, default $50).
+
+### Background Processing
+- **Receptionist Agent** (`src/ai/receptionist/agent.ts`) — the only agent that talks directly to users via `/chat`. Uses LITE for triage; if delegation needed, calls `orchestrate()` and composes a final response with FLASH.
+- **Inter-Agent Communication** (`src/ai/organization/protocols/communication.ts`) — `EventEmitter`-based message bus (Redis-Pub/Sub-ready) with `AgentMessage` envelope (from/to/type/payload/priority/timestamp).
+- **Task Manager** (`src/ai/organization/tasks/task-manager.ts`) — task lifecycle (pending→in_progress→completed/failed/awaiting_human) persisted to Firestore with in-memory fallback.
+- **Shared Memory** (`src/lib/memory/shared-memory.ts`) — Observational Memory: `observe()` extracts facts via LITE, `reflect()` merges into Digital Twin (max 200 facts/user). `src/lib/memory/context-provider.ts` exposes context summary to agents.
+
+### Personalized Paths (`src/ai/organization/personalization/paths.ts`)
+7 audience segments with priority departments and emphasis:
+fintech, ecommerce, women, ai_ml, sme, young, agritech.
+
+### API Endpoints
+- `POST /api/orchestrator/receptionist` — main entry point; rate-limited 20/min; auth-aware.
+- `GET /api/dashboard` — unified dashboard data (welcome, team activity, pending tasks, alerts, metrics, progress).
+- `GET /api/admin/mission-control` — live snapshot of agent metrics, daily cost, alerts.
+
+### Admin Mission Control UI
+- `app/admin/mission-control/page.tsx` — live agent map + cost gauge + alerts feed (5s polling).
+
 ## System-Wide Cleanup (April 21, 2026)
 
 1. **Removed dead `src/app/` shadow tree** — Next.js was serving from root `app/` only; all 12+ pages/routes under `src/app/` returned 404 in production. Deleted entirely (admin/observability, admin/sandboxes, admin/costs, api/agents/voice, api/cron/red-team, api/observability/aggregate, api/chat duplicate, dashboard/{analyze,billing,chat,digital-twin,ideas,mistake-shield,opportunities,plan,tasks,voice-advisor,workflows}, p3-hub, workflows).
