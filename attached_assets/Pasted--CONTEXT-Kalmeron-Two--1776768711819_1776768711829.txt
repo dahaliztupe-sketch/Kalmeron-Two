@@ -1,0 +1,197 @@
+
+[CONTEXT]
+نحن نعمل على منصة Kalmeron Two، منصة الذكاء الاصطناعي لرواد الأعمال المصريين. تم نشر المشروع على Vercel، ونجح البناء بعد إصلاح خطأ TypeScript. **لكن تدفق المصادقة والتسجيل معطل بالكامل**، مما يمنع أي مستخدم جديد من الانضمام إلى المنصة.
+
+المشاكل المرصودة:
+1. في صفحة `/auth/signup`، زر "التسجيل باستخدام Google" لا يؤدي أي إجراء (لا يفتح نافذة Google للمصادقة).
+2. رابط "تسجيل الدخول" في صفحة التسجيل يؤدي إلى صفحة 404.
+3. صفحة `/auth/login` غير موجودة أصلاً.
+4. زر "العودة للوحة التحكم" من صفحة 404 يوجه المستخدم إلى صفحة التسجيل بدلاً من لوحة التحكم.
+5. بعد التسجيل، لا يتم توجيه المستخدم إلى صفحة إكمال الملف الشخصي (`/onboarding`).
+6. التنقل بين صفحات المصادقة ولوحة التحكم غير منطقي.
+
+**المطلوب: إصلاح تدفق المصادقة بالكامل، مع اكتشاف وإصلاح أي أخطاء مشابهة في الواجهات (مثل أزرار لا تعمل، روابط مكسورة، توجيه خاطئ).**
+
+[YOUR MISSION]
+أنت كبير مهندسي المنصة. قم بتنفيذ المهام التالية بدقة. ركز على إصلاح جميع مشاكل الواجهات المتعلقة بالمصادقة والتنقل. لا تقم بتعديل المنطق الخلفي للوكلاء أو قاعدة البيانات إلا إذا كان ضروريًا لتدفق المصادقة.
+
+---
+
+## المهمة 1: إصلاح زر "التسجيل باستخدام Google" في `/auth/signup`
+
+### 1.1 تشخيص المشكلة
+- الزر لا يستدعي وظيفة المصادقة. ربما لا يوجد `onClick` handler، أو أن المنطق غير مكتمل.
+
+### 1.2 الإصلاح المطلوب
+- افتح `src/app/auth/signup/page.tsx`.
+- تأكد من وجود هذه الاستيرادات:
+  ```typescript
+  import { getAuth, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
+  import { useRouter } from 'next/navigation';
+```
+
+· أضف دالة handleGoogleSignUp:
+  ```typescript
+  const handleGoogleSignUp = async () => {
+    const auth = getAuth();
+    const provider = new GoogleAuthProvider();
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const isNewUser = result.user.metadata.creationTime === result.user.metadata.lastSignInTime;
+      if (isNewUser) {
+        router.push('/onboarding');
+      } else {
+        router.push('/dashboard');
+      }
+    } catch (error) {
+      console.error('Google sign-up error:', error);
+      // يمكنك إضافة Toast للإبلاغ عن الخطأ
+    }
+  };
+  ```
+· اربط هذه الدالة بزر "التسجيل باستخدام Google" عبر onClick={handleGoogleSignUp}.
+
+---
+
+المهمة 2: إنشاء صفحة تسجيل الدخول (/auth/login)
+
+2.1 المشكلة
+
+· رابط "تسجيل الدخول" في صفحة التسجيل يؤدي إلى 404.
+
+2.2 الإصلاح المطلوب
+
+· أنشئ الملف src/app/auth/login/page.tsx.
+· استخدم نفس تصميم صفحة التسجيل تقريبًا (يمكنك نسخ الكود وتعديله).
+· أضف زر "تسجيل الدخول باستخدام Google" مع دالة handleGoogleLogin:
+  ```typescript
+  const handleGoogleLogin = async () => {
+    const auth = getAuth();
+    const provider = new GoogleAuthProvider();
+    try {
+      const result = await signInWithPopup(auth, provider);
+      // تحقق مما إذا كان الملف الشخصي مكتملاً
+      const userDoc = await getDoc(doc(db, 'users', result.user.uid));
+      if (userDoc.exists() && userDoc.data().profileCompleted) {
+        router.push('/dashboard');
+      } else {
+        router.push('/onboarding');
+      }
+    } catch (error) {
+      console.error('Google login error:', error);
+    }
+  };
+  ```
+· أضف رابط "ليس لديك حساب؟ سجل الآن" يوجه إلى /auth/signup.
+
+---
+
+المهمة 3: إنشاء صفحة إكمال الملف الشخصي (/onboarding)
+
+3.1 المشكلة
+
+· بعد التسجيل، لا يوجد توجيه إلى صفحة إكمال الملف الشخصي.
+
+3.2 الإصلاح المطلوب
+
+· تأكد من وجود src/app/onboarding/page.tsx. إذا لم يكن موجودًا، أنشئه.
+· اجعل الصفحة محمية (لا يمكن الوصول إليها إلا بعد تسجيل الدخول):
+  ```typescript
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (!user) router.push('/auth/login');
+    });
+    return () => unsubscribe();
+  }, []);
+  ```
+· أنشئ نموذجًا لجمع: startupStage (قائمة منسدلة)، industry (قائمة منسدلة)، governorate (قائمة منسدلة)، و name (اختياري).
+· عند الإرسال، احفظ البيانات في Firestore:
+  ```typescript
+  await setDoc(doc(db, 'users', user.uid), {
+    name: formData.name,
+    startupStage: formData.startupStage,
+    industry: formData.industry,
+    governorate: formData.governorate,
+    profileCompleted: true,
+    createdAt: new Date(),
+  }, { merge: true });
+  router.push('/dashboard');
+  ```
+
+---
+
+المهمة 4: إصلاح توجيه صفحة 404
+
+4.1 المشكلة
+
+· زر "العودة للوحة التحكم" في not-found.tsx يوجه إلى صفحة خاطئة.
+
+4.2 الإصلاح المطلوب
+
+· افتح src/app/not-found.tsx.
+· تأكد من أن رابط "العودة للوحة التحكم" يستخدم href="/dashboard" بشكل صحيح:
+  ```tsx
+  <Link href="/dashboard">العودة للوحة التحكم</Link>
+  ```
+· إذا كان هناك منطق إضافي يحاول "تخمين" وجهة المستخدم، قم بإزالته واستخدم /dashboard مباشرة.
+
+---
+
+المهمة 5: فحص وإصلاح جميع الروابط المشابهة
+
+5.1 اكتشاف الروابط المكسورة
+
+· ابحث في المشروع عن أي استخدام لـ <Link href="/auth/login"> أو ما شابه، وتأكد من أنها تشير إلى المسارات الصحيحة.
+· تأكد من أن جميع أزرار "تسجيل الدخول" و"التسجيل" في الصفحة الرئيسية (/) تشير إلى /auth/login و /auth/signup على التوالي.
+
+5.2 فحص أزرار Google Sign-In الأخرى
+
+· ابحث في المشروع عن أي مكان آخر يستخدم signInWithPopup أو GoogleAuthProvider. تأكد من أن جميعها تعمل بشكل صحيح وتستخدم نفس المنطق.
+
+5.3 فحص أزرار تسجيل الخروج
+
+· تأكد من وجود زر تسجيل خروج في لوحة التحكم أو القائمة الجانبية، وأنه يعمل:
+  ```typescript
+  const handleLogout = async () => {
+    await signOut(auth);
+    router.push('/');
+  };
+  ```
+
+---
+
+المهمة 6: اختبار التدفق الكامل
+
+6.1 سيناريو الاختبار
+
+1. امسح بيانات المتصفح (أو استخدم وضع التصفح المتخفي).
+2. اذهب إلى /.
+3. اضغط على "ابدأ الآن" أو "تسجيل الدخول" (يجب أن يوجه إلى /auth/login).
+4. اضغط على "ليس لديك حساب؟ سجل الآن" (يجب أن يوجه إلى /auth/signup).
+5. اضغط على "التسجيل باستخدام Google". اختر حساب Google.
+6. يجب أن تنتقل إلى /onboarding.
+7. املأ البيانات واحفظ. يجب أن تنتقل إلى /dashboard.
+8. اضغط على زر تسجيل الخروج. يجب أن تنتقل إلى /.
+9. اذهب إلى /auth/login. اضغط على "تسجيل الدخول باستخدام Google". يجب أن تنتقل مباشرة إلى /dashboard.
+10. اكتب مسارًا غير موجود (مثل /xyz). يجب أن تظهر صفحة 404، وعند الضغط على "العودة للوحة التحكم" يجب أن تنتقل إلى /dashboard.
+
+6.2 التحقق
+
+· تأكد من عدم وجود أخطاء في وحدة تحكم المتصفح.
+· تأكد من حفظ بيانات المستخدم بشكل صحيح في Firestore.
+
+---
+
+[OUTPUT]
+بعد إكمال جميع المهام، قدم تقريرًا موجزًا يحتوي على:
+
+1. تأكيد إصلاح زر Google Sign-In.
+2. تأكيد إنشاء صفحة /auth/login.
+3. تأكيد إنشاء/إصلاح صفحة /onboarding.
+4. تأكيد إصلاح توجيه صفحة 404.
+5. تأكيد نجاح سيناريو الاختبار الكامل.
+6. قائمة بأي روابط مكسورة أخرى تم اكتشافها وإصلاحها.
+
+ابدأ العمل الآن. هذا الإصلاح سيجعل تدفق المصادقة سلسًا واحترافيًا، ويمنع أي مشاكل مشابهة في الواجهات. 🚀
+
+```
