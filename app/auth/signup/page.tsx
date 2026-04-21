@@ -51,7 +51,7 @@ export default function SignUpPage() {
       >
         <div className="glass border border-white/10 rounded-[2.5rem] p-10 shadow-2xl text-center space-y-8">
           <div className="flex flex-col items-center gap-4">
-            <Image src="/brand/logo.svg" alt="Kalmeron Two" width={160} height={48} style={{ height: '3rem', width: 'auto' }} />
+            <Image src="/brand/logo.svg" alt="Kalmeron Two" width={160} height={48} className="h-12 w-auto" />
             <h1 className="text-3xl font-black text-white">انضم إلى كلميرون تو</h1>
             <p className="text-neutral-400 text-base leading-relaxed">
               منصة الذكاء الاصطناعي لرواد الأعمال المصريين. سجّل الآن وابدأ رحلتك نحو بناء شركتك.

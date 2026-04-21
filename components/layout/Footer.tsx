@@ -11,7 +11,7 @@ export function Footer() {
     <footer className="border-t border-neutral-900 bg-[#06060A] py-16 px-6">
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-12">
         <div className="space-y-6 text-center md:text-right">
-          <Image src="/brand/logo.svg" alt="Kalmeron Two Logo" width={180} height={45} className="mx-auto md:mx-0" style={{ height: '2.5rem', width: 'auto' }} />
+          <Image src="/brand/logo.svg" alt="Kalmeron Two Logo" width={180} height={45} className="mx-auto md:mx-0 h-10 w-auto" />
           <p className="text-neutral-500 text-lg max-w-xs font-medium leading-relaxed">
             شريكك المؤسس المدعوم بالذكاء الاصطناعي للسوق المصري، مصمم لتمكينك من اختراق الحواجز وبناء المستقبل.
           </p>

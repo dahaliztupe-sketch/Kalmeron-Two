@@ -28,11 +28,13 @@ interface DashboardData {
   progress: { stage: string; stages: string[] };
 }
 
-const itemV = {
+import type { Variants } from "framer-motion";
+
+const itemV: Variants = {
   hidden: { opacity: 0, y: 16 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.35, ease: [0.16, 1, 0.3, 1] } },
+  show: { opacity: 1, y: 0, transition: { duration: 0.35, ease: 'easeOut' } },
 };
-const containerV = {
+const containerV: Variants = {
   hidden: { opacity: 0 },
   show: { opacity: 1, transition: { staggerChildren: 0.06 } },
 };

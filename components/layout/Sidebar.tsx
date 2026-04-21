@@ -3,7 +3,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
-import { motion } from "framer-motion";
+import { motion, type Variants } from "framer-motion";
 import {
   LayoutDashboard, MessageSquareText, Map, Megaphone, TrendingUp,
   Settings as SettingsIcon, Wallet, Users as UsersIcon, Heart, Scale,
@@ -35,11 +35,11 @@ const sectionTools: NavItem[] = [
   { href: "/opportunities", label: "رادار الفرص", icon: Radar },
 ];
 
-const containerV = {
+const containerV: Variants = {
   hidden: { opacity: 0 },
   show: { opacity: 1, transition: { staggerChildren: 0.04, delayChildren: 0.05 } },
 };
-const itemV = {
+const itemV: Variants = {
   hidden: { opacity: 0, x: 14 },
   show: { opacity: 1, x: 0, transition: { duration: 0.25, ease: 'easeOut' } },
 };

@@ -31,14 +31,33 @@ async function hydeGenerateNode(state: typeof RAGState.State) {
 }
 
 // 2. البحث الهجين الأولي (Baseline Hybrid RAG)
+// يبحث في knowledge_base/ في Firestore. عند ضبط Milvus/Chroma سيتم استبدال الجسم.
 async function retrieveNode(state: typeof RAGState.State) {
-  // محاكاة البحث الهجين في Milvus/ChromaDB (Semantic + Keyword BM25)
-  // في بيئة حقيقية سيتم استخدام queryEmbedding و text search
-  const mockDocs = [
-    { content: "التشريعات المصرية لعام 2026 تلزم الشركات الناشئة بامتلاك سجل تجاري قبل التمويل.", score: 0.82 },
-    { content: "بعض الدراسات تشير إلى أن التسويق الرقمي يحقق 60% من المبيعات، بينما دراسات أخرى تؤكد تراجعه.", score: 0.75 }
-  ];
-  return { documents: mockDocs };
+  try {
+    const { adminDb } = await import('@/src/lib/firebase-admin');
+    if (!adminDb?.collection) return { documents: [] };
+
+    const queryText = (state.hypotheticalAnswer || state.question || '').slice(0, 200);
+    const tokens = queryText.toLowerCase().split(/\s+/).filter(Boolean).slice(0, 6);
+
+    const snap = await adminDb.collection('knowledge_base').limit(50).get().catch(() => null);
+    if (!snap || snap.empty) return { documents: [] };
+
+    const docs: any[] = [];
+    snap.forEach((d: any) => {
+      const data = d.data() || {};
+      const content: string = data.content || data.text || '';
+      if (!content) return;
+      const lower = content.toLowerCase();
+      const hits = tokens.filter(t => lower.includes(t)).length;
+      if (hits > 0) docs.push({ content, score: Math.min(0.95, 0.5 + hits * 0.1), source: data.source });
+    });
+
+    docs.sort((a, b) => b.score - a.score);
+    return { documents: docs.slice(0, 5) };
+  } catch {
+    return { documents: [] };
+  }
 }
 
 // 3. المراجع (CRAG) - تقييم المستندات
