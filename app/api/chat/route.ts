@@ -1,12 +1,15 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import xss from 'xss';
 import { intelligentOrchestrator } from '@/src/ai/orchestrator/supervisor';
 import { HumanMessage } from '@langchain/core/messages';
 import { CreditManager } from '@/src/lib/billing/credit-manager';
 import { trackAgentUsage } from '@/src/lib/billing/usage-tracker';
 import { adminAuth } from '@/src/lib/firebase-admin';
+import { rateLimit, rateLimitResponse } from '@/lib/security/rate-limit';
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
+  const rl = rateLimit(req, { limit: 20, windowMs: 60_000 });
+  if (!rl.success) return rateLimitResponse();
   try {
     const { messages, isGuest, threadId, uiContext } = await req.json();
     

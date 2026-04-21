@@ -1,5 +1,5 @@
 import { test, expect, describe } from 'vitest';
-import { classifyTaskComplexity } from './src/lib/model-router';
+import { classifyTaskComplexity } from '../src/lib/model-router';
 
 describe('Task Complexity Classification', () => {
   test('should classify simple tasks correctly', () => {

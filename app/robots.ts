@@ -1,12 +1,16 @@
 import type { MetadataRoute } from 'next';
 
+const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://kalmeron.app';
+
 export default function robots(): MetadataRoute.Robots {
   return {
-    rules: {
-      userAgent: '*',
-      allow: '/',
-      disallow: ['/admin/', '/private/'],
-    },
-    sitemap: 'https://ais-dev-cmism2r4ts7kuphx6lzf5x-152637699957.europe-west1.run.app/sitemap.xml',
+    rules: [
+      {
+        userAgent: '*',
+        allow: '/',
+        disallow: ['/admin/', '/api/', '/profile/'],
+      },
+    ],
+    sitemap: `${siteUrl}/sitemap.xml`,
   };
 }

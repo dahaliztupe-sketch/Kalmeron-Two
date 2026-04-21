@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { ai } from '@/lib/gemini';
+import { rateLimit, rateLimitResponse } from '@/lib/security/rate-limit';
 
 export async function POST(request: NextRequest) {
+  const rl = rateLimit(request, { limit: 10, windowMs: 60_000 });
+  if (!rl.success) return rateLimitResponse();
+
   try {
     const { ideaDesc, industry, startup_stage } = await request.json();
 

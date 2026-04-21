@@ -12,7 +12,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 export default function Home() {
   const { user, dbUser } = useAuth();
   
-  const isActualAdmin = user?.email === 'abdalrahman32008@gmail.com' || (dbUser as any)?.isAdmin;
+  const isActualAdmin = !!(dbUser as any)?.isAdmin;
   const [testAdminMode, setTestAdminMode] = useState(false);
   const isAdmin = isActualAdmin || testAdminMode;
 
