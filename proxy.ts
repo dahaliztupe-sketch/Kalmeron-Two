@@ -2,10 +2,10 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 /**
- * Middleware handles global routing logic and GeoIP-based currency detection.
+ * Proxy handles global routing logic and GeoIP-based currency detection.
  * Removed firebase-admin to ensure compatibility with Next.js Edge Runtime.
  */
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const url = request.nextUrl;
   
   // 1. Global Edge Routing / Location-Aware Adaptation
