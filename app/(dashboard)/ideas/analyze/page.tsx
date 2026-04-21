@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { ai } from "@/lib/gemini";
 import { Loader2, Lightbulb, CheckCircle2, ChevronRight } from "lucide-react";
 import { db } from "@/lib/firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
@@ -30,20 +29,22 @@ export default function IdeaValidationPage() {
     setIsValidating(true);
 
     try {
-      const response = await ai.models.generateContent({
-        model: "gemini-3.1-pro-preview",
-        contents: `I have a startup idea. Please validate it aggressively for the Egyptian market. 
-        Idea: "${ideaDesc}"
-        My Target Industry is: ${dbUser.industry} and Phase is ${dbUser.startup_stage}.
-        
-        Respond in professional, formal Arabic (الفصحى المعاصرة). Structure your response beautifully with Markdown:
-        1. SWOT Analysis (نقاط القوة، الضعف، الفرص، التهديدات)
-        2. Market Fit in Egypt (حجم السوق واحتياجاته)
-        3. Potential Competitors (المنافسين المباشرين وغير المباشرين)
-        4. Recommendation (الخلاصة: هل تستحق ولا لأ، وما هي الخطوة التالية الخطوة العملية؟)`
+      const res = await fetch('/api/ideas/analyze', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ideaDesc,
+          industry: dbUser.industry,
+          startup_stage: dbUser.startup_stage,
+        }),
       });
 
-      const resultText = response.text || "";
+      if (!res.ok) {
+        throw new Error(`API error: ${res.status}`);
+      }
+
+      const data = await res.json();
+      const resultText: string = data.result || "";
       setValidationResult(resultText);
 
       // Save to Firestore following the rules exactly

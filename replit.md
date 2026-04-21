@@ -55,8 +55,7 @@ NextIntlClientProvider
 | `NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID` | Set | Firebase messaging |
 | `NEXT_PUBLIC_FIREBASE_APP_ID` | Set | Firebase app ID |
 | `FIREBASE_SERVICE_ACCOUNT_KEY` | **Missing** | Server-side Firebase Admin |
-| `GEMINI_API_KEY` | **Missing** | Google Gemini API |
-| `NEXT_PUBLIC_GEMINI_API_KEY` | **Missing** | Client-side Gemini |
+| `GEMINI_API_KEY` | **Missing** | Server-side Gemini API (via API route) |
 | `STRIPE_SECRET_KEY` | **Missing** | Stripe payments |
 | `STRIPE_WEBHOOK_SECRET` | **Missing** | Stripe webhooks |
 | `OPENMETER_API_KEY` | **Missing** | Usage metering |
