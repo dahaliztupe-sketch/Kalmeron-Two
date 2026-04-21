@@ -1,4 +1,5 @@
 "use client";
+import { AppShell } from "@/components/layout/AppShell";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Legend } from 'recharts';
 
@@ -23,6 +24,7 @@ const agentsScoresData = [
 
 export default function AgentsHealthDashboard() {
   return (
+    <AppShell>
     <div className="p-8 space-y-8 relative overflow-hidden" dir="rtl">
       {/* Background flare */}
       <div className="absolute top-0 left-0 w-[40vw] h-[40vw] rounded-full bg-[rgb(var(--tech-blue))] opacity-10 blur-[100px] pointer-events-none" />
@@ -85,5 +87,6 @@ export default function AgentsHealthDashboard() {
         </Card>
       </div>
     </div>
+    </AppShell>
   );
 }

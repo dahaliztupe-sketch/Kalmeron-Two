@@ -1,4 +1,5 @@
 "use client";
+import { AppShell } from "@/components/layout/AppShell";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ComposedChart, Bar, Line } from 'recharts';
 
@@ -13,6 +14,7 @@ const financialProjections = [
 
 export default function CFODashboard() {
   return (
+    <AppShell>
     <div className="p-8 space-y-8 relative overflow-hidden" dir="rtl">
       {/* Background flare */}
       <div className="absolute top-0 right-0 w-[40vw] h-[40vw] rounded-full bg-[rgb(var(--gold))] opacity-10 blur-[100px] pointer-events-none" />
@@ -91,5 +93,6 @@ export default function CFODashboard() {
         </Card>
       </div>
     </div>
+    </AppShell>
   );
 }

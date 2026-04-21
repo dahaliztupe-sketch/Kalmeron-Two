@@ -1,5 +1,5 @@
 import { Suspense } from 'react';
-import { Sidebar } from "@/components/layout/Sidebar";
+import { AppShell } from "@/components/layout/AppShell";
 import { getProactiveWarnings } from "@/src/agents/mistake-shield/agent";
 import { getUserData } from "@/src/features/users/api";
 import { BentoGrid, BentoCard } from "@/src/components/ui/BentoGrid";
@@ -80,14 +80,13 @@ function DashboardSkeleton() {
 
 export default function DashboardPage() {
   return (
-    <div className="flex min-h-screen bg-[rgb(var(--background))] text-white" dir="rtl">
-      <Sidebar />
-      <main className="flex-1 mr-64 p-8 relative">
+    <AppShell>
+      <div dir="rtl">
         <h1 className="text-4xl font-bold mb-8">لوحة التحكم</h1>
         <Suspense fallback={<DashboardSkeleton />}>
           <DashboardContent />
         </Suspense>
-      </main>
-    </div>
+      </div>
+    </AppShell>
   );
 }

@@ -87,7 +87,7 @@ export default function Home() {
         {/* Navigation & Admin Toggle */}
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-3">
-             <Image src="/logo.jpg" alt="Kalmeron Two Logo" width={200} height={60} className="h-10 w-auto" />
+             <Image src="/logo.jpg" alt="Kalmeron Two Logo" width={200} height={60} style={{ height: '2.5rem', width: 'auto' }} />
           </div>
           
           <div className="flex items-center gap-2 glass-panel px-4 py-2 rounded-full cursor-pointer transition-all hover:bg-white/5" onClick={() => setTestAdminMode(!testAdminMode)}>

@@ -119,6 +119,15 @@ NextIntlClientProvider
 - `app/privacy/page.tsx` — محدّثة بالتفاصيل الكاملة لقانون 151 + آلية طلب الحذف
 - `app/profile/page.tsx` — تحتوي على زر "حذف حسابي (الحق في النسيان)" 
 
+## Bug Fixes (April 2026)
+
+1. **LanguageContext** — default language changed from `'en'` to `'ar'` so all AppShell pages show Arabic UI by default.
+2. **AppShell splash CTA** — "بدء الرحلة" / "Enter the Future" button now links to `/auth/signup` instead of calling `signInWithGoogle()` directly.
+3. **Logo Image warnings** — All `<Image>` tags for `logo.jpg` across AppShell, Footer, auth/signup, and marketing page now use `style={{ height: '...', width: 'auto' }}` instead of mismatched `className` + `prop` dimensions.
+4. **CFO page** (`/cfo`) — wrapped in `<AppShell>` so it shows proper navigation header and sidebar.
+5. **Admin pages** (`/admin`, `/admin/agents-health`, `/admin/ai-logs`, `/admin/compliance`) — all wrapped in `<AppShell>` for consistent navigation.
+6. **Dashboard page** (`/dashboard`) — migrated from direct `<Sidebar>` import with hardcoded `mr-64` to `<AppShell>` for full consistency.
+
 ## Build Status
 
 ✅ Runtime: Next.js dev server running on port 5000  
@@ -126,4 +135,6 @@ NextIntlClientProvider
 ✅ Auth Guard: Client-side via `AuthGuard` component  
 ✅ Firestore Rules: Hardened for all collections  
 ✅ Pino Logger: Structured logging with request IDs  
-✅ E2E Tests: Playwright configured
+✅ E2E Tests: Playwright configured  
+✅ TypeScript: 0 errors (`tsc --noEmit`)  
+✅ Default Language: Arabic (`'ar'`)

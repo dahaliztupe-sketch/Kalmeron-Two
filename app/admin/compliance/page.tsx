@@ -1,9 +1,11 @@
 "use client";
+import { AppShell } from "@/components/layout/AppShell";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 export default function ComplianceDashboard() {
   return (
+    <AppShell>
     <div className="p-8 space-y-8 relative overflow-hidden" dir="rtl">
       {/* Background flare */}
       <div className="absolute bottom-0 right-0 w-[40vw] h-[40vw] rounded-full bg-[rgb(var(--tech-blue))] opacity-10 blur-[100px] pointer-events-none" />
@@ -44,5 +46,6 @@ export default function ComplianceDashboard() {
         </CardContent>
       </Card>
     </div>
+    </AppShell>
   );
 }

@@ -57,12 +57,13 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </motion.div>
 
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5, duration: 1 }}>
-            <Button
-              onClick={signInWithGoogle}
-              className="h-16 px-12 rounded-full text-xl bg-white text-black hover:bg-neutral-200 font-bold transition-all hover:scale-105 active:scale-95"
-            >
-              {language === 'ar' ? 'بدء الرحلة' : 'Enter the Future'}
-            </Button>
+            <Link href="/auth/signup">
+              <Button
+                className="h-16 px-12 rounded-full text-xl bg-white text-black hover:bg-neutral-200 font-bold transition-all hover:scale-105 active:scale-95"
+              >
+                {language === 'ar' ? 'بدء الرحلة' : 'Enter the Future'}
+              </Button>
+            </Link>
           </motion.div>
 
           <Button
@@ -100,7 +101,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 <line x1="4" x2="20" y1="6" y2="6" /><line x1="4" x2="20" y1="12" y2="12" /><line x1="4" x2="20" y1="18" y2="18" />
               </svg>
             </Button>
-            <Image src="/logo.jpg" alt="Logo" width={140} height={35} className="h-8 w-auto md:hidden" />
+            <Image src="/logo.jpg" alt="Logo" width={140} height={35} className="md:hidden" style={{ height: '2rem', width: 'auto' }} />
           </div>
 
           <div className="flex items-center gap-3">
@@ -171,7 +172,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               )}
             >
               <div className="flex justify-between items-center p-6 border-b border-neutral-900">
-                <Image src="/logo.jpg" alt="Logo" width={140} height={35} className="h-8 w-auto" />
+                <Image src="/logo.jpg" alt="Logo" width={140} height={35} style={{ height: '2rem', width: 'auto' }} />
                 <Button variant="ghost" size="icon" onClick={() => setMobileMenuOpen(false)} aria-label="إغلاق">
                   <X className="h-6 w-6 text-white" />
                 </Button>

@@ -1,4 +1,5 @@
 "use client";
+import { AppShell } from "@/components/layout/AppShell";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
@@ -12,6 +13,7 @@ export default function AiLogsDashboard() {
   ];
 
   return (
+    <AppShell>
     <div className="p-8 space-y-6" dir="rtl">
       <h1 className="text-3xl font-bold text-white">سجلات الذكاء الاصطناعي (AI Costs & Logs)</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -48,5 +50,6 @@ export default function AiLogsDashboard() {
         </CardContent>
       </Card>
     </div>
+    </AppShell>
   );
 }

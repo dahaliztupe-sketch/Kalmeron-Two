@@ -1,5 +1,6 @@
 "use client";
 import { useState } from 'react';
+import { AppShell } from "@/components/layout/AppShell";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
@@ -17,7 +18,8 @@ export default function AdminDashboard() {
   };
 
   return (
-    <div className="p-8 space-y-6">
+    <AppShell>
+    <div className="p-8 space-y-6" dir="rtl">
       <h1 className="text-3xl font-bold">لوحة تحكم المشرف</h1>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Card><CardHeader><CardTitle>عدد المستخدمين</CardTitle></CardHeader><CardContent>{users.length}</CardContent></Card>
@@ -52,5 +54,6 @@ export default function AdminDashboard() {
         </CardContent>
       </Card>
     </div>
+    </AppShell>
   );
 }
