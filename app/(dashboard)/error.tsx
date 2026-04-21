@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect } from "react";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { AlertTriangle, RefreshCcw, Home } from "lucide-react";
 import Link from "next/link";
+import { cn } from "@/lib/utils";
 
 export default function DashboardError({
   error,
@@ -39,12 +40,16 @@ export default function DashboardError({
             <RefreshCcw className="w-4 h-4" />
             إعادة المحاولة
           </Button>
-          <Button asChild variant="outline" className="flex items-center gap-2 border-white/20 text-white hover:bg-white/5 rounded-xl">
-            <Link href="/dashboard">
-              <Home className="w-4 h-4" />
-              لوحة التحكم
-            </Link>
-          </Button>
+          <Link
+            href="/dashboard"
+            className={cn(
+              buttonVariants({ variant: "outline" }),
+              "flex items-center gap-2 border-white/20 text-white hover:bg-white/5 rounded-xl"
+            )}
+          >
+            <Home className="w-4 h-4" />
+            لوحة التحكم
+          </Link>
         </div>
       </div>
     </div>

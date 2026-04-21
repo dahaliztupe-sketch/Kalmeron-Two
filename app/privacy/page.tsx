@@ -66,7 +66,7 @@ export default function PrivacyPage() {
               <li>
                 <strong>من لوحة التحكم:</strong>{" "}
                 <Link href="/profile" className="text-[rgb(var(--gold))] hover:underline">
-                  صفحة الإعدادات والملف الشخصي ← زر "حذف حسابي (الحق في النسيان)"
+                  صفحة الإعدادات والملف الشخصي ← زر &quot;حذف حسابي (الحق في النسيان)&quot;
                 </Link>
                 . يتم تنفيذ الحذف فوراً.
               </li>
@@ -87,7 +87,7 @@ export default function PrivacyPage() {
           <section className="glass p-8 rounded-3xl space-y-3">
             <h2 className="text-2xl font-semibold text-white">6. الذاكرة والذكاء الاصطناعي</h2>
             <p>
-              نقوم بتخزين "ذاكرة عرضية" لفهم تفضيلاتك وتجاربك السابقة لتحسين المخرجات
+              نقوم بتخزين &quot;ذاكرة عرضية&quot; لفهم تفضيلاتك وتجاربك السابقة لتحسين المخرجات
               الاستراتيجية. هذه الذاكرة مشفرة كلياً (AES-256) ولا تُستخدم لتدريب نماذج
               عامة لدى أي طرف ثالث.
             </p>

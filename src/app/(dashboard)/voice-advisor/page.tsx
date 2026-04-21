@@ -6,6 +6,8 @@ import { AppShell } from "@/components/layout/AppShell";
 import { Mic, Square, Loader2, Volume2, ShieldCheck, Activity } from 'lucide-react';
 import { useAudioAgent } from '@/hooks/use-audio-agent';
 
+const BAR_HEIGHTS = [1, 2, 3, 4, 5].map(() => Math.max(16, Math.random() * 64));
+
 export default function VoiceAdvisorPage() {
   const { isRecording, isAgentSpeaking, toggleRecording } = useAudioAgent();
 
@@ -49,13 +51,13 @@ export default function VoiceAdvisorPage() {
             ) : isRecording ? (
               <div className="flex flex-col items-center gap-6 animate-in fade-in zoom-in duration-500">
                 <div className="flex items-center gap-2">
-                  {[1, 2, 3, 4, 5].map((i) => (
+                  {BAR_HEIGHTS.map((h, i) => (
                     <div 
                       key={i} 
                       className="w-2 bg-rose-500 rounded-full animate-bounce" 
                       style={{ 
-                        height: `${Math.max(16, Math.random() * 64)}px`,
-                        animationDelay: `${i * 0.1}s` 
+                        height: `${h}px`,
+                        animationDelay: `${(i + 1) * 0.1}s` 
                       }} 
                     />
                   ))}

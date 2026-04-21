@@ -1,4 +1,10 @@
 import { AppShell } from "@/components/layout/AppShell";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "شروط الاستخدام | كلميرون",
+  description: "اقرأ شروط وأحكام استخدام منصة كلميرون للذكاء الاصطناعي لرواد الأعمال المصريين.",
+};
 
 export default function TermsPage() {
   return (

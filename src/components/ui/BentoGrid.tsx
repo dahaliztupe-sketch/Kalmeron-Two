@@ -1,3 +1,4 @@
+'use client';
 // @ts-nocheck
 import { motion } from 'framer-motion';
 import { GlassCard } from './GlassCard';

@@ -1,10 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { orchestratorWithCheckpoint } from '@/src/ai/orchestrator/graph';
 import { HumanMessage } from '@langchain/core/messages';
+import xss from 'xss';
 
 export async function POST(req: NextRequest) {
   try {
-    const { message, userId } = await req.json();
+    const body = await req.json();
+    const message = xss(String(body.message ?? '').slice(0, 10000));
+    const userId = xss(String(body.userId ?? '').slice(0, 128));
     
     // استدعاء المنسق
     const result = await orchestratorWithCheckpoint.invoke(

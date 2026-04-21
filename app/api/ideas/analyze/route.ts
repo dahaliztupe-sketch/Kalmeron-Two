@@ -1,13 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { ai } from '@/lib/gemini';
 import { rateLimit, rateLimitResponse } from '@/lib/security/rate-limit';
+import xss from 'xss';
 
 export async function POST(request: NextRequest) {
   const rl = rateLimit(request, { limit: 10, windowMs: 60_000 });
   if (!rl.success) return rateLimitResponse();
 
   try {
-    const { ideaDesc, industry, startup_stage } = await request.json();
+    const body = await request.json();
+    const ideaDesc = xss(String(body.ideaDesc ?? '').slice(0, 5000));
+    const industry = xss(String(body.industry ?? '').slice(0, 200));
+    const startup_stage = xss(String(body.startup_stage ?? '').slice(0, 100));
 
     if (!ideaDesc || typeof ideaDesc !== 'string' || !ideaDesc.trim()) {
       return NextResponse.json({ error: 'ideaDesc is required' }, { status: 400 });
