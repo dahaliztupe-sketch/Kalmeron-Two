@@ -119,6 +119,17 @@ NextIntlClientProvider
 - `app/privacy/page.tsx` — محدّثة بالتفاصيل الكاملة لقانون 151 + آلية طلب الحذف
 - `app/profile/page.tsx` — تحتوي على زر "حذف حسابي (الحق في النسيان)" 
 
+## System-Wide Cleanup (April 21, 2026)
+
+1. **Removed dead `src/app/` shadow tree** — Next.js was serving from root `app/` only; all 12+ pages/routes under `src/app/` returned 404 in production. Deleted entirely (admin/observability, admin/sandboxes, admin/costs, api/agents/voice, api/cron/red-team, api/observability/aggregate, api/chat duplicate, dashboard/{analyze,billing,chat,digital-twin,ideas,mistake-shield,opportunities,plan,tasks,voice-advisor,workflows}, p3-hub, workflows).
+2. **Removed broken `/p3-hub` link** from `components/layout/Sidebar.tsx` (its target page lived only in the deleted shadow tree, plus its own sub-links pointed to deleted routes).
+3. **Removed `src/ai/crews/idea-analysis-crew.py`** — Python file in a TypeScript project, never imported.
+4. **Model upgrades** (consistency with `src/lib/gemini.ts` MODELS tier):
+   - `src/ai/agents/code-interpreter/agent.ts`: `gemini-2.0-flash` → `gemini-3-flash-preview`
+   - `src/ai/agents/compliance/agent.ts`: `gemini-1.5-flash` → `gemini-3.1-pro-preview` (compliance reasoning depth)
+5. **Cost optimization** — `src/ai/agents/digital-twin/continuous-updater.ts` moved from FLASH to LITE (`gemini-3.1-flash-lite-preview`); routine continuous merges don't need a reasoning model. Estimated ~60-80% per-call cost reduction on this hot path.
+6. **Removed `// @ts-nocheck`** from `src/lib/gemini.ts` — file type-checks cleanly.
+
 ## Bug Fixes (April 2026)
 
 1. **LanguageContext** — default language changed from `'en'` to `'ar'` so all AppShell pages show Arabic UI by default.

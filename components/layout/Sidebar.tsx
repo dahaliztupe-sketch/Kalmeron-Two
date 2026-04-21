@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 import Image from "next/image";
 import {
   LayoutDashboard, MessageSquareText, Lightbulb, Target,
-  ShieldAlert, Network, FileText, Trophy, Users,
+  ShieldAlert, FileText, Trophy, Users,
 } from "lucide-react";
 
 const navItems = [
@@ -17,7 +17,6 @@ const navItems = [
   { href: "/mistake-shield", label: "حارس الأخطاء", icon: ShieldAlert },
   { href: "/success-museum", label: "متحف النجاح", icon: Trophy },
   { href: "/market-lab", label: "مختبر السوق", icon: Users },
-  { href: "/p3-hub", label: "مراقبة الوكلاء", icon: Network },
 ];
 
 export function Sidebar() {
