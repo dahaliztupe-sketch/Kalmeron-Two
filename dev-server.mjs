@@ -30,7 +30,7 @@ process.env.NEXT_PRIVATE_WORKER = '1';
 process.env.NEXT_PRIVATE_START_TIME = Date.now().toString();
 
 const child = fork(startServerPath, [], {
-  stdio: 'inherit',
+  stdio: ['ignore', 'inherit', 'inherit', 'ipc'],
   env: {
     ...process.env,
     NEXT_PRIVATE_WORKER: '1',
