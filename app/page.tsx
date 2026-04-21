@@ -34,10 +34,10 @@ export default function Home() {
           <Sparkles className="w-5 h-5 text-blue-400" /> Kalmeron
         </div>
         <div className="flex gap-4">
-          <Link href="/login" className="text-sm text-neutral-400 hover:text-white transition-colors flex items-center gap-2">
+          <Link href="/auth/login" className="text-sm text-neutral-400 hover:text-white transition-colors flex items-center gap-2">
             <LogIn className="w-4 h-4" /> تسجيل الدخول
           </Link>
-          <Link href="/register" className="text-sm bg-white/10 hover:bg-white/20 px-4 py-2 rounded-full transition-colors flex items-center gap-2">
+          <Link href="/auth/signup" className="text-sm bg-white/10 hover:bg-white/20 px-4 py-2 rounded-full transition-colors flex items-center gap-2">
             <UserPlus className="w-4 h-4" /> إنشاء حساب
           </Link>
         </div>

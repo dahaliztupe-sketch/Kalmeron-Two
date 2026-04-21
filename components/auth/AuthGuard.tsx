@@ -17,7 +17,7 @@ export function AuthGuard({ children, requireProfile = true }: AuthGuardProps) {
   useEffect(() => {
     if (!loading) {
       if (!user) {
-        router.replace("/auth/signup");
+        router.replace("/auth/login");
       } else if (requireProfile && dbUser && !dbUser.profile_completed) {
         router.replace("/onboarding");
       }

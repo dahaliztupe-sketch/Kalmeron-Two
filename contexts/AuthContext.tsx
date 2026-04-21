@@ -4,6 +4,7 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import { User, onAuthStateChanged, signInWithPopup, signOut as firebaseSignOut } from "firebase/auth";
 import { auth, googleProvider, db } from "@/src/lib/firebase";
 import { doc, getDoc, setDoc, serverTimestamp } from "firebase/firestore";
+import { toast } from "sonner";
 
 interface DBUser {
   uid: string;
@@ -76,8 +77,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signInWithGoogle = async () => {
     try {
       await signInWithPopup(auth, googleProvider);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error signing in with Google:", error);
+      const code = error?.code || "";
+      if (code === "auth/popup-closed-by-user" || code === "auth/cancelled-popup-request") {
+        return;
+      }
+      const message =
+        code === "auth/popup-blocked"
+          ? "المتصفح حظر النافذة المنبثقة. يرجى السماح بالنوافذ المنبثقة وإعادة المحاولة."
+          : code === "auth/unauthorized-domain"
+          ? "هذا النطاق غير مصرح به في إعدادات Firebase."
+          : "تعذّر تسجيل الدخول باستخدام Google. حاول مرة أخرى.";
+      try { toast.error(message); } catch {}
+      throw error;
     }
   };
 
@@ -86,6 +99,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       await firebaseSignOut(auth);
     } catch (error) {
       console.error("Error signing out:", error);
+      try { toast.error("تعذّر تسجيل الخروج. حاول مرة أخرى."); } catch {}
     }
   };
 
