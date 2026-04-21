@@ -16,6 +16,7 @@ import { cn } from "@/lib/utils";
 import ReactMarkdown from 'react-markdown';
 import { toast } from "sonner";
 import { motion } from 'framer-motion';
+import { ThoughtChain } from '@/components/chat/ThoughtChain';
 
 const suggestionChips = [
   { label: "حلل فكرتي الاستثمارية", prompt: "هل يمكنك إجراء تحليل شامل وفني لفكرتي المستندة إلى السوق المصري؟" },
@@ -213,8 +214,8 @@ export default function ChatPage() {
                 <Avatar className="h-8 w-8 shrink-0 border border-white/10">
                   <AvatarImage src="https://api.dicebear.com/7.x/bottts/svg?seed=Kalmeron" />
                 </Avatar>
-                <div className="glass-panel text-neutral-200 border border-white/10 rounded-2xl rounded-tl-none px-4 py-3 shadow-sm">
-                  <Loader2 className="h-4 w-4 animate-spin text-neutral-400" />
+                <div className="glass-panel text-neutral-200 border border-white/10 rounded-2xl rounded-tl-none px-4 py-3 shadow-sm min-w-[220px]">
+                  <ThoughtChain />
                 </div>
               </div>
             )}

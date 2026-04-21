@@ -1,32 +1,17 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 120" fill="none">
-  <!-- Gradient Definition -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 80" fill="none">
   <defs>
     <linearGradient id="brandGradient" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#D4AF37" />
-      <stop offset="100%" stop-color="#0A66C2" />
+      <stop offset="100%" stop-color="#3B82F6" />
     </linearGradient>
   </defs>
-
-  <!-- Logo Mark -->
-  <g transform="translate(10, 10)">
-    <!-- Base geometric forms for 'K' and ascending spark -->
-    <path d="M 20 10 L 20 90" stroke="url(#brandGradient)" stroke-width="12" stroke-linecap="round" />
-    <path d="M 20 50 L 60 10" stroke="url(#brandGradient)" stroke-width="12" stroke-linecap="round" />
-    <path d="M 40 30 L 80 90" stroke="url(#brandGradient)" stroke-width="12" stroke-linecap="round" />
-    <!-- Spark / Star aspect -->
-    <circle cx="85" cy="15" r="6" fill="#D4AF37" />
-    <circle cx="95" cy="5" r="4" fill="#0A66C2" />
+  <g transform="translate(8, 12)">
+    <path d="M10 6 L10 54" stroke="url(#brandGradient)" stroke-width="7" stroke-linecap="round" />
+    <path d="M10 30 L34 6" stroke="url(#brandGradient)" stroke-width="7" stroke-linecap="round" />
+    <path d="M19 21 L40 54" stroke="url(#brandGradient)" stroke-width="7" stroke-linecap="round" />
+    <circle cx="46" cy="9" r="3.5" fill="#D4AF37" />
+    <circle cx="52" cy="3" r="2.2" fill="#3B82F6" />
   </g>
-
-  <!-- Typography -->
-  <g transform="translate(130, 75)">
-    <!-- Kalmeron -->
-    <text x="0" y="0" font-family="'Geist Sans', -apple-system, sans-serif" font-weight="700" font-size="48" fill="#FFFFFF" letter-spacing="-1">
-      Kalmeron
-    </text>
-    <!-- Two -->
-    <text x="215" y="0" font-family="'Geist Sans', -apple-system, sans-serif" font-weight="400" font-size="48" fill="url(#brandGradient)">
-      Two
-    </text>
-  </g>
+  <text x="76" y="50" font-family="'Syne', 'Plus Jakarta Sans', system-ui, sans-serif" font-weight="800" font-size="32" letter-spacing="-1.2" fill="#F1F5F9">Kalmeron</text>
+  <text x="240" y="50" font-family="'Syne', 'Plus Jakarta Sans', system-ui, sans-serif" font-weight="600" font-size="20" letter-spacing="-0.5" fill="url(#brandGradient)">Two</text>
 </svg>

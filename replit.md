@@ -194,3 +194,44 @@ fintech, ecommerce, women, ai_ml, sme, young, agritech.
 ✅ E2E Tests: Playwright configured  
 ✅ TypeScript: 0 errors (`tsc --noEmit`)  
 ✅ Default Language: Arabic (`'ar'`)
+
+## 2026-04-21 — Production Readiness Overhaul (Kalmeron Two)
+
+### Brand & Theme
+- New SVG logo at `public/brand/logo.svg` (gold→blue gradient + "Kalmeron Two" wordmark).
+- Dynamic favicon/icon: `app/icon.svg`, `app/apple-icon.svg`.
+- New brand tokens in `app/globals.css`: brand-gold #D4AF37, brand-blue #3B82F6, dark-bg #080C14, dark-surface #0D1321.
+- Fonts: Plus Jakarta Sans, Syne (display), Noto Kufi Arabic.
+- Aurora background via CSS-only blobs (no 3D dependency).
+
+### Navigation
+- `components/layout/Sidebar.tsx` — 3 sections (Main / 7 Departments / Tools) + Settings + Logout.
+- `components/layout/AppShell.tsx` — uses new Sidebar; mobile menu redesigned; SVG logo everywhere.
+
+### New Pages
+- `/roadmap` — Live timeline of agent task activity from `/api/dashboard` (15s polling).
+- `/departments/[department]` — Dynamic page for 7 departments (marketing, sales, operations, finance, hr, support, legal) with agent rosters.
+
+### Real Data (no mocks)
+- `/dashboard` — Now fully driven by `/api/dashboard` (welcome, stage progress, team activity, pending tasks, alerts, metrics). Replaced hardcoded "أقرب فرصة" with rader CTA.
+- `/admin` — Replaced fake users array with real Firestore query via `/api/admin/users`. Added live fleet control table from `/api/admin/mission-control`.
+- New `/api/admin/users` (GET/DELETE) — admin-gated by `ADMIN_EMAILS` env, real Firebase Admin SDK.
+
+### Admin Governance Layer
+- `src/ai/admin/observer.agent.ts` — Continuous monitoring + auto-alerts.
+- `src/ai/admin/analyst.agent.ts` — Risk classification (cost/reliability/performance).
+- `src/ai/admin/planner.agent.ts` — Remediation plan generation.
+- `/api/admin/governance` — Exposes observer→analyst→planner pipeline.
+
+### Chat UX
+- `components/chat/ThoughtChain.tsx` — Phased "thinking" indicator (analyze → recall → research → compose).
+
+### Vercel Readiness
+- Updated `.env.example` documenting all required env vars including `ADMIN_EMAILS`, `FIREBASE_SERVICE_ACCOUNT_KEY`, `COST_DAILY_LIMIT_USD`.
+- `vercel.json` already configures cron jobs for /api/cron/red-team.
+
+### Required for Deploy
+- `GEMINI_API_KEY`
+- All `NEXT_PUBLIC_FIREBASE_*` vars
+- `FIREBASE_SERVICE_ACCOUNT_KEY` (for admin features + task persistence)
+- `ADMIN_EMAILS` (comma-separated; restricts /admin access)

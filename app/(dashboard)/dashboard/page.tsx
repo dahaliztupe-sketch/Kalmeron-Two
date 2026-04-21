@@ -1,91 +1,229 @@
-import { Suspense } from 'react';
+"use client";
+
+import { useEffect, useState } from "react";
 import { AppShell } from "@/components/layout/AppShell";
-import { getProactiveWarnings } from "@/src/agents/mistake-shield/agent";
-import { getUserData } from "@/src/features/users/api";
-import { BentoGrid, BentoCard } from "@/src/components/ui/BentoGrid";
-import { Lightbulb, Target, Activity } from "lucide-react";
-import { Skeleton } from "@/components/ui/skeleton";
+import { useAuth } from "@/contexts/AuthContext";
+import { motion } from "framer-motion";
+import {
+  Activity, Bot, AlertTriangle, DollarSign, Target,
+  Hourglass, Loader2, ArrowLeft, CheckCircle2, MapPin,
+} from "lucide-react";
+import Link from "next/link";
+import { cn } from "@/lib/utils";
 
-async function safeGetInsight(): Promise<string> {
-  try {
-    const insight = await getProactiveWarnings("general");
-    return insight || "احرص دائمًا على توثيق مستنداتك القانونية بشكل مسبق.";
-  } catch {
-    return "احرص دائمًا على توثيق مستنداتك القانونية بشكل مسبق.";
-  }
+const STAGE_LABELS: Record<string, string> = {
+  idea: 'فكرة',
+  validation: 'تحقق من السوق',
+  foundation: 'تأسيس',
+  growth: 'نمو',
+  scaling: 'توسع',
+};
+
+interface DashboardData {
+  welcome: { stage: string; companyName: string | null; industry: string | null };
+  teamActivity: Array<{ taskId: string; description: string; status: string; updatedAt?: any }>;
+  pendingTasks: Array<{ taskId: string; description: string; status: string }>;
+  alerts: Array<{ severity: string; source: string; message: string; timestamp?: string }>;
+  metrics: { dailyCostUsd: number; dailyLimit: number; agentCount: number };
+  progress: { stage: string; stages: string[] };
 }
 
-async function DashboardContent() {
-  const [userData, initialInsight] = await Promise.all([
-    getUserData(),
-    safeGetInsight(),
-  ]);
-
-  return (
-    <BentoGrid>
-      <BentoCard span={2} className="p-6">
-        <h2 className="text-2xl font-bold mb-2 text-white">مرحباً بعودتك، {userData.name}</h2>
-        <p className="text-neutral-400 mb-6">
-          متتبع المراحل: <span className="text-[#D4AF37]">{userData.stage}</span>
-        </p>
-        <div className="w-full h-3 bg-white/10 rounded-full overflow-hidden">
-          <div className="h-full bg-gradient-to-r from-[#D4AF37] to-[#0A66C2] w-[60%]" />
-        </div>
-      </BentoCard>
-
-      <BentoCard span={1} className="p-6 flex flex-col justify-center items-center text-center">
-        <div className="p-4 rounded-full bg-rose-500/10 mb-4">
-          <Lightbulb className="w-8 h-8 text-rose-400" />
-        </div>
-        <h3 className="text-lg font-bold text-white mb-2">رؤية اليوم</h3>
-        <p className="text-sm text-neutral-400 line-clamp-3">{initialInsight}</p>
-      </BentoCard>
-
-      <BentoCard span={1} className="p-6 flex flex-col justify-center items-center text-center">
-        <div className="p-4 rounded-full bg-green-500/10 mb-4">
-          <Target className="w-8 h-8 text-green-400" />
-        </div>
-        <h3 className="text-lg font-bold text-white mb-2">أقرب فرصة</h3>
-        <p className="text-sm text-neutral-400">انضمام لبرنامج احتضان مسرعة (X) خلال أسبوعين.</p>
-      </BentoCard>
-
-      <BentoCard span={2} className="p-6">
-        <div className="flex items-center gap-3 mb-6">
-          <Activity className="w-6 h-6 text-[#0A66C2]" />
-          <h3 className="text-xl font-bold text-white">نشاطك الأخير</h3>
-        </div>
-        <ul className="space-y-4">
-          {userData.recentActivity.map((activity: string, i: number) => (
-            <li key={i} className="flex items-center gap-3">
-              <div className="w-2 h-2 rounded-full bg-[#0A66C2]" />
-              <span className="text-neutral-300">{activity}</span>
-            </li>
-          ))}
-        </ul>
-      </BentoCard>
-    </BentoGrid>
-  );
-}
-
-function DashboardSkeleton() {
-  return (
-    <div className="grid grid-cols-3 gap-6">
-      <Skeleton className="col-span-2 h-48 rounded-3xl bg-white/5" />
-      <Skeleton className="col-span-1 h-48 rounded-3xl bg-white/5" />
-      <Skeleton className="col-span-1 h-48 rounded-3xl bg-white/5" />
-      <Skeleton className="col-span-2 h-48 rounded-3xl bg-white/5" />
-    </div>
-  );
-}
+const itemV = {
+  hidden: { opacity: 0, y: 16 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.35, ease: [0.16, 1, 0.3, 1] } },
+};
+const containerV = {
+  hidden: { opacity: 0 },
+  show: { opacity: 1, transition: { staggerChildren: 0.06 } },
+};
 
 export default function DashboardPage() {
+  const { user, dbUser } = useAuth();
+  const [data, setData] = useState<DashboardData | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancel = false;
+    const load = async () => {
+      try {
+        const token = user ? await user.getIdToken().catch(() => null) : null;
+        const r = await fetch('/api/dashboard', {
+          headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+          cache: 'no-store',
+        });
+        if (!r.ok) throw new Error(String(r.status));
+        const j = await r.json();
+        if (!cancel) { setData(j); setError(null); }
+      } catch (e: any) {
+        if (!cancel) setError('تعذر تحميل البيانات.');
+      } finally {
+        if (!cancel) setLoading(false);
+      }
+    };
+    load();
+    const id = setInterval(load, 12000);
+    return () => { cancel = true; clearInterval(id); };
+  }, [user]);
+
+  const stageIndex = data ? Math.max(0, data.progress.stages.indexOf(data.progress.stage)) : 0;
+  const stageProgressPct = data ? ((stageIndex + 1) / data.progress.stages.length) * 100 : 0;
+  const userName = dbUser?.name || user?.displayName || 'صديقي المؤسس';
+
   return (
     <AppShell>
-      <div dir="rtl">
-        <h1 className="text-4xl font-bold mb-8">لوحة التحكم</h1>
-        <Suspense fallback={<DashboardSkeleton />}>
-          <DashboardContent />
-        </Suspense>
+      <div dir="rtl" className="max-w-7xl mx-auto">
+        <h1 className="font-display text-4xl font-extrabold text-white mb-1">مركز القيادة</h1>
+        <p className="text-text-secondary mb-8">نظرة شاملة على فريق وكلائك وحالة شركتك.</p>
+
+        {loading ? (
+          <div className="flex items-center gap-3 text-text-secondary">
+            <Loader2 className="w-4 h-4 animate-spin" /> جاري تحميل البيانات...
+          </div>
+        ) : error || !data ? (
+          <div className="glass-panel p-6 rounded-2xl text-rose-300">{error || 'لا توجد بيانات.'}</div>
+        ) : (
+          <motion.div
+            variants={containerV}
+            initial="hidden"
+            animate="show"
+            className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-5"
+          >
+            {/* Welcome (wide) */}
+            <motion.div variants={itemV} className="glass-panel rounded-3xl p-6 md:col-span-3 lg:col-span-2 relative overflow-hidden">
+              <div className="absolute -top-20 -left-20 w-72 h-72 rounded-full bg-brand-gold/10 blur-3xl" />
+              <div className="relative">
+                <p className="text-text-secondary text-sm mb-2">مرحباً بعودتك،</p>
+                <h2 className="font-display text-2xl md:text-3xl font-extrabold text-white mb-4">
+                  {userName}
+                  {data.welcome.companyName && <span className="brand-gradient-text"> · {data.welcome.companyName}</span>}
+                </h2>
+                <div className="flex items-center gap-2 text-sm text-text-secondary mb-3">
+                  <MapPin className="w-3.5 h-3.5 text-brand-gold" />
+                  المرحلة الحالية: <span className="text-brand-gold font-bold">{STAGE_LABELS[data.welcome.stage] || data.welcome.stage}</span>
+                </div>
+                <div className="w-full h-2.5 bg-white/[0.06] rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-gradient-to-r from-brand-gold to-brand-blue transition-all"
+                    style={{ width: `${stageProgressPct}%` }}
+                  />
+                </div>
+                <div className="flex justify-between text-[10px] mt-2 text-text-secondary uppercase tracking-wider">
+                  {data.progress.stages.map((s, i) => (
+                    <span key={s} className={cn(i <= stageIndex && "text-brand-gold")}>{STAGE_LABELS[s]}</span>
+                  ))}
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Daily Cost */}
+            <motion.div variants={itemV} className="glass-panel rounded-3xl p-6">
+              <div className="flex items-center gap-2 mb-2">
+                <DollarSign className="w-4 h-4 text-emerald-400" />
+                <span className="text-xs text-text-secondary uppercase tracking-wider">تكلفة اليوم</span>
+              </div>
+              <div className="text-3xl font-extrabold text-white mb-1">${data.metrics.dailyCostUsd.toFixed(2)}</div>
+              <div className="text-xs text-text-secondary">من ${data.metrics.dailyLimit} يومياً</div>
+            </motion.div>
+
+            {/* Agents */}
+            <motion.div variants={itemV} className="glass-panel rounded-3xl p-6">
+              <div className="flex items-center gap-2 mb-2">
+                <Bot className="w-4 h-4 text-brand-gold" />
+                <span className="text-xs text-text-secondary uppercase tracking-wider">وكلاء نشطون</span>
+              </div>
+              <div className="text-3xl font-extrabold text-white mb-1">{data.metrics.agentCount}</div>
+              <div className="text-xs text-text-secondary">يعمل لصالحك الآن</div>
+            </motion.div>
+
+            {/* Team Activity (wide) */}
+            <motion.div variants={itemV} className="glass-panel rounded-3xl p-6 md:col-span-2 lg:col-span-2">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2">
+                  <Activity className="w-4 h-4 text-brand-blue" />
+                  <h3 className="text-base font-bold text-white">نشاط الفريق</h3>
+                </div>
+                <Link href="/roadmap" className="text-xs text-brand-gold flex items-center gap-1 hover:gap-2 transition-all">
+                  عرض المخطط <ArrowLeft className="w-3 h-3" />
+                </Link>
+              </div>
+              {data.teamActivity.length === 0 ? (
+                <p className="text-text-secondary text-sm">لا توجد إجراءات بعد. ابدأ محادثة مع المساعد.</p>
+              ) : (
+                <ul className="space-y-3">
+                  {data.teamActivity.slice(0, 3).map((t) => (
+                    <li key={t.taskId} className="flex items-start gap-3 text-sm">
+                      <div className={cn(
+                        "w-1.5 h-1.5 rounded-full mt-2 shrink-0",
+                        t.status === 'completed' ? 'bg-emerald-400' :
+                        t.status === 'in_progress' ? 'bg-brand-blue animate-pulse' :
+                        t.status === 'failed' ? 'bg-rose-400' : 'bg-text-secondary/40'
+                      )} />
+                      <span className="text-text-secondary leading-relaxed flex-1">{t.description}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </motion.div>
+
+            {/* Pending Tasks */}
+            <motion.div variants={itemV} className="glass-panel rounded-3xl p-6 md:col-span-2 lg:col-span-2">
+              <div className="flex items-center gap-2 mb-4">
+                <Hourglass className="w-4 h-4 text-brand-gold" />
+                <h3 className="text-base font-bold text-white">بانتظار موافقتك</h3>
+              </div>
+              {data.pendingTasks.length === 0 ? (
+                <div className="flex items-center gap-2 text-text-secondary text-sm">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-400" /> لا توجد مهام تنتظر قراراً منك.
+                </div>
+              ) : (
+                <ul className="space-y-3">
+                  {data.pendingTasks.slice(0, 3).map((t) => (
+                    <li key={t.taskId} className="text-sm text-text-secondary leading-relaxed border-r-2 border-brand-gold pr-3">
+                      {t.description}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </motion.div>
+
+            {/* Alerts */}
+            <motion.div variants={itemV} className="glass-panel rounded-3xl p-6 md:col-span-2 lg:col-span-2">
+              <div className="flex items-center gap-2 mb-4">
+                <AlertTriangle className="w-4 h-4 text-amber-400" />
+                <h3 className="text-base font-bold text-white">التنبيهات</h3>
+              </div>
+              {data.alerts.length === 0 ? (
+                <p className="text-text-secondary text-sm">كل الأنظمة سليمة.</p>
+              ) : (
+                <ul className="space-y-2">
+                  {data.alerts.slice(0, 3).map((a, i) => (
+                    <li key={i} className="text-sm text-text-secondary">
+                      <span className="text-amber-300 font-mono text-xs ml-2">{a.source}</span>{a.message}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </motion.div>
+
+            {/* Nearest Opportunity */}
+            <motion.div variants={itemV} className="glass-panel rounded-3xl p-6 md:col-span-1 lg:col-span-2 relative overflow-hidden">
+              <div className="absolute -bottom-10 -right-10 w-48 h-48 rounded-full bg-brand-blue/10 blur-3xl" />
+              <div className="relative">
+                <div className="flex items-center gap-2 mb-3">
+                  <Target className="w-4 h-4 text-brand-blue" />
+                  <h3 className="text-base font-bold text-white">رادار الفرص</h3>
+                </div>
+                <p className="text-text-secondary text-sm mb-4 leading-relaxed">
+                  استكشف أحدث فرص التمويل والمسرّعات والمسابقات المناسبة لمرحلتك.
+                </p>
+                <Link href="/opportunities" className="inline-flex items-center gap-2 text-brand-gold text-sm font-bold hover:gap-3 transition-all">
+                  افتح رادار الفرص <ArrowLeft className="w-4 h-4" />
+                </Link>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
       </div>
     </AppShell>
   );

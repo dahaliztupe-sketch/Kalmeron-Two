@@ -1,46 +1,52 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #0A0A0F;
-  --color-accent-gold: #D4AF37;
-  --color-accent-blue: #0A66C2;
-  --color-glass-bg: rgba(10, 10, 15, 0.4);
-  --color-glass-border: rgba(255, 255, 255, 0.08);
-  --font-display: "Geist Sans", sans-serif;
-  --font-arabic: "Noto Kufi Arabic", sans-serif;
+  /* Kalmeron Two Brand Tokens (2026) */
+  --color-brand-gold: #D4AF37;
+  --color-brand-blue: #3B82F6;
+  --color-dark-bg: #080C14;
+  --color-dark-surface: #0D1321;
+  --color-dark-surface-2: #131B2E;
+  --color-text-primary: #F1F5F9;
+  --color-text-secondary: #94A3B8;
+
+  --font-display: "Syne", "Plus Jakarta Sans", system-ui, sans-serif;
+  --font-body: "Plus Jakarta Sans", system-ui, sans-serif;
+  --font-arabic: "Noto Kufi Arabic", "Plus Jakarta Sans", sans-serif;
 }
 
 @layer base {
   :root {
-    --background: 10 10 15; /* #0A0A0F */
-    --foreground: 255 255 255;
-    
-    /* New Identity Colors */
-    --gold: 212 175 55;      /* #D4AF37 */
-    --tech-blue: 10 102 194; /* #0A66C2 */
-    
-    --card: 10 10 15; /* Translucent glass fallback */
-    --card-foreground: 255 255 255;
-    --popover: 10 10 15;
-    --popover-foreground: 255 255 255;
-    
-    --primary: 212 175 55; /* Gold */
-    --primary-foreground: 10 10 15;
-    
-    --secondary: 10 102 194; /* Blue */
-    --secondary-foreground: 255 255 255;
-    
-    --muted: 30 30 40;
-    --muted-foreground: 160 160 170;
-    
+    --background: 8 12 20;          /* #080C14 dark-bg */
+    --foreground: 241 245 249;      /* #F1F5F9 text-primary */
+
+    --gold: 212 175 55;             /* #D4AF37 brand-gold */
+    --tech-blue: 59 130 246;        /* #3B82F6 brand-blue */
+    --surface: 13 19 33;            /* #0D1321 dark-surface */
+    --surface-2: 19 27 46;          /* #131B2E */
+
+    --card: 13 19 33;
+    --card-foreground: 241 245 249;
+    --popover: 13 19 33;
+    --popover-foreground: 241 245 249;
+
+    --primary: 212 175 55;
+    --primary-foreground: 8 12 20;
+
+    --secondary: 59 130 246;
+    --secondary-foreground: 241 245 249;
+
+    --muted: 19 27 46;
+    --muted-foreground: 148 163 184;
+
     --accent: 212 175 55;
-    --accent-foreground: 10 10 15;
-    
+    --accent-foreground: 8 12 20;
+
     --destructive: 239 68 68;
     --destructive-foreground: 255 255 255;
-    
-    --border: 255 255 255; /* Used with opacity /10 */
-    --input: 30 30 40;
+
+    --border: 255 255 255;
+    --input: 19 27 46;
     --ring: 212 175 55;
     --radius: 1rem;
   }
@@ -52,25 +58,70 @@
   body {
     background-color: rgb(var(--background));
     color: rgb(var(--foreground));
-    font-family: var(--font-sans), var(--font-noto);
+    font-family: 'Noto Kufi Arabic', 'Plus Jakarta Sans', system-ui, sans-serif;
     @apply antialiased;
+  }
+
+  [dir="ltr"] body {
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  }
+
+  .font-display {
+    font-family: 'Syne', 'Plus Jakarta Sans', system-ui, sans-serif;
+    letter-spacing: -0.02em;
   }
 }
 
-/* Liquid Glass Effect */
+/* Liquid Glass 2.0 */
 .glass-panel {
-  @apply bg-black/40 backdrop-blur-xl border border-white/10 shadow-inner;
+  background-color: rgba(13, 19, 33, 0.4);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
 
 .brand-gradient {
-  background: linear-gradient(135deg, #D4AF37 0%, #0A66C2 100%);
+  background: linear-gradient(135deg, #D4AF37 0%, #3B82F6 100%);
 }
 
 .brand-gradient-text {
-  background: linear-gradient(135deg, #D4AF37 0%, #0A66C2 100%);
+  background: linear-gradient(135deg, #D4AF37 0%, #3B82F6 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+}
+
+/* Aurora background blobs (CSS-only, no 3D dep) */
+.aurora-bg::before,
+.aurora-bg::after {
+  content: '';
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(120px);
+  pointer-events: none;
+  z-index: 0;
+}
+.aurora-bg::before {
+  width: 50vw; height: 50vw;
+  top: -10%; right: -10%;
+  background: rgba(212, 175, 55, 0.18);
+  animation: auroraFloat1 18s ease-in-out infinite alternate;
+}
+.aurora-bg::after {
+  width: 60vw; height: 60vw;
+  bottom: -15%; left: -10%;
+  background: rgba(59, 130, 246, 0.18);
+  animation: auroraFloat2 22s ease-in-out infinite alternate;
+}
+
+@keyframes auroraFloat1 {
+  0%   { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(-60px, 80px) scale(1.1); }
+}
+@keyframes auroraFloat2 {
+  0%   { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(80px, -60px) scale(1.15); }
 }
 
 /* Asymmetric Bento Grid Utility */
@@ -80,45 +131,15 @@
   gap: 1.5rem;
   grid-auto-rows: 250px;
 }
-.bento-wide {
-  grid-column: span 2;
-}
-.bento-tall {
-  grid-row: span 2;
-}
+.bento-wide { grid-column: span 2; }
+.bento-tall { grid-row: span 2; }
 @media (max-width: 768px) {
-  .bento-wide {
-    grid-column: span 1;
-  }
+  .bento-wide { grid-column: span 1; }
 }
 
 /* RTL Icon Flipping */
-[dir="rtl"] .icon-flip {
-  transform: scaleX(-1);
-}
+[dir="rtl"] .icon-flip { transform: scaleX(-1); }
 
-@theme inline {
-  --font-sans: var(--font-sans);
-  --font-noto: var(--font-noto);
-  
-  --color-gold: rgb(var(--gold));
-  --color-tech-blue: rgb(var(--tech-blue));
-
-  --color-background: rgb(var(--background));
-  --color-foreground: rgb(var(--foreground));
-  --color-card: rgb(var(--card));
-  --color-card-foreground: rgb(var(--card-foreground));
-  --color-primary: rgb(var(--primary));
-  --color-primary-foreground: rgb(var(--primary-foreground));
-  --color-secondary: rgb(var(--secondary));
-  --color-secondary-foreground: rgb(var(--secondary-foreground));
-  --color-muted: rgb(var(--muted));
-  --color-muted-foreground: rgb(var(--muted-foreground));
-  --color-accent: rgb(var(--accent));
-  --color-accent-foreground: rgb(var(--accent-foreground));
-  --color-destructive: rgb(var(--destructive));
-  --color-destructive-foreground: rgb(var(--destructive-foreground));
-  --color-border: rgba(var(--border), 0.1);
-  --color-input: rgb(var(--input));
-  --color-ring: rgb(var(--ring));
-}
+/* Hide scrollbar utility */
+.scrollbar-hide { scrollbar-width: none; -ms-overflow-style: none; }
+.scrollbar-hide::-webkit-scrollbar { display: none; }
