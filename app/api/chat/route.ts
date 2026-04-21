@@ -6,8 +6,11 @@ import { CreditManager } from '@/src/lib/billing/credit-manager';
 import { trackAgentUsage } from '@/src/lib/billing/usage-tracker';
 import { adminAuth } from '@/src/lib/firebase-admin';
 import { rateLimit, rateLimitResponse } from '@/lib/security/rate-limit';
+import { createRequestLogger } from '@/src/lib/logger';
 
 export async function POST(req: NextRequest) {
+  const requestId = req.headers.get('X-Request-ID') || crypto.randomUUID();
+  const log = createRequestLogger(requestId);
   const rl = rateLimit(req, { limit: 20, windowMs: 60_000 });
   if (!rl.success) return rateLimitResponse();
   try {
@@ -25,7 +28,7 @@ export async function POST(req: NextRequest) {
         const decoded = await adminAuth.verifyIdToken(token!);
         userId = decoded.uid;
       } catch (e) {
-        console.warn("Invalid token, defaulting to guest");
+        log.warn({ msg: 'Invalid token, defaulting to guest' });
       }
     }
 
@@ -84,7 +87,7 @@ export async function POST(req: NextRequest) {
       intent: result.intent,
     });
   } catch (error: any) {
-    console.error("Chat API Error:", error);
+    log.error({ msg: 'Chat API Error', error: error?.message, stack: error?.stack });
     return new Response("عذراً، كالميرون بيواجه مشكلة فنية حالياً. الفريق التقني بيحاول يصحيه.", { status: 500 });
   }
 }

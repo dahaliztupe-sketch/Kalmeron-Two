@@ -4,13 +4,25 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { LineChart, Users, Scale, ShieldCheck, Activity, ChevronLeft, Lightbulb, Lock } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { GlassCard } from '@/src/components/ui/GlassCard';
 import { BentoGrid, BentoCard } from '@/src/components/ui/BentoGrid';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function Home() {
-  const { user, dbUser } = useAuth();
+  const { user, dbUser, loading } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!loading && user) {
+      if (!dbUser?.profile_completed) {
+        router.replace('/onboarding');
+      } else {
+        router.replace('/dashboard');
+      }
+    }
+  }, [user, dbUser, loading, router]);
   
   const isActualAdmin = !!(dbUser as any)?.isAdmin;
   const [testAdminMode, setTestAdminMode] = useState(false);

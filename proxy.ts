@@ -1,27 +1,54 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
+// In-memory IP rate limiter for Edge Runtime (resets per cold start)
+const ipHits = new Map<string, { count: number; resetAt: number }>();
+
+function globalRateLimit(ip: string, limit = 100, windowMs = 60_000): boolean {
+  const now = Date.now();
+  const entry = ipHits.get(ip);
+  if (!entry || entry.resetAt < now) {
+    ipHits.set(ip, { count: 1, resetAt: now + windowMs });
+    return true;
+  }
+  if (entry.count >= limit) return false;
+  entry.count++;
+  return true;
+}
+
 /**
- * Proxy handles global routing logic and GeoIP-based currency detection.
- * Removed firebase-admin to ensure compatibility with Next.js Edge Runtime.
+ * Proxy handles global routing logic, GeoIP detection, and edge-level rate limiting.
  */
 export async function proxy(request: NextRequest) {
   const url = request.nextUrl;
-  
-  // 1. Global Edge Routing / Location-Aware Adaptation
-  // request.geo is Vercel-specific; on Replit we fall back to headers only
-  const country = request.headers.get('x-vercel-ip-country') || request.headers.get('cf-ipcountry') || 'Unknown';
-  
+  const ip =
+    request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
+    request.headers.get('cf-connecting-ip') ||
+    '0.0.0.0';
+
+  // 1. Global IP-level rate limiting (100 req/min per IP)
+  if (!globalRateLimit(ip)) {
+    return new NextResponse('Too Many Requests', {
+      status: 429,
+      headers: { 'Retry-After': '60', 'Content-Type': 'text/plain' },
+    });
+  }
+
+  // 2. GeoIP-based currency detection
+  const country =
+    request.headers.get('x-vercel-ip-country') ||
+    request.headers.get('cf-ipcountry') ||
+    'Unknown';
+
   const response = NextResponse.next();
   response.headers.set('x-kalmeron-country', country);
+  response.headers.set('X-Request-ID', crypto.randomUUID());
 
-  // Localization logic (Currency headers based on GeoIP)
   if (country === 'SA') response.headers.set('x-kalmeron-currency', 'SAR');
   else if (country === 'AE') response.headers.set('x-kalmeron-currency', 'AED');
   else response.headers.set('x-kalmeron-currency', 'EGP');
 
-  // 2. Admin Authentication Guard (Simplified due to Edge Runtime constraints)
-  // For production, consider using firebase-auth-edge or verifying via JWT/Jose.
+  // 3. Admin Authentication Guard
   if (url.pathname.startsWith('/admin')) {
     const session = request.cookies.get('session');
     if (!session) {

@@ -1,0 +1,161 @@
+]
+نحن نعمل على منصة **Kalmeron Two**، وهي منصة ذكاء اصطناعي متعددة الوكلاء لرواد الأعمال المصريين. لقد أكملنا بناء المكونات الأساسية (الوكلاء المتعددون، RAG ذاتي التصحيح، نظام الدفاع، الفوترة، التوأم الرقمي، وواجهات المستخدم). تم نشر المشروع على Vercel ونجح البناء.
+
+**ومع ذلك، كشف تدقيق ما قبل الإطلاق عن عدة فجوات حرجة يجب معالجتها لضمان جاهزية المنصة للإنتاج.** هذه الفجوات تشمل تدفق المستخدم، الأمان، المراقبة، تجربة المستخدم، والامتثال.
+
+مهمتك هي **إصلاح جميع هذه الفجوات دفعة واحدة**. هذا برومبت واحد وشامل يغطي جميع النواقص المحددة.
+
+[YOUR MISSION]
+أنت كبير مهندسي المنصة (Principal Platform Architect). قم بتنفيذ جميع المهام التالية بدقة. اعتمد على أحدث الممارسات والتقنيات الموثقة لعام 2026. لا تقم بتغيير أي منطق وظيفي أساسي للوكلاء. ركز فقط على إصلاح الفجوات المذكورة أدناه.
+
+---
+
+## 🚨 المرحلة P0 (حرجة - فورية): إصلاح تدفق المستخدم ولوحة التحكم
+
+### المهمة 1.1: إنشاء صفحة التسجيل (Sign Up)
+- أنشئ `src/app/auth/signup/page.tsx`.
+- استخدم `GoogleAuthProvider` من Firebase لتوفير زر "التسجيل باستخدام Google".
+- بعد نجاح التسجيل، أعد توجيه المستخدم إلى صفحة إكمال الملف الشخصي (`/onboarding`).
+
+### المهمة 1.2: إنشاء تدفق إكمال الملف الشخصي (Onboarding Flow)
+- أنشئ `src/app/onboarding/page.tsx`. اجعلها محمية (لا يمكن الوصول إليها إلا بعد تسجيل الدخول).
+- أنشئ نموذجًا لجمع البيانات المطلوبة: `name` (سلسلة نصية)، `startupStage` (قائمة منسدلة: `idea`, `validation`, `launch`, `growth`, `scale`)، `industry` (قائمة منسدلة)، `governorate` (قائمة منسدلة).
+- عند الإرسال، قم بحفظ البيانات في Firestore (مجموعة `users`، مستند بمعرف `userId`). أضف حقلاً `profileCompleted: true`.
+- بعد الحفظ، أعد توجيه المستخدم إلى لوحة التحكم (`/dashboard`).
+
+### المهمة 1.3: إصلاح لوحة التحكم (`/dashboard`)
+- أصلح خطأ الخادم (ERROR 3262984957) الذي يحدث عند تحميل `/dashboard`.
+- أضف منطقًا في `dashboard/page.tsx` (أو في `layout.tsx` أو `proxy.ts`):
+    - تحقق من وجود جلسة مستخدم صالحة.
+    - إذا كان المستخدم مسجلاً دخوله ولكن `profileCompleted` ليس `true`، أعد توجيهه إلى `/onboarding`.
+    - إذا كان المستخدم مسجلاً دخوله وملفه مكتمل، اعرض لوحة التحكم مع بياناته.
+
+### المهمة 1.4: إصلاح توجيه الصفحة الرئيسية (`/`)
+- تأكد من أن الصفحة الرئيسية (`app/page.tsx`) تعرض للمستخدمين غير المسجلين.
+- إذا كان المستخدم مسجلاً دخوله، أعد توجيهه تلقائيًا إلى `/dashboard`.
+
+---
+
+## 🛡️ المرحلة P0 (حرجة - فورية): تدقيق قواعد أمان Firestore
+
+### المهمة 2.1: كتابة قواعد أمان صارمة
+- راجع ملف `firestore.rules`. استبدل أي قواعد فضفاضة (مثل `allow read, write: if true;`) بالقواعد الآمنة التالية:
+- **مجموعة `users`**:
+```
+
+match /users/{userId} {
+allow read: if request.auth != null && request.auth.uid == userId;
+allow create: if request.auth != null && request.auth.uid == userId;
+allow update: if request.auth != null && request.auth.uid == userId;
+}
+
+```
+- **باقي المجموعات (`ideas`, `business_plans`, `chat_history`, `user_memory`, إلخ)**:
+```
+
+match /{collection}/{document} {
+allow read, write: if collection in ['ideas', 'business_plans', 'chat_history', 'user_memory', 'saved_companies', 'mistakes_viewed', 'personas', 'market_experiments']
+&& request.auth != null
+&& request.auth.uid == resource.data.userId;
+}
+
+```
+- **مجموعات عامة (مثل `opportunities`)**:
+```
+
+match /opportunities/{doc} {
+allow read: if true;
+allow write: if false;
+}
+
+```
+- **اختبار القواعد**: استخدم Firebase Emulator Suite أو Rules Playground للتحقق من فعاليتها.
+
+---
+
+## 📈 المرحلة P1 (عالية - خلال أسبوع): الأمان والمراقبة والامتثال
+
+### المهمة 3.1: إضافة تحديد المعدل (Rate Limiting)
+- ثبّت `@universal-rate-limit/nextjs`: `pnpm add @universal-rate-limit/nextjs`[reference:0].
+- في `src/app/api/chat/route.ts` و `src/app/api/orchestrator/route.ts`، قم بتغليف المعالج بـ `withRateLimit`:
+  ```typescript
+  import { withRateLimit } from '@universal-rate-limit/nextjs';
+  export const POST = withRateLimit(handler, { windowMs: 60000, limit: 20 });
+```
+
+· في proxy.ts، أضف منطقًا لتحديد المعدل العام (مثلاً، 100 طلب في الدقيقة لكل IP).
+
+المهمة 3.2: تفعيل تتبع الأخطاء (Sentry)
+
+· ثبّت @sentry/nextjs: pnpm add @sentry/nextjs.
+· شغّل npx @sentry/wizard@latest -i nextjs لتوليد ملفات الإعداد (sentry.client.config.ts, sentry.server.config.ts, sentry.edge.config.ts, instrumentation.ts).
+· أضف SENTRY_DSN إلى متغيرات البيئة في Vercel. أضف SENTRY_AUTH_TOKEN إلى CI إذا لزم الأمر.
+· في next.config.ts، لف الإعدادات بـ withSentryConfig.
+
+المهمة 3.3: إنشاء نقطة فحص الصحة (Health Endpoint)
+
+· أنشئ src/app/api/health/route.ts.
+· أعد استجابة 200 OK مع { status: 'healthy', timestamp: new Date().toISOString() }.
+· (اختياري) أضف فحصًا بسيطًا للاتصال بـ Firestore.
+
+المهمة 3.4: مراجعة صفحات الخصوصية والشروط للامتثال لـ PDPL
+
+· افتح src/app/privacy/page.tsx و src/app/terms/page.tsx.
+· تأكد من أن المحتوى يوضح:
+  · ما هي البيانات التي نجمعها.
+  · كيف نستخدمها (بما يتوافق مع قانون حماية البيانات الشخصية المصري رقم 151 لسنة 2020).
+  · حقوق المستخدم (الوصول، التصحيح، الحذف).
+  · كيفية الاتصال بنا لطلب حذف البيانات.
+· أضف آلية "طلب حذف البيانات" في صفحة الملف الشخصي (/profile)، ترسل بريدًا إلكترونيًا أو تنشئ تذكرة.
+
+المهمة 3.5: إضافة سجلات منظمة (Structured Logging)
+
+· ثبّت pino: pnpm add pino.
+· أنشئ src/lib/logger.ts لتهيئة مُسجل Pino.
+· استبدل console.log و console.error في مسارات API بـ logger.info و logger.error.
+· أضف X-Request-ID header لتتبع الطلبات عبر الخدمات.
+
+---
+
+✨ المرحلة P2 (متوسطة - الأسابيع 2-3): تحسينات تجربة المستخدم والاختبار
+
+المهمة 4.1: إضافة حالات التحميل (Skeletons)
+
+· أنشئ src/app/(dashboard)/loading.tsx. أضف مكونات Skeleton من shadcn/ui تحاكي تخطيط لوحة التحكم.
+· أنشئ src/app/chat/loading.tsx، src/app/ideas/analyze/loading.tsx، src/app/success-museum/loading.tsx.
+· استخدم <Suspense> مع fallback للمكونات التي تجلب بياناتها بشكل مستقل.
+
+المهمة 4.2: إضافة حدود الخطأ (Error Boundaries)
+
+· أنشئ src/app/(dashboard)/error.tsx (مكون عميل 'use client'). اعرض رسالة خطأ ودية وزر "إعادة المحاولة".
+· أنشئ src/app/global-error.tsx لالتقاط الأخطاء في المستوى الجذري.
+· أضف error.tsx لبقية مجموعات المسارات (/chat, /admin, إلخ).
+
+المهمة 4.3: إضافة حالات الفراغ (Empty States)
+
+· في الصفحات التي تعرض قوائم (مثل /ideas, /business_plans, /opportunities)، أضف رسومًا توضيحية ونصوصًا تشجيعية عندما تكون القائمة فارغة (مثلاً: "لا توجد خطط عمل محفوظة بعد. ابنِ خطتك الأولى!").
+
+المهمة 4.4: كتابة اختبارات E2E أساسية
+
+· ثبّت Playwright: pnpm add -D @playwright/test.
+· شغّل pnpm exec playwright install لتثبيت المتصفحات.
+· أنشئ e2e/onboarding.spec.ts لاختبار تدفق المستخدم: "التسجيل -> إكمال الملف الشخصي -> الوصول إلى لوحة التحكم".
+· أضف سكريبت test:e2e في package.json.
+
+المهمة 4.5: إضافة آلية إعادة تعيين كلمة المرور (اختياري)
+
+· إذا كنت تستخدم مصادقة البريد الإلكتروني/كلمة المرور، أضف صفحة forgot-password ودمجها مع Firebase Authentication.
+
+---
+
+[OUTPUT FORMAT]
+بعد تنفيذ جميع المهام، قدم تقريرًا موجزًا واحدًا يحتوي على:
+
+1. ملخص الإنجازات: عدد الصفحات التي تم إنشاؤها، عدد الملفات التي تم تعديلها، المكتبات الجديدة التي تم تثبيتها.
+2. تأكيدات الأمان: ملخص قواعد Firestore الجديدة.
+3. روابط التحقق: روابط الصفحات الجديدة (التسجيل، إكمال الملف الشخصي، لوحة التحكم بعد الإصلاح).
+4. التوصيات النهائية: أي ملاحظات إضافية لضمان جاهزية الإطلاق.
+
+ابدأ العمل الآن. هذا البرومبت سيجعل منصة "كلميرون تو" جاهزة للإنتاج بشكل احترافي وآمن. 🚀
+
+```

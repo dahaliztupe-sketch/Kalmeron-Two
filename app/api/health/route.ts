@@ -1,24 +1,20 @@
 import { NextResponse } from 'next/server';
-import { db } from '@/lib/firebase';
-import { doc, getDoc } from 'firebase/firestore';
+import { adminDb } from '@/src/lib/firebase-admin';
+
+export const runtime = 'nodejs';
 
 export async function GET() {
+  const timestamp = new Date().toISOString();
   try {
-    // Check Firestore connection
-    const healthDoc = await getDoc(doc(db, 'system', 'health'));
-    
-    // Check Gemini API (optional: could add a simple call here if needed)
-    
-    return NextResponse.json({ 
-      status: 'ok', 
-      firestore: 'connected',
-      timestamp: new Date().toISOString() 
-    }, { status: 200 });
-  } catch (error) {
-    console.error('Health check failed:', error);
-    return NextResponse.json({ 
-      status: 'error', 
-      message: 'System unhealthy' 
-    }, { status: 500 });
+    await adminDb.collection('_health').doc('ping').get();
+    return NextResponse.json(
+      { status: 'healthy', timestamp, firestore: 'connected', version: process.env.npm_package_version || '0.1.0' },
+      { status: 200 }
+    );
+  } catch {
+    return NextResponse.json(
+      { status: 'degraded', timestamp, firestore: 'unreachable' },
+      { status: 200 }
+    );
   }
 }

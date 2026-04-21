@@ -37,6 +37,10 @@ const securityHeaders = [
 
 const nextConfig: NextConfig = {
   serverExternalPackages: ['pdf-parse', '@napi-rs/canvas'],
+  allowedDevOrigins: process.env.REPLIT_DEV_DOMAIN ? [
+    process.env.REPLIT_DEV_DOMAIN,
+    `https://${process.env.REPLIT_DEV_DOMAIN}`,
+  ] : [],
   experimental: {
     optimizePackageImports: ['lucide-react', '@radix-ui/react-icons'],
   },

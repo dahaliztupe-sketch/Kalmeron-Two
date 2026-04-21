@@ -87,8 +87,43 @@ NextIntlClientProvider
 | `STRIPE_WEBHOOK_SECRET` | **Missing** | Stripe webhooks |
 | `OPENMETER_API_KEY` | **Missing** | Usage metering |
 
+## New Pages & Routes (April 2026 Hardening)
+
+- `app/auth/signup/page.tsx` — صفحة التسجيل بـ Google Auth
+- `app/onboarding/page.tsx` — تدفق إكمال الملف الشخصي (محمي)
+- `components/auth/AuthGuard.tsx` — حارس المصادقة للداشبورد
+
+## Error Handling
+- `app/(dashboard)/error.tsx` — خطأ الداشبورد مع زر إعادة المحاولة
+- `app/(dashboard)/chat/error.tsx` — خطأ المحادثة
+- `app/global-error.tsx` — خطأ جذري
+- `app/(dashboard)/loading.tsx` — تحميل الداشبورد
+- `app/(dashboard)/chat/loading.tsx` — تحميل المحادثة
+- `app/(dashboard)/ideas/loading.tsx` — تحميل الأفكار
+
+## Logging & Monitoring
+- `src/lib/logger.ts` — Pino structured logger with X-Request-ID
+- `app/api/health/route.ts` — نقطة فحص الصحة (محدّثة لاستخدام Admin SDK)
+
+## Testing
+- `e2e/onboarding.spec.ts` — اختبارات E2E بـ Playwright
+- `playwright.config.ts` — تهيئة Playwright (يستهدف port 5000)
+- `package.json` — أضيف سكريبت `test:e2e` و `test:e2e:ui`
+
+## Security Hardening
+- `firestore.rules` — قواعد أمان موسّعة لتشمل: ideas, business_plans, chat_history, user_memory, saved_companies, mistakes_viewed, personas, market_experiments, opportunities, success_stories
+- `proxy.ts` — حدّ معدل على مستوى IP (100 طلب/دقيقة) + X-Request-ID header
+- `next.config.ts` — allowedDevOrigins لبيئة Replit
+
+## Compliance (PDPL Law 151/2020)
+- `app/privacy/page.tsx` — محدّثة بالتفاصيل الكاملة لقانون 151 + آلية طلب الحذف
+- `app/profile/page.tsx` — تحتوي على زر "حذف حسابي (الحق في النسيان)" 
+
 ## Build Status
 
-✅ TypeScript: zero errors (`npx tsc --noEmit`)  
 ✅ Runtime: Next.js dev server running on port 5000  
-✅ Proxy: `proxy.ts` (Next.js 16.2 convention, `middleware.ts` deleted)
+✅ Proxy: `proxy.ts` (Next.js 16.2 convention) + IP Rate Limiting  
+✅ Auth Guard: Client-side via `AuthGuard` component  
+✅ Firestore Rules: Hardened for all collections  
+✅ Pino Logger: Structured logging with request IDs  
+✅ E2E Tests: Playwright configured

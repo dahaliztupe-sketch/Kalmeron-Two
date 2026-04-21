@@ -1,54 +1,112 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    
-    // Global Deny
+
+    // Global Deny-All fallback
     match /{document=**} {
       allow read, write: if false;
     }
 
     // --- Hardened Helpers ---
     function isSignedIn() { return request.auth != null; }
-    function isValidId(id) { return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$'); }
     function isOwner(userId) { return isSignedIn() && request.auth.uid == userId; }
+    function isValidId(id) { return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$'); }
     function isVerified() { return request.auth.token.email_verified == true; }
     function incoming() { return request.resource.data; }
     function existing() { return resource.data; }
+    function isDocOwner() { return isSignedIn() && request.auth.uid == resource.data.userId; }
+    function isIncomingOwner() { return isSignedIn() && request.auth.uid == incoming().userId; }
+
     function isValidTask(data) {
-        return data.keys().hasAll(['taskId', 'name', 'description', 'status', 'priority', 'createdBy', 'assignee', 'createdAt', 'updatedAt'])
-            && data.taskId is string && data.taskId.size() <= 128
-            && data.name is string && data.name.size() <= 256
-            && data.description is string && data.description.size() <= 5000
-            && data.status in ['pending', 'in_progress', 'completed', 'failed', 'awaiting_human']
-            && data.priority in ['low', 'medium', 'high', 'critical']
-            && data.assignee is string;
+      return data.keys().hasAll(['taskId', 'name', 'description', 'status', 'priority', 'createdBy', 'assignee', 'createdAt', 'updatedAt'])
+          && data.taskId is string && data.taskId.size() <= 128
+          && data.name is string && data.name.size() <= 256
+          && data.description is string && data.description.size() <= 5000
+          && data.status in ['pending', 'in_progress', 'completed', 'failed', 'awaiting_human']
+          && data.priority in ['low', 'medium', 'high', 'critical']
+          && data.assignee is string;
     }
 
-    // --- User Collections ---
+    // --- User Profile ---
     match /users/{userId} {
-      allow read, update: if isOwner(userId);
+      allow read: if isOwner(userId);
       allow create: if isOwner(userId) && incoming().keys().hasAll(['email']);
-      
-      // Tasks sub-collection (Relational Master Gate: User profile)
+      allow update: if isOwner(userId);
+      allow delete: if false; // Deletions handled server-side only
+
       match /tasks/{taskId} {
         allow list: if isOwner(userId) && resource.data.createdBy == request.auth.uid;
-        allow get: if isOwner(userId) && resource.data.createdBy == request.auth.uid;
-        
-        allow create: if isOwner(userId) && isValidId(taskId) && isValidTask(incoming()) 
+        allow get:  if isOwner(userId) && resource.data.createdBy == request.auth.uid;
+        allow create: if isOwner(userId) && isValidId(taskId) && isValidTask(incoming())
                       && incoming().createdBy == request.auth.uid;
-        
         allow update: if isOwner(userId) && isValidTask(incoming())
                       && incoming().taskId == existing().taskId
-                      && existing().status != 'completed'; // Immortal state check
-
+                      && existing().status != 'completed';
         allow delete: if isOwner(userId);
       }
     }
-    
-    // Billing Logic (Immutable via client)
+
+    // --- Billing (Immutable via client) ---
     match /user_credits/{userId} {
-      allow read: if isOwner(userId);
-      allow write: if false; 
+      allow read:  if isOwner(userId);
+      allow write: if false;
+    }
+
+    // --- User-Owned Business Data ---
+    match /ideas/{docId} {
+      allow read, update, delete: if isSignedIn() && isDocOwner();
+      allow create: if isSignedIn() && isIncomingOwner();
+    }
+
+    match /business_plans/{docId} {
+      allow read, update, delete: if isSignedIn() && isDocOwner();
+      allow create: if isSignedIn() && isIncomingOwner();
+    }
+
+    match /chat_history/{docId} {
+      allow read, update, delete: if isSignedIn() && isDocOwner();
+      allow create: if isSignedIn() && isIncomingOwner();
+    }
+
+    match /user_memory/{docId} {
+      allow read, update, delete: if isSignedIn() && isDocOwner();
+      allow create: if isSignedIn() && isIncomingOwner();
+    }
+
+    match /saved_companies/{docId} {
+      allow read, update, delete: if isSignedIn() && isDocOwner();
+      allow create: if isSignedIn() && isIncomingOwner();
+    }
+
+    match /mistakes_viewed/{docId} {
+      allow read, update, delete: if isSignedIn() && isDocOwner();
+      allow create: if isSignedIn() && isIncomingOwner();
+    }
+
+    match /personas/{docId} {
+      allow read, update, delete: if isSignedIn() && isDocOwner();
+      allow create: if isSignedIn() && isIncomingOwner();
+    }
+
+    match /market_experiments/{docId} {
+      allow read, update, delete: if isSignedIn() && isDocOwner();
+      allow create: if isSignedIn() && isIncomingOwner();
+    }
+
+    // --- Public Read-Only Collections ---
+    match /opportunities/{doc} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    match /success_stories/{doc} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    // --- Health Check (internal, server-side only) ---
+    match /_health/{doc} {
+      allow read, write: if false;
     }
   }
 }

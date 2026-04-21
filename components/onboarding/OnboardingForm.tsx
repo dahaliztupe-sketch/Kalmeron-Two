@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { doc, updateDoc } from "firebase/firestore";
@@ -16,6 +17,7 @@ import { motion, AnimatePresence } from "framer-motion";
 export function OnboardingForm() {
   const { user, refreshDBUser } = useAuth();
   const { language } = useLanguage();
+  const router = useRouter();
   const dir = language === "ar" ? "rtl" : "ltr";
   
   const [name, setName] = useState(user?.displayName || "");
@@ -39,6 +41,7 @@ export function OnboardingForm() {
         profile_completed: true
       });
       await refreshDBUser();
+      router.replace("/dashboard");
     } catch (err) {
       console.error(err);
     } finally {
