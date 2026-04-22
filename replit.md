@@ -92,6 +92,7 @@ NextIntlClientProvider
 - `app/auth/signup/page.tsx` — صفحة التسجيل بـ Google Auth
 - `app/onboarding/page.tsx` — تدفق إكمال الملف الشخصي (محمي)
 - `components/auth/AuthGuard.tsx` — حارس المصادقة للداشبورد
+- `app/(dashboard)/settings/page.tsx` — صفحة الإعدادات الكاملة (الملف الشخصي، الأمان، الإشعارات، الفوترة، الخصوصية) باستخدام shadcn Tabs
 
 ## Error Handling
 - `app/(dashboard)/error.tsx` — خطأ الداشبورد مع زر إعادة المحاولة

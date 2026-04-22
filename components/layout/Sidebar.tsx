@@ -56,7 +56,7 @@ export function Sidebar() {
   const { signOut } = useAuth();
 
   return (
-    <aside className="w-64 hidden md:flex flex-col h-screen fixed top-0 right-0 z-40 backdrop-blur-xl bg-dark-surface/40 border-l border-white/10">
+    <aside className="w-64 hidden md:flex flex-col h-screen fixed top-0 right-0 z-40 backdrop-blur-sm bg-black/30 border-l border-white/10 font-arabic">
       <Link href="/dashboard" className="px-6 py-6 flex items-center justify-center border-b border-white/[0.05]">
         <img src="/brand/logo.svg" alt="Kalmeron Two" className="h-9 w-auto" />
       </Link>
@@ -99,7 +99,7 @@ export function Sidebar() {
           );
         })}
         <Link
-          href="/profile?tab=settings"
+          href="/settings"
           className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-semibold text-text-secondary hover:text-white hover:bg-white/[0.03] transition-all"
         >
           <SettingsIcon className="w-4 h-4 shrink-0" />

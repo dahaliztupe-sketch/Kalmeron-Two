@@ -6,11 +6,9 @@ import { useAuth } from "@/contexts/AuthContext";
 import { db } from "@/lib/firebase";
 import { doc, getDoc, setDoc, updateDoc, serverTimestamp } from "firebase/firestore";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { Loader2, Send, Paperclip, X, Square } from "lucide-react";
+import { Loader2, Send, Paperclip, X, Square, Lightbulb, FileText, ShieldAlert, Radar } from "lucide-react";
 import { cn } from "@/lib/utils";
 import ReactMarkdown from "react-markdown";
 import { toast } from "sonner";
@@ -18,10 +16,10 @@ import { motion } from "motion/react";
 import { ThoughtChain, type Phase } from "@/components/chat/ThoughtChain";
 
 const suggestionChips = [
-  { label: "حلل فكرتي الاستثمارية", prompt: "هل يمكنك إجراء تحليل شامل وفني لفكرتي المستندة إلى السوق المصري؟" },
-  { label: "صياغة خطة عمل كاملة", prompt: "ساعدني في بناء خطة عمل احترافية موجهة للمستثمرين في مصر." },
-  { label: "تنبيهات حارس الأخطاء", prompt: "ما هي الأخطاء القاتلة التي يجب أن أتجنبها عند التأسيس في السوق المحلي؟" },
-  { label: "اكتشاف فرص التمويل", prompt: "أخبرني عن أحدث جولات التمويل، مسابقات ريادة الأعمال، والفعاليات القادمة في مصر." },
+  { label: "حلل فكرتي الاستثمارية", icon: Lightbulb, prompt: "هل يمكنك إجراء تحليل شامل وفني لفكرتي المستندة إلى السوق المصري؟" },
+  { label: "صياغة خطة عمل كاملة", icon: FileText, prompt: "ساعدني في بناء خطة عمل احترافية موجهة للمستثمرين في مصر." },
+  { label: "تنبيهات حارس الأخطاء", icon: ShieldAlert, prompt: "ما هي الأخطاء القاتلة التي يجب أن أتجنبها عند التأسيس في السوق المحلي؟" },
+  { label: "اكتشاف فرص التمويل", icon: Radar, prompt: "أخبرني عن أحدث جولات التمويل، مسابقات ريادة الأعمال، والفعاليات القادمة في مصر." },
 ];
 
 type ChatMessage = {
@@ -249,19 +247,20 @@ export default function ChatPage() {
   return (
     <AppShell>
       <div
-        className="flex flex-col h-[calc(100vh-100px)] max-w-4xl mx-auto glass-panel rounded-3xl shadow-2xl overflow-hidden relative"
+        className="flex flex-col h-[calc(100vh-100px)] max-w-4xl mx-auto glass-panel rounded-3xl shadow-2xl overflow-hidden relative font-arabic"
         dir="rtl"
       >
-        <div className="flex items-center justify-between p-4 border-b border-white/10 bg-black/20 text-white backdrop-blur-md">
-          <div className="flex items-center gap-3">
-            <Avatar className="h-10 w-10 border border-white/20">
-              <AvatarImage src="https://api.dicebear.com/7.x/bottts/svg?seed=Kalmeron" />
-              <AvatarFallback>K</AvatarFallback>
-            </Avatar>
-            <div>
-              <h2 className="font-bold text-lg text-[#D4AF37]">كلميرون</h2>
-              <span className="text-xs text-neutral-400">الوكيل الذكي</span>
-            </div>
+        <div className="flex items-center gap-3 p-4 border-b border-white/10 bg-black/20 text-white backdrop-blur-md">
+          <Avatar className="h-11 w-11 border border-white/20 shrink-0">
+            <AvatarImage src="https://api.dicebear.com/7.x/bottts/svg?seed=Kalmeron" />
+            <AvatarFallback>K</AvatarFallback>
+          </Avatar>
+          <div className="flex flex-col leading-tight">
+            <h2 className="font-extrabold text-2xl text-brand-gold flex items-center gap-2">
+              <span aria-hidden>🤖</span>
+              <span>كلميرون</span>
+            </h2>
+            <span className="text-xs text-neutral-400 mt-0.5">الوكيل الذكي</span>
           </div>
         </div>
 
@@ -287,7 +286,10 @@ export default function ChatPage() {
               return (
                 <div
                   key={m.id}
-                  className={cn("flex gap-3", m.role === "user" ? "flex-row-reverse" : "flex-row")}
+                  className={cn(
+                    "flex gap-3 w-full",
+                    m.role === "user" ? "flex-row justify-start" : "flex-row-reverse justify-start"
+                  )}
                 >
                   <Avatar className="h-8 w-8 shrink-0 border border-white/10">
                     {m.role === "user" ? (
@@ -303,10 +305,10 @@ export default function ChatPage() {
                   </Avatar>
                   <div
                     className={cn(
-                      "rounded-2xl px-4 py-3 max-w-[85%] text-sm shadow-sm",
+                      "rounded-2xl px-4 py-3 max-w-[85%] text-sm shadow-sm border",
                       m.role === "user"
-                        ? "brand-gradient text-white rounded-tr-none border-none"
-                        : "glass-panel text-neutral-200 rounded-tl-none border border-white/10"
+                        ? "bg-brand-gold/20 border-brand-gold/30 text-white rounded-tr-none mr-auto"
+                        : "bg-brand-blue/20 border-brand-blue/30 text-neutral-100 rounded-tl-none ml-auto"
                     )}
                   >
                     {m.role === "assistant" && (m.phases?.length || isAssistantStreaming) ? (
@@ -342,16 +344,20 @@ export default function ChatPage() {
 
         <div className="p-4 border-t border-white/10 bg-black/40 backdrop-blur-md">
           <div className="flex flex-wrap gap-2 mb-4 justify-center">
-            {suggestionChips.map((chip) => (
-              <Badge
-                key={chip.label}
-                variant="outline"
-                className="cursor-pointer glass-panel border-white/10 hover:bg-white/10 py-1.5 px-3 rounded-full text-xs transition-colors text-neutral-300"
-                onClick={() => setInput(chip.prompt)}
-              >
-                {chip.label}
-              </Badge>
-            ))}
+            {suggestionChips.map((chip) => {
+              const Icon = chip.icon;
+              return (
+                <button
+                  key={chip.label}
+                  type="button"
+                  onClick={() => setInput(chip.prompt)}
+                  className="cursor-pointer flex items-center gap-1.5 glass-panel border border-white/10 hover:bg-brand-gold/10 hover:border-brand-gold/40 hover:text-white py-1.5 px-3 rounded-full text-xs transition-all text-neutral-300"
+                >
+                  <Icon className="h-3.5 w-3.5 text-brand-gold/80" />
+                  <span>{chip.label}</span>
+                </button>
+              );
+            })}
           </div>
 
           {pdfContext && (
@@ -371,7 +377,10 @@ export default function ChatPage() {
             </div>
           )}
 
-          <form onSubmit={onFormSubmit} className="relative flex items-center gap-2">
+          <form
+            onSubmit={onFormSubmit}
+            className="relative flex items-center gap-2 h-14 rounded-2xl bg-black/20 border border-white/10 px-2 focus-within:border-brand-gold/50 transition-colors"
+          >
             <input
               type="file"
               ref={fileInputRef}
@@ -384,17 +393,18 @@ export default function ChatPage() {
               variant="ghost"
               size="icon"
               disabled={isUploading || isLoading}
-              className="shrink-0 h-10 w-10 text-neutral-400 hover:text-white hover:bg-white/5 disabled:opacity-50"
+              className="shrink-0 h-10 w-10 rounded-xl text-neutral-400 hover:text-white hover:bg-white/5 disabled:opacity-50"
               onClick={() => fileInputRef.current?.click()}
+              aria-label="رفع ملف PDF"
             >
               {isUploading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Paperclip className="h-5 w-5" />}
             </Button>
 
-            <Input
+            <input
               value={input}
               placeholder="صف فكرتك أو اطرح سؤالك.. كلميرون هنا للرد."
               onChange={(e) => setInput(e.target.value)}
-              className="flex-1 h-12 rounded-xl bg-black/40 border-white/10 text-white placeholder-neutral-500 focus-visible:ring-1 focus-visible:ring-[#D4AF37] px-4"
+              className="flex-1 h-full bg-transparent border-none outline-none text-white placeholder-neutral-500 text-sm px-2"
               disabled={isLoading}
             />
 
@@ -402,7 +412,7 @@ export default function ChatPage() {
               <Button
                 type="button"
                 onClick={stopGenerating}
-                className="h-12 w-12 rounded-xl bg-red-500/90 hover:bg-red-500 text-white shrink-0 border-none"
+                className="h-10 w-10 rounded-xl bg-red-500/90 hover:bg-red-500 text-white shrink-0 border-none"
                 aria-label="إيقاف التوليد"
                 title="إيقاف التوليد"
               >
@@ -412,10 +422,10 @@ export default function ChatPage() {
               <Button
                 type="submit"
                 disabled={(!input.trim() && !pdfContext)}
-                className="h-12 w-12 rounded-xl bg-gradient-to-tr from-[#D4AF37] to-[#0A66C2] text-white hover:opacity-90 shrink-0 border-none disabled:opacity-50"
+                className="h-10 w-10 rounded-xl bg-gradient-to-tr from-brand-gold to-brand-blue text-white hover:opacity-90 shrink-0 border-none disabled:opacity-50"
                 aria-label="إرسال"
               >
-                <Send className="h-5 w-5" />
+                <Send className="h-4 w-4" />
               </Button>
             )}
           </form>
