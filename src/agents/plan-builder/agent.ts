@@ -4,6 +4,7 @@ import { MODELS } from '@/src/lib/gemini';
 import { PLAN_BUILDER_SYSTEM_PROMPT } from './prompt';
 import { z } from 'zod';
 import { searchKnowledge } from '@/src/lib/rag';
+import { instrumentAgent } from '@/src/lib/observability/agent-instrumentation';
 
 // 1. هيكل مخرجات خطة العمل
 export const BusinessPlanSchema = z.object({
@@ -36,10 +37,11 @@ export type BusinessPlan = z.infer<typeof BusinessPlanSchema>;
  * High-Reasoning Business Plan Agent using Gemini 3.1 Pro.
  */
 export async function buildBusinessPlanStream(projectInfo: string, conversationHistory: any[]) {
-  // RAG: Search for industry benchmarks or similar business models
-  const benchmarks = await searchKnowledge(projectInfo);
+  return instrumentAgent('plan_builder', async () => {
+    // RAG: Search for industry benchmarks or similar business models
+    const benchmarks = await searchKnowledge(projectInfo);
 
-  const prompt = `
+    const prompt = `
 المعلومات المتوفرة عن المشروع:
 ${projectInfo}
 
@@ -49,14 +51,15 @@ ${benchmarks}
 قم ببناء خطة عمل شاملة وفائقة الذكاء. استخدم قدراتك في الاستدلال (Reasoning) لتوليد أرقام وتوقعات مالية واقعية جداً للسوق المصري في 2026.
 `;
 
-  return streamText({
-    model: MODELS.PRO,
-    system: PLAN_BUILDER_SYSTEM_PROMPT,
-    messages: [
-        ...conversationHistory,
-        { role: 'user', content: prompt }
-    ],
-  });
+    return streamText({
+      model: MODELS.PRO,
+      system: PLAN_BUILDER_SYSTEM_PROMPT,
+      messages: [
+          ...conversationHistory,
+          { role: 'user', content: prompt }
+      ],
+    });
+  }, { model: 'gemini-pro', input: { projectInfo }, toolsUsed: ['rag.search', 'stream.text'] });
 }
 
 export async function generateStructuredPlan(projectInfo: string): Promise<BusinessPlan> {

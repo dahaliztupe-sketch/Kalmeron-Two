@@ -1,6 +1,7 @@
 // @ts-nocheck
 import { Agent, Workflow } from '@mastra/core';
 import { z } from 'zod';
+import { instrumentAgent } from '@/src/lib/observability/agent-instrumentation';
 
 // 1. Demand Forecasting Agent
 export const demandAgent = new Agent({
@@ -71,6 +72,8 @@ ${invPlan}`);
 supplyChainSwarm.commit();
 
 export const executeSupplyChainCrew = async (storeId: string) => {
-  const run = await supplyChainSwarm.execute({ storeId });
-  return run.results;
+  return instrumentAgent('supply_chain_swarm', async () => {
+    const run = await supplyChainSwarm.execute({ storeId });
+    return run.results;
+  }, { model: 'gemini-2.5-pro', input: { storeId }, toolsUsed: ['demand', 'inventory', 'logistics'] });
 };

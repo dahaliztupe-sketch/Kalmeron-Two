@@ -1,6 +1,7 @@
 // @ts-nocheck
   import { Agent } from '@mastra/core';
   import { z } from 'zod';
+  import { instrumentAgent } from '@/src/lib/observability/agent-instrumentation';
 
   /**
    * HR Orchestrator — منسق قسم الموارد البشرية والعمليات
@@ -42,4 +43,11 @@
       },
     },
   });
+
+  export async function hrCrewRun(prompt: string) {
+    return instrumentAgent('hr_crew', async () => {
+      const res: any = await hrOrchestratorAgent.generate(prompt);
+      return res?.text ?? res;
+    }, { model: 'gemini-2.5-flash', input: { prompt }, toolsUsed: ['delegate_task', 'aggregate_results'] });
+  }
   

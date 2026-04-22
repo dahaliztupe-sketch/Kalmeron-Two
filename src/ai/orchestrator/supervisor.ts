@@ -10,6 +10,7 @@ import { getPersonalizedOpportunities } from '@/src/agents/opportunity-radar/age
 import { analyzeCompany } from '@/src/agents/success-museum/agent';
 import { cfoAgentAction } from '@/src/ai/agents/cfo-agent/agent';
 import { legalGuideAction } from '@/src/ai/agents/legal-guide/agent';
+import { instrumentAgent } from '@/src/lib/observability/agent-instrumentation';
 
 export const SupervisorState = Annotation.Root({
   messages: Annotation<BaseMessage[]>({ reducer: (a, b) => a.concat(b) }),
@@ -35,6 +36,7 @@ const INTENT_CLASSIFIER_PROMPT = `أنت المنسق الذكي لمنصة كل
 
 async function routerNode(state: typeof SupervisorState.State) {
   const lastMessage = state.messages[state.messages.length - 1]?.content as string;
+  return instrumentAgent('orchestrator', async () => {
 
   if (state.isGuest && (state.messageCount || 0) >= 4) {
     return {
@@ -72,7 +74,8 @@ async function routerNode(state: typeof SupervisorState.State) {
     GENERAL_CHAT: 'general_chat_node',
   };
 
-  return { intent: matched, nextStep: stepMap[matched] };
+    return { intent: matched, nextStep: stepMap[matched] };
+  }, { model: 'gemini-lite', input: { lastMessage }, toolsUsed: ['intent.classify'] });
 }
 
 async function ideaValidatorNode(state: typeof SupervisorState.State) {

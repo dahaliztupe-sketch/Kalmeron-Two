@@ -5,6 +5,7 @@ import { OPPORTUNITY_RADAR_SYSTEM_PROMPT } from './prompt';
 import { z } from 'zod';
 import { searchKnowledge } from '@/src/lib/rag';
 import { unstable_cache } from 'next/cache';
+import { instrumentAgent } from '@/src/lib/observability/agent-instrumentation';
 
 // 1. هيكل الفرصة
 export const OpportunitySchema = z.object({
@@ -33,9 +34,10 @@ export const getPersonalizedOpportunities = unstable_cache(
     userStage: string,
     userGovernorate: string
   ): Promise<Opportunity[]> => {
-    const latestUpdates = await searchKnowledge(`${userIndustry} ${userStage} مصر`, 'opportunity');
+    return instrumentAgent('opportunity_radar', async () => {
+      const latestUpdates = await searchKnowledge(`${userIndustry} ${userStage} مصر`, 'opportunity');
 
-    const prompt = `
+      const prompt = `
   قم بتجميع قائمة من 5-10 فرص مناسبة لرائد أعمال مصري في قطاع "${userIndustry}" وفي مرحلة "${userStage}" ومقيم في "${userGovernorate}".
 
   بيانات من قاعدة المعرفة:
@@ -45,14 +47,15 @@ export const getPersonalizedOpportunities = unstable_cache(
   قدم النتيجة بتنسيق JSON منظم.
   `;
 
-    const { object } = await generateObject({
-      model: MODELS.FLASH,
-      system: OPPORTUNITY_RADAR_SYSTEM_PROMPT,
-      prompt: prompt,
-      schema: z.array(OpportunitySchema),
-    });
+      const { object } = await generateObject({
+        model: MODELS.FLASH,
+        system: OPPORTUNITY_RADAR_SYSTEM_PROMPT,
+        prompt: prompt,
+        schema: z.array(OpportunitySchema),
+      });
 
-    return object;
+      return object;
+    }, { model: 'gemini-flash', input: { userIndustry, userStage, userGovernorate }, toolsUsed: ['rag.search'] });
   },
   ['personalized-opportunities'],
   { revalidate: 21600 } // 6 Hours

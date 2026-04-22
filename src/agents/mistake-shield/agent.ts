@@ -3,6 +3,7 @@ import { generateText } from 'ai';
 import { MODELS } from '@/src/lib/gemini';
 import { MISTAKE_SHIELD_SYSTEM_PROMPT } from './prompt';
 import { searchKnowledge } from '@/src/lib/rag';
+import { instrumentAgent } from '@/src/lib/observability/agent-instrumentation';
 
 export const COMMON_MISTAKES = [
   { id: 'mixing-finances', title: 'خلط الحسابات الشخصية بحسابات الشركة', stage: 'launch', category: 'مالي' },
@@ -18,10 +19,11 @@ export const COMMON_MISTAKES = [
  * Proactive Risk Mitigation Agent using Gemini 3 Flash & RAG.
  */
 export async function getProactiveWarnings(userStage: string, recentActivity?: string) {
-  // RAG: Search for relevant market failures or specific sector risks
-  const marketKnowledge = await searchKnowledge(recentActivity || userStage, 'mistake');
+  return instrumentAgent('mistake_shield', async () => {
+    // RAG: Search for relevant market failures or specific sector risks
+    const marketKnowledge = await searchKnowledge(recentActivity || userStage, 'mistake');
 
-  const prompt = `
+    const prompt = `
 المستخدم حاليًا في مرحلة: "${userStage}".
 نشاطه الأخير: ${recentActivity || 'لا يوجد نشاط محدد'}.
 
@@ -31,13 +33,14 @@ ${marketKnowledge}
 بناءً على هذه المعلومات، ولد تحذيراً استباقياً يمنع الكارثة قبل وقوعها.
 `;
 
-  const result = await generateText({
-    model: MODELS.FLASH,
-    system: MISTAKE_SHIELD_SYSTEM_PROMPT,
-    prompt: prompt,
-  });
+    const result = await generateText({
+      model: MODELS.FLASH,
+      system: MISTAKE_SHIELD_SYSTEM_PROMPT,
+      prompt: prompt,
+    });
 
-  return result.text;
+    return result.text;
+  }, { model: 'gemini-flash', input: { userStage, recentActivity }, toolsUsed: ['rag.search'] });
 }
 
 export async function getMistakeDetails(mistakeId: string) {

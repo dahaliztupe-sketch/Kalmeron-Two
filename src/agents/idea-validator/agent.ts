@@ -2,11 +2,13 @@
 import { generateText } from "ai";
 import { MODELS } from "@/src/lib/gemini";
 import { searchKnowledge } from "@/src/lib/rag";
+import { instrumentAgent } from "@/src/lib/observability/agent-instrumentation";
 
 /**
  * High-Reasoning Idea Validator using Gemini 3.1 Pro & RAG.
  */
 export async function validateIdea(ideaDesc: string): Promise<string> {
+  return instrumentAgent('idea_validator', async () => {
     // RAG: Look for similar success stories or market mistakes
     const relevantInsights = await searchKnowledge(ideaDesc);
 
@@ -29,4 +31,5 @@ export async function validateIdea(ideaDesc: string): Promise<string> {
     });
 
     return text;
+  }, { model: 'gemini-pro', input: { ideaDesc }, toolsUsed: ['rag.search'] });
 }

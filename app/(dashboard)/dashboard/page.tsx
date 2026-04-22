@@ -27,6 +27,7 @@ interface DashboardData {
   alerts: Array<{ severity: string; source: string; message: string; timestamp?: string }>;
   metrics: { dailyCostUsd: number; dailyLimit: number; agentCount: number };
   progress: { stage: string; stages: string[] };
+  opportunity?: { id: string; title: string; type?: string; organizer?: string | null; deadline?: string | null; link?: string | null } | null;
 }
 
 import type { Variants } from "motion/react";
@@ -221,16 +222,17 @@ export default function DashboardPage() {
                 yKeys={["cost"]}
                 labels={{ cost: "USD" }}
                 data={(() => {
-                  const today = data.metrics.dailyCostUsd || 0;
+                  const today = +(data.metrics.dailyCostUsd || 0).toFixed(2);
                   const days = ["س", "أ", "ث", "ر", "خ", "ج", "اليوم"];
                   return days.map((d, i) => ({
                     day: d,
-                    cost: i === days.length - 1
-                      ? +today.toFixed(2)
-                      : +(today * (0.4 + Math.random() * 0.6)).toFixed(2),
+                    cost: i === days.length - 1 ? today : 0,
                   }));
                 })()}
               />
+              <p className="text-[10px] text-text-secondary/60 mt-2">
+                تاريخ التكلفة اليومية يبدأ بالتراكم من اليوم.
+              </p>
             </motion.div>
 
             {/* Nearest Opportunity */}
@@ -241,12 +243,27 @@ export default function DashboardPage() {
                   <Target className="w-4 h-4 text-brand-blue" />
                   <h3 className="text-base font-bold text-white">رادار الفرص</h3>
                 </div>
-                <p className="text-text-secondary text-sm mb-4 leading-relaxed">
-                  استكشف أحدث فرص التمويل والمسرّعات والمسابقات المناسبة لمرحلتك.
-                </p>
-                <Link href="/opportunities" className="inline-flex items-center gap-2 text-brand-gold text-sm font-bold hover:gap-3 transition-all">
-                  افتح رادار الفرص <ArrowLeft className="w-4 h-4" />
-                </Link>
+                {data.opportunity ? (
+                  <>
+                    <h4 className="text-white font-bold mb-2 leading-snug">{data.opportunity.title}</h4>
+                    <div className="text-xs text-text-secondary mb-3 space-y-1">
+                      {data.opportunity.organizer && <div>الجهة: <span className="text-white/80">{data.opportunity.organizer}</span></div>}
+                      {data.opportunity.deadline && <div>الموعد النهائي: <span className="text-white/80">{data.opportunity.deadline}</span></div>}
+                    </div>
+                    <Link href={data.opportunity.link || '/opportunities'} className="inline-flex items-center gap-2 text-brand-gold text-sm font-bold hover:gap-3 transition-all">
+                      التفاصيل <ArrowLeft className="w-4 h-4" />
+                    </Link>
+                  </>
+                ) : (
+                  <>
+                    <p className="text-text-secondary text-sm mb-4 leading-relaxed">
+                      لا توجد فرص محفوظة حالياً. افتح الرادار لاكتشاف أحدث الفرص.
+                    </p>
+                    <Link href="/opportunities" className="inline-flex items-center gap-2 text-brand-gold text-sm font-bold hover:gap-3 transition-all">
+                      افتح رادار الفرص <ArrowLeft className="w-4 h-4" />
+                    </Link>
+                  </>
+                )}
               </div>
             </motion.div>
           </motion.div>

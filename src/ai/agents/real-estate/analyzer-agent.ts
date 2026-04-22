@@ -1,6 +1,7 @@
 // @ts-nocheck
 import { Agent } from '@mastra/core';
 import { z } from 'zod';
+import { instrumentAgent } from '@/src/lib/observability/agent-instrumentation';
 
 export const realEstateAnalyzerAgent = new Agent({
   name: 'Real Estate Deal Analyzer',
@@ -62,3 +63,10 @@ export const realEstateAnalyzerAgent = new Agent({
     },
   },
 });
+
+export async function realEstateAnalyzerRun(prompt: string) {
+  return instrumentAgent('real_estate_analyzer', async () => {
+    const res: any = await realEstateAnalyzerAgent.generate(prompt);
+    return res?.text ?? res;
+  }, { model: 'gemini-2.5-flash', input: { prompt }, toolsUsed: ['analyze_deal', 'search_properties'] });
+}

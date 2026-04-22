@@ -10,6 +10,7 @@
  */
 import { recordDriftSample } from './drift-detector';
 import { logAgentGeneration } from './langfuse';
+import { recordInvocation } from '@/src/ai/organization/compliance/monitor';
 
 export interface InstrumentOptions {
   model?: string;
@@ -45,6 +46,9 @@ export async function instrumentAgent<T>(
       success,
       errorCode,
     });
+    try {
+      recordInvocation(agentName, latencyMs, 0, success ? undefined : errorCode);
+    } catch { /* never break call site */ }
     void logAgentGeneration({
       trace: opts.trace,
       agent: agentName,

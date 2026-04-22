@@ -7,5 +7,7 @@ if (dsn) {
     dsn,
     tracesSampleRate: 0.1,
     environment: process.env.NODE_ENV,
+    // Avoid double OpenTelemetry setup when Langfuse / @vercel/otel are present
+    skipOpenTelemetrySetup: true,
   });
 }

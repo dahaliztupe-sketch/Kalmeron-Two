@@ -1,6 +1,7 @@
 // @ts-nocheck
   import { Agent } from '@mastra/core';
   import { z } from 'zod';
+  import { instrumentAgent } from '@/src/lib/observability/agent-instrumentation';
 
   /**
    * Marketing Orchestrator — منسق قسم التسويق والنمو
@@ -43,4 +44,11 @@
       },
     },
   });
+
+  export async function marketingCrewRun(prompt: string) {
+    return instrumentAgent('marketing_crew', async () => {
+      const res: any = await marketingOrchestratorAgent.generate(prompt);
+      return res?.text ?? res;
+    }, { model: 'gemini-2.5-flash', input: { prompt }, toolsUsed: ['delegate_task', 'aggregate_results'] });
+  }
   

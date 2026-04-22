@@ -2,6 +2,7 @@
 import { google } from '@ai-sdk/google';
 import { generateText } from 'ai';
 import { z } from 'zod';
+import { instrumentAgent } from '@/src/lib/observability/agent-instrumentation';
 
 // وكيل مفسّر الأكواد - يستخدم Gemini لتحليل الأكواد والبيانات
 export const codeInterpreterAgent = {
@@ -34,11 +35,13 @@ export const codeInterpreterAgent = {
   },
 
   async run(prompt: string) {
-    const result = await generateText({
-      model: google('gemini-2.5-flash'),
-      system: this.instructions,
-      prompt,
-    });
-    return result.text;
+    return instrumentAgent('code_interpreter', async () => {
+      const result = await generateText({
+        model: google('gemini-2.5-flash'),
+        system: this.instructions,
+        prompt,
+      });
+      return result.text;
+    }, { model: 'gemini-2.5-flash', input: { prompt }, toolsUsed: ['execute_python'] });
   },
 };

@@ -5,6 +5,7 @@ import { SUCCESS_MUSEUM_SYSTEM_PROMPT } from './prompt';
 import { z } from 'zod';
 import { searchKnowledge } from '@/src/lib/rag';
 import { unstable_cache } from 'next/cache';
+import { instrumentAgent } from '@/src/lib/observability/agent-instrumentation';
 
 // 1. هيكل مخرجات تحليل الشركة
 export const CompanyAnalysisSchema = z.object({
@@ -29,9 +30,10 @@ export type CompanyAnalysis = z.infer<typeof CompanyAnalysisSchema>;
  */
 export const analyzeCompany = unstable_cache(
   async (companyName: string, userContext?: string): Promise<CompanyAnalysis> => {
-    const internalData = await searchKnowledge(companyName, 'success');
+    return instrumentAgent('success_museum', async () => {
+      const internalData = await searchKnowledge(companyName, 'success');
 
-    const prompt = `
+      const prompt = `
   قم بتحليل شركة "${companyName}" بشكل استراتيجي.
   ${userContext ? `معلومات إضافية عن المستخدم: ${userContext}` : ''}
 
@@ -41,14 +43,15 @@ export const analyzeCompany = unstable_cache(
   ركز على الدروس التي يمكن لرائد أعمال مصري أن يستفيد منها.
   `;
 
-    const { object } = await generateObject({
-      model: MODELS.FLASH,
-      system: SUCCESS_MUSEUM_SYSTEM_PROMPT,
-      prompt: prompt,
-      schema: CompanyAnalysisSchema,
-    });
+      const { object } = await generateObject({
+        model: MODELS.FLASH,
+        system: SUCCESS_MUSEUM_SYSTEM_PROMPT,
+        prompt: prompt,
+        schema: CompanyAnalysisSchema,
+      });
 
-    return object;
+      return object;
+    }, { model: 'gemini-flash', input: { companyName }, toolsUsed: ['rag.search'] });
   },
   ['company-analysis'],
   { revalidate: 86400 } // 24 Hours
