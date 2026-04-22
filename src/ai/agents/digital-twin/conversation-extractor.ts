@@ -25,7 +25,7 @@ export const conversationExtractorAgent = new Agent({
   - استخرج المعلومات الجديدة فقط (لا تكرر ما هو موجود مسبقاً).
   - إذا كانت المعلومات غامضة، اطلب توضيحاً.
   - ضف درجة ثقة لكل معلومة.`,
-  model: google('gemini-3-flash-preview'),
+  model: google('gemini-2.5-flash'),
   tools: {
     extract_entities: {
       description: 'استخراج الكيانات والعلاقات من نص المحادثة',

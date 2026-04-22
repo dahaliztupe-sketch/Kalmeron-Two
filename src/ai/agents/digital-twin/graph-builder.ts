@@ -16,7 +16,7 @@ export const graphBuilderAgent = new Agent({
   - تأكد من عدم تكرار العقد (استخدم MERGE بدلاً من CREATE).
   - حافظ على سلامة العلاقات (تأكد من وجود العقد قبل إنشاء العلاقات).
   - أضف طوابع زمنية لكل تحديث.`,
-  model: google('gemini-3-flash-preview'),
+  model: google('gemini-2.5-flash'),
   tools: {
     build_graph: {
       description: 'بناء أو تحديث الرسم البياني المعرفي',

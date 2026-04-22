@@ -10,7 +10,7 @@ export const demandAgent = new Agent({
   استخدم TimeCopilot وNixtla لتوليد توقعات دقيقة.
   قدم تقريرًا يتضمن: توقعات الطلب للأشهر 3-6-12 القادمة، فترات الذروة المتوقعة، وتوصيات لمستويات المخزون المثلى.`,
   // Cost optimization: Complex task
-  model: { provider: 'google', name: 'gemini-3.1-pro-preview' },
+  model: { provider: 'google', name: 'gemini-2.5-pro' },
   tools: {
     timecopilot_forecast: {
       description: 'تشغيل تنبؤات السلاسل الزمنية باستخدام TimeCopilot',
@@ -32,7 +32,7 @@ export const inventoryAgent = new Agent({
   instructions: `أنت خبير في تحسين المخزون وموازنة مستويات الخدمة مع التكاليف.
   مهمتك: مراقبة مستويات المخزون في الوقت الفعلي، وتحديد حالات نقص المخزون أو الفائض، واقتراح عمليات نقل المخزون بين المستودعات.
   استخدم مبادئ "سرب الوكلاء" (Agent Swarm) للتفاوض مع وكلاء آخرين (الطلب، اللوجستيات) لتحقيق التوازن الأمثل.`,
-  model: { provider: 'google', name: 'gemini-3-flash-preview' },
+  model: { provider: 'google', name: 'gemini-2.5-flash' },
 });
 
 // 3. Logistics & Tracking Agent
@@ -41,7 +41,7 @@ export const logisticsAgent = new Agent({
   instructions: `أنت خبير في إدارة الشحنات واللوجستيات.
   مهمتك: تتبع الشحنات في الوقت الفعلي، واكتشاف الاضطرابات (مثل ازدحام الموانئ، التأخيرات الجوية)، واقتراح مسارات بديلة.
   استلهم من project44's Disruption Management Agent الذي يفحص الأحداث العالمية في الوقت الفعلي ويبدأ إجراءات استجابة منسقة قبل تفاقم الاستثناءات.`,
-  model: { provider: 'google', name: 'gemini-3-flash-preview' },
+  model: { provider: 'google', name: 'gemini-2.5-flash' },
 });
 
 // Supply Chain Swarm Workflow

@@ -6,7 +6,7 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 
 export async function createSupportSession() {
   const model = genAI.getGenerativeModel({
-    model: 'gemini-3.1-flash-live-preview',
+    model: 'gemini-2.5-flash-live-preview',
   });
   
   // Create a chat session designed for Multimodal Live API

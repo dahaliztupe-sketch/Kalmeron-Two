@@ -1,7 +1,7 @@
 // @ts-nocheck
   /**
    * Receptionist Agent — الواجهة الوحيدة للمستخدم (/chat).
-   * نموذج: gemini-3.1-flash-lite-preview (زمن استجابة منخفض جدًا).
+   * نموذج: gemini-2.5-flash-lite (زمن استجابة منخفض جدًا).
    */
   import { generateText } from 'ai';
   import { MODELS } from '@/src/lib/gemini';

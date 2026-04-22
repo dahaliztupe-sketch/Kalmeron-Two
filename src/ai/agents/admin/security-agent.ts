@@ -6,7 +6,7 @@ export const securityAgent = new Agent({
   name: 'Proactive Security Agent',
   instructions: `أنت وكيل الأمن السيبراني الاستباقي (VistaroAI Style) لمنصة كلميرون تو.
   مهمتك: اكتشاف التهديدات بصورة استباقية من خلال القراءة المستمرة لسجلات النظام والتحقيق في هجمات PII أو Prompt Injection الدقيقة التي تخطت الجرعات الأولية.`,
-  model: { provider: 'google', name: 'gemini-3.1-pro-preview' },
+  model: { provider: 'google', name: 'gemini-2.5-pro' },
   tools: {
     investigate_threat: {
       description: 'التحقيق في تحديد أمني استناداً لنصوص السجلات',

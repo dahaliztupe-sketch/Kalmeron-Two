@@ -7,7 +7,7 @@ export const jdAgent = new Agent({
   name: 'Job Description Agent',
   instructions: `أنت خبير في كتابة الإعلانات الوظيفية الجذابة والدقيقة.
   مهمتك: بناءً على المسمى الوظيفي والمتطلبات التي يقدمها المستخدم، قم بإنشاء وصف وظيفي احترافي يتضمن: ملخص الدور، المسؤوليات الرئيسية، المؤهلات المطلوبة، والمزايا.`,
-  model: { provider: 'google', name: 'gemini-3-flash-preview' },
+  model: { provider: 'google', name: 'gemini-2.5-flash' },
 });
 
 // 2. Resume Screening Agent
@@ -17,7 +17,7 @@ export const screeningAgent = new Agent({
   مهمتك: تحليل السير الذاتية للمتقدمين، ومطابقتها مع متطلبات الوظيفة، وتصنيف المرشحين حسب ملاءمتهم.
   استخدم معايير موضوعية مثل المهارات، الخبرة، والتعليم. قدم قائمة مختصرة بأفضل المرشحين مع تبرير لكل اختيار.`,
   // Complex analysis => Pro preview
-  model: { provider: 'google', name: 'gemini-3.1-pro-preview' },
+  model: { provider: 'google', name: 'gemini-2.5-pro' },
   tools: {
     parse_resume: {
       description: 'استخراج المعلومات الرئيسية من السيرة الذاتية',
@@ -42,7 +42,7 @@ export const schedulerAgent = new Agent({
   مهمتك: التواصل مع المرشحين المختارين، واقتراح مواعيد متاحة للمقابلات، وتأكيد الحجوزات.
   استلهم من Paradox (Olivia) التي تحجز المقابلات تلقائيًا.`,
   // Simple scheduling => Flash Lite
-  model: { provider: 'google', name: 'gemini-3.1-flash-lite-preview' },
+  model: { provider: 'google', name: 'gemini-2.5-flash-lite' },
 });
 
 // 4. Interview Companion Agent
@@ -51,7 +51,7 @@ export const interviewCompanionAgent = new Agent({
   instructions: `أنت رفيق مقابلة ذكي، مصمم لمساعدة مديري التوظيف أثناء المقابلات الحية.
   مهمتك: تقديم إرشادات في الوقت الفعلي، اقتراح أسئلة متابعة بناءً على إجابات المرشح، وتوثيق الملاحظات الرئيسية.
   استلهم من Eightfold AI Interview Companion الذي يعزز المقابلات التي يقودها البشر بإرشادات منظمة ورؤى في الوقت الفعلي.`,
-  model: { provider: 'google', name: 'gemini-3-flash-preview' },
+  model: { provider: 'google', name: 'gemini-2.5-flash' },
 });
 
 // HR Recruitment Workflow

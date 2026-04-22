@@ -16,7 +16,7 @@ export async function generateHypotheticalAnswer(query: string): Promise<string>
   الإجابة الافتراضية:`;
   
   const result = await generateText({
-    model: google('gemini-3-flash-preview'), // نموذج سريع ومناسب
+    model: google('gemini-2.5-flash'), // نموذج سريع ومناسب
     prompt,
     maxTokens: 150,
     temperature: 0.3, // إبداع منخفض للحصول على إجابات متسقة

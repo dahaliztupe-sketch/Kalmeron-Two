@@ -15,5 +15,5 @@ export const complianceAgent = new Agent({
   5. إجراء تقييمات دورية للمخاطر (Risk Assessments) لأنشطة الوكلاء.
 
   حدودك: أنت لا تمنع الإجراءات بشكل مباشر إلا إذا كانت تشكل خطرًا قانونيًا واضحًا. في حالة الشك، تقوم بتصعيد الأمر إلى مشرف بشري (Human-in-the-Loop).`,
-  model: google('gemini-3.1-pro-preview'), // PRO tier — compliance reasoning needs depth
+  model: google('gemini-2.5-pro'), // PRO tier — compliance reasoning needs depth
 });

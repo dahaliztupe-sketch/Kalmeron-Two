@@ -35,7 +35,7 @@ export const codeInterpreterAgent = {
 
   async run(prompt: string) {
     const result = await generateText({
-      model: google('gemini-3-flash-preview'),
+      model: google('gemini-2.5-flash'),
       system: this.instructions,
       prompt,
     });

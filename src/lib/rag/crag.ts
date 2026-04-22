@@ -20,7 +20,7 @@ export async function evaluateRetrievalRelevance(query: string, documents: strin
   درجة الصلة (0-1):`;
   
   const result = await generateText({
-    model: google('gemini-3.1-flash-lite-preview'), // نموذج خفيف وسريع للتقييم
+    model: google('gemini-2.5-flash-lite'), // نموذج خفيف وسريع للتقييم
     prompt,
     maxTokens: 10,
     temperature: 0,
@@ -43,7 +43,7 @@ export async function rewriteQuery(originalQuery: string, feedback?: string): Pr
   الاستعلام المعاد صياغته:`;
   
   const result = await generateText({
-    model: google('gemini-3-flash-preview'),
+    model: google('gemini-2.5-flash'),
     prompt,
     maxTokens: 200,
     temperature: 0.4,

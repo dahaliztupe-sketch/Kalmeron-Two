@@ -6,19 +6,19 @@ export const gateway = createGateway({
     {
       // المهام البسيطة (تصنيف، تلخيص قصير) ← نموذج رخيص
       condition: (task) => task.complexity === 'simple',
-      model: 'gemini-3.1-flash-lite-preview',
+      model: 'gemini-2.5-flash-lite',
       provider: 'google',
     },
     {
       // المهام المتوسطة (محادثة، تحليل متوسط) ← نموذج متوازن
       condition: (task) => task.complexity === 'medium',
-      model: 'gemini-3-flash-preview',
+      model: 'gemini-2.5-flash',
       provider: 'google',
     },
     {
       // المهام المعقدة (تحليل فكرة، بناء خطة) ← نموذج قوي
       condition: (task) => task.complexity === 'complex',
-      model: 'gemini-3.1-pro-preview',
+      model: 'gemini-2.5-pro',
       provider: 'google',
     },
   ],

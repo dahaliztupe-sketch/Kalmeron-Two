@@ -34,7 +34,7 @@ export async function reflectOnRetrieval(query: string, documents: string[]): Pr
   تقييم JSON:`;
   
   const result = await generateText({
-    model: google('gemini-3-flash-preview'),
+    model: google('gemini-2.5-flash'),
     prompt,
     maxTokens: 300,
     temperature: 0,
@@ -67,7 +67,7 @@ export async function generateHonestDontKnow(query: string): Promise<string> {
   الرد:`;
   
   const result = await generateText({
-    model: google('gemini-3-flash-preview'),
+    model: google('gemini-2.5-flash'),
     prompt,
     maxTokens: 200,
     temperature: 0.3,
@@ -105,7 +105,7 @@ export async function selfRAGRetrieve(
       الاستعلام المحسن:`;
       
       const refineResult = await generateText({
-        model: google('gemini-3-flash-preview'),
+        model: google('gemini-2.5-flash'),
         prompt: refinePrompt,
         maxTokens: 200,
         temperature: 0.4,

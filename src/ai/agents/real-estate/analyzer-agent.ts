@@ -14,7 +14,7 @@ export const realEstateAnalyzerAgent = new Agent({
   - قاعدة 1% (الإيجار الشهري ≥ 1% من سعر الشراء)
   - تصنيف استثماري (Strong Buy، Consider، Marginal، Weak)
   استلهم من investra-ai-mcp الذي يثري كل نتيجة مسبقًا بالأرقام التي تهم المستثمر.`,
-  model: { provider: 'google', name: 'gemini-3-flash-preview' },
+  model: { provider: 'google', name: 'gemini-2.5-flash' },
   tools: {
     search_properties: {
       description: 'البحث عن عقارات استثمارية بناءً على معايير محددة',

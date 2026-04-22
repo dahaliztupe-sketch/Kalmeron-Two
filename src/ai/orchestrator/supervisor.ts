@@ -44,7 +44,7 @@ async function routerNode(state: typeof SupervisorState.State) {
   }
 
   const { text: intent } = await generateText({
-    model: MODELS.FLASH,
+    model: MODELS.LITE,
     system: INTENT_CLASSIFIER_PROMPT,
     prompt: `سياق الواجهة: ${JSON.stringify(state.uiContext || {})}
 رسالة المستخدم: ${lastMessage}`,

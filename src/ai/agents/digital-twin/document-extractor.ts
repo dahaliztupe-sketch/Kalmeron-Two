@@ -18,5 +18,5 @@ export const documentExtractorAgent = new Agent({
   - استخدم Code Interpreter Agent لتحليل ملفات Excel.
   - استخدم OCR إذا لزم الأمر للصور.
   - نظّم المعلومات المستخرجة وفقاً لهيكل الأنطولوجيا.`,
-  model: google('gemini-3.1-pro-preview'),
+  model: google('gemini-2.5-pro'),
 });

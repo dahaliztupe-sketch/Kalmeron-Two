@@ -6,10 +6,10 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 export default function AiLogsDashboard() {
   // Mock data representing logs fetched from BigQuery or Firestore
   const logs = [
-    { id: '1', task: 'بناء خطة استراتيجية', model: 'gemini-3.1-pro', tokens: 4250, cost: '$0.008' },
-    { id: '2', task: 'تحليل أفكار (مزاد الوكلاء)', model: 'gemini-3-flash', tokens: 1800, cost: '$0.001' },
-    { id: '3', task: 'نصائح حماية من الأخطاء', model: 'gemini-3-flash', tokens: 900, cost: '$0.0004' },
-    { id: '4', task: 'صياغة العرض التقديمي للمستثمرين', model: 'gemini-3.1-pro', tokens: 6100, cost: '$0.012' },
+    { id: '1', task: 'بناء خطة استراتيجية', model: 'gemini-2.5-pro', tokens: 4250, cost: '$0.008' },
+    { id: '2', task: 'تحليل أفكار (مزاد الوكلاء)', model: 'gemini-2.5-flash', tokens: 1800, cost: '$0.001' },
+    { id: '3', task: 'نصائح حماية من الأخطاء', model: 'gemini-2.5-flash', tokens: 900, cost: '$0.0004' },
+    { id: '4', task: 'صياغة العرض التقديمي للمستثمرين', model: 'gemini-2.5-pro', tokens: 6100, cost: '$0.012' },
   ];
 
   return (

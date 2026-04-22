@@ -57,7 +57,7 @@ export async function POST(req: NextRequest) {
 
   if (userId !== 'guest-system') {
     const creditManager = new CreditManager(userId);
-    const creditResult = await creditManager.consumeCredits(5, 'Supervisor', 'gemini-3.1-flash');
+    const creditResult = await creditManager.consumeCredits(5, 'Supervisor', 'gemini-2.5-flash');
     if (!creditResult.success) {
       return new Response(
         JSON.stringify({
@@ -157,7 +157,7 @@ export async function POST(req: NextRequest) {
         }
 
         if (userId !== 'guest-system') {
-          await trackAgentUsage(userId, 'Supervisor', 'gemini-3.1-flash', 1000);
+          await trackAgentUsage(userId, 'Supervisor', 'gemini-2.5-flash', 1000);
           const creditManager = new CreditManager(userId);
           await creditManager.checkAndNotifyThreshold();
         }

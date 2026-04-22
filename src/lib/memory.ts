@@ -14,7 +14,7 @@ export const mem0 = new Mem0({
     },
     llm: {
       provider: 'google',    // Using google provider (or gemini as per prompt)
-      model: 'gemini-3.1-flash-lite-preview',
+      model: 'gemini-2.5-flash-lite',
     },
   },
 } as any);

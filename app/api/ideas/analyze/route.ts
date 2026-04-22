@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
     }
 
     const response = await ai.models.generateContent({
-      model: 'gemini-3.1-pro-preview',
+      model: 'gemini-2.5-pro',
       contents: `I have a startup idea. Please validate it aggressively for the Egyptian market. 
         Idea: "${ideaDesc}"
         My Target Industry is: ${industry} and Phase is ${startup_stage}.

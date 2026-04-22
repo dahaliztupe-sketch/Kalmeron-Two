@@ -7,7 +7,7 @@ export class GraphRAG {
   
   async retrieveContext(startupId: string, query: string): Promise<string> {
     const { embedding } = await embed({
-      model: google.embedding('gemini-embedding-001'),
+      model: google.textEmbeddingModel('gemini-embedding-001'),
       value: query,
     });
     

@@ -1,21 +1,34 @@
-import { google } from "@ai-sdk/google";
+import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { generateText } from "ai";
 
+const apiKey =
+    process.env.GEMINI_API_KEY ||
+    process.env.GOOGLE_GENERATIVE_AI_API_KEY ||
+    process.env.GOOGLE_API_KEY ||
+    "";
+
+if (!apiKey && typeof window === "undefined") {
+    console.warn("[gemini] GEMINI_API_KEY غير موجود — وكلاء كلميرون لن يعملوا.");
+}
+
+export const google = createGoogleGenerativeAI({ apiKey });
+
 /**
- * Kalmeron AI Model Tiers (2026 Strategy)
+ * Kalmeron AI Model Tiers — using real Gemini model IDs.
+ * Aliased so we can swap to preview models when they GA without touching call sites.
  */
+export const MODEL_IDS = {
+    LITE: process.env.MODEL_LITE || "gemini-2.5-flash-lite",
+    FLASH: process.env.MODEL_FLASH || "gemini-2.5-flash",
+    PRO: process.env.MODEL_PRO || "gemini-2.5-pro",
+    EMBEDDING: process.env.MODEL_EMBEDDING || "gemini-embedding-001",
+} as const;
+
 export const MODELS = {
-    // Basic tasks (Classification, Summarization) - High speed, low cost
-    LITE: google('gemini-3.1-flash-lite-preview'),
-    
-    // Balanced tasks (General Chat, Standard Analysis)
-    FLASH: google('gemini-3-flash-preview'),
-    
-    // Complex tasks (Business Plan, In-depth Validation)
-    PRO: google('gemini-3.1-pro-preview'),
-    
-    // Embedding for RAG
-    EMBEDDING: google.embedding('gemini-embedding-001')
+    LITE: google(MODEL_IDS.LITE),
+    FLASH: google(MODEL_IDS.FLASH),
+    PRO: google(MODEL_IDS.PRO),
+    EMBEDDING: google.textEmbeddingModel(MODEL_IDS.EMBEDDING),
 };
 
 /**

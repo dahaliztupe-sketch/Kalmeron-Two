@@ -7,7 +7,7 @@ const genAI = new GoogleGenerativeAI(process.env.EXPO_PUBLIC_GEMINI_API_KEY || '
 
 export async function createMobileAgentSession(userId: string, userDID: string) {
   const model = genAI.getGenerativeModel({
-    model: 'gemini-3-flash-preview',
+    model: 'gemini-2.5-flash',
   });
   
   return model.startChat({

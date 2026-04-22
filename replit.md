@@ -185,6 +185,32 @@ fintech, ecommerce, women, ai_ml, sme, young, agritech.
 6. **Dashboard page** (`/dashboard`) — migrated from direct `<Sidebar>` import with hardcoded `mr-64` to `<AppShell>` for full consistency.
 7. **Auth flow fully restored (April 21, 2026)** — `src/lib/firebase.ts` now falls back to real config from `firebase-applet-config.json` when `NEXT_PUBLIC_FIREBASE_*` env vars are missing (was using dummy keys → silent Google popup failure). Created `app/auth/login/page.tsx`. Fixed root navbar in `app/page.tsx` (`/login` → `/auth/login`, `/register` → `/auth/signup`). `AuthContext.signInWithGoogle` now surfaces toast errors. `AuthGuard` redirects unauthenticated users to `/auth/login` instead of signup. Added `prompt: 'select_account'` on `GoogleAuthProvider` so users can switch accounts.
 
+## 2026-04-22 — Chat Agent Restoration & UI Polish
+
+### Root cause of "main agent error when chatting"
+1. **`GEMINI_API_KEY` was missing** from secrets entirely (now requested and set).
+2. **`@ai-sdk/google` reads `GOOGLE_GENERATIVE_AI_API_KEY`**, not `GEMINI_API_KEY`. Fixed in two places:
+   - `src/lib/gemini.ts` now uses `createGoogleGenerativeAI({ apiKey })` and reads `GEMINI_API_KEY` (with fallbacks).
+   - `instrumentation.ts` mirrors `GEMINI_API_KEY` → `GOOGLE_GENERATIVE_AI_API_KEY` / `GOOGLE_API_KEY` at server startup so files importing `google` directly from the SDK still work.
+3. **Speculative model IDs (`gemini-3.x-*`) don't exist on the Google API.** Globally replaced across `src/`, `app/`, `components/`:
+   - `gemini-3-flash-preview` → `gemini-2.5-flash`
+   - `gemini-3.1-flash-lite-preview` → `gemini-2.5-flash-lite`
+   - `gemini-3.1-pro-preview` → `gemini-2.5-pro`
+   - Real IDs are now centralized in `MODEL_IDS` in `src/lib/gemini.ts` and overridable via `MODEL_LITE`, `MODEL_FLASH`, `MODEL_PRO`, `MODEL_EMBEDDING` env vars (single swap point when 3.x models GA).
+4. **Embedding API**: `google.embedding(...)` (deprecated) → `google.textEmbeddingModel(...)`.
+5. **Intent router** in `src/ai/orchestrator/supervisor.ts` switched from FLASH → LITE for the trivial classification call (cheaper + less rate-limited).
+
+### Chat UI fixes (`app/(dashboard)/chat/page.tsx`)
+- Header: removed duplicate 🤖 emoji that overlapped the avatar; added "متصل" status indicator with pulse; cleaner stacking of "كلميرون" + "المستشار الذكي".
+- Bubble alignment: replaced `mr-auto`/`ml-auto` hacks with proper `justify-start` (user) and `justify-end` (assistant) inside the RTL container, plus `items-end` for clean baseline.
+- Bubble colors: brand-gold tint for user, brand-blue tint for assistant — consistent with the brand palette.
+
+### Verified working
+```
+POST /api/chat → 200, SSE stream:
+  phase: router → phase: general_chat_node → delta: "مرحباً بك! أنا كلميرون..." → done
+```
+
 ## Build Status
 
 ✅ Runtime: Next.js dev server running on port 5000  

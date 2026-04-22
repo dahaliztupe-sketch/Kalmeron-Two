@@ -29,7 +29,7 @@ export async function analyzeDiscourse(documents: string[]): Promise<{
   تحليل JSON:`;
   
   const result = await generateText({
-    model: google('gemini-3.1-pro-preview'), // نموذج أقوى للتحليل العميق
+    model: google('gemini-2.5-pro'), // نموذج أقوى للتحليل العميق
     prompt,
     maxTokens: 1000,
     temperature: 0.1,
@@ -116,7 +116,7 @@ export async function discoGenerateAnswer(
   الإجابة:`;
   
   const result = await generateText({
-    model: google('gemini-3.1-pro-preview'),
+    model: google('gemini-2.5-pro'),
     prompt,
     maxTokens: 1000,
     temperature: 0.3,

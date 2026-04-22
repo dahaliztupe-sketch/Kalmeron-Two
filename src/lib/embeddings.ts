@@ -7,7 +7,7 @@ import { google } from '@ai-sdk/google';
 export const getCachedEmbedding = cache(async (text: string) => {
   'use cache';
   const { embedding } = await embed({
-    model: google.embedding('gemini-embedding-001'),
+    model: google.textEmbeddingModel('gemini-embedding-001'),
     value: text,
   });
   return embedding;

@@ -14,7 +14,7 @@ export async function GET(req: Request) {
     // Logic to generate signed ephemeral token for the UI to establish WebRTC/WS directly 
     // with regional Gateway, maintaining Activeloop L0 retrieval rights.
     const ephemeralToken = `live_wss_token_${Date.now()}_kalmeron`;
-    const gatewayUrl = `wss://gateway.ai.vercel.com/v1/live/kalmeron/gemini-3.1-flash-live`;
+    const gatewayUrl = `wss://gateway.ai.vercel.com/v1/live/kalmeron/gemini-2.5-flash-live`;
 
     return NextResponse.json({
       url: gatewayUrl,
