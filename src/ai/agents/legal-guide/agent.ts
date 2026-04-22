@@ -2,14 +2,21 @@
 import { generateText } from 'ai';
 import { MODELS } from '@/src/lib/gemini';
 import { LEGAL_KNOWLEDGE } from './knowledge-base';
+import { instrumentAgent } from '@/src/lib/observability/agent-instrumentation';
 
 export async function legalGuideAction(query: string) {
-  const { text } = await generateText({
-    model: MODELS.PRO,
-    system: `أنت "المرشد القانوني" في منصة كلميرون تو، خبير في التشريعات المصرية المتعلقة بالشركات الناشئة وريادة الأعمال. تقديم إرشادات عامة وتوعوية فقط.
+  return instrumentAgent(
+    'legal_guide',
+    async () => {
+      const { text } = await generateText({
+        model: MODELS.PRO,
+        system: `أنت "المرشد القانوني" في منصة كلميرون تو، خبير في التشريعات المصرية المتعلقة بالشركات الناشئة وريادة الأعمال. تقديم إرشادات عامة وتوعوية فقط.
     قاعدة المعرفة: ${JSON.stringify(LEGAL_KNOWLEDGE)}
     وجّه المستخدم دائماً للمصادر الرسمية.`,
-    prompt: query
-  });
-  return text;
+        prompt: query,
+      });
+      return text;
+    },
+    { model: 'gemini-pro', input: query, toolsUsed: ['legal.knowledge_base'] }
+  );
 }

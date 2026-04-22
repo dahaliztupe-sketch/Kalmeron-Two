@@ -15,7 +15,7 @@ export const MODELS = {
     PRO: google('gemini-3.1-pro-preview'),
     
     // Embedding for RAG
-    EMBEDDING: google.embedding('gemini-embedding-2-preview')
+    EMBEDDING: google.embedding('gemini-embedding-001')
 };
 
 /**

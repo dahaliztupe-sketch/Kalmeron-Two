@@ -3,6 +3,7 @@ import { Noto_Kufi_Arabic, Plus_Jakarta_Sans, Syne } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { QueryProvider } from "@/src/lib/cache/query-client";
 import { cn } from "@/lib/utils";
 import { Toaster } from "@/components/ui/sonner";
 import { CookieBanner } from "@/components/cookie-banner";
@@ -115,9 +116,11 @@ export default async function RootLayout({
             <ThemeProvider attribute="class" defaultTheme="dark" forcedTheme="dark" enableSystem={false}>
               <LanguageProvider>
                 <AuthProvider>
+                  <QueryProvider>
                     {children}
                     <CookieBanner />
                     <Toaster position="top-right" richColors />
+                  </QueryProvider>
                 </AuthProvider>
               </LanguageProvider>
             </ThemeProvider>

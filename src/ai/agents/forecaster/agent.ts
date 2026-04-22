@@ -3,6 +3,7 @@ import { generateText } from 'ai';
 import { MODELS } from '@/src/lib/gemini';
 // Using Nixtla for Time-Series forecasting & anomaly detection
 import { NixtlaClient } from 'nixtla';
+import { instrumentAgent } from '@/src/lib/observability/agent-instrumentation';
 
 // Initialize Nixtla (Requires NIXTLA_API_KEY in environment)
 // Fallback gracefully if the package or key isn't fully set in this environment
@@ -18,6 +19,7 @@ export const ForecasterAgent = {
   goal: 'استشراف المستقبل المالي واكتشاف الشذوذ المالي باستخدام الذكاء الاصطناعي التنبؤي.',
   
   async predictRevenue(historicalData: { timestamp: string, value: number }[], horizon: number = 6) {
+    return instrumentAgent('forecaster.predict_revenue', async () => {
     if (!nixtla) {
       console.warn("Nixtla API key missing or SDK not loaded. Using LLM heuristic fallback.");
       return this.fallbackLLMPrediction(historicalData, horizon);
@@ -37,6 +39,7 @@ export const ForecasterAgent = {
       console.error("Forecasting Error:", error);
       throw error;
     }
+    }, { model: 'nixtla.timegpt', toolsUsed: ['nixtla.forecast'] });
   },
 
   async detectAnomalies(historicalData: { timestamp: string, value: number }[]) {

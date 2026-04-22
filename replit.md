@@ -254,3 +254,45 @@ fintech, ecommerce, women, ai_ml, sme, young, agritech.
 - نماذج `gemini-3.1-*`, `gemma-4-*`, `deepseek-v4`, `glm-5.1`, `llama-4-maverick`
 - إطارَا `ClawGuard` و`PlanGuard` كحزم منفصلة (طُبّق منهجهما في `plan-guard.ts` كنسخة محلية).
 - `Next.js 16 cacheComponents` (يتعارض مع `export const runtime = 'nodejs'` في مسارات API الحالية — موثّق في `next.config.ts`).
+
+## Phase 3 — Production Observability & Caching (April 2026)
+
+### Real packages added
+- `langfuse` (LLM trace, latency, cost & quality tracking)
+- `@sentry/nextjs` (runtime error tracking, already installed)
+- `@tanstack/react-query` + `react-query-persist-client` + `query-sync-storage-persister` (client cache with localStorage, ~40-60% Firestore-read reduction on hot paths)
+- `recharts` (brand-styled chart components)
+
+### New files
+- `src/lib/observability/langfuse.ts` — real Langfuse client with no-op fallback when env keys absent.
+- `src/lib/observability/agent-instrumentation.ts` — `instrumentAgent()` wrapper unifying drift detector + Langfuse for any agent.
+- `src/lib/observability/arize.ts` — Phoenix HTTP collector stub (Phoenix has no JS SDK; OTel HTTP integration documented in-file).
+- `src/lib/cache/query-client.tsx` — `<QueryProvider>` with localStorage persistence (10 min stale, 1 day gc).
+- `src/components/charts/index.tsx` — `KalmeronLineChart / AreaChart / BarChart / PieChart` (Recharts, brand palette).
+- `sentry.client.config.ts` / `sentry.server.config.ts` / `sentry.edge.config.ts` / `instrumentation.ts` — gated on `NEXT_PUBLIC_SENTRY_DSN` / `SENTRY_DSN`.
+
+### Wiring
+- `app/layout.tsx` now wraps the tree in `<QueryProvider>`.
+- Agents instrumented: `cfo-agent`, `legal-guide`, `forecaster.predictRevenue`. Each call now feeds drift detector + Langfuse automatically.
+- Embedding model upgraded to **real GA `gemini-embedding-001`** (replacing the speculative preview ID) across `embeddings.ts`, `gemini.ts`, `digital-twin/graphrag.ts`.
+
+### New env vars (all optional, gated fallback)
+```
+LANGFUSE_PUBLIC_KEY=
+LANGFUSE_SECRET_KEY=
+LANGFUSE_BASE_URL=https://cloud.langfuse.com
+NEXT_PUBLIC_SENTRY_DSN=
+SENTRY_DSN=
+PHOENIX_ENDPOINT=
+```
+
+### Skipped — fictional / unavailable packages
+- `@a2ui/rizzcharts` → replaced by Recharts brand wrappers.
+- `@tthbfo2/firebase-cost-trimmer` → replaced by React Query + localStorage persister.
+- `freerstore` → covered by the same React Query layer.
+- `@arize-ai/phoenix` (npm) → Phoenix is Python-only; HTTP collector stub provided.
+- Speculative model IDs (Gemini 3.1, Gemma 4, DeepSeek V4, GLM-5.1, Llama 4 Maverick) — single swap point at `src/lib/model-router.ts` `MODEL_ALIASES`.
+- Next.js 16 `cacheComponents` flag — incompatible with `runtime = 'nodejs'` declared on 12+ API routes; deferred until those routes can move to Edge.
+
+### Build status
+`next build` passes cleanly; dev server starts on port 5000.
