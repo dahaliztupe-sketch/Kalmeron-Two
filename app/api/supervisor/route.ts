@@ -17,7 +17,8 @@ export async function POST(req: Request) {
     // For this demonstration, we return the result directly.
     return NextResponse.json({ result });
   } catch (error) {
-    console.error('Supervisor Engine Error:', error);
+    const { logger } = await import('@/src/lib/logger');
+    logger.error({ err: error }, 'Supervisor Engine Error');
     return NextResponse.json({ error: 'Failed to process coordinator task' }, { status: 500 });
   }
 }

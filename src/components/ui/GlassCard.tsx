@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 
 export function GlassCard({ children, className }: { children: React.ReactNode, className?: string }) {
   return (

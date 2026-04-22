@@ -13,7 +13,7 @@ import { db } from "@/lib/firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { toast } from "sonner";
 import ReactMarkdown from 'react-markdown';
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 
 export default function IdeaValidationPage() {
   const { user, dbUser } = useAuth();

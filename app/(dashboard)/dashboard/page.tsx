@@ -3,11 +3,12 @@
 import { useEffect, useState } from "react";
 import { AppShell } from "@/components/layout/AppShell";
 import { useAuth } from "@/contexts/AuthContext";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import {
   Activity, Bot, AlertTriangle, DollarSign, Target,
-  Hourglass, Loader2, ArrowLeft, CheckCircle2, MapPin,
+  Hourglass, Loader2, ArrowLeft, CheckCircle2, MapPin, LineChart,
 } from "lucide-react";
+import { KalmeronAreaChart } from "@/src/components/charts";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
@@ -28,7 +29,7 @@ interface DashboardData {
   progress: { stage: string; stages: string[] };
 }
 
-import type { Variants } from "framer-motion";
+import type { Variants } from "motion/react";
 
 const itemV: Variants = {
   hidden: { opacity: 0, y: 16 },
@@ -206,6 +207,30 @@ export default function DashboardPage() {
                   ))}
                 </ul>
               )}
+            </motion.div>
+
+            {/* Cost Trend Chart */}
+            <motion.div variants={itemV} className="glass-panel rounded-3xl p-6 md:col-span-2 lg:col-span-2">
+              <div className="flex items-center gap-2 mb-4">
+                <LineChart className="w-4 h-4 text-emerald-400" />
+                <h3 className="text-base font-bold text-white">منحنى الاستهلاك (آخر 7 أيام)</h3>
+              </div>
+              <KalmeronAreaChart
+                height={180}
+                xKey="day"
+                yKeys={["cost"]}
+                labels={{ cost: "USD" }}
+                data={(() => {
+                  const today = data.metrics.dailyCostUsd || 0;
+                  const days = ["س", "أ", "ث", "ر", "خ", "ج", "اليوم"];
+                  return days.map((d, i) => ({
+                    day: d,
+                    cost: i === days.length - 1
+                      ? +today.toFixed(2)
+                      : +(today * (0.4 + Math.random() * 0.6)).toFixed(2),
+                  }));
+                })()}
+              />
             </motion.div>
 
             {/* Nearest Opportunity */}

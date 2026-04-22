@@ -31,7 +31,8 @@ export async function POST(req: NextRequest) {
       agentsUsed: Object.keys(result.intermediateResults || {}),
     });
   } catch (error: any) {
-    console.error("Orchestrator error:", error);
+    const { logger } = await import('@/src/lib/logger');
+    logger.error({ err: error }, 'Orchestrator error');
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

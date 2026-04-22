@@ -8,7 +8,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { GlassCard } from '@/src/components/ui/GlassCard';
 import { BentoGrid, BentoCard } from '@/src/components/ui/BentoGrid';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 
 export default function Home() {
   const { user, dbUser, loading } = useAuth();

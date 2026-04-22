@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { AppShell } from "@/components/layout/AppShell";
 import { useAuth } from "@/contexts/AuthContext";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { Loader2, CheckCircle2, Clock, AlertCircle, PauseCircle, Hourglass } from "lucide-react";
 import { cn } from "@/lib/utils";
 

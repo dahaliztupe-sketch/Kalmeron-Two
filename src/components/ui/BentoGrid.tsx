@@ -1,6 +1,6 @@
 'use client';
 // @ts-nocheck
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { GlassCard } from './GlassCard';
 import { staggerContainer, fadeInUp } from '@/src/lib/motion-presets';
 

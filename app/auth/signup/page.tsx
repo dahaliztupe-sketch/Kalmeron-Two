@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { Loader2, Chrome } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";

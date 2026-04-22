@@ -16,7 +16,8 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ text: data.text });
   } catch (error) {
-    console.error('PDF Extraction Error:', error);
+    const { logger } = await import('@/src/lib/logger');
+    logger.error({ err: error }, 'PDF Extraction Error');
     return NextResponse.json({ error: 'Failed to extract PDF text' }, { status: 500 });
   }
 }

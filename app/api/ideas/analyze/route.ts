@@ -34,7 +34,8 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ result: resultText });
   } catch (error) {
-    console.error('[ideas/analyze] error:', error);
+    const { logger } = await import('@/src/lib/logger');
+    logger.error({ err: error }, '[ideas/analyze] error');
     return NextResponse.json(
       { error: 'Failed to analyze idea' },
       { status: 500 }

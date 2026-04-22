@@ -3,51 +3,18 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
-import { motion, type Variants } from "framer-motion";
-import {
-  LayoutDashboard, MessageSquareText, Map, Megaphone, TrendingUp,
-  Settings as SettingsIcon, Wallet, Users as UsersIcon, Heart, Scale,
-  FlaskConical, Trophy, ShieldAlert, Radar, LogOut,
-} from "lucide-react";
-
-type NavItem = { href: string; label: string; icon: any; exact?: boolean };
-
-const sectionMain: NavItem[] = [
-  { href: "/dashboard", label: "مركز القيادة", icon: LayoutDashboard, exact: true },
-  { href: "/chat", label: "المساعد", icon: MessageSquareText },
-  { href: "/roadmap", label: "المخطط", icon: Map },
-];
-
-const sectionDepartments: NavItem[] = [
-  { href: "/departments/marketing", label: "التسويق", icon: Megaphone },
-  { href: "/departments/sales", label: "المبيعات", icon: TrendingUp },
-  { href: "/departments/operations", label: "العمليات", icon: SettingsIcon },
-  { href: "/departments/finance", label: "المالية", icon: Wallet },
-  { href: "/departments/hr", label: "الموارد البشرية", icon: UsersIcon },
-  { href: "/departments/support", label: "خدمة العملاء", icon: Heart },
-  { href: "/departments/legal", label: "القانونية", icon: Scale },
-];
-
-const sectionTools: NavItem[] = [
-  { href: "/market-lab", label: "مختبر السوق", icon: FlaskConical },
-  { href: "/success-museum", label: "متحف النجاح", icon: Trophy },
-  { href: "/mistake-shield", label: "حارس الأخطاء", icon: ShieldAlert },
-  { href: "/opportunities", label: "رادار الفرص", icon: Radar },
-];
+import { motion, type Variants } from "motion/react";
+import { Settings as SettingsIcon, LogOut } from "lucide-react";
+import { NAV_SECTIONS, FOOTER_NAV, isActive, type NavItem } from "@/lib/navigation";
 
 const containerV: Variants = {
   hidden: { opacity: 0 },
-  show: { opacity: 1, transition: { staggerChildren: 0.04, delayChildren: 0.05 } },
+  show: { opacity: 1, transition: { staggerChildren: 0.03, delayChildren: 0.05 } },
 };
 const itemV: Variants = {
   hidden: { opacity: 0, x: 14 },
-  show: { opacity: 1, x: 0, transition: { duration: 0.25, ease: 'easeOut' } },
+  show: { opacity: 1, x: 0, transition: { duration: 0.25, ease: "easeOut" } },
 };
-
-function isActive(pathname: string, href: string, exact?: boolean) {
-  if (exact) return pathname === href;
-  return pathname === href || pathname.startsWith(href + '/');
-}
 
 function SectionHeading({ children }: { children: React.ReactNode }) {
   return (
@@ -90,44 +57,50 @@ export function Sidebar() {
 
   return (
     <aside className="w-64 hidden md:flex flex-col h-screen fixed top-0 right-0 z-40 backdrop-blur-xl bg-dark-surface/40 border-l border-white/10">
-      {/* Brand */}
       <Link href="/dashboard" className="px-6 py-6 flex items-center justify-center border-b border-white/[0.05]">
         <img src="/brand/logo.svg" alt="Kalmeron Two" className="h-9 w-auto" />
       </Link>
 
-      {/* Nav */}
       <motion.nav
         variants={containerV}
         initial="hidden"
         animate="show"
         className="flex-1 overflow-y-auto scrollbar-hide px-3 pb-4"
       >
-        <SectionHeading>الرئيسي</SectionHeading>
-        <div className="space-y-0.5">
-          {sectionMain.map((it) => <NavLink key={it.href} item={it} pathname={pathname} />)}
-        </div>
-
-        <SectionHeading>الأقسام السبعة</SectionHeading>
-        <div className="space-y-0.5">
-          {sectionDepartments.map((it) => <NavLink key={it.href} item={it} pathname={pathname} />)}
-        </div>
-
-        <SectionHeading>الأدوات</SectionHeading>
-        <div className="space-y-0.5">
-          {sectionTools.map((it) => <NavLink key={it.href} item={it} pathname={pathname} />)}
-        </div>
+        {NAV_SECTIONS.map((section) => (
+          <div key={section.heading}>
+            <SectionHeading>{section.heading}</SectionHeading>
+            <div className="space-y-0.5">
+              {section.items.map((it) => (
+                <NavLink key={it.href} item={it} pathname={pathname} />
+              ))}
+            </div>
+          </div>
+        ))}
       </motion.nav>
 
-      {/* Footer actions */}
       <div className="p-3 border-t border-white/[0.05] space-y-1">
+        {FOOTER_NAV.map((it) => {
+          const Icon = it.icon;
+          return (
+            <Link
+              key={it.href}
+              href={it.href}
+              className={cn(
+                "flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all",
+                isActive(pathname, it.href)
+                  ? "text-brand-gold bg-white/[0.04]"
+                  : "text-text-secondary hover:text-white hover:bg-white/[0.03]"
+              )}
+            >
+              <Icon className="w-4 h-4 shrink-0" />
+              <span>{it.label}</span>
+            </Link>
+          );
+        })}
         <Link
-          href="/profile"
-          className={cn(
-            "flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all",
-            isActive(pathname, '/profile')
-              ? "text-brand-gold bg-white/[0.04]"
-              : "text-text-secondary hover:text-white hover:bg-white/[0.03]"
-          )}
+          href="/profile?tab=settings"
+          className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-semibold text-text-secondary hover:text-white hover:bg-white/[0.03] transition-all"
         >
           <SettingsIcon className="w-4 h-4 shrink-0" />
           <span>الإعدادات</span>

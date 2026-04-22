@@ -4,36 +4,18 @@ import React, { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
-import {
-  Globe, X, LogOut, LayoutDashboard, MessageSquareText, Map,
-  Megaphone, TrendingUp, Settings as SettingsIcon, Wallet,
-  Users as UsersIcon, Heart, Scale, FlaskConical, Trophy,
-  ShieldAlert, Radar,
-} from "lucide-react";
+import { Globe, X, LogOut } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "motion/react";
 import { Sidebar } from "./Sidebar";
 import { Footer } from "./Footer";
 import Loading from "@/app/loading";
+import { FLAT_NAV as ALL_NAV } from "@/lib/navigation";
+import dynamic from "next/dynamic";
 
-const ALL_NAV = [
-  { href: "/dashboard", label: "مركز القيادة", icon: LayoutDashboard },
-  { href: "/chat", label: "المساعد", icon: MessageSquareText },
-  { href: "/roadmap", label: "المخطط", icon: Map },
-  { href: "/departments/marketing", label: "التسويق", icon: Megaphone },
-  { href: "/departments/sales", label: "المبيعات", icon: TrendingUp },
-  { href: "/departments/operations", label: "العمليات", icon: SettingsIcon },
-  { href: "/departments/finance", label: "المالية", icon: Wallet },
-  { href: "/departments/hr", label: "الموارد البشرية", icon: UsersIcon },
-  { href: "/departments/support", label: "خدمة العملاء", icon: Heart },
-  { href: "/departments/legal", label: "القانونية", icon: Scale },
-  { href: "/market-lab", label: "مختبر السوق", icon: FlaskConical },
-  { href: "/success-museum", label: "متحف النجاح", icon: Trophy },
-  { href: "/mistake-shield", label: "حارس الأخطاء", icon: ShieldAlert },
-  { href: "/opportunities", label: "رادار الفرص", icon: Radar },
-];
+const Logo3D = dynamic(() => import("@/components/3d/Logo3D"), { ssr: false });
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const { user, dbUser, loading, signOut: logout } = useAuth();
@@ -105,7 +87,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 <line x1="4" x2="20" y1="6" y2="6" /><line x1="4" x2="20" y1="12" y2="12" /><line x1="4" x2="20" y1="18" y2="18" />
               </svg>
             </Button>
-            <img src="/brand/logo.svg" alt="Logo" className="h-7 w-auto md:hidden" />
+            <div className="md:hidden">
+              <Logo3D size={40} />
+            </div>
           </div>
 
           <div className="flex items-center gap-3">

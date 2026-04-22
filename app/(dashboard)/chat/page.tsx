@@ -14,7 +14,7 @@ import { Loader2, Send, Paperclip, X, Square } from "lucide-react";
 import { cn } from "@/lib/utils";
 import ReactMarkdown from "react-markdown";
 import { toast } from "sonner";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { ThoughtChain, type Phase } from "@/components/chat/ThoughtChain";
 
 const suggestionChips = [
