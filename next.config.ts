@@ -43,6 +43,9 @@ const nextConfig: NextConfig = {
   ] : [],
   experimental: {
     optimizePackageImports: ['lucide-react', '@radix-ui/react-icons'],
+    // ملاحظة: cacheComponents معطّل عمداً — يتعارض مع `export const runtime = 'nodejs'`
+    // المستخدم في عدة مسارات API تحتاج Node runtime (Firebase Admin SDK، WebSockets).
+    // لتفعيله مستقبلاً يجب نقل تلك المسارات إلى edge أو إزالة إعلان runtime.
   },
   logging: {
     fetches: {

@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { AppShell } from "@/components/layout/AppShell";
 import { Megaphone, TrendingUp, Settings, Wallet, Users, Heart, Scale, Activity, Bot, FileText } from "lucide-react";
 import Link from "next/link";
+import { cn } from "@/lib/utils";
 
 const DEPARTMENTS = {
   marketing: {
@@ -140,23 +141,53 @@ export default async function DepartmentPage({ params }: { params: Promise<{ dep
           <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
             <Users className="w-5 h-5 text-brand-gold" /> الأعضاء
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {dep.agents.map((agent) => (
-              <div key={agent.id} className="glass-panel rounded-2xl p-5 hover:border-white/20 transition-all">
-                <div className="flex items-start gap-3 mb-3">
-                  <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${dep.color} opacity-80 flex items-center justify-center shrink-0`}>
-                    <Bot className="w-5 h-5 text-white" />
+          {/* Bento Grid: البطاقة الأولى مزدوجة الحجم لإبراز قائد القسم */}
+          <div className="grid grid-cols-2 md:grid-cols-4 auto-rows-[140px] gap-4">
+            {dep.agents.map((agent, i) => {
+              const isLead = i === 0;
+              const isWide = i % 5 === 3;
+              return (
+                <div
+                  key={agent.id}
+                  className={cn(
+                    "glass-panel rounded-2xl p-5 hover:border-white/20 transition-all relative overflow-hidden flex flex-col",
+                    isLead && "col-span-2 row-span-2",
+                    isWide && "col-span-2"
+                  )}
+                >
+                  {isLead && (
+                    <div className={`absolute -top-16 -left-16 w-48 h-48 rounded-full blur-3xl opacity-20 bg-gradient-to-br ${dep.color}`} />
+                  )}
+                  <div className="relative flex items-start gap-3 mb-3">
+                    <div className={cn(
+                      "rounded-xl bg-gradient-to-br opacity-80 flex items-center justify-center shrink-0",
+                      dep.color,
+                      isLead ? "w-14 h-14" : "w-10 h-10"
+                    )}>
+                      <Bot className={isLead ? "w-7 h-7 text-white" : "w-5 h-5 text-white"} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <p className={cn("font-bold text-white truncate", isLead ? "text-base" : "text-sm")}>
+                          {agent.name}
+                        </p>
+                        {isLead && (
+                          <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-brand-gold/15 text-brand-gold border border-brand-gold/30 shrink-0">
+                            قائد القسم
+                          </span>
+                        )}
+                      </div>
+                      <p className={cn("text-text-secondary leading-relaxed", isLead ? "text-sm mt-1" : "text-xs mt-0.5")}>
+                        {agent.role}
+                      </p>
+                    </div>
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-bold text-white text-sm truncate">{agent.name}</p>
-                    <p className="text-xs text-text-secondary mt-0.5 leading-relaxed">{agent.role}</p>
+                  <div className="mt-auto text-[10px] text-text-secondary/60 font-mono uppercase tracking-wider">
+                    {agent.id}
                   </div>
                 </div>
-                <div className="text-[10px] text-text-secondary/60 font-mono uppercase tracking-wider">
-                  {agent.id}
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </section>
 

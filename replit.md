@@ -235,3 +235,22 @@ fintech, ecommerce, women, ai_ml, sme, young, agritech.
 - All `NEXT_PUBLIC_FIREBASE_*` vars
 - `FIREBASE_SERVICE_ACCOUNT_KEY` (for admin features + task persistence)
 - `ADMIN_EMAILS` (comma-separated; restricts /admin access)
+
+## Radical Refinement Session (Phase 2)
+**SSE Thought Streaming** — `/api/chat` الآن يبثّ مراحل تفكير LangGraph الحقيقية (`event: phase`) ودلتا النص (`event: delta`) عبر SSE. واجهة المحادثة تستهلكها مباشرة بدون `useChat`.
+
+**Stop Generating** — زرّ إيقاف أحمر يظهر أثناء التوليد، يلغي الطلب عبر `AbortController` ويحفظ النص الجزئي الذي وصل في Firestore.
+
+**Hybrid Model Router** — `src/lib/model-router.ts` يصنّف المهام إلى 5 مستويات (trivial/simple/medium/complex/critical) ويوجّهها إلى نقاط نهاية Gemini المناسبة (`gemini-2.5-flash-lite` / `flash` / `pro`)، مع جدول تكلفة وتقدير مالي. أسماء النماذج معزولة في `MODEL_ALIASES` لتسهيل التبديل لاحقاً (Gemma 4 / DeepSeek V4 / GLM-5.1) عند توفّر نقاط نهايتها.
+
+**Drift Detector** — `src/lib/observability/drift-detector.ts` يخزّن عيّنات سلوك الوكلاء في `agent_drift/` ويحسب درجة انجراف 0..1 لكل وكيل بناءً على نسبة النجاح، زمن الاستجابة، وتركّز استخدام الأدوات. مكشوف عبر `/api/admin/drift` ومدمج في `/api/admin/governance`.
+
+**PlanGuard** — `src/lib/security/plan-guard.ts` يطبّق دفاع متعدّد الطبقات ضد حقن الأوامر غير المباشر: قائمة بيضاء للأدوات لكل نية، فحص استدعاء كل أداة، ورفض الوسائط المنسوخة من مصادر غير موثوقة (RAG/PDF/الويب).
+
+**Bento Grid** — صفحات الأقسام تستخدم تخطيط "بنتو" (بطاقة قائد القسم مزدوجة الحجم + بطاقات عرض ثنائي متناوبة).
+
+**حزم/نماذج لم تُنفَّذ** (لعدم توفّرها كحزم npm/نقاط نهاية حقيقية وقت العمل):
+- `@a2ui/rizzcharts`, `@tthbfo2/firebase-cost-trimmer`
+- نماذج `gemini-3.1-*`, `gemma-4-*`, `deepseek-v4`, `glm-5.1`, `llama-4-maverick`
+- إطارَا `ClawGuard` و`PlanGuard` كحزم منفصلة (طُبّق منهجهما في `plan-guard.ts` كنسخة محلية).
+- `Next.js 16 cacheComponents` (يتعارض مع `export const runtime = 'nodejs'` في مسارات API الحالية — موثّق في `next.config.ts`).

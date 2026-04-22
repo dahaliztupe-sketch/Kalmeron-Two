@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Send, Paperclip, X } from "lucide-react";
+import { Loader2, Send, Paperclip, X, Square } from "lucide-react";
 import { cn } from "@/lib/utils";
 import ReactMarkdown from "react-markdown";
 import { toast } from "sonner";
@@ -219,6 +219,21 @@ export default function ChatPage() {
     }
   };
 
+  const stopGenerating = useCallback(() => {
+    if (!abortRef.current) return;
+    abortRef.current.abort();
+    abortRef.current = null;
+    // الرسالة الجزئية محفوظة بالفعل في messages بفضل onDelta؛
+    // نُجبر فقط على إنهاء حالة التحميل ونحفظ ما وصل في Firestore.
+    setIsLoading(false);
+    setActivePhases([]);
+    setMessages((prev) => {
+      void saveChatToFirestore(prev);
+      return prev;
+    });
+    toast.message("تم إيقاف التوليد. الجزء الذي وصل تم حفظه.");
+  }, [saveChatToFirestore]);
+
   const onFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (isLoading) return;
@@ -376,13 +391,26 @@ export default function ChatPage() {
               disabled={isLoading}
             />
 
-            <Button
-              type="submit"
-              disabled={(!input.trim() && !pdfContext) || isLoading}
-              className="h-12 w-12 rounded-xl bg-gradient-to-tr from-[#D4AF37] to-[#0A66C2] text-white hover:opacity-90 shrink-0 border-none disabled:opacity-50"
-            >
-              {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Send className="h-5 w-5" />}
-            </Button>
+            {isLoading ? (
+              <Button
+                type="button"
+                onClick={stopGenerating}
+                className="h-12 w-12 rounded-xl bg-red-500/90 hover:bg-red-500 text-white shrink-0 border-none"
+                aria-label="إيقاف التوليد"
+                title="إيقاف التوليد"
+              >
+                <Square className="h-4 w-4 fill-current" />
+              </Button>
+            ) : (
+              <Button
+                type="submit"
+                disabled={(!input.trim() && !pdfContext)}
+                className="h-12 w-12 rounded-xl bg-gradient-to-tr from-[#D4AF37] to-[#0A66C2] text-white hover:opacity-90 shrink-0 border-none disabled:opacity-50"
+                aria-label="إرسال"
+              >
+                <Send className="h-5 w-5" />
+              </Button>
+            )}
           </form>
           <div className="mt-2 text-[10px] text-center text-neutral-500">
             الذكاء الاصطناعي قد يخطئ أحياناً؛ استشر خبيراً قبل اتخاذ قرارات مصيرية.
