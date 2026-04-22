@@ -251,17 +251,21 @@ export default function ChatPage() {
         dir="rtl"
       >
         <div className="flex items-center gap-3 p-4 border-b border-white/10 bg-black/20 text-white backdrop-blur-md">
-          <Avatar className="h-11 w-11 border border-white/20 shrink-0">
+          <Avatar className="h-11 w-11 border border-brand-gold/40 shrink-0 ring-2 ring-brand-gold/20">
             <AvatarImage src="https://api.dicebear.com/7.x/bottts/svg?seed=Kalmeron" />
-            <AvatarFallback>K</AvatarFallback>
+            <AvatarFallback className="bg-brand-gold/20 text-brand-gold font-bold">K</AvatarFallback>
           </Avatar>
-          <div className="flex flex-col leading-tight">
-            <h2 className="font-extrabold text-2xl text-brand-gold flex items-center gap-2">
-              <span aria-hidden>🤖</span>
-              <span>كلميرون</span>
-            </h2>
-            <span className="text-xs text-neutral-400 mt-0.5">الوكيل الذكي</span>
+          <div className="flex flex-col">
+            <h2 className="font-bold text-lg leading-tight text-brand-gold">كلميرون</h2>
+            <span className="text-xs text-neutral-400 leading-tight mt-1">المستشار الذكي</span>
           </div>
+          <span className="ms-auto inline-flex items-center gap-1.5 text-[11px] text-emerald-400/90">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-60" />
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400" />
+            </span>
+            متصل
+          </span>
         </div>
 
         <ScrollArea className="flex-1 p-4 md:p-6 bg-transparent">
@@ -287,19 +291,19 @@ export default function ChatPage() {
                 <div
                   key={m.id}
                   className={cn(
-                    "flex gap-3 w-full",
-                    m.role === "user" ? "flex-row justify-start" : "flex-row-reverse justify-start"
+                    "flex gap-3 w-full items-end",
+                    m.role === "user" ? "justify-start flex-row" : "justify-end flex-row-reverse"
                   )}
                 >
                   <Avatar className="h-8 w-8 shrink-0 border border-white/10">
                     {m.role === "user" ? (
-                      <AvatarFallback className="bg-black/50 text-white">
+                      <AvatarFallback className="bg-brand-gold/20 text-brand-gold font-semibold">
                         {user?.displayName?.charAt(0) || "U"}
                       </AvatarFallback>
                     ) : (
                       <>
                         <AvatarImage src="https://api.dicebear.com/7.x/bottts/svg?seed=Kalmeron" />
-                        <AvatarFallback>K</AvatarFallback>
+                        <AvatarFallback className="bg-brand-blue/20 text-brand-blue">K</AvatarFallback>
                       </>
                     )}
                   </Avatar>
@@ -307,8 +311,8 @@ export default function ChatPage() {
                     className={cn(
                       "rounded-2xl px-4 py-3 max-w-[85%] text-sm shadow-sm border",
                       m.role === "user"
-                        ? "bg-brand-gold/20 border-brand-gold/30 text-white rounded-tr-none mr-auto"
-                        : "bg-brand-blue/20 border-brand-blue/30 text-neutral-100 rounded-tl-none ml-auto"
+                        ? "bg-brand-gold/15 border-brand-gold/30 text-white rounded-tr-md"
+                        : "bg-brand-blue/15 border-brand-blue/30 text-neutral-100 rounded-tl-md"
                     )}
                   >
                     {m.role === "assistant" && (m.phases?.length || isAssistantStreaming) ? (
