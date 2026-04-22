@@ -1,4 +1,4 @@
-modules = ["web", "python-3.12", "nodejs-22"]
+modules = ["web", "python-3.12", "nodejs-20"]
 [agent]
 expertMode = true
 
@@ -71,3 +71,8 @@ NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET = "kalmeron-two.firebasestorage.app"
 NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID = "686711690176"
 NEXT_PUBLIC_FIREBASE_APP_ID = "1:686711690176:web:aef254de2ec4ea357ee25"
 NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID = "G-GLX7PM8VCE"
+
+[deployment]
+deploymentTarget = "autoscale"
+run = ["node", "./dist/index.cjs"]
+build = ["npm", "run", "build"]
