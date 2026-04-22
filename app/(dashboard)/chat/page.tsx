@@ -1,7 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
-import { useChat } from "@ai-sdk/react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { AppShell } from "@/components/layout/AppShell";
 import { useAuth } from "@/contexts/AuthContext";
 import { db } from "@/lib/firebase";
@@ -13,10 +12,10 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Loader2, Send, Paperclip, X } from "lucide-react";
 import { cn } from "@/lib/utils";
-import ReactMarkdown from 'react-markdown';
+import ReactMarkdown from "react-markdown";
 import { toast } from "sonner";
-import { motion } from 'framer-motion';
-import { ThoughtChain } from '@/components/chat/ThoughtChain';
+import { motion } from "framer-motion";
+import { ThoughtChain, type Phase } from "@/components/chat/ThoughtChain";
 
 const suggestionChips = [
   { label: "حلل فكرتي الاستثمارية", prompt: "هل يمكنك إجراء تحليل شامل وفني لفكرتي المستندة إلى السوق المصري؟" },
@@ -25,28 +24,24 @@ const suggestionChips = [
   { label: "اكتشاف فرص التمويل", prompt: "أخبرني عن أحدث جولات التمويل، مسابقات ريادة الأعمال، والفعاليات القادمة في مصر." },
 ];
 
+type ChatMessage = {
+  id: string;
+  role: "user" | "assistant";
+  content: string;
+  phases?: Phase[];
+};
+
 export default function ChatPage() {
   const { user } = useAuth();
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [activePhases, setActivePhases] = useState<Phase[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [pdfContext, setPdfContext] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const { messages, sendMessage, setMessages, status } = useChat({
-    api: "/api/chat",
-    onFinish: async (message: any) => {
-      if (user) {
-        await saveChatToFirestore([...messages, message]);
-      }
-    },
-    onError: (err: Error) => {
-      console.error(err);
-      toast.error("حدث خطأ أثناء التواصل مع كلميرون.");
-    },
-  } as any);
-
-  const isLoading = status === 'streaming' || status === 'submitted';
+  const abortRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
     if (!user) return;
@@ -55,36 +50,144 @@ export default function ChatPage() {
       const chatSnap = await getDoc(chatRef);
       if (chatSnap.exists()) {
         const data = chatSnap.data();
-        if (data.messages) setMessages(data.messages);
+        if (Array.isArray(data.messages)) setMessages(data.messages as ChatMessage[]);
       }
     };
     loadChat();
-  }, [user, setMessages]);
+  }, [user]);
 
   useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollIntoView({ behavior: "smooth" });
-    }
-  }, [messages]);
+    if (scrollRef.current) scrollRef.current.scrollIntoView({ behavior: "smooth" });
+  }, [messages, activePhases]);
 
-  const saveChatToFirestore = async (updatedMessages: any[]) => {
-    if (!user) return;
-    const chatRef = doc(db, "users", user.uid, "chat_history", "default-chat");
-    const chatSnap = await getDoc(chatRef);
-    const payload = {
-      userId: user.uid,
-      messages: updatedMessages.map(m => ({
-        id: m.id,
-        role: m.role,
-        content: m.content,
-        createdAt: new Date(),
-      })),
-      updated_at: serverTimestamp(),
+  const saveChatToFirestore = useCallback(
+    async (updatedMessages: ChatMessage[]) => {
+      if (!user) return;
+      const chatRef = doc(db, "users", user.uid, "chat_history", "default-chat");
+      const chatSnap = await getDoc(chatRef);
+      const payload = {
+        userId: user.uid,
+        messages: updatedMessages.map((m) => ({
+          id: m.id,
+          role: m.role,
+          content: m.content,
+          phases: m.phases || [],
+          createdAt: new Date(),
+        })),
+        updated_at: serverTimestamp(),
+      };
+      if (chatSnap.exists()) await updateDoc(chatRef, payload);
+      else await setDoc(chatRef, { ...payload, created_at: serverTimestamp() });
+    },
+    [user]
+  );
+
+  const sendMessage = async (content: string) => {
+    const userMsg: ChatMessage = {
+      id: `u-${Date.now()}`,
+      role: "user",
+      content,
     };
-    if (chatSnap.exists()) {
-      await updateDoc(chatRef, payload);
-    } else {
-      await setDoc(chatRef, { ...payload, created_at: serverTimestamp() });
+    const assistantId = `a-${Date.now()}`;
+    const baseMessages = [...messages, userMsg];
+    setMessages([...baseMessages, { id: assistantId, role: "assistant", content: "", phases: [] }]);
+    setIsLoading(true);
+    setActivePhases([]);
+
+    const controller = new AbortController();
+    abortRef.current = controller;
+
+    try {
+      const token = user ? await user.getIdToken().catch(() => null) : null;
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        signal: controller.signal,
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({
+          messages: baseMessages.map((m) => ({ role: m.role, content: m.content })),
+          isGuest: !user,
+          threadId: user?.uid ? `thread-${user.uid}` : undefined,
+        }),
+      });
+
+      if (!res.ok || !res.body) {
+        const errText = await res.text().catch(() => "");
+        throw new Error(errText || `HTTP ${res.status}`);
+      }
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+      let collectedText = "";
+      let collectedPhases: Phase[] = [];
+
+      const handleEvent = (event: string, data: any) => {
+        if (event === "phase") {
+          collectedPhases = [...collectedPhases, { id: data.id, label: data.label }];
+          setActivePhases(collectedPhases);
+        } else if (event === "delta") {
+          collectedText += data.text || "";
+          setMessages((prev) =>
+            prev.map((m) =>
+              m.id === assistantId ? { ...m, content: collectedText, phases: collectedPhases } : m
+            )
+          );
+        } else if (event === "done") {
+          setMessages((prev) => {
+            const next = prev.map((m) =>
+              m.id === assistantId ? { ...m, content: collectedText, phases: collectedPhases } : m
+            );
+            void saveChatToFirestore(next);
+            return next;
+          });
+        } else if (event === "error") {
+          toast.error(data.message || "حدث خطأ أثناء التواصل مع كلميرون.");
+        }
+      };
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+
+        let idx;
+        while ((idx = buffer.indexOf("\n\n")) !== -1) {
+          const block = buffer.slice(0, idx);
+          buffer = buffer.slice(idx + 2);
+          if (!block.trim()) continue;
+          let event = "message";
+          let dataStr = "";
+          for (const line of block.split("\n")) {
+            if (line.startsWith("event:")) event = line.slice(6).trim();
+            else if (line.startsWith("data:")) dataStr += line.slice(5).trim();
+          }
+          if (!dataStr) continue;
+          try {
+            handleEvent(event, JSON.parse(dataStr));
+          } catch {
+            /* ignore malformed event */
+          }
+        }
+      }
+    } catch (err: any) {
+      if (err?.name !== "AbortError") {
+        console.error(err);
+        toast.error("حدث خطأ أثناء التواصل مع كلميرون.");
+        setMessages((prev) =>
+          prev.map((m) =>
+            m.id === assistantId
+              ? { ...m, content: "عذراً، كالميرون بيواجه مشكلة فنية حالياً." }
+              : m
+          )
+        );
+      }
+    } finally {
+      setIsLoading(false);
+      setActivePhases([]);
+      abortRef.current = null;
     }
   };
 
@@ -118,19 +221,22 @@ export default function ChatPage() {
 
   const onFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (isLoading) return;
     if (!input.trim() && !pdfContext) return;
     const messageContent = pdfContext
       ? `[سياق من ملف PDF]: ${pdfContext}\n\n[رسالة المستخدم]: ${input}`
       : input;
-    sendMessage({ role: 'user', text: messageContent } as any);
+    void sendMessage(messageContent);
     setInput("");
     if (pdfContext) setPdfContext(null);
   };
 
   return (
     <AppShell>
-      <div className="flex flex-col h-[calc(100vh-100px)] max-w-4xl mx-auto glass-panel rounded-3xl shadow-2xl overflow-hidden relative" dir="rtl">
-        {/* Header */}
+      <div
+        className="flex flex-col h-[calc(100vh-100px)] max-w-4xl mx-auto glass-panel rounded-3xl shadow-2xl overflow-hidden relative"
+        dir="rtl"
+      >
         <div className="flex items-center justify-between p-4 border-b border-white/10 bg-black/20 text-white backdrop-blur-md">
           <div className="flex items-center gap-3">
             <Avatar className="h-10 w-10 border border-white/20">
@@ -144,7 +250,6 @@ export default function ChatPage() {
           </div>
         </div>
 
-        {/* Chat Area */}
         <ScrollArea className="flex-1 p-4 md:p-6 bg-transparent">
           <div className="space-y-6">
             {messages.length === 0 && (
@@ -161,12 +266,9 @@ export default function ChatPage() {
               </div>
             )}
 
-            {messages.map((m) => {
-              const textContent = (m.parts ?? [])
-                .filter((p: any) => p.type === 'text')
-                .map((p: any) => p.text)
-                .join('');
-
+            {messages.map((m, idx) => {
+              const isLast = idx === messages.length - 1;
+              const isAssistantStreaming = isLoading && isLast && m.role === "assistant";
               return (
                 <div
                   key={m.id}
@@ -174,7 +276,9 @@ export default function ChatPage() {
                 >
                   <Avatar className="h-8 w-8 shrink-0 border border-white/10">
                     {m.role === "user" ? (
-                      <AvatarFallback className="bg-black/50 text-white">{user?.displayName?.charAt(0) || "U"}</AvatarFallback>
+                      <AvatarFallback className="bg-black/50 text-white">
+                        {user?.displayName?.charAt(0) || "U"}
+                      </AvatarFallback>
                     ) : (
                       <>
                         <AvatarImage src="https://api.dicebear.com/7.x/bottts/svg?seed=Kalmeron" />
@@ -190,40 +294,30 @@ export default function ChatPage() {
                         : "glass-panel text-neutral-200 rounded-tl-none border border-white/10"
                     )}
                   >
-                    <div className="prose prose-sm prose-invert max-w-none" dir="auto">
-                      {m.role === 'assistant' && isLoading && m.id === messages[messages.length - 1]?.id ? (
-                        <motion.div
-                          animate={{ opacity: [0.5, 1] }}
-                          transition={{ duration: 0.5, repeat: Infinity, repeatType: "reverse" }}
-                        >
-                          <ReactMarkdown>{textContent}</ReactMarkdown>
-                        </motion.div>
-                      ) : (
+                    {m.role === "assistant" && (m.phases?.length || isAssistantStreaming) ? (
+                      <div className="mb-3 pb-3 border-b border-white/10">
+                        <ThoughtChain
+                          phases={isAssistantStreaming ? activePhases : m.phases}
+                          done={!isAssistantStreaming}
+                        />
+                      </div>
+                    ) : null}
+                    {m.content && (
+                      <div className="prose prose-sm prose-invert max-w-none" dir="auto">
                         <motion.div initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }}>
-                          <ReactMarkdown>{textContent}</ReactMarkdown>
+                          <ReactMarkdown>{m.content}</ReactMarkdown>
                         </motion.div>
-                      )}
-                    </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               );
             })}
 
-            {isLoading && messages[messages.length - 1]?.role !== 'assistant' && (
-              <div className="flex gap-3">
-                <Avatar className="h-8 w-8 shrink-0 border border-white/10">
-                  <AvatarImage src="https://api.dicebear.com/7.x/bottts/svg?seed=Kalmeron" />
-                </Avatar>
-                <div className="glass-panel text-neutral-200 border border-white/10 rounded-2xl rounded-tl-none px-4 py-3 shadow-sm min-w-[220px]">
-                  <ThoughtChain />
-                </div>
-              </div>
-            )}
             <div ref={scrollRef} />
           </div>
         </ScrollArea>
 
-        {/* Footer / Input Area */}
         <div className="p-4 border-t border-white/10 bg-black/40 backdrop-blur-md">
           <div className="flex flex-wrap gap-2 mb-4 justify-center">
             {suggestionChips.map((chip) => (
@@ -242,9 +336,14 @@ export default function ChatPage() {
             <div className="mb-3 p-2 glass-panel border border-[#0A66C2]/50 rounded-lg flex items-center justify-between text-xs text-[#0A66C2]">
               <span className="flex items-center gap-2">
                 <Paperclip className="h-3 w-3" />
-                ملف PDF مرقّق كلياً (سيتم إرسال المحتوى مع الرسالة القادمة)
+                ملف PDF مرفّق (سيتم إرسال المحتوى مع الرسالة القادمة)
               </span>
-              <Button variant="ghost" size="icon" className="h-5 w-5 hover:bg-white/10" onClick={() => setPdfContext(null)}>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-5 w-5 hover:bg-white/10"
+                onClick={() => setPdfContext(null)}
+              >
                 <X className="h-3 w-3" />
               </Button>
             </div>
