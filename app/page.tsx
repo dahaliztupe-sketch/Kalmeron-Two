@@ -5,6 +5,12 @@ import { useRouter } from 'next/navigation';
 import { motion } from 'motion/react';
 import { Search, Sparkles, LogIn, UserPlus } from 'lucide-react';
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
+
+const AuroraBackground = dynamic(() => import('@/components/3d/AuroraBackground'), {
+  ssr: false,
+  loading: () => null,
+});
 
 export default function Home() {
   const [query, setQuery] = useState('');
@@ -43,18 +49,11 @@ export default function Home() {
         </div>
       </nav>
 
-      {/* Aurora Background Effect */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-40">
-        <motion.div 
-          animate={{ x: [0, 50, 0], y: [0, -50, 0] }}
-          transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
-          className="absolute top-[-10%] right-[-10%] w-[50vw] h-[50vw] bg-purple-600/30 blur-[120px] rounded-full"
-        />
-        <motion.div 
-          animate={{ x: [0, -50, 0], y: [0, 50, 0] }}
-          transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
-          className="absolute bottom-[-10%] left-[-10%] w-[60vw] h-[60vw] bg-blue-600/20 blur-[120px] rounded-full"
-        />
+      {/* Aurora Background — R3F shader (gold/blue) with CSS fallback */}
+      <AuroraBackground className="opacity-70" />
+      <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-25 -z-10">
+        <div className="absolute top-[-10%] right-[-10%] w-[50vw] h-[50vw] bg-amber-400/20 blur-[120px] rounded-full" />
+        <div className="absolute bottom-[-10%] left-[-10%] w-[60vw] h-[60vw] bg-blue-600/20 blur-[120px] rounded-full" />
       </div>
 
       {/* Hero Section */}

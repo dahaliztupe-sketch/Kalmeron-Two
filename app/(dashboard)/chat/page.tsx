@@ -317,6 +317,13 @@ export default function ChatPage() {
                         />
                       </div>
                     ) : null}
+                    {isAssistantStreaming && !m.content && (
+                      <div className="flex items-center gap-1.5 py-1" aria-label="جارٍ الكتابة">
+                        <span className="w-2 h-2 rounded-full bg-[#D4AF37] animate-soft-pulse" />
+                        <span className="w-2 h-2 rounded-full bg-[#D4AF37] animate-soft-pulse [animation-delay:200ms]" />
+                        <span className="w-2 h-2 rounded-full bg-[#D4AF37] animate-soft-pulse [animation-delay:400ms]" />
+                      </div>
+                    )}
                     {m.content && (
                       <div className="prose prose-sm prose-invert max-w-none" dir="auto">
                         <motion.div initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }}>

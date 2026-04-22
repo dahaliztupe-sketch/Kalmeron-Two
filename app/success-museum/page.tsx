@@ -7,6 +7,7 @@ import { Trophy, ArrowLeft, Star, TrendingUp } from "lucide-react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { Spotlight } from "@/components/effects/Spotlight";
 
 export default function SuccessPage() {
   const { language, t } = useLanguage();
@@ -45,7 +46,11 @@ export default function SuccessPage() {
 
   return (
     <AppShell>
-      <div className="max-w-5xl mx-auto space-y-10 p-4 text-white" dir={dir}>
+      <div className="max-w-5xl mx-auto space-y-10 p-4 text-white relative overflow-hidden" dir={dir}>
+        <Spotlight
+          className="-top-40 left-0 md:left-60 md:-top-20 h-[80vh] w-[120vw]"
+          fill="#a855f7"
+        />
         <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}>
           <h1 className="text-4xl font-black tracking-tight mb-4 flex items-center gap-3 text-purple-400">
             <Star className="h-10 w-10 text-purple-400" />

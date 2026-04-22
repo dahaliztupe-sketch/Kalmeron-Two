@@ -32,6 +32,8 @@
     "@opentelemetry/sdk-trace-base": "^2.7.0",
     "@playwright/test": "^1.59.1",
     "@react-pdf/renderer": "^4.5.1",
+    "@react-three/drei": "^10.7.7",
+    "@react-three/fiber": "^9.6.0",
     "@sentry/nextjs": "^10.49.0",
     "@tanstack/query-sync-storage-persister": "^5.99.2",
     "@tanstack/react-query": "^5.99.2",
@@ -72,6 +74,7 @@
     "sonner": "^2.0.7",
     "stripe": "^22.0.2",
     "tailwind-merge": "^3.5.0",
+    "three": "^0.184.0",
     "vitest": "^4.1.4",
     "xss": "^1.0.15",
     "zod": "^3.25.76"
