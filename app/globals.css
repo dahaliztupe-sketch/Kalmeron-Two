@@ -320,6 +320,32 @@
 .glow-pulse { animation: glow-pulse 4s ease-in-out infinite; }
 
 /* ───────────────── Logo halo ───────────────── */
+@keyframes draw-path {
+  from { stroke-dashoffset: 1; }
+  to   { stroke-dashoffset: 0; }
+}
+.draw-path-anim {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation-name: draw-path;
+  animation-duration: 1.6s;
+  animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1);
+  animation-fill-mode: forwards;
+}
+@media (prefers-reduced-motion: reduce) {
+  .draw-path-anim {
+    animation: none;
+    stroke-dashoffset: 0;
+  }
+}
+.draw-path-anim.delayed {
+  animation-delay: 0.2s;
+}
+.draw-path-anim.loop {
+  animation: draw-path 1.6s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+  animation-direction: alternate;
+}
+
 @keyframes logo-halo {
   0%, 100% { opacity: 0.55; transform: scale(1); }
   50%      { opacity: 0.9;  transform: scale(1.08); }

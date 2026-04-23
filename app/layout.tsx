@@ -7,6 +7,7 @@ import { QueryProvider } from "@/src/lib/cache/query-client";
 import { cn } from "@/lib/utils";
 import { Toaster } from "@/components/ui/sonner";
 import { CookieBanner } from "@/components/cookie-banner";
+import { IntroPreloader } from "@/components/brand/IntroPreloader";
 import { NextIntlClientProvider } from 'next-intl';
 import { getLocale, getMessages } from 'next-intl/server';
 import { LanguageProvider } from "@/contexts/LanguageContext";
@@ -117,6 +118,7 @@ export default async function RootLayout({
               <LanguageProvider>
                 <AuthProvider>
                   <QueryProvider>
+                    <IntroPreloader />
                     {children}
                     <CookieBanner />
                     <Toaster position="top-right" richColors />

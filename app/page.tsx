@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { BrandLogo } from "@/components/brand/BrandLogo";
+import { AnimatedBrandMark } from "@/components/brand/AnimatedBrandMark";
 import { useAuth } from "@/contexts/AuthContext";
 
 // ───────────── Data ─────────────
@@ -113,6 +114,7 @@ function TopNav() {
           : "bg-transparent"
       }`}
     >
+      <ScrollProgress />
       <div className="max-w-7xl mx-auto px-4 md:px-8 h-16 flex items-center justify-between">
         <BrandLogo size={38} glow iconOnly />
 
@@ -214,6 +216,18 @@ function TopNav() {
   );
 }
 
+// ───────────── Scroll progress bar ─────────────
+
+function ScrollProgress() {
+  const { scrollYProgress } = useScroll();
+  return (
+    <motion.div
+      style={{ scaleX: scrollYProgress }}
+      className="absolute top-0 left-0 right-0 h-[2px] origin-left bg-gradient-to-r from-cyan-400 via-indigo-500 to-fuchsia-500 z-[60]"
+    />
+  );
+}
+
 // ───────────── Hero ─────────────
 
 function Hero() {
@@ -242,12 +256,8 @@ function Hero() {
           className="relative w-32 h-32 md:w-40 md:h-40 mx-auto mb-8"
         >
           <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-cyan-500/40 via-indigo-500/40 to-fuchsia-500/40 blur-3xl logo-halo" />
-          <div className="relative w-full h-full rounded-3xl border border-white/10 shadow-2xl bg-[#070A18]/80 backdrop-blur-md flex items-center justify-center subtle-float">
-            <img
-              src="/brand/kalmeron-mark.svg"
-              alt="Kalmeron AI"
-              className="w-[78%] h-[78%] object-contain"
-            />
+          <div className="relative w-full h-full rounded-3xl border border-white/10 shadow-2xl bg-[#070A18]/80 backdrop-blur-md flex items-center justify-center subtle-float overflow-hidden">
+            <AnimatedBrandMark size={130} halo={false} glow />
           </div>
         </motion.div>
 
@@ -600,8 +610,8 @@ function FinalCTA() {
         <div className="absolute -bottom-32 -left-32 w-80 h-80 rounded-full bg-fuchsia-500/30 blur-3xl" />
 
         <div className="relative">
-          <div className="relative w-20 h-20 mx-auto mb-6 rounded-2xl border border-white/10 bg-[#070A18]/70 flex items-center justify-center logo-halo">
-            <img src="/brand/kalmeron-mark.svg" alt="Kalmeron AI" className="w-[78%] h-[78%] object-contain" />
+          <div className="relative w-20 h-20 mx-auto mb-6 rounded-2xl border border-white/10 bg-[#070A18]/70 flex items-center justify-center logo-halo overflow-hidden">
+            <AnimatedBrandMark size={64} halo={false} glow />
           </div>
           <h2 className="font-display text-3xl md:text-5xl font-extrabold text-white mb-4 leading-tight">
             ابدأ شركتك اليوم<br />

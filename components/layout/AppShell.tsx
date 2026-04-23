@@ -14,6 +14,7 @@ import { Footer } from "./Footer";
 import { CreditsIndicator } from "./CreditsIndicator";
 import { MobileBottomNav } from "./MobileBottomNav";
 import { BrandLogo } from "@/components/brand/BrandLogo";
+import { AnimatedBrandMark } from "@/components/brand/AnimatedBrandMark";
 import Loading from "@/app/loading";
 import { NAV_SECTIONS } from "@/lib/navigation";
 
@@ -41,12 +42,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           >
             <div className="relative w-32 h-32 md:w-40 md:h-40 mx-auto mb-8">
               <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-cyan-500/40 via-indigo-500/40 to-fuchsia-500/40 blur-3xl logo-halo" />
-              <div className="relative w-full h-full rounded-3xl border border-white/10 shadow-2xl bg-[#070A18]/80 backdrop-blur-md flex items-center justify-center">
-                <img
-                  src="/brand/kalmeron-mark.svg"
-                  alt="Kalmeron AI"
-                  className="w-[78%] h-[78%] object-contain"
-                />
+              <div className="relative w-full h-full rounded-3xl border border-white/10 shadow-2xl bg-[#070A18]/80 backdrop-blur-md flex items-center justify-center overflow-hidden">
+                <AnimatedBrandMark size={120} halo={false} glow />
               </div>
             </div>
 
