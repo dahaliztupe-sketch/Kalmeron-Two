@@ -26,7 +26,7 @@ export default function Loading() {
           />
         </div>
         <div className="flex flex-col items-center">
-            <h2 className="text-white text-2xl font-black tracking-widest uppercase">Kalmeron Two</h2>
+            <h2 className="text-white text-2xl font-black tracking-widest uppercase">Kalmeron AI</h2>
             <p className="text-neutral-500 mt-2 font-medium">جاري تحضير ذكاء شريكك المؤسس...</p>
         </div>
       </motion.div>

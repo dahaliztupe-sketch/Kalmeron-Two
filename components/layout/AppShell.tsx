@@ -41,11 +41,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           >
             <div className="relative w-32 h-32 md:w-40 md:h-40 mx-auto mb-8">
               <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-cyan-500/40 via-indigo-500/40 to-fuchsia-500/40 blur-3xl logo-halo" />
-              <div className="relative w-full h-full rounded-3xl overflow-hidden border border-white/10 shadow-2xl">
+              <div className="relative w-full h-full rounded-3xl border border-white/10 shadow-2xl bg-[#070A18]/80 backdrop-blur-md flex items-center justify-center">
                 <img
-                  src="/brand/kalmeron-logo.png"
+                  src="/brand/kalmeron-mark.svg"
                   alt="Kalmeron AI"
-                  className="w-full h-full object-cover"
+                  className="w-[78%] h-[78%] object-contain"
                 />
               </div>
             </div>

@@ -45,8 +45,8 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     metadataBase: new URL(siteUrl),
     title: {
-      default: "Kalmeron Two | نظام تشغيل رواد الأعمال",
-      template: "%s | Kalmeron Two"
+      default: "Kalmeron AI | نظام تشغيل رواد الأعمال",
+      template: "%s | Kalmeron AI"
     },
     description: "نظام تشغيل لرواد الأعمال يضم 7 أقسام و50+ وكيلاً ذكياً. حوّل فكرتك إلى شركة ناجحة مع شريكك المؤسس الذكي.",
     keywords: [
@@ -55,17 +55,17 @@ export async function generateMetadata(): Promise<Metadata> {
     ],
     manifest: "/manifest.json",
     openGraph: {
-      title: "Kalmeron Two | نظام تشغيل رواد الأعمال",
+      title: "Kalmeron AI | نظام تشغيل رواد الأعمال",
       description: "7 أقسام و50+ وكيلاً ذكياً يعملون كفريقك المؤسس.",
-      images: [{ url: "/brand/logo.svg", width: 1200, height: 630, alt: "Kalmeron Two" }],
+      images: [{ url: "/brand/logo.svg", width: 1200, height: 630, alt: "Kalmeron AI" }],
       locale: "ar_EG",
       type: "website",
       url: siteUrl,
-      siteName: "Kalmeron Two",
+      siteName: "Kalmeron AI",
     },
     twitter: {
       card: "summary_large_image",
-      title: "Kalmeron Two | نظام تشغيل رواد الأعمال",
+      title: "Kalmeron AI | نظام تشغيل رواد الأعمال",
       description: "7 أقسام و50+ وكيلاً ذكياً يعملون كفريقك المؤسس.",
       images: ["/brand/logo.svg"],
     },
@@ -84,7 +84,7 @@ export async function generateMetadata(): Promise<Metadata> {
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
-  "name": "Kalmeron Two",
+  "name": "Kalmeron AI",
   "applicationCategory": "BusinessApplication",
   "operatingSystem": "Web",
   "description": "نظام تشغيل لرواد الأعمال يضم 7 أقسام و50+ وكيلاً ذكياً.",
@@ -92,7 +92,7 @@ const jsonLd = {
   "image": `${siteUrl}/brand/logo.svg`,
   "inLanguage": "ar",
   "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EGP" },
-  "author": { "@type": "Organization", "name": "Kalmeron Two", "url": siteUrl },
+  "author": { "@type": "Organization", "name": "Kalmeron AI", "url": siteUrl },
 };
 
 export default async function RootLayout({

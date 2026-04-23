@@ -53,7 +53,7 @@ export default function ProfilePage() {
             الإعدادات والملف الشخصي
           </h1>
           <p className="text-neutral-400 text-xl leading-relaxed">
-            التحكم في بياناتك كرائد أعمال وتخصيص تفضيلاتك داخل كلميرون تو.
+            التحكم في بياناتك كرائد أعمال وتخصيص تفضيلاتك داخل كلميرون.
           </p>
         </motion.div>
 

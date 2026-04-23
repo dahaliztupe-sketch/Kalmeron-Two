@@ -2,7 +2,7 @@ import { AppShell } from "@/components/layout/AppShell";
 import Link from "next/link";
 
 export const metadata = {
-  title: "سياسة الخصوصية | كلميرون تو",
+  title: "سياسة الخصوصية | كلميرون",
   description: "سياسة الخصوصية وحماية البيانات الشخصية وفق قانون رقم 151 لسنة 2020",
 };
 
@@ -18,7 +18,7 @@ export default function PrivacyPage() {
           <section className="glass p-8 rounded-3xl space-y-3">
             <h2 className="text-2xl font-semibold text-white">1. التوافق التنظيمي (PDPL & GDPR)</h2>
             <p>
-              تلتزم منصة <strong>كلميرون تو</strong> تماماً بأحكام{" "}
+              تلتزم منصة <strong>كلميرون</strong> تماماً بأحكام{" "}
               <strong>قانون حماية البيانات الشخصية المصري رقم 151 لسنة 2020</strong>{" "}
               ولوائحه التنفيذية المطبّقة منذ 2026، وكذلك اللائحة العامة لحماية البيانات
               الأوروبية (GDPR). نعالج بياناتك على أساس قانوني شفاف يتمثل في موافقتك

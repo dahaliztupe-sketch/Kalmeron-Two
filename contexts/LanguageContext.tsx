@@ -12,7 +12,7 @@ interface LanguageContextType {
 
 const translations: Record<Language, Record<string, string>> = {
   en: {
-    "app.title": "Kalmeron Two",
+    "app.title": "Kalmeron AI",
     "app.subtitle": "Your AI Co-Founder for the Egyptian Market",
     "auth.login": "Sign in with Google",
     "auth.loading": "Loading...",

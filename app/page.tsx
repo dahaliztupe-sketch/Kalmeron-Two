@@ -242,11 +242,11 @@ function Hero() {
           className="relative w-32 h-32 md:w-40 md:h-40 mx-auto mb-8"
         >
           <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-cyan-500/40 via-indigo-500/40 to-fuchsia-500/40 blur-3xl logo-halo" />
-          <div className="relative w-full h-full rounded-3xl overflow-hidden border border-white/10 shadow-2xl subtle-float">
+          <div className="relative w-full h-full rounded-3xl border border-white/10 shadow-2xl bg-[#070A18]/80 backdrop-blur-md flex items-center justify-center subtle-float">
             <img
-              src="/brand/kalmeron-logo.png"
+              src="/brand/kalmeron-mark.svg"
               alt="Kalmeron AI"
-              className="w-full h-full object-cover"
+              className="w-[78%] h-[78%] object-contain"
             />
           </div>
         </motion.div>
@@ -600,8 +600,8 @@ function FinalCTA() {
         <div className="absolute -bottom-32 -left-32 w-80 h-80 rounded-full bg-fuchsia-500/30 blur-3xl" />
 
         <div className="relative">
-          <div className="relative w-20 h-20 mx-auto mb-6 rounded-2xl overflow-hidden border border-white/10 logo-halo">
-            <img src="/brand/kalmeron-logo.png" alt="Kalmeron AI" className="w-full h-full object-cover" />
+          <div className="relative w-20 h-20 mx-auto mb-6 rounded-2xl border border-white/10 bg-[#070A18]/70 flex items-center justify-center logo-halo">
+            <img src="/brand/kalmeron-mark.svg" alt="Kalmeron AI" className="w-[78%] h-[78%] object-contain" />
           </div>
           <h2 className="font-display text-3xl md:text-5xl font-extrabold text-white mb-4 leading-tight">
             ابدأ شركتك اليوم<br />

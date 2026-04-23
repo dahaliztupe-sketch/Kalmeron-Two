@@ -46,8 +46,8 @@ export default function LoginPage() {
           <div className="flex flex-col items-center gap-5">
             <div className="relative w-20 h-20">
               <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-cyan-500/40 via-indigo-500/40 to-fuchsia-500/40 blur-2xl logo-halo" />
-              <div className="relative w-full h-full rounded-2xl overflow-hidden border border-white/10">
-                <img src="/brand/kalmeron-logo.png" alt="Kalmeron AI" className="w-full h-full object-cover" />
+              <div className="relative w-full h-full rounded-2xl border border-white/10 bg-[#070A18]/70 flex items-center justify-center">
+                <img src="/brand/kalmeron-mark.svg" alt="Kalmeron AI" className="w-[78%] h-[78%] object-contain" />
               </div>
             </div>
             <div>

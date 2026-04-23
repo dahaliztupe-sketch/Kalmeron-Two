@@ -85,11 +85,11 @@ export function Sidebar() {
         <Link href="/dashboard" className="flex items-center gap-3 group">
           <div className="relative">
             <div className="absolute -inset-1 rounded-2xl bg-gradient-to-br from-cyan-500/50 via-indigo-500/40 to-fuchsia-500/40 blur-md opacity-70 group-hover:opacity-100 transition-opacity" />
-            <div className="relative w-11 h-11 rounded-2xl overflow-hidden border border-white/10">
+            <div className="relative w-11 h-11 rounded-2xl border border-white/10 bg-[#070A18]/70 flex items-center justify-center">
               <img
-                src="/brand/kalmeron-logo.png"
+                src="/brand/kalmeron-mark.svg"
                 alt="Kalmeron AI"
-                className="w-full h-full object-cover"
+                className="w-[78%] h-[78%] object-contain"
               />
             </div>
           </div>

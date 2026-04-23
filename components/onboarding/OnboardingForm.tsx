@@ -66,7 +66,7 @@ export function OnboardingForm() {
                 <Rocket className="w-8 h-8 text-[rgb(var(--gold))]" />
             </div>
             <CardTitle className="text-4xl font-black text-white tracking-tight">
-              {language === 'ar' ? 'أهلاً بك في كلميرون تو' : 'Welcome to Kalmeron Two'}
+              {language === 'ar' ? 'أهلاً بك في كلميرون' : 'Welcome to Kalmeron AI'}
             </CardTitle>
             <CardDescription className="text-xl text-neutral-400">
               {language === 'ar' 

@@ -2,7 +2,6 @@
 
 import React, { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { AppShell } from "@/components/layout/AppShell";
 import { useAuth } from "@/contexts/AuthContext";
 import { PLANS, PLAN_ORDER, type PlanId } from "@/src/lib/billing/plans";
@@ -133,30 +132,31 @@ export default function PricingPage() {
   // Public (logged-out) view: minimal header + pricing content
   return (
     <div className="min-h-screen bg-dark-bg text-white" dir="rtl">
-      <header className="sticky top-0 z-40 border-b border-white/[0.06] bg-dark-bg/80 backdrop-blur-xl">
+      <header className="sticky top-0 z-40 border-b border-white/[0.06] bg-[#05070D]/80 backdrop-blur-xl">
         <div className="max-w-7xl mx-auto px-4 md:px-8 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <Image
-              src="/brand/logo-mark.svg"
-              alt="Kalmeron"
-              width={32}
-              height={32}
-              className="w-8 h-8 object-contain"
-            />
-            <span className="font-display text-lg font-extrabold">
-              Kalmeron <span className="text-brand-gold">Two</span>
-            </span>
+          <Link href="/" className="flex items-center gap-3 group">
+            <div className="relative w-9 h-9 rounded-xl border border-white/10 bg-[#070A18]/70 flex items-center justify-center">
+              <img
+                src="/brand/kalmeron-mark.svg"
+                alt="Kalmeron AI"
+                className="w-[78%] h-[78%] object-contain"
+              />
+            </div>
+            <div className="leading-none">
+              <span className="block font-display text-base font-extrabold text-white">KALMERON</span>
+              <span className="block text-[9px] uppercase tracking-[0.3em] text-cyan-300/80 mt-1">AI Studio</span>
+            </div>
           </Link>
           <div className="flex items-center gap-2 md:gap-3">
             <Link
               href="/auth/login"
-              className="text-sm text-text-secondary hover:text-white transition px-3 py-2"
+              className="text-sm text-neutral-400 hover:text-white transition px-3 py-2"
             >
               تسجيل الدخول
             </Link>
             <Link
               href="/auth/signup"
-              className="text-sm font-bold rounded-full bg-brand-gold text-black px-4 py-2 hover:bg-amber-400 transition"
+              className="btn-primary text-sm font-bold rounded-full px-4 py-2"
             >
               ابدأ مجاناً
             </Link>

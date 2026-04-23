@@ -10,7 +10,7 @@ export default function TermsPage() {
   return (
     <AppShell>
       <div className="max-w-4xl mx-auto py-12 px-6">
-        <h1 className="text-4xl font-black text-white mb-8 border-r-4 border-[rgb(var(--azure))] pr-4">شروط الخدمة | Kalmeron Two</h1>
+        <h1 className="text-4xl font-black text-white mb-8 border-r-4 border-[rgb(var(--azure))] pr-4">شروط الخدمة | Kalmeron AI</h1>
         
         <div className="space-y-8 text-neutral-300 leading-relaxed text-lg">
           <section className="glass p-8 rounded-3xl">
@@ -35,7 +35,7 @@ export default function TermsPage() {
 
           <section className="glass p-8 rounded-3xl">
             <h2 className="text-2xl font-bold text-white mb-4">5. حدود المسؤولية</h2>
-            <p>لا تتحمل &quot;كلميرون تو&quot; أي مسؤولية عن نتائج القرارات التجارية المبنية على مخرجات الذكاء الاصطناعي.</p>
+            <p>لا تتحمل &quot;كلميرون&quot; أي مسؤولية عن نتائج القرارات التجارية المبنية على مخرجات الذكاء الاصطناعي.</p>
           </section>
         </div>
       </div>

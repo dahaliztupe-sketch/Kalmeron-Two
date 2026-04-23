@@ -5,7 +5,7 @@ export default function CompliancePage() {
     <AppShell>
       <div className="max-w-4xl mx-auto py-12 px-4" dir="rtl">
         <h1 className="text-4xl font-bold mb-8 text-[rgb(var(--gold))]">الامتثال التنظيمي (Regional Compliance)</h1>
-        <p className="text-neutral-300 mb-8">نعمل في Kalmeron Two على مواءمة عملياتنا التقنية والقانونية مع أعلى المعايير التنظيمية في منطقة الشرق الأوسط وشمال أفريقيا (MENA).</p>
+        <p className="text-neutral-300 mb-8">نعمل في Kalmeron AI على مواءمة عملياتنا التقنية والقانونية مع أعلى المعايير التنظيمية في منطقة الشرق الأوسط وشمال أفريقيا (MENA).</p>
         
         <div className="grid gap-8 md:grid-cols-2">
           <div className="p-6 bg-neutral-900 rounded-2xl border border-neutral-800">
