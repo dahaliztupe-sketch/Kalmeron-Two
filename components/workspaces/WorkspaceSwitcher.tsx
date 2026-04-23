@@ -56,13 +56,13 @@ export function WorkspaceSwitcher() {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <button className="flex items-center gap-2 w-full px-3 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-sm text-white transition-colors">
+      <DropdownMenuTrigger render={(p: any) => (
+        <button {...p} className="flex items-center gap-2 w-full px-3 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-sm text-white transition-colors">
           <Building2 className="w-4 h-4 text-brand-gold" />
           <span className="flex-1 text-right truncate">{active?.name || "—"}</span>
           <ChevronsUpDown className="w-3.5 h-3.5 text-neutral-400" />
         </button>
-      </DropdownMenuTrigger>
+      )} />
       <DropdownMenuContent align="end" className="w-56">
         <DropdownMenuLabel>مساحات العمل</DropdownMenuLabel>
         <DropdownMenuSeparator />

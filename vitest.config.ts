@@ -10,5 +10,5 @@ export default defineConfig({
     ],
     globals: true,
     exclude: ['node_modules', 'dist', '.next', 'e2e/**', 'test/e2e/**', '**/*.spec.ts'],
-  },
+  } as any,
 });

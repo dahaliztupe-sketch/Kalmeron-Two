@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
   }
   const results: any[] = [];
   for (const uid of userIds) {
-    try { const r = await runWeeklyReview(uid); results.push({ userId: uid, reviewId: r.reviewId || null }); }
+    try { const r: any = await runWeeklyReview(uid); results.push({ userId: uid, reviewId: r?.reviewId ?? null }); }
     catch (e: any) { results.push({ userId: uid, error: e?.message }); }
   }
   return NextResponse.json({ usersProcessed: results.length, results });
