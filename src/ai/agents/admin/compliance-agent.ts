@@ -1,4 +1,5 @@
 // @ts-nocheck
+import { globalGraphTools } from '@/src/lib/memory/graph-tools';
 import { Agent } from '@mastra/core';
 import { z } from 'zod';
 
@@ -8,6 +9,7 @@ export const complianceAgent = new Agent({
   مهمتك: ضمان التزام المنصة باللوائح التنظيمية مثل EU AI Act و GDPR. قم بتدقيق مسارات الذكاء الاصطناعي واصدار تقارير مراجعة.`,
   model: { provider: 'google', name: 'gemini-2.5-pro' }, // Pro Preview for legal & compliance depth
   tools: {
+      ...globalGraphTools,
     audit_ai_pipeline: {
       description: 'تدقيق مسار الذكاء الاصطناعي للامتثال',
       parameters: z.object({

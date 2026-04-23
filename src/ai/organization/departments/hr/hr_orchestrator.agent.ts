@@ -1,4 +1,5 @@
 // @ts-nocheck
+import { globalGraphTools } from '@/src/lib/memory/graph-tools';
   import { Agent } from '@mastra/core';
   import { z } from 'zod';
   import { instrumentAgent } from '@/src/lib/observability/agent-instrumentation';
@@ -27,6 +28,7 @@
   - تُسجّل التكلفة وزمن الاستجابة في طبقة المراقبة.`,
     model: { provider: 'google', name: 'gemini-2.5-flash' },
     tools: {
+      ...globalGraphTools,
       delegate_task: {
         description: 'تفويض مهمة فرعية إلى وكيل متخصص داخل القسم',
         parameters: z.object({

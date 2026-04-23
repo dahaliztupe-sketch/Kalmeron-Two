@@ -1,4 +1,5 @@
 // @ts-nocheck
+import { globalGraphTools } from '@/src/lib/memory/graph-tools';
 import { Agent } from '@mastra/core';
 import { z } from 'zod';
 
@@ -8,6 +9,7 @@ export const securityAgent = new Agent({
   مهمتك: اكتشاف التهديدات بصورة استباقية من خلال القراءة المستمرة لسجلات النظام والتحقيق في هجمات PII أو Prompt Injection الدقيقة التي تخطت الجرعات الأولية.`,
   model: { provider: 'google', name: 'gemini-2.5-pro' },
   tools: {
+      ...globalGraphTools,
     investigate_threat: {
       description: 'التحقيق في تحديد أمني استناداً لنصوص السجلات',
       parameters: z.object({ threatId: z.string() }),

@@ -1,4 +1,5 @@
 // @ts-nocheck
+import { globalGraphTools } from '@/src/lib/memory/graph-tools';
 import { Agent } from '@mastra/core';
 import { z } from 'zod';
 
@@ -9,6 +10,7 @@ export const dashboardMonitorAgent = new Agent({
   عند اكتشاف تغير بنسبة >10% في عدد المستخدمين النشطين، الاحتفاظ، أو تكاليف الذكاء الاصطناعي، حقق في السبب.`,
   model: { provider: 'google', name: 'gemini-2.5-flash-lite' }, // Flash Lite for continuous fast monitoring
   tools: {
+      ...globalGraphTools,
     analyze_metric_change: {
       description: 'تحليل تغير في مقياس محدد',
       parameters: z.object({
