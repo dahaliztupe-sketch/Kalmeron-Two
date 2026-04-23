@@ -11,6 +11,7 @@ import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "motion/react";
 import { Sidebar } from "./Sidebar";
 import { Footer } from "./Footer";
+import { CreditsIndicator } from "./CreditsIndicator";
 import Loading from "@/app/loading";
 import { FLAT_NAV as ALL_NAV } from "@/lib/navigation";
 import dynamic from "next/dynamic";
@@ -102,6 +103,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             >
               <Globe className="h-5 w-5" />
             </Button>
+
+            <CreditsIndicator />
 
             <div className="h-8 w-[1px] bg-white/[0.07] mx-1 hidden sm:block" />
 
