@@ -6,6 +6,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { motion, type Variants } from "motion/react";
 import { Settings as SettingsIcon, LogOut } from "lucide-react";
 import { NAV_SECTIONS, FOOTER_NAV, isActive, type NavItem } from "@/lib/navigation";
+import { BrandLogo } from "@/components/brand/BrandLogo";
 
 const containerV: Variants = {
   hidden: { opacity: 0 },
