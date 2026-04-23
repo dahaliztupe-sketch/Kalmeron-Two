@@ -537,6 +537,15 @@
 5. ✅ **Referral System** — `/api/referrals` + DB collection + UI في الـ settings
 6. ✅ **Multi-locale SEO** — hreflang + alternates + bilingual metadata
 7. ✅ **Performance hardening** — preconnect, dns-prefetch، image optimization
+8. ✅ **Content Expansion (Long-form)** — use-cases (40+)، industries (25+)، comparisons (18+)، blog (15+) كلها بمحتوى عربي طويل ومفصل
+9. ✅ **Templates SEO Library** — 25 قالب احترافي (business plan، pitch deck، financial model، MSA، NDA، PRD، OKR، cap table، privacy policy...) في `src/lib/seo/templates.ts` + صفحات `/templates` و`/templates/[slug]`
+10. ✅ **Glossary SEO** — 60+ مصطلح أعمال في `src/lib/seo/glossary.ts` + صفحات `/glossary` و`/glossary/[term]` مع DefinedTerm JSON-LD
+11. ✅ **Cities SEO** — 15 مدينة عربية (القاهرة، الرياض، دبي، أبوظبي، عمان، الدار البيضاء، الدوحة...) في `src/lib/seo/cities.ts` + صفحات `/cities` و`/cities/[city]` مع LocalBusiness JSON-LD
+12. ✅ **Schema.org JSON-LD Helpers** — `src/lib/seo/schema.ts` (Organization, SoftwareApplication, Breadcrumb, FAQ, Article, HowTo, Product, DefinedTerm, LocalBusiness)
+13. ✅ **Killer Feature Pages** — `/founder-mode`, `/market-pulse`, `/investor-deck`, `/founder-network`, `/api-docs`, `/mcp-server`, `/workflows`
+14. ✅ **PPP-Adjusted Pricing Localization** — `src/lib/pricing-currency.ts` يدعم 12 عملة MENA مع PPP factors لـ EGP، MAD، TND، DZD، JOD، OMR
+15. ✅ **Web Vitals Tracking** — `components/analytics/WebVitals.tsx` + `app/api/analytics/vitals/route.ts` (edge runtime، sendBeacon)
+16. ✅ **Sitemap Update** — `app/sitemap.ts` يضمّ كل templates/glossary/cities + الصفحات الجديدة (250+ URL)
 
 ---
 

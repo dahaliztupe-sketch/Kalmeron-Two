@@ -4,6 +4,9 @@ import { getAllComparisonSlugs } from '@/src/lib/seo/comparisons';
 import { getAllIndustrySlugs } from '@/src/lib/seo/industries';
 import { getAllExpertSlugs } from '@/src/lib/seo/experts';
 import { BLOG_POSTS } from '@/src/lib/seo/blog-posts';
+import { getAllTemplateSlugs } from '@/src/lib/seo/templates';
+import { getAllGlossarySlugs } from '@/src/lib/seo/glossary';
+import { getAllCitySlugs } from '@/src/lib/seo/cities';
 
 const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://kalmeron.app';
 
@@ -18,6 +21,16 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${siteUrl}/compare`, lastModified: now, changeFrequency: 'weekly', priority: 0.9 },
     { url: `${siteUrl}/ai-experts`, lastModified: now, changeFrequency: 'weekly', priority: 0.9 },
     { url: `${siteUrl}/blog`, lastModified: now, changeFrequency: 'daily', priority: 0.85 },
+    { url: `${siteUrl}/templates`, lastModified: now, changeFrequency: 'weekly', priority: 0.9 },
+    { url: `${siteUrl}/glossary`, lastModified: now, changeFrequency: 'weekly', priority: 0.85 },
+    { url: `${siteUrl}/cities`, lastModified: now, changeFrequency: 'weekly', priority: 0.85 },
+    { url: `${siteUrl}/founder-mode`, lastModified: now, changeFrequency: 'monthly', priority: 0.85 },
+    { url: `${siteUrl}/market-pulse`, lastModified: now, changeFrequency: 'weekly', priority: 0.85 },
+    { url: `${siteUrl}/investor-deck`, lastModified: now, changeFrequency: 'monthly', priority: 0.85 },
+    { url: `${siteUrl}/founder-network`, lastModified: now, changeFrequency: 'weekly', priority: 0.85 },
+    { url: `${siteUrl}/api-docs`, lastModified: now, changeFrequency: 'monthly', priority: 0.7 },
+    { url: `${siteUrl}/mcp-server`, lastModified: now, changeFrequency: 'monthly', priority: 0.7 },
+    { url: `${siteUrl}/workflows`, lastModified: now, changeFrequency: 'monthly', priority: 0.8 },
     { url: `${siteUrl}/chat`, lastModified: now, changeFrequency: 'weekly', priority: 0.8 },
     { url: `${siteUrl}/ideas/analyze`, lastModified: now, changeFrequency: 'weekly', priority: 0.8 },
     { url: `${siteUrl}/plan`, lastModified: now, changeFrequency: 'weekly', priority: 0.8 },
@@ -66,6 +79,27 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.75,
   }));
 
+  const templatePages: MetadataRoute.Sitemap = getAllTemplateSlugs().map((slug) => ({
+    url: `${siteUrl}/templates/${slug}`,
+    lastModified: now,
+    changeFrequency: 'monthly',
+    priority: 0.8,
+  }));
+
+  const glossaryPages: MetadataRoute.Sitemap = getAllGlossarySlugs().map((slug) => ({
+    url: `${siteUrl}/glossary/${slug}`,
+    lastModified: now,
+    changeFrequency: 'monthly',
+    priority: 0.7,
+  }));
+
+  const cityPages: MetadataRoute.Sitemap = getAllCitySlugs().map((slug) => ({
+    url: `${siteUrl}/cities/${slug}`,
+    lastModified: now,
+    changeFrequency: 'monthly',
+    priority: 0.8,
+  }));
+
   return [
     ...staticPages,
     ...useCasePages,
@@ -73,5 +107,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...industryPages,
     ...expertPages,
     ...blogPages,
+    ...templatePages,
+    ...glossaryPages,
+    ...cityPages,
   ];
 }

@@ -9,6 +9,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { CookieBanner } from "@/components/cookie-banner";
 import { IntroPreloader } from "@/components/brand/IntroPreloader";
 import { ServiceWorkerRegistrar } from "@/components/pwa/ServiceWorkerRegistrar";
+import { WebVitals } from "@/components/analytics/WebVitals";
 import { NextIntlClientProvider } from 'next-intl';
 import { getLocale, getMessages } from 'next-intl/server';
 import { LanguageProvider } from "@/contexts/LanguageContext";
@@ -145,6 +146,7 @@ export default async function RootLayout({
                     <CookieBanner />
                     <Toaster position="top-right" richColors />
                     <ServiceWorkerRegistrar />
+                    <WebVitals />
                   </QueryProvider>
                 </AuthProvider>
               </LanguageProvider>

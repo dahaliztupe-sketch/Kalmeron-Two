@@ -149,6 +149,28 @@ A "best-in-the-world" push — programmatic SEO, viral growth, social previews,
 AI-search optimization, and richer pricing — to compete head-to-head with
 ChatGPT/Claude/Manus/Lovable in the MENA market.
 
+### Session 3 additions (Apr 23 2026 — Strategic Overhaul)
+- **Massive content expansion**: `use-cases.ts` (40+), `industries.ts` (25+),
+  `comparisons.ts` (18+), `blog-posts.ts` (15+) — Arabic-first, MENA-specific.
+- **New programmatic SEO surfaces**:
+  - `src/lib/seo/templates.ts` (25 templates) → `/templates` + `/templates/[slug]`
+    with HowTo JSON-LD.
+  - `src/lib/seo/glossary.ts` (60+ Arabic startup terms) → `/glossary` +
+    `/glossary/[term]` with DefinedTerm JSON-LD.
+  - `src/lib/seo/cities.ts` (15 MENA cities) → `/cities` + `/cities/[city]`
+    with LocalBusiness JSON-LD.
+- **Schema helpers**: `src/lib/seo/schema.ts` exposes Organization,
+  SoftwareApplication, Breadcrumb, FAQ, Article, HowTo, Product, DefinedTerm,
+  LocalBusiness JSON-LD generators.
+- **Killer feature pages**: `/founder-mode`, `/market-pulse`, `/investor-deck`,
+  `/founder-network`, `/api-docs`, `/mcp-server`, `/workflows`.
+- **PPP-adjusted pricing**: `src/lib/pricing-currency.ts` — 12 MENA currencies
+  with PPP factors (EGP, MAD, TND, DZD, JOD, OMR get discounts; GCC at parity).
+- **Web Vitals**: `components/analytics/WebVitals.tsx` mounted in
+  `app/layout.tsx`, posts to edge route `/api/analytics/vitals` via
+  `navigator.sendBeacon`. `web-vitals` package installed.
+- **Sitemap**: now ~250+ URLs, includes templates/glossary/cities/feature pages.
+
 ### Session 2 additions (Apr 23 2026)
 - `/ai-experts` directory + `/ai-experts/[slug]` for 12 specialized agents
   (CFO, legal, idea-validator, marketing, opportunity-radar, mistake-shield,
