@@ -32,6 +32,21 @@ function getDriver(): Driver | null {
   return driver;
 }
 
+/** Recursively convert Neo4j Integer ({low, high}) values into plain JS numbers/strings. */
+export function neo4jToPlain(v: any): any {
+  if (v === null || v === undefined) return v;
+  if (neo4j.isInt && neo4j.isInt(v)) {
+    return v.inSafeRange() ? v.toNumber() : v.toString();
+  }
+  if (Array.isArray(v)) return v.map(neo4jToPlain);
+  if (typeof v === 'object') {
+    const out: any = {};
+    for (const k of Object.keys(v)) out[k] = neo4jToPlain(v[k]);
+    return out;
+  }
+  return v;
+}
+
 async function withSession<T>(fn: (s: Session) => Promise<T>): Promise<T | null> {
   const d = getDriver();
   if (!d) return null;
@@ -65,7 +80,7 @@ export async function addEntity(userId: string, type: string, properties: Record
        RETURN e`,
       { userId, id, props: properties },
     );
-    return res.records[0]?.get('e')?.properties || { id, ...properties };
+    return neo4jToPlain(res.records[0]?.get('e')?.properties || { id, ...properties });
   });
 }
 
@@ -106,7 +121,7 @@ export async function searchEntities(userId: string, term: string, limit = 20) {
        RETURN e LIMIT $limit`,
       { userId, term, limit: neo4j.int(limit) },
     );
-    return res.records.map((r) => r.get('e').properties);
+    return res.records.map((r) => neo4jToPlain(r.get('e').properties));
   });
 }
 
@@ -122,12 +137,12 @@ export async function getProjectOverview(userId: string, limit = 200) {
     const nodes = new Map<string, any>();
     const edges: any[] = [];
     for (const rec of res.records) {
-      const e = rec.get('e').properties;
+      const e = neo4jToPlain(rec.get('e').properties);
       nodes.set(e.id, e);
       const rel = rec.get('rel');
       const target = rec.get('target');
       if (rel && target) {
-        const t = target.properties;
+        const t = neo4jToPlain(target.properties);
         nodes.set(t.id, t);
         edges.push({ from: e.id, to: t.id, type: rel });
       }

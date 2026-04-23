@@ -160,6 +160,23 @@ export async function POST(req: NextRequest) {
           await trackAgentUsage(userId, 'Supervisor', 'gemini-2.5-flash', 1000);
           const creditManager = new CreditManager(userId);
           await creditManager.checkAndNotifyThreshold();
+
+          // Auto-feed the shared brain (best-effort, never blocks the response)
+          void (async () => {
+            try {
+              const { isKnowledgeGraphEnabled, addEntity } = await import('@/src/lib/memory/knowledge-graph');
+              if (await isKnowledgeGraphEnabled()) {
+                const lastUserMsg = messages?.[messages.length - 1]?.content || '';
+                await addEntity(userId, 'Conversation', {
+                  intent: finalIntent || 'GENERAL_CHAT',
+                  question: typeof lastUserMsg === 'string' ? lastUserMsg.slice(0, 500) : '',
+                  answerSummary: finalText.slice(0, 500),
+                  thread: threadId || null,
+                  source: 'chat',
+                });
+              }
+            } catch { /* swallow */ }
+          })();
         }
 
         send('done', { intent: finalIntent, length: finalText.length });
