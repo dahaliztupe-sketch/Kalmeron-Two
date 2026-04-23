@@ -4,6 +4,11 @@
    * مستلهم من AgentMon: مراقبة مستمرة في الخلفية.
    */
   import { logger } from '@/src/lib/logger';
+  import { EventEmitter } from 'events';
+
+  export const monitorEvents = (globalThis as any).__kalmeronMonitorEvents
+    || ((globalThis as any).__kalmeronMonitorEvents = new EventEmitter());
+  monitorEvents.setMaxListeners(0);
 
   export type AlertSeverity = 'low' | 'medium' | 'high' | 'critical';
 
@@ -50,6 +55,22 @@
     if (error) { m.failures++; m.lastError = error; }
     metrics.set(agentId, m);
 
+    monitorEvents.emit('invocation', {
+      agentId,
+      latencyMs,
+      costUsd,
+      error: error || null,
+      timestamp: new Date().toISOString(),
+      snapshot: {
+        invocations: m.invocations,
+        failures: m.failures,
+        avgLatencyMs: Math.round(m.totalLatencyMs / m.invocations),
+        successRate: +((1 - m.failures / m.invocations) * 100).toFixed(2),
+        totalCostUsd: +m.totalCostUsd.toFixed(4),
+      },
+      dailyCostUsd,
+    });
+
     // Cost alert at 80% of daily budget
     if (dailyCostUsd > COST_DAILY_LIMIT_USD * 0.8) {
       dispatchAlert({
@@ -66,6 +87,7 @@
     alerts.push(enriched);
     if (alerts.length > 1000) alerts.shift();
     logger?.warn?.({ msg: 'AGENT_ALERT', ...enriched }) ?? console.warn('[ALERT]', enriched);
+    monitorEvents.emit('alert', enriched);
   }
 
   export function getMetricsSnapshot() {

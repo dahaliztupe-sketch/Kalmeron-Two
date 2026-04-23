@@ -1,5 +1,5 @@
 "use client";
-  import { useEffect, useState } from 'react';
+  import { useEffect, useRef, useState } from 'react';
   import { AppShell } from '@/components/layout/AppShell';
 
   interface Snapshot {
@@ -12,30 +12,58 @@
   export default function MissionControlPage() {
     const [data, setData] = useState<Snapshot | null>(null);
     const [error, setError] = useState<string | null>(null);
+    const [live, setLive] = useState(false);
+    const [pulse, setPulse] = useState<string | null>(null);
+    const pulseTimer = useRef<any>(null);
 
     useEffect(() => {
-      let alive = true;
-      async function load() {
+      const es = new EventSource('/api/admin/mission-control/stream');
+
+      es.addEventListener('open', () => setLive(true));
+      es.addEventListener('snapshot', (e: MessageEvent) => {
+        try { setData(JSON.parse(e.data)); setError(null); } catch {}
+      });
+      es.addEventListener('invocation', (e: MessageEvent) => {
         try {
-          const res = await fetch('/api/admin/mission-control', { cache: 'no-store' });
-          if (!res.ok) throw new Error(`HTTP ${res.status}`);
-          const json = await res.json();
-          if (alive) setData(json);
-        } catch (e: any) {
-          if (alive) setError(e.message);
-        }
-      }
-      load();
-      const id = setInterval(load, 5000);
-      return () => { alive = false; clearInterval(id); };
+          const payload = JSON.parse(e.data);
+          setPulse(payload.agentId);
+          if (pulseTimer.current) clearTimeout(pulseTimer.current);
+          pulseTimer.current = setTimeout(() => setPulse(null), 1500);
+          setData(prev => {
+            if (!prev) return prev;
+            return {
+              ...prev,
+              agents: { ...prev.agents, [payload.agentId]: payload.snapshot },
+              dailyCostUsd: payload.dailyCostUsd,
+            };
+          });
+        } catch {}
+      });
+      es.addEventListener('alert', (e: MessageEvent) => {
+        try {
+          const a = JSON.parse(e.data);
+          setData(prev => prev ? { ...prev, alertsRecent: [...prev.alertsRecent, a].slice(-50) } : prev);
+        } catch {}
+      });
+      es.onerror = () => { setLive(false); setError('انقطع البث المباشر، يحاول إعادة الاتصال...'); };
+
+      return () => { es.close(); if (pulseTimer.current) clearTimeout(pulseTimer.current); };
     }, []);
 
     return (
       <AppShell>
         <div className="min-h-screen p-8 max-w-7xl mx-auto text-white" dir="rtl">
-          <header className="mb-8">
-            <h1 className="text-4xl font-extrabold mb-2">مركز القيادة</h1>
-            <p className="text-neutral-400">مراقبة الوكلاء والتكاليف والأمان والامتثال في الوقت الفعلي.</p>
+          <header className="mb-8 flex items-start justify-between gap-4">
+            <div>
+              <h1 className="text-4xl font-extrabold mb-2">مركز القيادة</h1>
+              <p className="text-neutral-400">مراقبة الوكلاء والتكاليف والأمان والامتثال في الوقت الفعلي.</p>
+            </div>
+            <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full border text-xs font-bold ${
+              live ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300' : 'bg-neutral-800 border-white/10 text-neutral-400'
+            }`}>
+              <span className={`w-2 h-2 rounded-full ${live ? 'bg-emerald-400 animate-pulse' : 'bg-neutral-500'}`} />
+              {live ? 'بث مباشر' : 'غير متصل'}
+            </div>
           </header>
 
           {error && (
@@ -52,8 +80,18 @@
                 <h2 className="text-xl font-bold mb-4">خريطة الوكلاء النشطين</h2>
                 <div className="space-y-2 max-h-96 overflow-y-auto">
                   {Object.entries(data.agents).map(([id, m]: any) => (
-                    <div key={id} className="flex items-center justify-between p-3 rounded-lg bg-black/30 text-sm">
-                      <span className="font-mono">{id}</span>
+                    <div
+                      key={id}
+                      className={`flex items-center justify-between p-3 rounded-lg text-sm transition-all duration-500 ${
+                        pulse === id
+                          ? 'bg-emerald-500/20 ring-2 ring-emerald-400/60 scale-[1.01]'
+                          : 'bg-black/30'
+                      }`}
+                    >
+                      <span className="font-mono flex items-center gap-2">
+                        {pulse === id && <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />}
+                        {id}
+                      </span>
                       <div className="flex gap-4 text-neutral-400">
                         <span>طلبات: {m.invocations}</span>
                         <span>زمن: {m.avgLatencyMs}ms</span>
