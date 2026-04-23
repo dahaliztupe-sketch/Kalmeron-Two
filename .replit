@@ -1,4 +1,4 @@
-modules = ["nodejs-20", "web", "bash"]
+modules = ["web", "bash", "nodejs-22"]
 [agent]
 expertMode = true
 stack = "GAMESTACK_JS"
@@ -33,10 +33,6 @@ waitForPort = 5000
 [[ports]]
 localPort = 5000
 externalPort = 80
-
-[[ports]]
-localPort = 5004
-externalPort = 3002
 
 [[ports]]
 localPort = 5005
