@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <defs>
+    <linearGradient id="markGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#D4AF37" />
+      <stop offset="100%" stop-color="#3B82F6" />
+    </linearGradient>
+  </defs>
+  <g transform="translate(8, 6)">
+    <path d="M10 6 L10 54" stroke="url(#markGradient)" stroke-width="8" stroke-linecap="round" />
+    <path d="M10 30 L36 6"  stroke="url(#markGradient)" stroke-width="8" stroke-linecap="round" />
+    <path d="M19 21 L42 54" stroke="url(#markGradient)" stroke-width="8" stroke-linecap="round" />
+    <circle cx="48" cy="9" r="4"   fill="#D4AF37" />
+    <circle cx="54" cy="2.5" r="2.5" fill="#3B82F6" />
+  </g>
+</svg>

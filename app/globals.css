@@ -159,3 +159,127 @@
   50%      { transform: scale(1.18); opacity: 1;   }
 }
 .animate-soft-pulse { animation: soft-pulse 1.4s ease-in-out infinite; }
+
+/* ============================================ */
+/* Premium pricing surface utilities (2026)     */
+/* ============================================ */
+
+/* Animated conic-gradient border (used on highlighted cards) */
+@keyframes border-spin {
+  to { transform: rotate(360deg); }
+}
+.gradient-border {
+  position: relative;
+  isolation: isolate;
+}
+.gradient-border::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: conic-gradient(from var(--angle, 0deg), #D4AF37, #3B82F6, #D4AF37);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+  pointer-events: none;
+  z-index: -1;
+}
+@property --angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+.gradient-border-animate::before {
+  animation: gradient-rotate 6s linear infinite;
+}
+@keyframes gradient-rotate {
+  to { --angle: 360deg; }
+}
+
+/* Premium card hover lift */
+.card-lift {
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+              border-color 0.3s ease;
+}
+.card-lift:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.6),
+              0 20px 40px -25px rgba(212, 175, 55, 0.25);
+}
+
+/* Shimmer text */
+@keyframes shimmer-sweep {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.shimmer-text {
+  background: linear-gradient(
+    100deg,
+    #94A3B8 0%,
+    #F1F5F9 40%,
+    #D4AF37 50%,
+    #F1F5F9 60%,
+    #94A3B8 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer-sweep 5s linear infinite;
+}
+
+/* Slow drifting starfield */
+@keyframes starfield-drift {
+  from { background-position: 0 0; }
+  to   { background-position: -1000px 1000px; }
+}
+.starfield::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(1px 1px at 25% 30%, rgba(255,255,255,0.6), transparent 50%),
+    radial-gradient(1px 1px at 60% 70%, rgba(255,255,255,0.4), transparent 50%),
+    radial-gradient(1.5px 1.5px at 85% 15%, rgba(212,175,55,0.6), transparent 50%),
+    radial-gradient(1px 1px at 15% 85%, rgba(59,130,246,0.5), transparent 50%),
+    radial-gradient(1px 1px at 75% 45%, rgba(255,255,255,0.5), transparent 50%);
+  background-size: 1000px 1000px;
+  animation: starfield-drift 90s linear infinite;
+  pointer-events: none;
+  opacity: 0.4;
+}
+
+/* Mesh gradient background for premium hero */
+.mesh-gradient {
+  background-color: #080C14;
+  background-image:
+    radial-gradient(at 20% 0%, rgba(212, 175, 55, 0.18) 0px, transparent 50%),
+    radial-gradient(at 80% 0%, rgba(59, 130, 246, 0.18) 0px, transparent 50%),
+    radial-gradient(at 50% 100%, rgba(168, 85, 247, 0.10) 0px, transparent 50%);
+}
+
+/* Pulsing glow ring for popular plan */
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 30px -5px rgba(212, 175, 55, 0.5),
+                          0 0 60px -10px rgba(212, 175, 55, 0.3); }
+  50%      { box-shadow: 0 0 50px -5px rgba(212, 175, 55, 0.7),
+                          0 0 90px -10px rgba(212, 175, 55, 0.45); }
+}
+.glow-pulse { animation: glow-pulse 4s ease-in-out infinite; }
+
+/* Mobile-only horizontal snap-scroll for plan cards */
+.snap-x-mandatory { scroll-snap-type: x mandatory; }
+.snap-center      { scroll-snap-align: center; }
+
+/* FAQ accordion smooth */
+.faq-content[data-open="true"] {
+  grid-template-rows: 1fr;
+}
+.faq-content {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.faq-content > div { overflow: hidden; }
