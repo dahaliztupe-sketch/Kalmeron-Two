@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect } from "react";
+import { Suspense, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { motion } from "motion/react";
 import { Loader2, Chrome, Check, ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import { ReferralCapture, attributeReferralIfAny } from "@/components/auth/ReferralCapture";
 
 const PERKS = [
   "وصول مجاني للأبد للأفكار الأولى",
@@ -20,6 +21,8 @@ export default function SignUpPage() {
 
   useEffect(() => {
     if (!loading && user) {
+      // attempt to attribute any captured referral code
+      user.getIdToken().then((t) => attributeReferralIfAny(t)).catch(() => {});
       if (!dbUser?.profile_completed) router.replace("/onboarding");
       else router.replace("/dashboard");
     }
@@ -39,6 +42,9 @@ export default function SignUpPage() {
 
   return (
     <div className="min-h-screen mesh-gradient aurora-bg starfield flex items-center justify-center relative overflow-hidden" dir="rtl">
+      <Suspense fallback={null}>
+        <ReferralCapture />
+      </Suspense>
       <Link href="/" className="absolute top-6 right-6 z-20 inline-flex items-center gap-2 text-sm text-neutral-400 hover:text-white transition-colors">
         <ArrowLeft className="w-4 h-4 icon-flip" /> العودة للرئيسية
       </Link>

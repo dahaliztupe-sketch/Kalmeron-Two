@@ -91,9 +91,33 @@ The `intelligentOrchestrator` (LangGraph StateGraph) routes to 10 specialized no
 
 ## Strategic Growth Layer (Apr 2026)
 
-A "best-in-the-world" push delivered in one session — programmatic SEO, viral
-growth, social previews, and richer pricing — to compete head-to-head with
+A "best-in-the-world" push — programmatic SEO, viral growth, social previews,
+AI-search optimization, and richer pricing — to compete head-to-head with
 ChatGPT/Claude/Manus/Lovable in the MENA market.
+
+### Session 2 additions (Apr 23 2026)
+- `/ai-experts` directory + `/ai-experts/[slug]` for 12 specialized agents
+  (CFO, legal, idea-validator, marketing, opportunity-radar, mistake-shield,
+  success-museum, plan-builder, HR, compliance, SEO, content-creator). Each
+  page emits a `Service` JSON-LD block. Renamed from `/experts` to avoid
+  conflict with the existing dashboard agents page.
+- `app/llms.txt/route.ts` — emerging spec for AI crawlers (ChatGPT, Claude,
+  Perplexity, Gemini) listing every page with descriptions; cached 1 hour.
+- Newsletter capture: `src/lib/newsletter/subscribers.ts` (Firestore-backed,
+  email-hash keyed) + `app/api/newsletter/route.ts` POST/DELETE +
+  `components/marketing/NewsletterCapture.tsx` (inline + card variants).
+  Embedded in every SEO landing footer.
+- Referral attribution on signup: `components/auth/ReferralCapture.tsx`
+  captures `?ref=XXX` to localStorage (30-day TTL) then POSTs to
+  `/api/referrals` after the user completes Google sign-in.
+- Two new comparison pages: vs Gemini, vs Perplexity.
+- `<head>` performance hardening: preconnect to `fonts.googleapis.com`,
+  `fonts.gstatic.com`, `firestore.googleapis.com`, `identitytoolkit`, plus
+  dns-prefetch for jsdelivr. Cuts ~200ms from first font/auth roundtrip.
+- Annual pricing now correctly reads `priceAnnualMonthlyEgp/Usd` from
+  `src/lib/billing/plans.ts` instead of a hardcoded 0.8 multiplier.
+- Sitemap extended with `/ai-experts` index, all 12 expert slugs, and every
+  blog post (with real `publishedAt` lastModified).
 
 ### Programmatic SEO
 - `src/lib/seo/use-cases.ts` — 10 detailed Arabic use cases (cloud restaurant,

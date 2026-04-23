@@ -15,8 +15,8 @@ export function getDisplayedPrice(plan: Plan, billing: BillingCycle) {
   if (plan.priceMonthlyEgp === 0) return { egp: 0, usd: 0, original: 0 };
   if (billing === "annual") {
     return {
-      egp: Math.round(plan.priceMonthlyEgp * 0.8),
-      usd: Math.round(plan.priceMonthlyUsd * 0.8),
+      egp: plan.priceAnnualMonthlyEgp,
+      usd: plan.priceAnnualMonthlyUsd,
       original: plan.priceMonthlyEgp,
     };
   }

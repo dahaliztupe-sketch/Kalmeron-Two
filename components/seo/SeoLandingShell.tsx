@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowLeft, Sparkles, CheckCircle2, ChevronRight } from "lucide-react";
 import { BrandLogo } from "@/components/brand/BrandLogo";
+import { NewsletterCapture } from "@/components/marketing/NewsletterCapture";
 
 interface SeoLandingShellProps {
   eyebrow: string;
@@ -121,9 +122,14 @@ export function SeoLandingShell({
         </div>
       </section>
 
+      {/* Newsletter */}
+      <section className="max-w-6xl mx-auto px-4 mt-16">
+        <NewsletterCapture variant="card" source="seo-footer" />
+      </section>
+
       {/* Footer */}
       <footer className="border-t border-white/5 py-12 mt-12">
-        <div className="max-w-6xl mx-auto px-4 grid md:grid-cols-4 gap-8 text-sm">
+        <div className="max-w-6xl mx-auto px-4 grid md:grid-cols-5 gap-8 text-sm">
           <div>
             <BrandLogo size={28} showWordmark href={null} />
             <p className="text-zinc-500 mt-3 text-xs leading-relaxed">
@@ -144,6 +150,13 @@ export function SeoLandingShell({
               <li><Link href="/compare/chatgpt" className="hover:text-zinc-300">vs ChatGPT</Link></li>
               <li><Link href="/compare/claude" className="hover:text-zinc-300">vs Claude</Link></li>
               <li><Link href="/compare/microsoft-copilot" className="hover:text-zinc-300">vs Copilot</Link></li>
+            </ul>
+          </div>
+          <div>
+            <div className="text-zinc-300 font-medium mb-3">المزيد</div>
+            <ul className="space-y-2 text-zinc-500">
+              <li><Link href="/ai-experts" className="hover:text-zinc-300">الخبراء</Link></li>
+              <li><Link href="/blog" className="hover:text-zinc-300">المدونة</Link></li>
             </ul>
           </div>
           <div>

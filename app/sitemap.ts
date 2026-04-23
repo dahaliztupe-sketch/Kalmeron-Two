@@ -2,6 +2,8 @@ import type { MetadataRoute } from 'next';
 import { getAllUseCaseSlugs } from '@/src/lib/seo/use-cases';
 import { getAllComparisonSlugs } from '@/src/lib/seo/comparisons';
 import { getAllIndustrySlugs } from '@/src/lib/seo/industries';
+import { getAllExpertSlugs } from '@/src/lib/seo/experts';
+import { BLOG_POSTS } from '@/src/lib/seo/blog-posts';
 
 const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://kalmeron.app';
 
@@ -14,6 +16,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${siteUrl}/use-cases`, lastModified: now, changeFrequency: 'weekly', priority: 0.9 },
     { url: `${siteUrl}/industries`, lastModified: now, changeFrequency: 'weekly', priority: 0.9 },
     { url: `${siteUrl}/compare`, lastModified: now, changeFrequency: 'weekly', priority: 0.9 },
+    { url: `${siteUrl}/ai-experts`, lastModified: now, changeFrequency: 'weekly', priority: 0.9 },
     { url: `${siteUrl}/blog`, lastModified: now, changeFrequency: 'daily', priority: 0.85 },
     { url: `${siteUrl}/chat`, lastModified: now, changeFrequency: 'weekly', priority: 0.8 },
     { url: `${siteUrl}/ideas/analyze`, lastModified: now, changeFrequency: 'weekly', priority: 0.8 },
@@ -49,5 +52,26 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.85,
   }));
 
-  return [...staticPages, ...useCasePages, ...comparisonPages, ...industryPages];
+  const expertPages: MetadataRoute.Sitemap = getAllExpertSlugs().map((slug) => ({
+    url: `${siteUrl}/ai-experts/${slug}`,
+    lastModified: now,
+    changeFrequency: 'monthly',
+    priority: 0.8,
+  }));
+
+  const blogPages: MetadataRoute.Sitemap = BLOG_POSTS.map((p) => ({
+    url: `${siteUrl}/blog/${p.slug}`,
+    lastModified: new Date(p.publishedAt),
+    changeFrequency: 'monthly',
+    priority: 0.75,
+  }));
+
+  return [
+    ...staticPages,
+    ...useCasePages,
+    ...comparisonPages,
+    ...industryPages,
+    ...expertPages,
+    ...blogPages,
+  ];
 }
