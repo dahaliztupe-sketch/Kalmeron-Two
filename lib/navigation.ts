@@ -3,7 +3,7 @@ import {
   Settings as SettingsIcon, Wallet, Users as UsersIcon, Heart, Scale,
   FlaskConical, Trophy, ShieldAlert, Radar, FileText, Briefcase,
   Building2, ScrollText, Lightbulb, Store, User as UserIcon,
-  Target, Brain,
+  Target, Brain, CreditCard,
 } from "lucide-react";
 
 export type NavItem = {
@@ -54,6 +54,7 @@ export const NAV_SECTIONS: NavSection[] = [
       { href: "/real-estate", label: "العقارات", icon: Building2 },
       { href: "/legal-templates", label: "نماذج قانونية", icon: FileText },
       { href: "/marketplace", label: "السوق", icon: Store },
+      { href: "/pricing", label: "الخطط والأسعار", icon: CreditCard },
     ],
   },
 ];

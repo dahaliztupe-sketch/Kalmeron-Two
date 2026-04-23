@@ -24,6 +24,7 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { motion } from "motion/react";
 import { Ltr } from "@/components/Ltr";
+import { BillingTab } from "@/components/billing/BillingTab";
 
 type ToggleProps = {
   checked: boolean;
@@ -381,64 +382,7 @@ export default function SettingsPage() {
 
           {/* BILLING */}
           <TabsContent value="billing">
-            <Card className="bg-dark-surface/40 backdrop-blur-md border-white/10 rounded-2xl">
-              <CardHeader>
-                <CardTitle className="text-white">الفوترة والاشتراك</CardTitle>
-                <CardDescription className="text-neutral-400">
-                  خطتك الحالية، أرصدتك، وتاريخ التجديد.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="rounded-2xl border border-brand-gold/30 bg-gradient-to-br from-brand-gold/10 to-brand-blue/10 p-6">
-                  <div className="flex items-start justify-between flex-wrap gap-4">
-                    <div>
-                      <p className="text-xs text-brand-gold uppercase tracking-widest font-bold">
-                        الخطة الحالية
-                      </p>
-                      <h3 className="text-2xl font-extrabold text-white mt-1 flex items-center gap-2">
-                        <Sparkles className="h-5 w-5 text-brand-gold" /> خطة المؤسس
-                      </h3>
-                      <p className="text-sm text-neutral-300 mt-1">
-                        التجديد التالي: <Ltr>2026-05-22</Ltr>
-                      </p>
-                    </div>
-                    <Button className="bg-brand-gold text-black hover:bg-brand-gold/90 font-bold">
-                      ترقية الخطة
-                    </Button>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="rounded-xl border border-white/10 bg-black/30 p-4">
-                    <p className="text-xs text-neutral-400">رسائل المساعد المتبقية</p>
-                    <p className="text-2xl font-extrabold text-white mt-1">
-                      <Ltr>1,240</Ltr> <span className="text-sm text-neutral-500">/ <Ltr>2,000</Ltr></span>
-                    </p>
-                  </div>
-                  <div className="rounded-xl border border-white/10 bg-black/30 p-4">
-                    <p className="text-xs text-neutral-400">تحاليل أفكار</p>
-                    <p className="text-2xl font-extrabold text-white mt-1">
-                      <Ltr>18</Ltr> <span className="text-sm text-neutral-500">/ <Ltr>30</Ltr></span>
-                    </p>
-                  </div>
-                  <div className="rounded-xl border border-white/10 bg-black/30 p-4">
-                    <p className="text-xs text-neutral-400">خطط أعمال</p>
-                    <p className="text-2xl font-extrabold text-white mt-1">
-                      <Ltr>4</Ltr> <span className="text-sm text-neutral-500">/ <Ltr>10</Ltr></span>
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex flex-wrap gap-3">
-                  <Button variant="outline" className="border-white/10 text-white hover:bg-white/5">
-                    عرض الفواتير السابقة
-                  </Button>
-                  <Button variant="outline" className="border-white/10 text-white hover:bg-white/5">
-                    إدارة طريقة الدفع
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
+            <BillingTab />
           </TabsContent>
 
           {/* PRIVACY */}

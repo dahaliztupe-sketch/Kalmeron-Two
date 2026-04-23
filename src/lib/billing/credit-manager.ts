@@ -1,9 +1,11 @@
 // @ts-nocheck
 import { adminDb } from '@/src/lib/firebase-admin';
-import { FieldValue, Timestamp } from 'firebase-admin/firestore';
+import { Timestamp } from 'firebase-admin/firestore';
+import { PLANS, getPlan, type PlanId } from './plans';
 
 export interface CreditWallet {
   userId: string;
+  plan: PlanId;
   dailyBalance: number;
   monthlyBalance: number;
   lifetimeEarned: number;
@@ -13,7 +15,38 @@ export interface CreditWallet {
   dailyResetAt: Timestamp;
   monthlyResetAt: Timestamp;
   rolledOverCredits: number;
+  unlimited: boolean;
   lastUpdated: Timestamp;
+}
+
+function buildInitialWallet(userId: string, planId: PlanId): CreditWallet {
+  const plan = getPlan(planId);
+  const now = Timestamp.now();
+  return {
+    userId,
+    plan: plan.id,
+    dailyBalance: plan.dailyCredits,
+    monthlyBalance: plan.monthlyCredits,
+    lifetimeEarned: plan.dailyCredits + plan.monthlyCredits,
+    lifetimeConsumed: 0,
+    dailyLimit: plan.dailyCredits,
+    monthlyLimit: plan.monthlyCredits,
+    dailyResetAt: new Timestamp(now.seconds + 86400, 0),
+    monthlyResetAt: new Timestamp(now.seconds + 2592000, 0),
+    rolledOverCredits: 0,
+    unlimited: plan.unlimited,
+    lastUpdated: now,
+  };
+}
+
+async function getUserPlanId(userId: string): Promise<PlanId> {
+  try {
+    const userDoc = await adminDb.collection('users').doc(userId).get();
+    const data = userDoc.data() as any;
+    const plan = data?.plan as PlanId | undefined;
+    if (plan && PLANS[plan]) return plan;
+  } catch {}
+  return 'free';
 }
 
 export class CreditManager {
@@ -25,31 +58,60 @@ export class CreditManager {
 
   async consumeCredits(amount: number, agentName: string, model: string): Promise<{ success: boolean; message: string }> {
     const walletRef = adminDb.collection('user_credits').doc(this.userId);
-    
+    const planId = await getUserPlanId(this.userId);
+
     return adminDb.runTransaction(async (transaction) => {
       const walletDoc = await transaction.get(walletRef);
       const wallet = walletDoc.data() as CreditWallet | undefined;
 
       let createdNew = false;
       let workingWallet: CreditWallet;
+
       if (!wallet) {
-        const now = Timestamp.now();
-        workingWallet = {
-          userId: this.userId,
-          dailyBalance: 20,
-          monthlyBalance: 100,
-          lifetimeEarned: 120,
-          lifetimeConsumed: 0,
-          dailyLimit: 20,
-          monthlyLimit: 100,
-          dailyResetAt: new Timestamp(now.seconds + 86400, 0),
-          monthlyResetAt: new Timestamp(now.seconds + 2592000, 0),
-          rolledOverCredits: 0,
-          lastUpdated: now,
-        };
+        workingWallet = buildInitialWallet(this.userId, planId);
         createdNew = true;
       } else {
         workingWallet = wallet;
+        // إذا تغيّرت الخطة، حدث الحدود الافتراضية ولكن احتفظ بالأرصدة المتبقية
+        if (workingWallet.plan !== planId) {
+          const plan = getPlan(planId);
+          workingWallet = {
+            ...workingWallet,
+            plan: plan.id,
+            dailyLimit: plan.dailyCredits,
+            monthlyLimit: plan.monthlyCredits,
+            unlimited: plan.unlimited,
+            // امنح المستخدم الأرصدة الجديدة عند الترقية
+            dailyBalance: Math.max(workingWallet.dailyBalance, plan.dailyCredits),
+            monthlyBalance: Math.max(workingWallet.monthlyBalance, plan.monthlyCredits),
+          };
+        }
+      }
+
+      // المؤسسات: استهلاك غير محدود
+      if (workingWallet.unlimited) {
+        const updatedFields = {
+          plan: workingWallet.plan,
+          unlimited: true,
+          lifetimeConsumed: (workingWallet.lifetimeConsumed || 0) + amount,
+          lastUpdated: Timestamp.now(),
+        };
+        if (createdNew) {
+          transaction.set(walletRef, { ...workingWallet, ...updatedFields });
+        } else {
+          transaction.update(walletRef, updatedFields);
+        }
+        const txRef = adminDb.collection('credit_transactions').doc();
+        transaction.set(txRef, {
+          userId: this.userId,
+          type: 'consume',
+          amount,
+          agentName,
+          modelUsed: model,
+          plan: workingWallet.plan,
+          timestamp: Timestamp.now(),
+        });
+        return { success: true, message: 'تم خصم الأرصدة بنجاح (خطة غير محدودة)' };
       }
 
       let remaining = amount;
@@ -57,7 +119,6 @@ export class CreditManager {
       let monthlyConsumed = 0;
       let rolloverConsumed = 0;
 
-      // 1. استهلاك الأرصدة اليومية أولاً
       if (workingWallet.dailyBalance >= remaining) {
         dailyConsumed = remaining;
         remaining = 0;
@@ -66,7 +127,6 @@ export class CreditManager {
         remaining -= workingWallet.dailyBalance;
       }
 
-      // 2. استهلاك الأرصدة الشهرية
       if (remaining > 0 && workingWallet.monthlyBalance >= remaining) {
         monthlyConsumed = remaining;
         remaining = 0;
@@ -75,24 +135,23 @@ export class CreditManager {
         remaining -= workingWallet.monthlyBalance;
       }
 
-      // 3. استهلاك الأرصدة المرحلة (Rollover)
       if (remaining > 0 && workingWallet.rolledOverCredits >= remaining) {
         rolloverConsumed = remaining;
         remaining = 0;
       } else if (remaining > 0) {
-          rolloverConsumed = workingWallet.rolledOverCredits;
-          remaining -= workingWallet.rolledOverCredits;
+        rolloverConsumed = workingWallet.rolledOverCredits;
+        remaining -= workingWallet.rolledOverCredits;
       }
 
-      // 4. فشل - رصيد غير كافٍ
       if (remaining > 0) {
         return {
           success: false,
-          message: `رصيدك غير كافٍ. تحتاج ${amount} رصيدًا، والمتبقي لديك ${workingWallet.dailyBalance + workingWallet.monthlyBalance + workingWallet.rolledOverCredits} رصيدًا.`,
+          message: `رصيدك غير كافٍ. تحتاج ${amount} رصيدًا، والمتبقي لديك ${
+            workingWallet.dailyBalance + workingWallet.monthlyBalance + workingWallet.rolledOverCredits
+          } رصيدًا.`,
         };
       }
 
-      // 5. تحديث المحفظة
       const updatedWallet: CreditWallet = {
         ...workingWallet,
         dailyBalance: workingWallet.dailyBalance - dailyConsumed,
@@ -101,10 +160,15 @@ export class CreditManager {
         lifetimeConsumed: workingWallet.lifetimeConsumed + amount,
         lastUpdated: Timestamp.now(),
       };
+
       if (createdNew) {
         transaction.set(walletRef, updatedWallet);
       } else {
         transaction.update(walletRef, {
+          plan: updatedWallet.plan,
+          dailyLimit: updatedWallet.dailyLimit,
+          monthlyLimit: updatedWallet.monthlyLimit,
+          unlimited: updatedWallet.unlimited,
           dailyBalance: updatedWallet.dailyBalance,
           monthlyBalance: updatedWallet.monthlyBalance,
           rolledOverCredits: updatedWallet.rolledOverCredits,
@@ -113,9 +177,8 @@ export class CreditManager {
         });
       }
 
-      // 6. تسجيل المعاملة
-      const transactionRef = adminDb.collection('credit_transactions').doc();
-      transaction.set(transactionRef, {
+      const txRef = adminDb.collection('credit_transactions').doc();
+      transaction.set(txRef, {
         userId: this.userId,
         type: 'consume',
         amount,
@@ -124,9 +187,10 @@ export class CreditManager {
         rolloverConsumed,
         agentName,
         modelUsed: model,
+        plan: updatedWallet.plan,
         timestamp: Timestamp.now(),
-        remainingDaily: wallet.dailyBalance - dailyConsumed,
-        remainingMonthly: wallet.monthlyBalance - monthlyConsumed,
+        remainingDaily: updatedWallet.dailyBalance,
+        remainingMonthly: updatedWallet.monthlyBalance,
       });
 
       return { success: true, message: 'تم خصم الأرصدة بنجاح' };
@@ -137,24 +201,26 @@ export class CreditManager {
     const walletRef = adminDb.collection('user_credits').doc(this.userId);
     const walletDoc = await walletRef.get();
     const wallet = walletDoc.data() as CreditWallet | undefined;
-    if (!wallet) return;
+    if (!wallet || wallet.unlimited) return;
 
-    const monthlyUsagePercent = ((wallet.monthlyLimit - wallet.monthlyBalance) / wallet.monthlyLimit) * 100;
-    const dailyUsagePercent = ((wallet.dailyLimit - wallet.dailyBalance) / wallet.dailyLimit) * 100;
+    const monthlyUsagePercent =
+      wallet.monthlyLimit > 0
+        ? ((wallet.monthlyLimit - wallet.monthlyBalance) / wallet.monthlyLimit) * 100
+        : 0;
+    const dailyUsagePercent =
+      wallet.dailyLimit > 0
+        ? ((wallet.dailyLimit - wallet.dailyBalance) / wallet.dailyLimit) * 100
+        : 0;
 
-    // تحذير عند 80% من الحد الشهري
     if (monthlyUsagePercent >= 80 && monthlyUsagePercent < 100) {
       await this.sendNotification('monthly_warning', monthlyUsagePercent);
     }
-
-    // إيقاف عند 100% من الحد اليومي
     if (dailyUsagePercent >= 100) {
       await this.sendNotification('daily_cap_reached', dailyUsagePercent);
     }
   }
 
   private async sendNotification(type: string, percent: number): Promise<void> {
-    // إرسالية إشعار داخل المنصة أو بريد إلكتروني
     console.log(`Notification for ${this.userId}: ${type} (${percent}%)`);
   }
 }

@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server';
 import { adminAuth, adminDb } from '@/src/lib/firebase-admin';
+import { getPlan, PLANS, type PlanId } from '@/src/lib/billing/plans';
 
 export const runtime = 'nodejs';
 
@@ -25,31 +26,45 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const walletDoc = await adminDb.collection('user_credits').doc(userId).get();
+    const [walletDoc, userDoc] = await Promise.all([
+      adminDb.collection('user_credits').doc(userId).get(),
+      adminDb.collection('users').doc(userId).get(),
+    ]);
+    const userPlanId = (userDoc.data()?.plan as PlanId) || 'free';
+    const userPlan = getPlan(userPlanId);
+
     if (!walletDoc.exists) {
       return new Response(
         JSON.stringify({
-          dailyBalance: 20,
-          monthlyBalance: 100,
+          plan: userPlan.id,
+          planName: userPlan.nameAr,
+          dailyBalance: userPlan.dailyCredits,
+          monthlyBalance: userPlan.monthlyCredits,
           rolledOverCredits: 0,
-          dailyLimit: 20,
-          monthlyLimit: 100,
-          total: 120,
+          dailyLimit: userPlan.dailyCredits,
+          monthlyLimit: userPlan.monthlyCredits,
+          unlimited: userPlan.unlimited,
+          total: userPlan.unlimited ? -1 : userPlan.dailyCredits + userPlan.monthlyCredits,
           initialized: false,
         }),
         { headers: { 'Content-Type': 'application/json' } }
       );
     }
     const w = walletDoc.data() as any;
-    const total =
-      (w.dailyBalance || 0) + (w.monthlyBalance || 0) + (w.rolledOverCredits || 0);
+    const planFromWallet = getPlan((w.plan as PlanId) || userPlanId);
+    const total = planFromWallet.unlimited
+      ? -1
+      : (w.dailyBalance || 0) + (w.monthlyBalance || 0) + (w.rolledOverCredits || 0);
     return new Response(
       JSON.stringify({
+        plan: planFromWallet.id,
+        planName: planFromWallet.nameAr,
         dailyBalance: w.dailyBalance || 0,
         monthlyBalance: w.monthlyBalance || 0,
         rolledOverCredits: w.rolledOverCredits || 0,
-        dailyLimit: w.dailyLimit || 20,
-        monthlyLimit: w.monthlyLimit || 100,
+        dailyLimit: w.dailyLimit || planFromWallet.dailyCredits,
+        monthlyLimit: w.monthlyLimit || planFromWallet.monthlyCredits,
+        unlimited: !!w.unlimited || planFromWallet.unlimited,
         total,
         initialized: true,
       }),

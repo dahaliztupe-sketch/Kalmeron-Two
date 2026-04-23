@@ -7,11 +7,14 @@ import { useAuth } from "@/contexts/AuthContext";
 import { cn } from "@/lib/utils";
 
 type CreditsResp = {
+  plan: string;
+  planName: string;
   dailyBalance: number;
   monthlyBalance: number;
   rolledOverCredits: number;
   dailyLimit: number;
   monthlyLimit: number;
+  unlimited: boolean;
   total: number;
 };
 
@@ -51,13 +54,15 @@ export function CreditsIndicator() {
 
   if (!user) return null;
 
+  const unlimited = !!data?.unlimited;
   const total = data?.total ?? null;
-  const low = total !== null && total < 20;
+  const low = !unlimited && total !== null && total < 50;
+  const planName = data?.planName || "—";
 
   return (
     <Link
-      href="/settings"
-      title="رصيد كلميرون"
+      href="/pricing"
+      title={`خطتك: ${planName}`}
       className={cn(
         "hidden sm:flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-bold transition-all",
         low
@@ -67,10 +72,10 @@ export function CreditsIndicator() {
     >
       <Coins className="h-3.5 w-3.5" />
       <span className="tabular-nums">
-        {loading && total === null ? "—" : total ?? "—"}
+        {unlimited ? "∞" : loading && total === null ? "—" : total ?? "—"}
       </span>
       <span className="text-[10px] font-semibold uppercase tracking-widest opacity-70">
-        رصيد
+        {planName}
       </span>
     </Link>
   );
