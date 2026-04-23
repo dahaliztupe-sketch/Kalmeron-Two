@@ -61,6 +61,10 @@ type AuditEntry = {
   piiHits: Array<{ type: string; count: number }>;
   injectionBlocked: boolean;
   durationMs: number;
+  model?: string;
+  inputTokens?: number;
+  outputTokens?: number;
+  costUsd?: number;
 };
 
 const AUDIT: AuditEntry[] = [];
@@ -68,6 +72,24 @@ const AUDIT_MAX = 5000;
 
 const COST_BY_USER: Map<string, number> = new Map();
 const COST_BY_AGENT: Map<string, number> = new Map();
+type ModelCost = { inputTokens: number; outputTokens: number; costUsd: number; calls: number };
+const COST_BY_MODEL: Map<string, ModelCost> = new Map();
+
+function bumpModelCost(model: string, inputLen: number, outputLen: number, cost: number): void {
+  const cur = COST_BY_MODEL.get(model) || { inputTokens: 0, outputTokens: 0, costUsd: 0, calls: 0 };
+  // Approximate token count from char length (Gemini ~4 chars/token).
+  cur.inputTokens += Math.ceil(inputLen / 4);
+  cur.outputTokens += Math.ceil(outputLen / 4);
+  cur.costUsd += cost;
+  cur.calls += 1;
+  COST_BY_MODEL.set(model, cur);
+}
+
+export function getCostByModel(): Array<{ model: string } & ModelCost> {
+  return Array.from(COST_BY_MODEL.entries())
+    .map(([model, m]) => ({ model, ...m }))
+    .sort((a, b) => b.costUsd - a.costUsd);
+}
 
 function pushAudit(entry: AuditEntry): void {
   AUDIT.push(entry);
@@ -205,10 +227,15 @@ export async function safeGenerateText<TOOLS extends ToolSet = ToolSet>(
   const cost = approxCostUsd(modelId, rawPrompt.length, outLen);
   COST_BY_USER.set(userId, (COST_BY_USER.get(userId) || 0) + cost);
   COST_BY_AGENT.set(ctx.agent, (COST_BY_AGENT.get(ctx.agent) || 0) + cost);
+  bumpModelCost(modelId, rawPrompt.length, outLen, cost);
 
   pushAudit({
     ts: Date.now(), agent: ctx.agent, userId, promptHash,
     outputLength: outLen, piiHits, injectionBlocked: false, durationMs,
+    model: modelId,
+    inputTokens: Math.ceil(rawPrompt.length / 4),
+    outputTokens: Math.ceil(outLen / 4),
+    costUsd: cost,
   });
 
   if (ctx.softCostBudgetUsd && cost > ctx.softCostBudgetUsd) {
@@ -247,10 +274,15 @@ export async function safeGenerateObject<SCHEMA extends z.ZodType>(
   const cost = approxCostUsd(modelId, rawPrompt.length, outLen);
   COST_BY_USER.set(userId, (COST_BY_USER.get(userId) || 0) + cost);
   COST_BY_AGENT.set(ctx.agent, (COST_BY_AGENT.get(ctx.agent) || 0) + cost);
+  bumpModelCost(modelId, rawPrompt.length, outLen, cost);
 
   pushAudit({
     ts: Date.now(), agent: ctx.agent, userId, promptHash,
     outputLength: outLen, piiHits, injectionBlocked: false, durationMs,
+    model: modelId,
+    inputTokens: Math.ceil(rawPrompt.length / 4),
+    outputTokens: Math.ceil(outLen / 4),
+    costUsd: cost,
   });
 
   return { result, meta: { agent: ctx.agent, userId, durationMs, piiHits, injectionBlocked: false } };

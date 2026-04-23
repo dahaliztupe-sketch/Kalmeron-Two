@@ -9,6 +9,8 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Activity, AlertTriangle, DollarSign, ShieldCheck, Loader2, Trash2, Bot } from "lucide-react";
 import Link from "next/link";
+import { DriftWidget } from "@/components/admin/DriftWidget";
+import { CostByModelWidget } from "@/components/admin/CostByModelWidget";
 
 interface Snapshot {
   agents: Record<string, { invocations: number; failures: number; avgLatencyMs: number; successRate: number; totalCostUsd: number }>;
@@ -155,6 +157,12 @@ export default function AdminCommandCenter() {
             </CardContent>
           </Card>
         )}
+
+        {/* Drift + Cost-by-Model widgets (Phase 4) */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <DriftWidget windowDays={7} />
+          <CostByModelWidget />
+        </div>
 
         {/* Fleet Control */}
         <Card className="bg-dark-surface/60 border-white/10">

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getRecentAudit, getCostSnapshot } from '@/src/lib/llm/gateway';
+import { getRecentAudit, getCostSnapshot, getCostByModel } from '@/src/lib/llm/gateway';
 import { adminAuth } from '@/src/lib/firebase-admin';
 
 export const runtime = 'nodejs';
@@ -27,8 +27,13 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
   const limit = Math.min(Number(req.nextUrl.searchParams.get('limit') || 100), 500);
+  const summary = req.nextUrl.searchParams.get('summary');
+  if (summary === 'byModel') {
+    return NextResponse.json({ byModel: getCostByModel() });
+  }
   return NextResponse.json({
     audit: getRecentAudit(limit),
     cost: getCostSnapshot(),
+    byModel: getCostByModel(),
   });
 }

@@ -77,3 +77,7 @@ NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID = "G-GLX7PM8VCE"
 deploymentTarget = "autoscale"
 run = ["node", "./dist/index.cjs"]
 build = ["npm", "run", "build"]
+
+[postMerge]
+path = ".local/scripts/post_merge_setup.sh"
+timeoutMs = 180000
