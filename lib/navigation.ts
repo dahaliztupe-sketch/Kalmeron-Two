@@ -3,6 +3,7 @@ import {
   Settings as SettingsIcon, Wallet, Users as UsersIcon, Heart, Scale,
   FlaskConical, Trophy, ShieldAlert, Radar, FileText, Briefcase,
   Building2, ScrollText, Lightbulb, Store, User as UserIcon,
+  Target,
 } from "lucide-react";
 
 export type NavItem = {
@@ -23,6 +24,7 @@ export const NAV_SECTIONS: NavSection[] = [
     items: [
       { href: "/dashboard", label: "مركز القيادة", icon: LayoutDashboard, exact: true },
       { href: "/chat", label: "المساعد", icon: MessageSquareText },
+      { href: "/okr", label: "أهداف الأسبوع", icon: Target },
       { href: "/roadmap", label: "المخطط", icon: Map },
       { href: "/plan", label: "خطة العمل", icon: ScrollText },
       { href: "/ideas/analyze", label: "تحليل الأفكار", icon: Lightbulb },
