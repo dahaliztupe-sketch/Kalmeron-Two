@@ -8,6 +8,11 @@
   import { orchestrate } from '../organization/governance/orchestrator';
   import { observe, reflect } from '@/src/lib/memory/shared-memory';
   import { getAgentContext } from '@/src/lib/memory/context-provider';
+  import {
+    receiveMessage as receiveChannelMessage,
+    sendMessage as sendChannelMessage,
+    type Channel,
+  } from '@/src/lib/integrations/omnichannel';
 
   const PROGRESS_MESSAGES: Record<string, string> = {
     marketing: 'فريق التسويق يعمل على استراتيجيتك...',
@@ -26,6 +31,24 @@
     taskId?: string;
     departments?: string[];
     progressMessages?: string[];
+  }
+
+  /**
+   * استقبال رسائل من قنوات خارجية (واتساب/تيليجرام/بريد) وتمريرها إلى وكيل
+   * الاستقبال بنفس الواجهة الموحّدة. تحلّ هوية المستخدم عبر بوابة القنوات.
+   */
+  export async function receptionistHandleChannelMessage(args: {
+    channel: Channel;
+    senderId: string;
+    text: string;
+    raw?: any;
+  }) {
+    const inbound = await receiveChannelMessage(args.channel, { text: args.text, raw: args.raw }, args.senderId);
+    const userId = inbound.userId || `${args.channel}:${args.senderId}`;
+    const response = await receptionistRespond({ userId, message: args.text });
+    // أرسل الردّ مرة أخرى عبر نفس القناة (best-effort).
+    sendChannelMessage(args.channel, { text: response.text }, args.senderId).catch(() => {});
+    return response;
   }
 
   export async function receptionistRespond(args: {

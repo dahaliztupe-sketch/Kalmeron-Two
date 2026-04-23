@@ -5,6 +5,33 @@ import { AgentRegistry } from '../agents/registry';
 import { withLearnedSkills } from '@/src/lib/observability/agent-instrumentation';
 import { updateSkillFeedback } from '@/src/lib/learning/loop';
 import { isFeedbackRecorded, markFeedbackRecorded } from '@/src/lib/learning/context';
+import { launchStartup } from '@/src/ai/launchpad/pipeline';
+import { detectCollaborationOpportunity } from '@/src/ai/orchestrator/virtual-meeting';
+import { receiveMessage, type Channel } from '@/src/lib/integrations/omnichannel';
+
+/**
+ * إدخال موحّد للمنسق العام يوجّه الطلب حسب نوعه:
+ *  - إن احتوى على "إطلاق المشروع" → مسار Launchpad الكامل.
+ *  - إن وُرد من قناة خارجية (واتساب/تيليجرام/بريد) → يمرّ عبر بوابة القنوات أولاً.
+ *  - غير ذلك → يمرّ عبر StateGraph الافتراضي.
+ */
+export async function routeIncoming(args: {
+  task: string;
+  workspaceId: string;
+  channel?: Channel;
+  senderId?: string;
+}) {
+  if (args.channel && args.senderId) {
+    await receiveMessage(args.channel, { text: args.task }, args.senderId);
+  }
+  const t = (args.task || '').toLowerCase();
+  if (t.includes('إطلاق المشروع') || t.includes('launch startup')) {
+    return { kind: 'launch', result: await launchStartup({ idea: args.task, workspaceId: args.workspaceId }) };
+  }
+  // Periodically surface collaboration opportunities (best-effort).
+  detectCollaborationOpportunity(args.workspaceId).catch(() => {});
+  return { kind: 'graph', pending: true };
+}
 
 const AgentState = Annotation.Root({
   messages: Annotation<BaseMessage[]>({
