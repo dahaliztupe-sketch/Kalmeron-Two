@@ -13,6 +13,20 @@ import { logAgentGeneration } from './langfuse';
 import { recordInvocation } from '@/src/ai/organization/compliance/monitor';
 import { addEntity, isKnowledgeGraphEnabled } from '@/src/lib/memory/knowledge-graph';
 import { updateOKRProgress } from '@/src/lib/okr/okr-store';
+import {
+  loadRelevantSkills,
+  extractSkillFromTask,
+  saveSkill,
+  updateSkillFeedback,
+  formatSkillsForPrompt,
+  type LearnedSkill,
+} from '@/src/lib/learning/loop';
+import {
+  getCurrentLearningContext,
+  setCurrentLearnedSkills,
+  clearCurrentLearnedSkills,
+  markFeedbackRecorded,
+} from '@/src/lib/learning/context';
 
 export interface InstrumentOptions {
   model?: string;
@@ -25,6 +39,33 @@ export interface InstrumentOptions {
   findingType?: string;
   /** اختياري: ربط النتيجة بنتيجة رئيسية */
   okrUpdate?: { okrId: string; krIndex: number; delta?: number; current?: number };
+  /** اختياري: نص المهمة (لاستخدامه في تلقيح الذاكرة بمهارات مُتعلَّمة) */
+  task?: string;
+  /** مطلوب لتفعيل دورة التعلم — يضمن العزل بين مساحات العمل. */
+  workspaceId?: string;
+  /** اختياري: تعطيل دورة التعلم لهذا الاستدعاء */
+  disableLearning?: boolean;
+  /** يتم حقنها بواسطة withLearnedSkills قبل التنفيذ */
+  loadedSkills?: LearnedSkill[];
+}
+
+/**
+ * يحمّل المهارات المُتعلَّمة الأنسب قبل تنفيذ الوكيل ويرجعها كنص جاهز
+ * للحقن في system prompt. استخدمه قبل بناء الـ system message.
+ */
+export async function withLearnedSkills(
+  workspaceId: string,
+  agentName: string,
+  task: string,
+  limit = 5
+): Promise<{ skills: LearnedSkill[]; promptAddon: string }> {
+  if (!task || !workspaceId) return { skills: [], promptAddon: '' };
+  try {
+    const skills = await loadRelevantSkills(workspaceId, agentName, task, limit);
+    return { skills, promptAddon: formatSkillsForPrompt(skills) };
+  } catch {
+    return { skills: [], promptAddon: '' };
+  }
 }
 
 export async function instrumentAgent<T>(
@@ -36,6 +77,42 @@ export async function instrumentAgent<T>(
   let success = true;
   let errorCode: string | undefined;
   let result: T | undefined;
+
+  // ---- Learning loop: tenant-scoped via opts OR ambient AsyncLocalStorage ctx ----
+  // Falling back to the ambient context lets us light up learning across ALL
+  // agent files without modifying each one — the orchestrator entrypoint sets
+  // the context once via runWithLearningContext().
+  const ambient = getCurrentLearningContext();
+  const effectiveWorkspaceId = opts.workspaceId || ambient?.workspaceId || '';
+  const effectiveTask = opts.task || ambient?.task || '';
+  const learningEnabled =
+    !opts.disableLearning && !!effectiveWorkspaceId && !!effectiveTask;
+
+  let preloadedSkills: LearnedSkill[] = opts.loadedSkills || [];
+  if (learningEnabled && !preloadedSkills.length) {
+    try {
+      preloadedSkills = await loadRelevantSkills(
+        effectiveWorkspaceId,
+        agentName,
+        effectiveTask,
+        5
+      );
+    } catch { preloadedSkills = []; }
+  }
+  // اجعل المهارات مرئية للكود الداخلي (مثل بنّاء system prompt) عبر السياق،
+  // وامسح أي قيمة قديمة من وكيل سابق إذا لم نجد مهارات لهذا الاستدعاء حتى
+  // لا تتسرّب نصوص قديمة إلى prompt الوكيل التالي.
+  if (learningEnabled) {
+    if (preloadedSkills.length) {
+      setCurrentLearnedSkills(
+        formatSkillsForPrompt(preloadedSkills),
+        preloadedSkills.map((s) => s.id!).filter(Boolean)
+      );
+    } else {
+      clearCurrentLearnedSkills();
+    }
+  }
+
   try {
     result = await exec();
     return result;
@@ -100,5 +177,37 @@ export async function instrumentAgent<T>(
       latencyMs,
       success,
     });
+
+    // ---- Learning loop: feedback + skill extraction (tenant-scoped) ----
+    if (learningEnabled) {
+      const usedIds = (preloadedSkills || []).map((s) => s.id!).filter(Boolean);
+      if (usedIds.length) {
+        void updateSkillFeedback(effectiveWorkspaceId, usedIds, {
+          success,
+          failureReason: success ? undefined : errorCode,
+        }).catch(() => {});
+        // أعلم العقد العلوية (مثل synthesizer) أننا سجّلنا التغذية الراجعة
+        // لهذه المعرّفات لتفادي العدّ المضاعف.
+        markFeedbackRecorded(usedIds);
+      }
+      if (success) {
+        const taskText = effectiveTask;
+        const wid = effectiveWorkspaceId;
+        void (async () => {
+          try {
+            const outputStr =
+              typeof result === 'string' ? result : JSON.stringify(result || '').slice(0, 6000);
+            const skill = await extractSkillFromTask({
+              workspaceId: wid,
+              agentType: agentName,
+              task: taskText,
+              output: outputStr,
+              toolsUsed: opts.toolsUsed || [],
+            });
+            if (skill) await saveSkill(skill);
+          } catch { /* swallow */ }
+        })();
+      }
+    }
   }
 }

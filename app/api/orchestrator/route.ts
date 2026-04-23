@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { orchestratorWithCheckpoint } from '@/src/ai/orchestrator/graph';
 import { HumanMessage } from '@langchain/core/messages';
+import { runWithLearningContext } from '@/src/lib/learning/context';
 import xss from 'xss';
 
 export async function POST(req: NextRequest) {
@@ -8,19 +9,28 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const message = xss(String(body.message ?? '').slice(0, 10000));
     const userId = xss(String(body.userId ?? '').slice(0, 128));
-    
-    // استدعاء المنسق
-    const result = await orchestratorWithCheckpoint.invoke(
-      {
-        messages: [new HumanMessage(message)],
-        task: message,
-        intermediateResults: {},
-      },
-      {
-        configurable: {
-          thread_id: userId || 'default-thread', // حفظ المحادثة لكل مستخدم
-        },
-      }
+    const workspaceId = xss(String(body.workspaceId ?? '').slice(0, 128));
+
+    // كل التنفيذ — بما فيه استدعاءات الوكلاء المتداخلة — يجري داخل سياق
+    // التعلم؛ هذا يضمن أن instrumentAgent يستطيع تحميل المهارات وحفظ
+    // التغذية الراجعة واستخراج المهارات الجديدة لكل وكيل تلقائياً، بدون
+    // تعديل كل ملف وكيل على حدة.
+    const result = await runWithLearningContext(
+      { workspaceId, task: message },
+      () =>
+        orchestratorWithCheckpoint.invoke(
+          {
+            messages: [new HumanMessage(message)],
+            task: message,
+            workspaceId,
+            intermediateResults: {},
+          },
+          {
+            configurable: {
+              thread_id: userId || 'default-thread',
+            },
+          }
+        )
     );
     
     // استخراج الرد النهائي

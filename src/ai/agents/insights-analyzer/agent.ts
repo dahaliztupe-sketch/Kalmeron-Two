@@ -2,14 +2,17 @@
 import { generateText } from 'ai';
 import { MODELS } from '@/src/lib/gemini';
 import { instrumentAgent } from '@/src/lib/observability/agent-instrumentation';
+import { getCurrentLearnedSkillsAddon } from '@/src/lib/learning/context';
 
 export async function analyzeInterviewResults(ideaDescription: string, results: any[]) {
   return instrumentAgent(
     'insights_analyzer',
     async () => {
+      const baseSystem = `أنت محلل أبحاث سوق. مهمتك هي تحليل ردود الشخصيات الافتراضية على فكرة منتج ما، واستخلاص رؤى قابلة للتنفيذ. ركز على: الاهتمامات المشتركة، الاعتراضات الرئيسية، الشرائح الأكثر تقبلاً، وتوصيات لتحسين الفكرة.`;
+      const learnedAddon = getCurrentLearnedSkillsAddon();
       const { text } = await generateText({
         model: MODELS.PRO,
-        system: `أنت محلل أبحاث سوق. مهمتك هي تحليل ردود الشخصيات الافتراضية على فكرة منتج ما، واستخلاص رؤى قابلة للتنفيذ. ركز على: الاهتمامات المشتركة، الاعتراضات الرئيسية، الشرائح الأكثر تقبلاً، وتوصيات لتحسين الفكرة.`,
+        system: learnedAddon ? `${baseSystem}\n\n${learnedAddon}` : baseSystem,
         prompt: `فكرة المنتج: "${ideaDescription}"
     ردود الشخصيات الافتراضية: ${JSON.stringify(results)}
     

@@ -1,0 +1,37 @@
+{
+  "Index": {
+    "title": "Build your impact with Kalmeron",
+    "description": "Your intelligent founder partner"
+  },
+  "LearnedSkills": {
+    "navLabel": "Learned Skills",
+    "title": "Learned Skills",
+    "subtitle": "Skills agents distill automatically after every successful task, then reuse to keep improving.",
+    "refresh": "Refresh",
+    "consolidate": "Run consolidation",
+    "stats": {
+      "total": "Total skills",
+      "enabled": "Enabled",
+      "used": "Times used",
+      "avgSuccess": "Average success"
+    },
+    "filters": {
+      "allAgents": "All agents"
+    },
+    "empty": "No skills distilled yet. They will be created automatically after each successful task.",
+    "details": {
+      "show": "Show steps and evolution tree",
+      "hide": "Hide details",
+      "steps": "Steps",
+      "parameters": "Parameters",
+      "evolution": "Evolution tree",
+      "noEvolution": "No evolution chain yet — this is a first-generation skill.",
+      "lastFailure": "Last failure reason"
+    },
+    "source": {
+      "extracted": "Extracted",
+      "merged": "Merged",
+      "refined": "Refined"
+    }
+  }
+}

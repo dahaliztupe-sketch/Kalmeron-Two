@@ -93,6 +93,18 @@ service cloud.firestore {
       allow create: if isSignedIn() && isIncomingOwner();
     }
 
+    // --- Learned Skills (Self-Evolution Learning Loop) ---
+    // Per-workspace tenant isolation:
+    //   - Reads: only users who are members of the skill's workspace.
+    //   - Writes: server-side only (Admin SDK bypasses these rules).
+    // Membership is checked via workspaces/{wid}/members/{uid} existence.
+    match /skills/{skillId} {
+      allow read: if isSignedIn()
+                  && resource.data.workspaceId is string
+                  && exists(/databases/$(database)/documents/workspaces/$(resource.data.workspaceId)/members/$(request.auth.uid));
+      allow write: if false;
+    }
+
     // --- Public Read-Only Collections ---
     match /opportunities/{doc} {
       allow read: if true;
