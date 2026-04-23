@@ -8,6 +8,7 @@ import { motion, type Variants } from "motion/react";
 import { Settings as SettingsIcon, LogOut, ChevronLeft } from "lucide-react";
 import { NAV_SECTIONS, FOOTER_NAV, isActive, type NavItem } from "@/lib/navigation";
 import { BrandLogo } from "@/components/brand/BrandLogo";
+import { WorkspaceSwitcher } from "@/components/workspaces/WorkspaceSwitcher";
 
 const containerV: Variants = {
   hidden: { opacity: 0 },
@@ -120,6 +121,11 @@ export function Sidebar() {
           </div>
         </div>
       )}
+
+      {/* Workspace switcher */}
+      <div className="px-3 pt-3">
+        <WorkspaceSwitcher />
+      </div>
 
       {/* Nav */}
       <motion.nav

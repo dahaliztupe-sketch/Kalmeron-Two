@@ -2,6 +2,7 @@
 import { AppShell } from "@/components/layout/AppShell";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ComposedChart, Bar, Line } from 'recharts';
+import { DocumentUploader } from "@/components/rag/DocumentUploader";
 
 const financialProjections = [
   { month: 'يناير', revenue: 15000, expenses: 12000, cashflow: 3000 },
@@ -91,6 +92,13 @@ export default function CFODashboard() {
             </ResponsiveContainer>
           </CardContent>
         </Card>
+      </div>
+
+      <div className="relative z-10 mt-8">
+        <DocumentUploader title="مستنداتك المالية (كشوف بنكية، ميزانيات، فواتير)" />
+        <p className="text-xs text-neutral-500 mt-2">
+          ارفع كشوفك ليستشهد بها CFO الذكي عند تحليل السيولة والتدفقات النقدية في المحادثة.
+        </p>
       </div>
     </div>
     </AppShell>

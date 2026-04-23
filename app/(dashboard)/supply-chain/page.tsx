@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { Package, Truck, Activity, ArrowRightLeft } from 'lucide-react';
 import { AppShell } from "@/components/layout/AppShell";
+import { DocumentUploader } from "@/components/rag/DocumentUploader";
 
 export default function SupplyChainDashboard() {
   const [analyzing, setAnalyzing] = useState(false);
@@ -66,6 +67,13 @@ export default function SupplyChainDashboard() {
                {`>`} مسار بديل مقترح: شحنة X5 لتجنب إغلاقات الميناء الحالية، يوفر 3 أيام.
              </div>
           </div>
+        </div>
+
+        <div className="mt-8">
+          <DocumentUploader title="مستندات سلسلة الإمداد (قوائم موردين، عقود، فواتير شحن)" />
+          <p className="text-xs text-neutral-500 mt-2">
+            ارفع بيانات المخزون والموردين ليستشهد بها سرب الإمداد عند توصياته في المحادثة.
+          </p>
         </div>
       </div>
     </AppShell>

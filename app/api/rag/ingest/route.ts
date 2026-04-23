@@ -47,8 +47,8 @@ export async function POST(req: NextRequest) {
   const userId = await authedUserId(req);
   if (!userId) return NextResponse.json({ error: 'auth_required' }, { status: 401 });
 
-  const rl = rateLimit(req, { max: 10, windowMs: 60_000, scope: `rag-ingest:${userId}` });
-  if (!rl.allowed) return NextResponse.json({ error: 'rate_limited' }, { status: 429 });
+  const rl = rateLimit(req, { limit: 10, windowMs: 60_000, userId, scope: 'rag-ingest' });
+  if (!rl.success) return NextResponse.json({ error: 'rate_limited' }, { status: 429 });
 
   let form: FormData;
   try { form = await req.formData(); }

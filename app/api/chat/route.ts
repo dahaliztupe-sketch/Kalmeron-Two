@@ -9,6 +9,8 @@ import { rateLimit, rateLimitAgent, rateLimitResponse } from '@/lib/security/rat
 import { createRequestLogger } from '@/src/lib/logger';
 import { redactPII } from '@/src/lib/compliance/pii-redactor';
 import { generateFollowUpSuggestions } from '@/src/ai/suggestions/follow-ups';
+import { searchUserKnowledge } from '@/src/lib/rag/user-rag';
+import { SystemMessage } from '@langchain/core/messages';
 
 export const runtime = 'nodejs';
 
@@ -88,9 +90,30 @@ export async function POST(req: NextRequest) {
   }
 
   // PII redaction قبل تمرير المحتوى لأي LLM (audit + privacy).
-  const langchainMessages = messages.map((m: any) =>
+  const langchainMessages: any[] = messages.map((m: any) =>
     new HumanMessage(redactPII(xss(m.content)).redacted),
   );
+
+  // RAG على مستندات المستخدم (Phase 6) — استرجاع الاستشهادات وإدراجها كسياق.
+  let citations: Array<{ documentId: string; documentName: string; chunkIndex: number; text: string; similarity: number }> = [];
+  if (userId !== 'guest-system') {
+    try {
+      citations = await searchUserKnowledge({ userId, query: cleanMessage, topK: 4 });
+      if (citations.length > 0) {
+        const ctx = citations
+          .map((c, i) => `[${i + 1}] (${c.documentName} #${c.chunkIndex})\n${c.text}`)
+          .join('\n\n');
+        langchainMessages.unshift(
+          new SystemMessage(
+            `سياق من مستندات المستخدم (استخدمه واستشهد بالأرقام [1]، [2]... عند الاقتباس):\n\n${ctx}`,
+          ),
+        );
+      }
+    } catch (e) {
+      log.warn({ msg: 'rag_search_failed', err: (e as any)?.message });
+    }
+  }
+
   const encoder = new TextEncoder();
 
   const stream = new ReadableStream({
@@ -204,7 +227,19 @@ export async function POST(req: NextRequest) {
           /* swallow */
         }
 
-        send('done', { intent: finalIntent, length: finalText.length });
+        if (citations.length > 0) {
+          send('citations', {
+            items: citations.map((c, i) => ({
+              index: i + 1,
+              documentId: c.documentId,
+              documentName: c.documentName,
+              chunkIndex: c.chunkIndex,
+              snippet: c.text.slice(0, 220),
+              similarity: Number(c.similarity.toFixed(3)),
+            })),
+          });
+        }
+        send('done', { intent: finalIntent, length: finalText.length, citations: citations.length });
       } catch (error: any) {
         log.error({ msg: 'Chat SSE error', error: error?.message, stack: error?.stack });
         send('error', { message: 'عذراً، كالميرون بيواجه مشكلة فنية حالياً.' });

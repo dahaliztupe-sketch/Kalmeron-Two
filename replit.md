@@ -384,10 +384,86 @@ snapshot. Gated by `ADMIN_EMAILS` env var.
 `event: done`. Existing events (`phase`, `delta`, `done`, `error`) are unchanged.
 
 ### Explicitly out of scope this pass (still TODO from task spec)
-- Full RAG ingestion pipeline + advanced retrieval strategies (Phase 4 #11–14).
 - Multi-agent crews wiring through `artifact-bus` / `event-mesh` (Phase 5).
 - Langfuse / Arize live traces wiring beyond what `instrumentAgent` already
   provides (Phase 7).
 - Long-term user memory + Knowledge Graph activation (Phase 3 #9–10).
 - Prompt-optimizer auto-tuning loop (Phase 9 #32).
 - E2E Playwright coverage per agent (Phase 11 #38).
+
+---
+
+## April 2026 — Roadmap Phases 4–9 implementation
+
+### Phase 4 — Observability (extension)
+- Wrapped `insights-analyzer`, `interview-simulator`, `customer-support`,
+  `compliance` with `instrumentAgent`. Added `src/ai/agents/admin/runners.ts`
+  with 4 admin Mastra agents.
+- Extended `src/lib/llm/gateway.ts`: `COST_BY_MODEL` table +
+  `getCostByModel()`; every audit row now stores `model`, `tokens`, `cost`.
+- `app/api/admin/llm-audit/route.ts?summary=byModel` returns aggregated
+  per-model cost rollups.
+- New widgets `components/admin/DriftWidget.tsx` and `CostByModelWidget.tsx`
+  mounted in `app/admin/page.tsx`.
+
+### Phase 5 — Eval CI gate
+- Golden dataset expanded 11 → 21 cases (per-intent coverage + extra safety
+  cases incl. PII national-ID).
+- `npm run eval` runs `tsx test/eval/run-eval.ts`.
+- `.github/workflows/eval.yml` enforces the threshold on PRs.
+
+### Phase 6 — Per-user RAG with citations
+- `src/lib/rag/user-rag.ts` — chunk (800 chars / 120 overlap), embed via
+  `gemini-embedding-001`, store in Firestore `rag_chunks` namespaced by
+  `userId`; cosine search in-memory (sufficient up to ~10k chunks/user).
+- `app/api/rag/ingest` (PDF/CSV/XLSX/TXT, 10MB cap), `/search`, `/documents`
+  (GET list / DELETE).
+- `components/rag/DocumentUploader.tsx` mounted on `/cfo` and
+  `/(dashboard)/supply-chain`.
+- `/api/chat` now calls `searchUserKnowledge` per turn, prepends a system
+  message with the top-K chunks tagged `[1]…[N]`, and emits a new
+  `event: citations` SSE frame consumed by the chat UI to render a
+  "مصادر من مستنداتك" panel under each assistant reply.
+
+### Phase 7 — Actions registry + approval inbox
+- `src/ai/actions/registry.ts` — typed registry of side-effecting actions
+  (`send_email`, `create_invoice_draft`, `schedule_meeting`, `send_whatsapp`).
+  Each declares a Zod input schema and `requiresApproval`. External rails
+  (Resend, WhatsApp Cloud API) gracefully no-op when their env vars are
+  absent — request still gets logged with `status: 'executed_noop'`.
+- `requestAction()` writes to Firestore `agent_actions`; `decideAction()`
+  approves/rejects and runs the handler.
+- `app/api/actions/inbox` (GET list / POST decide) and
+  `app/api/actions/request` (POST).
+- `app/inbox/page.tsx` — reviewer UI with status filters and one-click
+  approve/reject. Linked from sidebar nav (الرئيسي → صندوق الموافقات).
+
+### Phase 8 — Workspaces + audit log
+- `src/lib/workspaces/workspaces.ts` — Firestore `workspaces/{wid}` with
+  `members/{uid}` subcollection (`owner|finance|ops|viewer`).
+  `ensureDefaultWorkspace(uid)` auto-provisions a personal space on first
+  request.
+- `app/api/workspaces` (GET list+members, POST add/remove member).
+- `recordAudit()` writes immutable rows to Firestore `audit_log`. Hooked
+  into action-approval/rejection in `/api/actions/inbox` and member
+  add/remove in `/api/workspaces`.
+- `app/api/admin/audit` returns last 200 rows; `/admin/audit` page renders
+  them in a sortable table.
+- `components/workspaces/WorkspaceSwitcher.tsx` mounted at the top of the
+  sidebar; persists active workspace ID in `localStorage`.
+
+### Phase 9 — PWA hardening + Arabic voice
+- `public/sw.js` — Workbox-style service worker: install caches the app
+  shell, stale-while-revalidate for `/_next/static` + static assets,
+  network-first for navigations with cache fallback. Skips POST/SSE/API
+  routes so the LLM stream is never intercepted.
+- `components/pwa/ServiceWorkerRegistrar.tsx` — registers SW only in
+  production; mounted in `app/layout.tsx`.
+- `components/chat/VoiceInputButton.tsx` — Web Speech API (`ar-EG`).
+  Detects browsers without `SpeechRecognition` and renders a disabled
+  mic icon instead of failing. Integrated into the chat input.
+
+### Chat SSE contract additions (Phase 6)
+`event: citations` `{ items: Citation[] }` emitted before
+`event: done` whenever the user has matching documents. `done` payload now
+includes `citations: <count>`.

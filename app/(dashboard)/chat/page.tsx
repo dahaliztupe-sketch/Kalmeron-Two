@@ -14,6 +14,7 @@ import ReactMarkdown from "react-markdown";
 import { toast } from "sonner";
 import { motion } from "motion/react";
 import { ThoughtChain, type Phase } from "@/components/chat/ThoughtChain";
+import { VoiceInputButton } from "@/components/chat/VoiceInputButton";
 
 const suggestionChips = [
   { label: "حلل فكرتي الاستثمارية", icon: Lightbulb, prompt: "هل يمكنك إجراء تحليل شامل وفني لفكرتي المستندة إلى السوق المصري؟" },
@@ -22,11 +23,21 @@ const suggestionChips = [
   { label: "اكتشاف فرص التمويل", icon: Radar, prompt: "أخبرني عن أحدث جولات التمويل، مسابقات ريادة الأعمال، والفعاليات القادمة في مصر." },
 ];
 
+type Citation = {
+  index: number;
+  documentId: string;
+  documentName: string;
+  chunkIndex: number;
+  snippet: string;
+  similarity: number;
+};
+
 type ChatMessage = {
   id: string;
   role: "user" | "assistant";
   content: string;
   phases?: Phase[];
+  citations?: Citation[];
 };
 
 export default function ChatPage() {
@@ -121,6 +132,7 @@ export default function ChatPage() {
       let buffer = "";
       let collectedText = "";
       let collectedPhases: Phase[] = [];
+      let collectedCitations: Citation[] = [];
 
       const handleEvent = (event: string, data: any) => {
         if (event === "phase") {
@@ -133,10 +145,19 @@ export default function ChatPage() {
               m.id === assistantId ? { ...m, content: collectedText, phases: collectedPhases } : m
             )
           );
+        } else if (event === "citations") {
+          collectedCitations = Array.isArray(data?.items) ? data.items : [];
+          setMessages((prev) =>
+            prev.map((m) =>
+              m.id === assistantId ? { ...m, citations: collectedCitations } : m
+            )
+          );
         } else if (event === "done") {
           setMessages((prev) => {
             const next = prev.map((m) =>
-              m.id === assistantId ? { ...m, content: collectedText, phases: collectedPhases } : m
+              m.id === assistantId
+                ? { ...m, content: collectedText, phases: collectedPhases, citations: collectedCitations }
+                : m
             );
             void saveChatToFirestore(next);
             return next;
@@ -337,6 +358,25 @@ export default function ChatPage() {
                         </motion.div>
                       </div>
                     )}
+                    {m.role === "assistant" && m.citations && m.citations.length > 0 && (
+                      <div className="mt-3 pt-3 border-t border-white/10">
+                        <p className="text-[11px] uppercase tracking-wider text-brand-gold/80 mb-2">
+                          مصادر من مستنداتك
+                        </p>
+                        <ol className="space-y-1.5 text-xs text-neutral-300">
+                          {m.citations.map((c) => (
+                            <li key={`${c.documentId}-${c.chunkIndex}`} className="flex gap-2">
+                              <span className="text-brand-gold shrink-0">[{c.index}]</span>
+                              <span className="flex-1">
+                                <span className="text-white">{c.documentName}</span>
+                                <span className="text-neutral-500"> · مقطع {c.chunkIndex}</span>
+                                <span className="block text-neutral-400 mt-0.5 line-clamp-2">{c.snippet}</span>
+                              </span>
+                            </li>
+                          ))}
+                        </ol>
+                      </div>
+                    )}
                   </div>
                 </div>
               );
@@ -410,6 +450,11 @@ export default function ChatPage() {
               onChange={(e) => setInput(e.target.value)}
               className="flex-1 h-full bg-transparent border-none outline-none text-white placeholder-neutral-500 text-sm px-2"
               disabled={isLoading}
+            />
+
+            <VoiceInputButton
+              onTranscript={(t) => setInput((cur) => (cur ? cur + " " + t : t))}
+              className="h-10 w-10 text-neutral-300 hover:text-white shrink-0"
             />
 
             {isLoading ? (

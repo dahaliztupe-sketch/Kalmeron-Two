@@ -1,7 +1,7 @@
 // @ts-nocheck
 import { NextRequest, NextResponse } from 'next/server';
 import { adminAuth } from '@/src/lib/firebase-admin';
-import { searchUserKnowledge } from '@/src/lib/rag/user-rag';
+import { requestAction } from '@/src/ai/actions/registry';
 import { rateLimit } from '@/lib/security/rate-limit';
 
 export const runtime = 'nodejs';
@@ -18,18 +18,16 @@ async function authedUserId(req: NextRequest): Promise<string | null> {
 export async function POST(req: NextRequest) {
   const userId = await authedUserId(req);
   if (!userId) return NextResponse.json({ error: 'auth_required' }, { status: 401 });
-  const rl = rateLimit(req, { limit: 30, windowMs: 60_000, userId, scope: 'rag-search' });
+  const rl = rateLimit(req, { limit: 20, windowMs: 60_000, userId, scope: 'action-request' });
   if (!rl.success) return NextResponse.json({ error: 'rate_limited' }, { status: 429 });
 
   let body: any; try { body = await req.json(); } catch { return NextResponse.json({ error: 'invalid_json' }, { status: 400 }); }
-  const q = String(body?.query || '').trim();
-  if (!q) return NextResponse.json({ error: 'query_required' }, { status: 400 });
-  const topK = Math.min(10, Math.max(1, Number(body?.topK || 4)));
-
+  const { actionId, input, rationale } = body || {};
+  if (!actionId) return NextResponse.json({ error: 'actionId_required' }, { status: 400 });
   try {
-    const citations = await searchUserKnowledge({ userId, query: q, topK });
-    return NextResponse.json({ citations });
+    const r = await requestAction({ userId, actionId, input: input || {}, rationale, requestedBy: 'user' });
+    return NextResponse.json({ ok: true, ...r });
   } catch (e: any) {
-    return NextResponse.json({ error: e?.message || 'search_failed' }, { status: 500 });
+    return NextResponse.json({ error: e?.message || 'request_failed' }, { status: 400 });
   }
 }
