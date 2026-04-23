@@ -3,7 +3,8 @@ import {
   Settings as SettingsIcon, Wallet, Users as UsersIcon, Heart, Scale,
   FlaskConical, Trophy, ShieldAlert, Radar, FileText, Briefcase,
   Building2, ScrollText, Lightbulb, Store, User as UserIcon,
-  Target, Brain, CreditCard, Inbox as InboxIcon, Sparkles,
+  Target, Brain, CreditCard, Inbox as InboxIcon, Sparkles, Cpu,
+  BarChart3, Calculator,
 } from "lucide-react";
 
 export type NavItem = {
@@ -48,11 +49,13 @@ export const NAV_SECTIONS: NavSection[] = [
   {
     heading: "الأدوات الإستراتيجية",
     items: [
+      { href: "/agents", label: "عرض الوكلاء", icon: Cpu },
       { href: "/market-lab", label: "مختبر السوق", icon: FlaskConical },
-      { href: "/success-museum", label: "متحف النجاح", icon: Trophy },
-      { href: "/mistake-shield", label: "حارس الأخطاء", icon: ShieldAlert },
       { href: "/opportunities", label: "رادار الفرص", icon: Radar },
-      { href: "/cfo", label: "المدير المالي", icon: Briefcase },
+      { href: "/cfo", label: "المدير المالي", icon: BarChart3 },
+      { href: "/roi", label: "حاسبة ROI", icon: Calculator },
+      { href: "/success-museum", label: "متحف النجاح", icon: Trophy },
+      { href: "/mistake-shield", label: "درع الأخطاء", icon: ShieldAlert },
       { href: "/real-estate", label: "العقارات", icon: Building2 },
       { href: "/legal-templates", label: "نماذج قانونية", icon: FileText },
       { href: "/marketplace", label: "السوق", icon: Store },

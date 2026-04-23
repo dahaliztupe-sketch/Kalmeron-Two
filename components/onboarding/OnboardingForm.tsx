@@ -3,33 +3,108 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
-import { useLanguage } from "@/contexts/LanguageContext";
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "@/src/lib/firebase";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Loader2, Rocket, Sparkles, MapPin, Briefcase } from "lucide-react";
+import { Loader2, Rocket, Sparkles, MapPin, Briefcase, CheckCircle2, ArrowLeft, ArrowRight, Brain, FlaskConical, Scale, Radar, Shield, Building2, ShoppingCart, HeartPulse, GraduationCap, Cpu, Leaf, Home, Banknote, Utensils } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
+import { cn } from "@/lib/utils";
+
+const STAGES = [
+  { id: "idea", label: "فكرة أولية", desc: "عندي فكرة لكن لم أبدأ بعد", icon: "💡" },
+  { id: "validation", label: "اختبار السوق", desc: "بدأت التحقق من الفكرة مع عملاء", icon: "🔬" },
+  { id: "mvp", label: "بناء MVP", desc: "أعمل على النموذج الأولي", icon: "🛠️" },
+  { id: "foundation", label: "مرحلة التأسيس", desc: "أسست الشركة وبدأت البيع", icon: "🏗️" },
+  { id: "growth", label: "نمو وتوسع", desc: "شركة قائمة وأبحث عن تسريع النمو", icon: "📈" },
+];
+
+const INDUSTRIES = [
+  { id: "fintech", label: "مالية ومصرفية", icon: Banknote, color: "emerald" },
+  { id: "tech", label: "تكنولوجيا وبرمجيات", icon: Cpu, color: "cyan" },
+  { id: "ecommerce", label: "تجارة إلكترونية", icon: ShoppingCart, color: "indigo" },
+  { id: "health", label: "صحة وطب", icon: HeartPulse, color: "rose" },
+  { id: "education", label: "تعليم وتدريب", icon: GraduationCap, color: "violet" },
+  { id: "food", label: "أغذية ومطاعم", icon: Utensils, color: "amber" },
+  { id: "realestate", label: "عقارات", icon: Home, color: "orange" },
+  { id: "sustainability", label: "استدامة وبيئة", icon: Leaf, color: "teal" },
+  { id: "other", label: "مجال آخر", icon: Building2, color: "neutral" },
+];
+
+const GOVERNORATES = [
+  "القاهرة", "الإسكندرية", "الجيزة", "الشرقية", "الدقهلية",
+  "المنوفية", "القليوبية", "الغربية", "البحيرة", "سوهاج",
+  "أسيوط", "المنيا", "بني سويف", "الفيوم", "قنا",
+  "الأقصر", "أسوان", "بورسعيد", "الإسماعيلية", "السويس",
+  "شمال سيناء", "جنوب سيناء", "دمياط", "كفر الشيخ", "مطروح",
+  "الوادي الجديد", "البحر الأحمر",
+];
+
+const GOALS = [
+  { id: "idea_analysis", label: "تحليل فكرتي", icon: Brain, color: "cyan" },
+  { id: "business_plan", label: "خطة عمل للمستثمر", icon: Briefcase, color: "indigo" },
+  { id: "market_research", label: "بحث سوقي", icon: FlaskConical, color: "fuchsia" },
+  { id: "legal", label: "تأسيس قانوني", icon: Scale, color: "amber" },
+  { id: "funding", label: "إيجاد تمويل", icon: Radar, color: "emerald" },
+  { id: "risk", label: "تجنب الأخطاء", icon: Shield, color: "rose" },
+];
+
+const STEPS = [
+  { id: "welcome", title: "مرحباً بك في كلميرون!", subtitle: "رحلتك نحو النجاح تبدأ هنا" },
+  { id: "name", title: "ما اسمك؟", subtitle: "سنناديك به في كل محادثة" },
+  { id: "stage", title: "في أي مرحلة أنت؟", subtitle: "هذا يساعدنا نخصص لك أفضل وكلاء" },
+  { id: "industry", title: "ما مجال مشروعك؟", subtitle: "وكلاؤنا خبراء في مجالك" },
+  { id: "location", title: "من أي محافظة؟", subtitle: "نحلل لك السوق المحلي بدقة" },
+  { id: "goals", title: "ماذا تريد تحقيقه؟", subtitle: "اختر كل ما ينطبق عليك" },
+];
 
 export function OnboardingForm() {
   const { user, refreshDBUser } = useAuth();
-  const { language } = useLanguage();
   const router = useRouter();
-  const dir = language === "ar" ? "rtl" : "ltr";
-  
-  const [name, setName] = useState(user?.displayName || "");
+
+  const [step, setStep] = useState(0);
+  const [name, setName] = useState(user?.displayName?.split(" ")[0] || "");
   const [stage, setStage] = useState("");
   const [industry, setIndustry] = useState("");
-  const [gov, setGov] = useState("");
+  const [location, setLocation] = useState("");
+  const [goals, setGoals] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
+  const [direction, setDirection] = useState(1);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!user || !name || !stage || !industry || !gov) return;
-    
+  const totalSteps = STEPS.length;
+  const progress = ((step + 1) / totalSteps) * 100;
+
+  const canNext = (() => {
+    if (step === 0) return true;
+    if (step === 1) return name.trim().length >= 2;
+    if (step === 2) return !!stage;
+    if (step === 3) return !!industry;
+    if (step === 4) return !!location;
+    if (step === 5) return goals.length > 0;
+    return false;
+  })();
+
+  const goNext = () => {
+    if (!canNext) return;
+    if (step < totalSteps - 1) {
+      setDirection(1);
+      setStep((s) => s + 1);
+    } else {
+      handleSubmit();
+    }
+  };
+
+  const goBack = () => {
+    if (step > 0) {
+      setDirection(-1);
+      setStep((s) => s - 1);
+    }
+  };
+
+  const toggleGoal = (id: string) => {
+    setGoals((prev) => prev.includes(id) ? prev.filter((g) => g !== id) : [...prev, id]);
+  };
+
+  const handleSubmit = async () => {
+    if (!user) return;
     setLoading(true);
     try {
       const userRef = doc(db, "users", user.uid);
@@ -37,8 +112,10 @@ export function OnboardingForm() {
         name,
         startup_stage: stage,
         industry,
-        governorate: gov,
-        profile_completed: true
+        governorate: location,
+        goals,
+        profile_completed: true,
+        onboarded_at: new Date(),
       });
       await refreshDBUser();
       router.replace("/dashboard");
@@ -49,110 +126,268 @@ export function OnboardingForm() {
     }
   };
 
+  const variants = {
+    enter: (dir: number) => ({ x: dir > 0 ? 40 : -40, opacity: 0, scale: 0.97 }),
+    center: { x: 0, opacity: 1, scale: 1 },
+    exit: (dir: number) => ({ x: dir > 0 ? -40 : 40, opacity: 0, scale: 0.97 }),
+  };
+
   return (
-    <div className="min-h-screen bg-[#0A0A0F] flex items-center justify-center p-6 relative overflow-hidden" dir={dir}>
-      {/* Background Glows */}
-      <div className="absolute top-0 left-1/4 w-96 h-96 bg-[rgb(var(--gold))]/10 blur-[120px] rounded-full pointer-events-none" />
-      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-[rgb(var(--azure))]/10 blur-[120px] rounded-full pointer-events-none" />
+    <div className="min-h-screen bg-[#05070D] flex flex-col items-center justify-center p-4 relative overflow-hidden" dir="rtl">
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-indigo-600/10 rounded-full blur-[120px]" />
+        <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-cyan-600/10 rounded-full blur-[120px]" />
+        <div className="absolute inset-0 opacity-[0.02] [background-image:linear-gradient(rgba(255,255,255,0.8)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.8)_1px,transparent_1px)] [background-size:50px_50px]" />
+      </div>
 
-      <motion.div 
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        className="w-full max-w-xl z-10"
-      >
-        <Card className="glass border-neutral-800 shadow-2xl rounded-[2.5rem] overflow-hidden">
-          <CardHeader className="p-10 pb-6 text-center space-y-4">
-            <div className="mx-auto w-16 h-16 bg-[rgb(var(--gold))]/10 rounded-2xl flex items-center justify-center mb-2">
-                <Rocket className="w-8 h-8 text-[rgb(var(--gold))]" />
+      <div className="relative w-full max-w-lg z-10">
+        {/* Logo */}
+        <div className="flex justify-center mb-8">
+          <div className="flex items-center gap-2.5">
+            <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-cyan-500 to-indigo-500 flex items-center justify-center shadow-lg shadow-indigo-500/30">
+              <Sparkles className="w-5 h-5 text-white" />
             </div>
-            <CardTitle className="text-4xl font-black text-white tracking-tight">
-              {language === 'ar' ? 'أهلاً بك في كلميرون' : 'Welcome to Kalmeron AI'}
-            </CardTitle>
-            <CardDescription className="text-xl text-neutral-400">
-              {language === 'ar' 
-                ? 'لنقم بتخصيص تجربتك. أخبرنا عن مشروعك لنبدأ الرحلة سوياً.'
-                : 'Let\'s personalize your experience. Tell us about your startup to begin.'}
-            </CardDescription>
-          </CardHeader>
-          
-          <CardContent className="p-10 pt-0">
-            <form onSubmit={handleSubmit} className="space-y-8">
-              <div className="space-y-3">
-                <Label className="text-neutral-300 font-bold ml-1 flex items-center gap-2">
-                    <Sparkles className="w-4 h-4 text-[rgb(var(--gold))]" />
-                    {language === 'ar' ? 'الاسم الذي تود أن نناديك به' : 'Full Name'}
-                </Label>
-                <Input 
-                  value={name} 
-                  onChange={(e) => setName(e.target.value)} 
-                  placeholder={language === 'ar' ? 'اكتب اسمك هنا...' : 'Enter your name...'}
-                  className="h-14 bg-neutral-900/50 border-neutral-800 rounded-2xl text-lg focus:ring-[rgb(var(--gold))]"
-                  required 
-                />
+            <span className="font-display font-extrabold text-white text-xl tracking-tight">KALMERON</span>
+          </div>
+        </div>
+
+        {/* Progress */}
+        <div className="mb-6">
+          <div className="flex items-center justify-between text-xs text-neutral-500 mb-2">
+            <span>الخطوة {step + 1} من {totalSteps}</span>
+            <span>{Math.round(progress)}% مكتمل</span>
+          </div>
+          <div className="h-1.5 bg-white/[0.06] rounded-full overflow-hidden">
+            <motion.div
+              className="h-full bg-gradient-to-r from-cyan-400 via-indigo-500 to-fuchsia-500 rounded-full"
+              animate={{ width: `${progress}%` }}
+              transition={{ duration: 0.4, ease: "easeOut" }}
+            />
+          </div>
+          {/* Step dots */}
+          <div className="flex items-center justify-center gap-1.5 mt-3">
+            {STEPS.map((_, i) => (
+              <div key={i} className={cn(
+                "rounded-full transition-all duration-300",
+                i < step ? "w-4 h-1.5 bg-emerald-400" :
+                i === step ? "w-6 h-1.5 bg-indigo-400" :
+                "w-1.5 h-1.5 bg-white/15"
+              )} />
+            ))}
+          </div>
+        </div>
+
+        {/* Card */}
+        <div className="relative rounded-3xl border border-white/10 bg-[#0B1020]/90 backdrop-blur-xl shadow-2xl overflow-hidden">
+          <AnimatePresence mode="wait" custom={direction}>
+            <motion.div
+              key={step}
+              custom={direction}
+              variants={variants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={{ duration: 0.3, ease: "easeInOut" }}
+              className="p-6 md:p-8"
+            >
+              {/* Step Header */}
+              <div className="text-center mb-7">
+                <h2 className="font-display text-2xl md:text-3xl font-extrabold text-white mb-1.5">{STEPS[step].title}</h2>
+                <p className="text-neutral-400 text-sm">{STEPS[step].subtitle}</p>
               </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-3">
-                    <Label className="text-neutral-300 font-bold ml-1 flex items-center gap-2">
-                        <Briefcase className="w-4 h-4 text-[rgb(var(--azure))]" />
-                        {language === 'ar' ? 'مرحلة المشروع' : 'Startup Stage'}
-                    </Label>
-                    <Select onValueChange={(val: any) => setStage(val)} required>
-                        <SelectTrigger className="h-14 bg-neutral-900/50 border-neutral-800 rounded-2xl text-lg" dir={dir}>
-                        <SelectValue placeholder={language === 'ar' ? 'اختر المرحلة' : 'Select stage'} />
-                        </SelectTrigger>
-                        <SelectContent className="bg-neutral-900 border-neutral-800 text-white rounded-2xl" dir={dir}>
-                        <SelectItem value="idea">{language === 'ar' ? 'فكرة أولية' : 'Initial Idea'}</SelectItem>
-                        <SelectItem value="validation">{language === 'ar' ? 'اختبار المنتج' : 'Market Validation'}</SelectItem>
-                        <SelectItem value="launch">{language === 'ar' ? 'إطلاق رسمي' : 'Live Product'}</SelectItem>
-                        <SelectItem value="growth">{language === 'ar' ? 'توسع ونمو' : 'Scale & Growth'}</SelectItem>
-                        </SelectContent>
-                    </Select>
+
+              {/* Step 0: Welcome */}
+              {step === 0 && (
+                <div className="text-center space-y-5">
+                  <div className="relative mx-auto w-28 h-28">
+                    <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-cyan-500/40 to-fuchsia-500/40 blur-2xl animate-pulse" />
+                    <div className="relative w-full h-full rounded-3xl bg-gradient-to-br from-cyan-500/20 to-indigo-500/20 border border-white/10 flex items-center justify-center text-5xl">
+                      🚀
+                    </div>
+                  </div>
+                  <div className="space-y-3 text-sm text-neutral-300">
+                    {[
+                      { icon: "🤖", text: "+50 وكيلاً ذكياً في خدمتك" },
+                      { icon: "📊", text: "خطط عمل وتحليلات مالية فورية" },
+                      { icon: "⚖️", text: "إرشاد قانوني متوافق مع قانون مصر" },
+                      { icon: "🎯", text: "فرص تمويل مخصصة لمرحلتك" },
+                    ].map((item) => (
+                      <div key={item.text} className="flex items-center gap-3 bg-white/[0.04] rounded-xl px-4 py-3 text-right border border-white/[0.06]">
+                        <span className="text-xl">{item.icon}</span>
+                        <span>{item.text}</span>
+                        <CheckCircle2 className="w-4 h-4 text-emerald-400 mr-auto shrink-0" />
+                      </div>
+                    ))}
+                  </div>
                 </div>
+              )}
 
-                <div className="space-y-3">
-                    <Label className="text-neutral-300 font-bold ml-1 flex items-center gap-2">
-                        <MapPin className="w-4 h-4 text-red-500" />
-                        {language === 'ar' ? 'المحافظة' : 'Governorate'}
-                    </Label>
-                    <Input 
-                        value={gov} 
-                        onChange={(e) => setGov(e.target.value)} 
-                        placeholder={language === 'ar' ? 'مثال: القاهرة' : 'e.g. Cairo'}
-                        className="h-14 bg-neutral-900/50 border-neutral-800 rounded-2xl text-lg"
-                        required 
-                    />
+              {/* Step 1: Name */}
+              {step === 1 && (
+                <div className="space-y-4">
+                  <input
+                    autoFocus
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && goNext()}
+                    placeholder="اكتب اسمك الأول..."
+                    className="w-full bg-white/[0.04] border border-white/10 rounded-2xl px-5 py-4 text-white text-xl text-center placeholder-neutral-600 outline-none focus:border-indigo-400/50 transition-all font-display font-bold"
+                  />
+                  <p className="text-center text-xs text-neutral-600">سيناديك كلميرون باسمك في كل محادثة 🤝</p>
                 </div>
-              </div>
+              )}
 
-              <div className="space-y-3">
-                <Label className="text-neutral-300 font-bold ml-1">
-                    {language === 'ar' ? 'مجال العمل (Fintech, Tech...)' : 'Industry'}
-                </Label>
-                <Input 
-                  value={industry} 
-                  onChange={(e) => setIndustry(e.target.value)} 
-                  placeholder={language === 'ar' ? 'ما هو تخصصك؟' : 'e.g. HealthTech'}
-                  className="h-14 bg-neutral-900/50 border-neutral-800 rounded-2xl text-lg"
-                  required 
-                />
-              </div>
+              {/* Step 2: Stage */}
+              {step === 2 && (
+                <div className="space-y-2.5">
+                  {STAGES.map((s) => (
+                    <button key={s.id} onClick={() => setStage(s.id)}
+                      className={cn(
+                        "w-full flex items-center gap-4 p-4 rounded-2xl border transition-all text-right",
+                        stage === s.id
+                          ? "bg-indigo-500/15 border-indigo-400/50 shadow-lg"
+                          : "bg-white/[0.03] border-white/[0.07] hover:bg-white/[0.06] hover:border-white/15"
+                      )}
+                    >
+                      <span className="text-2xl shrink-0">{s.icon}</span>
+                      <div className="flex-1">
+                        <div className={cn("font-bold text-sm", stage === s.id ? "text-white" : "text-neutral-200")}>{s.label}</div>
+                        <div className="text-xs text-neutral-500 mt-0.5">{s.desc}</div>
+                      </div>
+                      {stage === s.id && <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />}
+                    </button>
+                  ))}
+                </div>
+              )}
 
-              <Button 
-                type="submit" 
-                disabled={loading} 
-                className="w-full h-16 text-xl rounded-2xl bg-[rgb(var(--gold))] text-black hover:bg-[#d9a31a] font-black shadow-xl mt-4 transition-transform hover:scale-[1.02]"
+              {/* Step 3: Industry */}
+              {step === 3 && (
+                <div className="grid grid-cols-3 gap-2.5">
+                  {INDUSTRIES.map((ind) => {
+                    const Icon = ind.icon;
+                    const isSelected = industry === ind.id;
+                    const colorMap: Record<string, string> = {
+                      emerald: "border-emerald-500/40 bg-emerald-500/10 text-emerald-400",
+                      cyan: "border-cyan-500/40 bg-cyan-500/10 text-cyan-400",
+                      indigo: "border-indigo-500/40 bg-indigo-500/10 text-indigo-400",
+                      rose: "border-rose-500/40 bg-rose-500/10 text-rose-400",
+                      violet: "border-violet-500/40 bg-violet-500/10 text-violet-400",
+                      amber: "border-amber-500/40 bg-amber-500/10 text-amber-400",
+                      orange: "border-orange-500/40 bg-orange-500/10 text-orange-400",
+                      teal: "border-teal-500/40 bg-teal-500/10 text-teal-400",
+                      neutral: "border-neutral-500/40 bg-neutral-500/10 text-neutral-400",
+                    };
+                    return (
+                      <button key={ind.id} onClick={() => setIndustry(ind.id)}
+                        className={cn(
+                          "flex flex-col items-center gap-2 p-3 rounded-2xl border transition-all",
+                          isSelected ? colorMap[ind.color] : "border-white/[0.07] bg-white/[0.03] hover:bg-white/[0.06]"
+                        )}
+                      >
+                        <Icon className={cn("w-6 h-6", isSelected ? "" : "text-neutral-400")} />
+                        <span className={cn("text-xs font-medium text-center leading-tight", isSelected ? "font-bold" : "text-neutral-300")}>
+                          {ind.label}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+
+              {/* Step 4: Location */}
+              {step === 4 && (
+                <div>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-72 overflow-y-auto scrollbar-thin pl-1">
+                    {GOVERNORATES.map((gov) => (
+                      <button key={gov} onClick={() => setLocation(gov)}
+                        className={cn(
+                          "px-3 py-2.5 rounded-xl border text-sm font-medium transition-all",
+                          location === gov
+                            ? "bg-indigo-500/20 border-indigo-400/50 text-white"
+                            : "bg-white/[0.03] border-white/[0.07] text-neutral-300 hover:bg-white/[0.07] hover:border-white/20"
+                        )}
+                      >
+                        {gov}
+                      </button>
+                    ))}
+                  </div>
+                  {location && (
+                    <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+                      className="mt-3 flex items-center gap-2 text-sm text-emerald-400"
+                    >
+                      <MapPin className="w-4 h-4" /> اخترت: {location}
+                    </motion.div>
+                  )}
+                </div>
+              )}
+
+              {/* Step 5: Goals */}
+              {step === 5 && (
+                <div className="space-y-2">
+                  <p className="text-xs text-neutral-500 text-center mb-4">يمكنك اختيار أكثر من هدف</p>
+                  <div className="grid grid-cols-2 gap-2.5">
+                    {GOALS.map((goal) => {
+                      const Icon = goal.icon;
+                      const isSelected = goals.includes(goal.id);
+                      const colorMap: Record<string, string> = {
+                        cyan: "border-cyan-500/40 bg-cyan-500/10",
+                        indigo: "border-indigo-500/40 bg-indigo-500/10",
+                        fuchsia: "border-fuchsia-500/40 bg-fuchsia-500/10",
+                        amber: "border-amber-500/40 bg-amber-500/10",
+                        emerald: "border-emerald-500/40 bg-emerald-500/10",
+                        rose: "border-rose-500/40 bg-rose-500/10",
+                      };
+                      return (
+                        <button key={goal.id} onClick={() => toggleGoal(goal.id)}
+                          className={cn(
+                            "flex items-center gap-3 p-3.5 rounded-2xl border transition-all text-right",
+                            isSelected ? colorMap[goal.color] : "bg-white/[0.03] border-white/[0.07] hover:bg-white/[0.06]"
+                          )}
+                        >
+                          <Icon className={cn("w-5 h-5 shrink-0", isSelected ? "text-white" : "text-neutral-400")} />
+                          <span className={cn("text-sm font-medium", isSelected ? "text-white" : "text-neutral-300")}>
+                            {goal.label}
+                          </span>
+                          {isSelected && <CheckCircle2 className="w-4 h-4 text-emerald-400 mr-auto shrink-0" />}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </motion.div>
+          </AnimatePresence>
+
+          {/* Navigation */}
+          <div className="flex items-center gap-3 px-6 md:px-8 pb-6 md:pb-8">
+            {step > 0 && (
+              <button onClick={goBack}
+                className="flex items-center gap-2 text-sm text-neutral-400 hover:text-white border border-white/10 bg-white/5 hover:bg-white/10 px-4 py-3 rounded-2xl transition-all"
               >
-                {loading ? (
-                    <><Loader2 className="mr-3 h-6 w-6 animate-spin" /> جاري التحضير...</>
-                ) : (
-                    language === 'ar' ? 'ابدأ بناء مستقبلك الآن' : 'Start Building Your Future'
-                )}
-              </Button>
-            </form>
-          </CardContent>
-        </Card>
-      </motion.div>
+                <ArrowRight className="w-4 h-4" /> رجوع
+              </button>
+            )}
+            <button onClick={goNext} disabled={!canNext || loading}
+              className={cn(
+                "flex-1 flex items-center justify-center gap-2 font-bold py-3.5 rounded-2xl transition-all",
+                canNext ? "btn-primary" : "bg-white/5 text-neutral-600 cursor-not-allowed border border-white/10"
+              )}
+            >
+              {loading ? (
+                <><Loader2 className="w-5 h-5 animate-spin" /> جاري التجهيز...</>
+              ) : step === totalSteps - 1 ? (
+                <><Rocket className="w-5 h-5" /> انطلق مع كلميرون!</>
+              ) : (
+                <>التالي <ArrowLeft className="w-4 h-4" /></>
+              )}
+            </button>
+          </div>
+        </div>
+
+        <p className="text-center text-xs text-neutral-600 mt-4">
+          بمتابعتك، أنت توافق على <a href="/terms" className="text-neutral-400 hover:text-white transition-colors">الشروط</a> و<a href="/privacy" className="text-neutral-400 hover:text-white transition-colors">سياسة الخصوصية</a>
+        </p>
+      </div>
     </div>
   );
 }
