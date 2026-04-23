@@ -59,8 +59,16 @@ export async function generateMetadata(): Promise<Metadata> {
     openGraph: {
       title: "Kalmeron AI | نظام تشغيل رواد الأعمال",
       description: "7 أقسام و50+ وكيلاً ذكياً يعملون كفريقك المؤسس.",
-      images: [{ url: "/brand/logo.svg", width: 1200, height: 630, alt: "Kalmeron AI" }],
+      images: [
+        {
+          url: `/api/og?title=${encodeURIComponent("نظام تشغيل رواد الأعمال")}&type=default`,
+          width: 1200,
+          height: 630,
+          alt: "Kalmeron AI",
+        },
+      ],
       locale: "ar_EG",
+      alternateLocale: ["en_US", "ar_SA", "ar_AE"],
       type: "website",
       url: siteUrl,
       siteName: "Kalmeron AI",
@@ -69,9 +77,16 @@ export async function generateMetadata(): Promise<Metadata> {
       card: "summary_large_image",
       title: "Kalmeron AI | نظام تشغيل رواد الأعمال",
       description: "7 أقسام و50+ وكيلاً ذكياً يعملون كفريقك المؤسس.",
-      images: ["/brand/logo.svg"],
+      images: [`/api/og?title=${encodeURIComponent("نظام تشغيل رواد الأعمال")}&type=default`],
     },
-    alternates: { canonical: siteUrl },
+    alternates: {
+      canonical: siteUrl,
+      languages: {
+        ar: `${siteUrl}/ar`,
+        en: `${siteUrl}/en`,
+        "x-default": siteUrl,
+      },
+    },
     robots: {
       index: true,
       follow: true,

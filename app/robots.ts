@@ -8,9 +8,16 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: '*',
         allow: '/',
-        disallow: ['/admin/', '/api/', '/profile/'],
+        disallow: ['/admin/', '/api/', '/profile/', '/onboarding/'],
+      },
+      // Allow crawlers explicitly access OG endpoint for richer previews.
+      {
+        userAgent: ['GPTBot', 'ChatGPT-User', 'Google-Extended', 'CCBot', 'PerplexityBot'],
+        allow: '/',
+        disallow: ['/admin/', '/api/'],
       },
     ],
     sitemap: `${siteUrl}/sitemap.xml`,
+    host: siteUrl,
   };
 }

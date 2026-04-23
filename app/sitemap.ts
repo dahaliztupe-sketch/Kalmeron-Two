@@ -1,68 +1,53 @@
 import type { MetadataRoute } from 'next';
+import { getAllUseCaseSlugs } from '@/src/lib/seo/use-cases';
+import { getAllComparisonSlugs } from '@/src/lib/seo/comparisons';
+import { getAllIndustrySlugs } from '@/src/lib/seo/industries';
 
 const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://kalmeron.app';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  return [
-    {
-      url: siteUrl,
-      lastModified: new Date(),
-      changeFrequency: 'daily',
-      priority: 1,
-    },
-    {
-      url: `${siteUrl}/chat`,
-      lastModified: new Date(),
-      changeFrequency: 'weekly',
-      priority: 0.9,
-    },
-    {
-      url: `${siteUrl}/ideas/analyze`,
-      lastModified: new Date(),
-      changeFrequency: 'weekly',
-      priority: 0.8,
-    },
-    {
-      url: `${siteUrl}/plan`,
-      lastModified: new Date(),
-      changeFrequency: 'weekly',
-      priority: 0.8,
-    },
-    {
-      url: `${siteUrl}/opportunities`,
-      lastModified: new Date(),
-      changeFrequency: 'daily',
-      priority: 0.8,
-    },
-    {
-      url: `${siteUrl}/mistake-shield`,
-      lastModified: new Date(),
-      changeFrequency: 'weekly',
-      priority: 0.7,
-    },
-    {
-      url: `${siteUrl}/marketplace`,
-      lastModified: new Date(),
-      changeFrequency: 'weekly',
-      priority: 0.7,
-    },
-    {
-      url: `${siteUrl}/legal-templates`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.6,
-    },
-    {
-      url: `${siteUrl}/privacy`,
-      lastModified: new Date(),
-      changeFrequency: 'yearly',
-      priority: 0.3,
-    },
-    {
-      url: `${siteUrl}/terms`,
-      lastModified: new Date(),
-      changeFrequency: 'yearly',
-      priority: 0.3,
-    },
+  const now = new Date();
+
+  const staticPages: MetadataRoute.Sitemap = [
+    { url: siteUrl, lastModified: now, changeFrequency: 'daily', priority: 1.0 },
+    { url: `${siteUrl}/pricing`, lastModified: now, changeFrequency: 'weekly', priority: 0.95 },
+    { url: `${siteUrl}/use-cases`, lastModified: now, changeFrequency: 'weekly', priority: 0.9 },
+    { url: `${siteUrl}/industries`, lastModified: now, changeFrequency: 'weekly', priority: 0.9 },
+    { url: `${siteUrl}/compare`, lastModified: now, changeFrequency: 'weekly', priority: 0.9 },
+    { url: `${siteUrl}/blog`, lastModified: now, changeFrequency: 'daily', priority: 0.85 },
+    { url: `${siteUrl}/chat`, lastModified: now, changeFrequency: 'weekly', priority: 0.8 },
+    { url: `${siteUrl}/ideas/analyze`, lastModified: now, changeFrequency: 'weekly', priority: 0.8 },
+    { url: `${siteUrl}/plan`, lastModified: now, changeFrequency: 'weekly', priority: 0.8 },
+    { url: `${siteUrl}/opportunities`, lastModified: now, changeFrequency: 'daily', priority: 0.8 },
+    { url: `${siteUrl}/mistake-shield`, lastModified: now, changeFrequency: 'weekly', priority: 0.7 },
+    { url: `${siteUrl}/marketplace`, lastModified: now, changeFrequency: 'weekly', priority: 0.7 },
+    { url: `${siteUrl}/legal-templates`, lastModified: now, changeFrequency: 'monthly', priority: 0.6 },
+    { url: `${siteUrl}/privacy`, lastModified: now, changeFrequency: 'yearly', priority: 0.3 },
+    { url: `${siteUrl}/terms`, lastModified: now, changeFrequency: 'yearly', priority: 0.3 },
+    { url: `${siteUrl}/auth/signup`, lastModified: now, changeFrequency: 'monthly', priority: 0.7 },
+    { url: `${siteUrl}/auth/login`, lastModified: now, changeFrequency: 'monthly', priority: 0.5 },
   ];
+
+  const useCasePages: MetadataRoute.Sitemap = getAllUseCaseSlugs().map((slug) => ({
+    url: `${siteUrl}/use-cases/${slug}`,
+    lastModified: now,
+    changeFrequency: 'monthly',
+    priority: 0.85,
+  }));
+
+  const comparisonPages: MetadataRoute.Sitemap = getAllComparisonSlugs().map((slug) => ({
+    url: `${siteUrl}/compare/${slug}`,
+    lastModified: now,
+    changeFrequency: 'monthly',
+    priority: 0.85,
+  }));
+
+  const industryPages: MetadataRoute.Sitemap = getAllIndustrySlugs().map((slug) => ({
+    url: `${siteUrl}/industries/${slug}`,
+    lastModified: now,
+    changeFrequency: 'monthly',
+    priority: 0.85,
+  }));
+
+  return [...staticPages, ...useCasePages, ...comparisonPages, ...industryPages];
 }

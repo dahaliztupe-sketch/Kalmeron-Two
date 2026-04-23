@@ -1,4 +1,5 @@
 export type PlanId = 'free' | 'pro' | 'founder' | 'enterprise';
+export type BillingCycle = 'monthly' | 'annual';
 
 export interface Plan {
   id: PlanId;
@@ -7,11 +8,21 @@ export interface Plan {
   taglineAr: string;
   priceMonthlyEgp: number;
   priceMonthlyUsd: number;
+  /** Annual price (per month, when paying yearly) — already discounted. */
+  priceAnnualMonthlyEgp: number;
+  priceAnnualMonthlyUsd: number;
   dailyCredits: number;
   monthlyCredits: number;
   unlimited: boolean;
   highlighted?: boolean;
   featuresAr: string[];
+}
+
+/** Annual savings discount. 33% mirrors the strategic plan recommendation. */
+export const ANNUAL_DISCOUNT_PCT = 33;
+
+function applyAnnual(monthly: number): number {
+  return Math.round(monthly * (1 - ANNUAL_DISCOUNT_PCT / 100));
 }
 
 export const PLANS: Record<PlanId, Plan> = {
@@ -22,6 +33,8 @@ export const PLANS: Record<PlanId, Plan> = {
     taglineAr: 'ابدأ رحلتك بدون أي تكلفة',
     priceMonthlyEgp: 0,
     priceMonthlyUsd: 0,
+    priceAnnualMonthlyEgp: 0,
+    priceAnnualMonthlyUsd: 0,
     dailyCredits: 200,
     monthlyCredits: 3000,
     unlimited: false,
@@ -41,6 +54,8 @@ export const PLANS: Record<PlanId, Plan> = {
     taglineAr: 'لرواد الأعمال الجادين الذين يبنون شركتهم القادمة',
     priceMonthlyEgp: 499,
     priceMonthlyUsd: 19,
+    priceAnnualMonthlyEgp: applyAnnual(499),
+    priceAnnualMonthlyUsd: applyAnnual(19),
     dailyCredits: 2000,
     monthlyCredits: 30000,
     unlimited: false,
@@ -61,6 +76,8 @@ export const PLANS: Record<PlanId, Plan> = {
     taglineAr: 'لفريق التأسيس الذي يحتاج كل وكلاء كلميرون',
     priceMonthlyEgp: 1999,
     priceMonthlyUsd: 79,
+    priceAnnualMonthlyEgp: applyAnnual(1999),
+    priceAnnualMonthlyUsd: applyAnnual(79),
     dailyCredits: 10000,
     monthlyCredits: 200000,
     unlimited: false,
@@ -80,6 +97,8 @@ export const PLANS: Record<PlanId, Plan> = {
     taglineAr: 'حلول مخصصة للشركات والمؤسسات الكبرى',
     priceMonthlyEgp: 0,
     priceMonthlyUsd: 0,
+    priceAnnualMonthlyEgp: 0,
+    priceAnnualMonthlyUsd: 0,
     dailyCredits: 0,
     monthlyCredits: 0,
     unlimited: true,
@@ -99,4 +118,18 @@ export const PLAN_ORDER: PlanId[] = ['free', 'pro', 'founder', 'enterprise'];
 export function getPlan(id: string | null | undefined): Plan {
   if (!id) return PLANS.free;
   return PLANS[id as PlanId] || PLANS.free;
+}
+
+export function getPlanPrice(plan: Plan, cycle: BillingCycle, currency: 'egp' | 'usd' = 'egp'): number {
+  if (cycle === 'annual') {
+    return currency === 'egp' ? plan.priceAnnualMonthlyEgp : plan.priceAnnualMonthlyUsd;
+  }
+  return currency === 'egp' ? plan.priceMonthlyEgp : plan.priceMonthlyUsd;
+}
+
+export function getAnnualSavings(plan: Plan, currency: 'egp' | 'usd' = 'egp'): number {
+  if (plan.priceMonthlyEgp === 0) return 0;
+  const monthly = currency === 'egp' ? plan.priceMonthlyEgp : plan.priceMonthlyUsd;
+  const annualMonthly = currency === 'egp' ? plan.priceAnnualMonthlyEgp : plan.priceAnnualMonthlyUsd;
+  return (monthly - annualMonthly) * 12;
 }

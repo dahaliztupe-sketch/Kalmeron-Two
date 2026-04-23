@@ -89,6 +89,59 @@ The `intelligentOrchestrator` (LangGraph StateGraph) routes to 10 specialized no
 | ADMIN | `admin_node` | Admin redirect |
 | GENERAL_CHAT | `general_chat_node` | Gemini FLASH |
 
+## Strategic Growth Layer (Apr 2026)
+
+A "best-in-the-world" push delivered in one session — programmatic SEO, viral
+growth, social previews, and richer pricing — to compete head-to-head with
+ChatGPT/Claude/Manus/Lovable in the MENA market.
+
+### Programmatic SEO
+- `src/lib/seo/use-cases.ts` — 10 detailed Arabic use cases (cloud restaurant,
+  e-commerce, seed funding, MVP, fintech, pricing, hiring, GCC expansion, etc.)
+  with HowTo JSON-LD schema baked into pages.
+- `src/lib/seo/comparisons.ts` — head-to-head pages vs ChatGPT, Claude,
+  Manus AI, Lovable, Microsoft Copilot with feature/pricing matrices.
+- `src/lib/seo/industries.ts` — 8 industry verticals (fintech, e-commerce,
+  SaaS, F&B, edtech, healthtech, logistics, agritech) with market size,
+  challenges, and case studies.
+- `src/lib/seo/blog-posts.ts` — initial 3 thought-leadership posts.
+- Routes: `/use-cases`, `/use-cases/[slug]`, `/compare`, `/compare/[slug]`,
+  `/industries`, `/industries/[slug]`, `/blog`, `/blog/[slug]` — all
+  statically generated via `generateStaticParams`.
+- Shared layout: `components/seo/SeoLandingShell.tsx`.
+- `app/sitemap.ts` includes every programmatic URL automatically.
+- `app/robots.ts` explicitly allowlists `GPTBot`, `ChatGPT-User`,
+  `Google-Extended`, `CCBot`, `PerplexityBot` for AI-search visibility.
+
+### Dynamic Open Graph images
+- `app/api/og/route.tsx` (edge runtime) renders branded 1200×630 PNGs with
+  the page title, type label, and gradient background.
+- Loads Cairo/Tajawal Bold from jsdelivr to render Arabic correctly; falls
+  back to Latin-only if the font fetch fails so the route never 500s.
+- Wired into `app/layout.tsx` plus per-page metadata for use-cases, comparisons,
+  industries, and blog posts.
+
+### Annual billing
+- `src/lib/billing/plans.ts` adds `BillingCycle` ('monthly'|'annual'),
+  `ANNUAL_DISCOUNT_PCT = 33`, and helpers `getPlanPrice` /
+  `getAnnualSavings`. Annual prices are pre-computed on every plan.
+
+### Referral / viral growth
+- `src/lib/referrals/manager.ts` — generates stable per-user codes,
+  attributes signups, grants 500-credit signup bonus to the referee, and
+  5,000-credit reward to the referrer on paid conversion. Uses Firestore
+  collection `referrals` keyed by referee uid.
+- `app/api/referrals/route.ts` — `GET` returns stats + share URL,
+  `POST { code }` attributes a new signup. Rate-limited via existing
+  `lib/security/rate-limit`.
+- `app/(dashboard)/settings/referrals/page.tsx` — UI with copy/share,
+  stats cards, and reward summary.
+
+### Strategic master plan
+- `STRATEGIC_MASTER_PLAN.md` — 16-section competitive playbook (SWOT,
+  competitor analysis, Q1-Q4 roadmap, killer features, pricing, GTM, KPIs,
+  budget) covering the path to compete with global AI giants.
+
 ## New Feature Additions (2026)
 
 Six major feature families were layered on top of the original platform:
