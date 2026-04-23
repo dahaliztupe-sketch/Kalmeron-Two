@@ -1,27 +1,33 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
+import { z } from 'zod';
 import { adminDb } from '@/src/lib/firebase-admin';
 import { conveneMeeting, detectCollaborationOpportunity } from '@/src/ai/orchestrator/virtual-meeting';
+import { guardedRoute } from '@/src/lib/security/route-guard';
 
-export async function GET() {
-  try {
-    const snap = await adminDb.collection('virtual_meetings').orderBy('createdAt', 'desc').limit(50).get();
+const postSchema = z.object({
+  topic: z.string().min(5).max(2000),
+  departmentIds: z.array(z.string().min(1).max(64)).min(1).max(12),
+  context: z.record(z.any()).optional(),
+});
+
+export const GET = guardedRoute(
+  async () => {
+    const snap = await adminDb
+      .collection('virtual_meetings')
+      .orderBy('createdAt', 'desc')
+      .limit(50)
+      .get();
     const meetings = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
     const opportunities = await detectCollaborationOpportunity();
     return NextResponse.json({ meetings, opportunities });
-  } catch (e: any) {
-    return NextResponse.json({ meetings: [], opportunities: [], error: e?.message });
-  }
-}
+  },
+  { rateLimit: { limit: 60, windowMs: 60_000 } }
+);
 
-export async function POST(req: NextRequest) {
-  const { topic, departmentIds, context } = await req.json();
-  if (!topic || !Array.isArray(departmentIds) || departmentIds.length === 0) {
-    return NextResponse.json({ error: 'topic and departmentIds required' }, { status: 400 });
-  }
-  try {
-    const meeting = await conveneMeeting(topic, departmentIds, context || {});
+export const POST = guardedRoute(
+  async ({ body }) => {
+    const meeting = await conveneMeeting(body.topic, body.departmentIds, body.context || {});
     return NextResponse.json({ meeting });
-  } catch (e: any) {
-    return NextResponse.json({ error: e?.message || 'failed' }, { status: 500 });
-  }
-}
+  },
+  { schema: postSchema, rateLimit: { limit: 10, windowMs: 60_000 } }
+);

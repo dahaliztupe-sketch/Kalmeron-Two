@@ -9,6 +9,7 @@ import { generateText } from 'ai';
 import { MODELS } from '@/src/lib/gemini';
 import { adminDb } from '@/src/lib/firebase-admin';
 import { FieldValue } from 'firebase-admin/firestore';
+import { instrumentAgent } from '@/src/lib/observability/instrumentation';
 
 export type LaunchStage =
   | 'idea_validator'
@@ -194,21 +195,27 @@ export function buildLaunchPipeline() {
 
 export async function launchStartup(args: { workspaceId: string; idea: string; runId?: string }) {
   const runId = args.runId || `run_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
-  try {
-    await adminDb.collection('launch_runs').doc(runId).set(
-      {
-        workspaceId: args.workspaceId,
-        idea: args.idea,
-        status: 'running',
-        createdAt: FieldValue.serverTimestamp(),
-        updatedAt: FieldValue.serverTimestamp(),
-      },
-      { merge: true }
-    );
-  } catch {}
-  const app = buildLaunchPipeline();
-  const final = await app.invoke({ runId, workspaceId: args.workspaceId, idea: args.idea });
-  return { runId, ...final };
+  return instrumentAgent(
+    'launchpad_pipeline',
+    async () => {
+      try {
+        await adminDb.collection('launch_runs').doc(runId).set(
+          {
+            workspaceId: args.workspaceId,
+            idea: args.idea,
+            status: 'running',
+            createdAt: FieldValue.serverTimestamp(),
+            updatedAt: FieldValue.serverTimestamp(),
+          },
+          { merge: true }
+        );
+      } catch {}
+      const app = buildLaunchPipeline();
+      const final = await app.invoke({ runId, workspaceId: args.workspaceId, idea: args.idea });
+      return { runId, ...final };
+    },
+    { task: args.idea, workspaceId: args.workspaceId }
+  );
 }
 
 /** Lightweight status fetcher for the dashboard. */

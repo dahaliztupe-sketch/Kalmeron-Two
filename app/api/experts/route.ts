@@ -1,29 +1,47 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { createExpertFromDescription, saveExpert, listExperts, loadExpert, invokeExpert } from '@/src/ai/experts/expert-factory';
+import { NextResponse } from 'next/server';
+import { z } from 'zod';
+import {
+  createExpertFromDescription,
+  saveExpert,
+  listExperts,
+  invokeExpert,
+} from '@/src/ai/experts/expert-factory';
+import { guardedRoute } from '@/src/lib/security/route-guard';
 
-export async function GET(req: NextRequest) {
-  const workspaceId = req.nextUrl.searchParams.get('workspaceId') || undefined;
-  try {
+const postSchema = z.union([
+  z.object({
+    action: z.literal('invoke'),
+    expertId: z.string().min(1).max(128),
+    message: z.string().min(1).max(4000),
+  }),
+  z.object({
+    description: z.string().min(10).max(2000),
+    creatorId: z.string().min(1).max(128).default('anonymous'),
+    workspaceId: z.string().min(1).max(128).optional(),
+  }),
+]);
+
+export const GET = guardedRoute(
+  async ({ req }) => {
+    const workspaceId = req.nextUrl.searchParams.get('workspaceId') || undefined;
     const experts = await listExperts({ workspaceId });
     return NextResponse.json({ experts });
-  } catch (e: any) {
-    return NextResponse.json({ experts: [], error: e?.message });
-  }
-}
+  },
+  { rateLimit: { limit: 60, windowMs: 60_000 } }
+);
 
-export async function POST(req: NextRequest) {
-  const body = await req.json();
-  try {
-    if (body.action === 'invoke') {
-      const out = await invokeExpert(body.expertId, body.message);
-      return NextResponse.json({ output: out });
+export const POST = guardedRoute(
+  async ({ body }) => {
+    if ('action' in body && body.action === 'invoke') {
+      const output = await invokeExpert(body.expertId, body.message);
+      return NextResponse.json({ output });
     }
-    const { description, creatorId, workspaceId } = body;
-    if (!description) return NextResponse.json({ error: 'description required' }, { status: 400 });
-    const expert = await createExpertFromDescription(description, creatorId || 'anonymous', { workspaceId });
+    const b = body as Extract<typeof body, { description: string }>;
+    const expert = await createExpertFromDescription(b.description, b.creatorId, {
+      workspaceId: b.workspaceId,
+    });
     const id = await saveExpert(expert);
     return NextResponse.json({ expert: { ...expert, id } });
-  } catch (e: any) {
-    return NextResponse.json({ error: e?.message || 'failed' }, { status: 500 });
-  }
-}
+  },
+  { schema: postSchema, rateLimit: { limit: 15, windowMs: 60_000 } }
+);

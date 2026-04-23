@@ -1,20 +1,27 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
+import { z } from 'zod';
 import { launchStartup, getLaunchRun } from '@/src/ai/launchpad/pipeline';
+import { guardedRoute } from '@/src/lib/security/route-guard';
 
-export async function POST(req: NextRequest) {
-  const { idea, workspaceId } = await req.json();
-  if (!idea) return NextResponse.json({ error: 'idea required' }, { status: 400 });
-  try {
-    const result = await launchStartup({ idea, workspaceId: workspaceId || 'default' });
+const postSchema = z.object({
+  idea: z.string().min(10).max(4000),
+  workspaceId: z.string().min(1).max(128).default('default'),
+});
+
+export const POST = guardedRoute(
+  async ({ body }) => {
+    const result = await launchStartup(body);
     return NextResponse.json(result);
-  } catch (e: any) {
-    return NextResponse.json({ error: e?.message || 'failed' }, { status: 500 });
-  }
-}
+  },
+  { schema: postSchema, rateLimit: { limit: 5, windowMs: 60_000 } }
+);
 
-export async function GET(req: NextRequest) {
-  const runId = req.nextUrl.searchParams.get('runId');
-  if (!runId) return NextResponse.json({ error: 'runId required' }, { status: 400 });
-  const run = await getLaunchRun(runId);
-  return NextResponse.json({ run });
-}
+export const GET = guardedRoute(
+  async ({ req }) => {
+    const runId = req.nextUrl.searchParams.get('runId');
+    if (!runId) return NextResponse.json({ error: 'runId required' }, { status: 400 });
+    const run = await getLaunchRun(runId);
+    return NextResponse.json({ run });
+  },
+  { rateLimit: { limit: 120, windowMs: 60_000 } }
+);

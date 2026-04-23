@@ -1,22 +1,25 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
+import { z } from 'zod';
 import { listSkills, consolidateSkills } from '@/src/lib/evolution/learning-loop';
+import { guardedRoute } from '@/src/lib/security/route-guard';
 
-export async function GET(req: NextRequest) {
-  const workspaceId = req.nextUrl.searchParams.get('workspaceId') || 'default';
-  try {
+const postSchema = z.object({
+  workspaceId: z.string().min(1).max(128).default('default'),
+});
+
+export const GET = guardedRoute(
+  async ({ req }) => {
+    const workspaceId = req.nextUrl.searchParams.get('workspaceId') || 'default';
     const skills = await listSkills(workspaceId);
     return NextResponse.json({ skills });
-  } catch (e: any) {
-    return NextResponse.json({ error: e?.message || 'failed' }, { status: 500 });
-  }
-}
+  },
+  { rateLimit: { limit: 60, windowMs: 60_000 } }
+);
 
-export async function POST(req: NextRequest) {
-  const { workspaceId } = await req.json();
-  try {
-    const report = await consolidateSkills(workspaceId || 'default');
+export const POST = guardedRoute(
+  async ({ body }) => {
+    const report = await consolidateSkills(body.workspaceId);
     return NextResponse.json({ report });
-  } catch (e: any) {
-    return NextResponse.json({ error: e?.message || 'failed' }, { status: 500 });
-  }
-}
+  },
+  { schema: postSchema, rateLimit: { limit: 5, windowMs: 60_000 }, requireAuth: false }
+);

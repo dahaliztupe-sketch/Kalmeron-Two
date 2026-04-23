@@ -6,6 +6,7 @@ import { generateText } from 'ai';
 import { MODELS } from '@/src/lib/gemini';
 import { adminDb } from '@/src/lib/firebase-admin';
 import { FieldValue } from 'firebase-admin/firestore';
+import { instrumentAgent } from '@/src/lib/observability/instrumentation';
 
 export interface MeetingOpinion {
   departmentId: string;
@@ -58,6 +59,18 @@ async function askDepartment(
 }
 
 export async function conveneMeeting(
+  topic: string,
+  departmentIds: string[],
+  context: Record<string, any> = {}
+): Promise<MeetingResult> {
+  return instrumentAgent(
+    'virtual_meeting',
+    () => conveneMeetingInner(topic, departmentIds, context),
+    { task: topic, input: { departmentIds } }
+  );
+}
+
+async function conveneMeetingInner(
   topic: string,
   departmentIds: string[],
   context: Record<string, any> = {}

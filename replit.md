@@ -45,6 +45,69 @@ The `intelligentOrchestrator` (LangGraph StateGraph) routes to 10 specialized no
 | ADMIN | `admin_node` | Admin redirect |
 | GENERAL_CHAT | `general_chat_node` | Gemini FLASH |
 
+## New Feature Additions (2026)
+
+Six major feature families were layered on top of the original platform:
+
+1. **Self-Evolution Learning Loop** (`src/lib/learning/loop.ts`, re-exported via `src/lib/evolution/learning-loop.ts`) — collects agent outcomes and feeds them back into prompt/tool refinement.
+2. **Virtual Office VM Manager** (`src/lib/virtual-office/vm-manager.ts`, `src/lib/integrations/vm-tools.ts`) — pluggable providers (E2B, Daytona) with stub fallback when keys are absent.
+3. **Startup Launchpad** (`src/ai/launchpad/pipeline.ts`) — 8-stage LangGraph `StateGraph` that transforms an idea into a full launch kit; wrapped with `instrumentAgent('launchpad_pipeline', …)`.
+4. **Swarm / Virtual Meetings** (`src/ai/orchestrator/virtual-meeting.ts`) — `conveneMeeting` orchestrates multi-agent deliberation; wrapped with `instrumentAgent('virtual_meeting', …)`.
+5. **Omnichannel Gateway** (`src/lib/integrations/omnichannel.ts`, `app/api/webhooks/{whatsapp,telegram}/route.ts`) — unified send/receive for WhatsApp, Telegram, and SendGrid email.
+6. **Expert Factory** (`src/ai/experts/expert-factory.ts`) — creates bespoke agent "experts" from a natural-language description, sanitising tools and persisting to Firestore.
+
+### API surface for the new features
+
+Each of these routes goes through the unified `guardedRoute` wrapper:
+
+- `POST /api/skills` — learning-loop events
+- `POST /api/virtual-office` — VM provisioning & exec
+- `POST /api/launchpad` — kick off the 8-stage pipeline
+- `POST /api/meetings` — start a virtual meeting
+- `POST /api/experts` — create an expert from a description
+
+## Unified Route Guard
+
+`src/lib/security/route-guard.ts` provides `guardedRoute(handler, { schema, requireAuth, rateLimit })` which composes:
+
+- Zod body validation (Arabic error messages on 400)
+- Firebase bearer-token auth (401 if missing/invalid when `requireAuth: true`)
+- Per-route in-memory rate limiting (429 on abuse)
+- Consistent JSON error shape `{ error, code }`
+
+All five new feature routes use this wrapper.
+
+## Observability
+
+`instrumentAgent(name, fn, meta)` (in `src/lib/observability/instrumentation.ts`) wraps the three heaviest agent entry points:
+
+- `conveneMeeting`
+- `launchStartup`
+- (plus existing orchestrator coverage)
+
+Each invocation is timed and logged with a request-id for cross-service tracing.
+
+## Status & Mission Control
+
+- `GET /api/health` reports `status`, `version`, per-subsystem `checks`, and a `meta.recentLaunchRuns` snapshot. Degraded state is surfaced via `status: "degraded"`.
+- `/status` dashboard page polls the health endpoint every 15 seconds and groups results into Infrastructure / Features / Channels with coloured status dots and an accessible live layout.
+
+## UX & Accessibility
+
+- Every new dashboard page (`skills`, `virtual-office`, `launchpad`, `meetings`, `experts`) ships with dedicated `loading.tsx` and `error.tsx` segments.
+- Shared primitives live in `components/ui/page-shell.tsx`: `PageShell`, `Card`, `Skeleton`, `EmptyState`, and `ErrorBlock` (with retry + `role="alert"`).
+- All UI strings remain Arabic; error surfaces use `role="alert"` and skeletons use `aria-hidden`.
+
+## Tests
+
+Vitest suites (with `@` path alias configured in `vitest.config.ts`):
+
+- `test/omnichannel.test.ts` — credential guards + WhatsApp send happy-path
+- `test/expert-factory.test.ts` — JSON parsing, tool sanitisation, fallback, save
+- `test/route-guard.test.ts` — Zod rejection, bearer-token auth injection, 401 path
+
+Run: `npx vitest run`.
+
 ## Security
 
 - HTTP Security Headers via `next.config.ts` (HSTS, X-Frame-Options, CSP-prep, Referrer-Policy, Permissions-Policy, X-Content-Type-Options)
