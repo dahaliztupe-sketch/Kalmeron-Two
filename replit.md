@@ -1,6 +1,60 @@
 # Kalmeron AI (ai-studio-applet)
 
-Arabic-language AI studio platform for Egyptian entrepreneurs.
+Arabic-language AI Operating System for Egyptian entrepreneurs. World-class platform with 50+ specialized AI agents across 7 departments.
+
+## Recent Major Updates (Session 2025-04-23)
+
+### Landing Page (`app/page.tsx`) — Completely rebuilt
+- Animated particle canvas hero with parallax scrolling
+- Live typewriter AI demo section (3 real conversation scenarios)
+- Interactive 7-department showcase with animated detail panel
+- Full competitive comparison table (vs consultants, ChatGPT, Notion)
+- Animated count-up stats (useCountUp hook, InView triggered)
+- 5 testimonial cards with metrics
+- Trust marquee strip with ecosystem logos
+- 3-step "How It Works" section
+- RTL-first responsive design, mobile menu drawer
+- Scroll progress bar in header
+
+### Chat Interface (`app/(dashboard)/chat/page.tsx`) — World-class upgrade
+- Multi-conversation sidebar (Firebase Firestore history, 20 conversations)
+- "New Chat" button creating unique conversation IDs
+- Delete conversation with confirmation
+- Sidebar toggle (PanelLeftClose/Open) with smooth animation
+- Copy message button on hover for AI responses
+- 6 color-coded agent quick-select chips
+- Rich empty state with 6 suggestion cards
+- Animated typing indicator (3 bouncing dots)
+- Auto-resizing textarea (max 160px)
+- Stop generation button
+- Better message bubbles with ThoughtChain integration
+
+### Compare Page (`app/compare/page.tsx`) — New world-class page
+- Cost comparison: Kalmeron vs individual consultants (saves 97%)
+- Speed/time comparison table (5 key tasks)
+- Full 18-row feature matrix (5 categories, 4 tools)
+- Category filter buttons
+- Expandable notes on key features
+- Legend for cell icons
+- Sticky header + final CTA section
+
+### Dashboard (`app/(dashboard)/dashboard/page.tsx`) — Enhanced
+- Personalized greeting with first name + gradient
+- 6 Quick Action cards (one per department) with color-coded icons
+- Animated progress bar (stageProgressPct with motion)
+- Improved activity feed with status badges
+- Better empty states with illustrations
+- Cleaner 2-column bottom grid
+
+### CSS (`app/globals.css`) — Enhanced
+- Typing bounce animation (.typing-dot)
+- Prose RTL fixes for markdown chat bubbles
+- Grid overlay utility (.grid-overlay)
+- Glow text utilities
+- Hover gradient border
+- Reveal-up animation
+- Chat bubble shadow styles
+- Number counter animation
 
 ## Architecture
 

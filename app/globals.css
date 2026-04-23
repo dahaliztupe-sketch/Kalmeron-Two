@@ -425,3 +425,107 @@
 /* ───────────────── Page transitions ───────────────── */
 .page-fade-enter { opacity: 0; transform: translateY(8px); }
 .page-fade-enter-active { opacity: 1; transform: translateY(0); transition: all .3s ease; }
+
+/* ───────────────── Typing dots ───────────────── */
+@keyframes typing-bounce {
+  0%, 100% { transform: translateY(0); opacity: 0.5; }
+  50% { transform: translateY(-4px); opacity: 1; }
+}
+.typing-dot:nth-child(1) { animation: typing-bounce 1.2s ease-in-out 0ms infinite; }
+.typing-dot:nth-child(2) { animation: typing-bounce 1.2s ease-in-out 150ms infinite; }
+.typing-dot:nth-child(3) { animation: typing-bounce 1.2s ease-in-out 300ms infinite; }
+
+/* ───────────────── Hero grid overlay ───────────────── */
+.grid-overlay {
+  background-image:
+    linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
+/* ───────────────── Glow text (for stats) ───────────────── */
+.glow-text-cyan {
+  text-shadow: 0 0 30px rgba(56,189,248,0.5), 0 0 60px rgba(56,189,248,0.25);
+}
+.glow-text-indigo {
+  text-shadow: 0 0 30px rgba(79,70,229,0.5), 0 0 60px rgba(79,70,229,0.25);
+}
+
+/* ───────────────── Gradient border on hover ───────────────── */
+.hover-gradient-border {
+  position: relative;
+  transition: box-shadow 0.3s ease;
+}
+.hover-gradient-border:hover {
+  box-shadow: 0 0 0 1px rgba(79,70,229,0.5), 0 20px 40px -20px rgba(79,70,229,0.3);
+}
+
+/* ───────────────── Smooth reveal ───────────────── */
+@keyframes reveal-up {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.reveal-up {
+  animation: reveal-up 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* ───────────────── Prose fix for dark RTL ───────────────── */
+.prose.prose-invert p { color: #E2E8F0; }
+.prose.prose-invert strong { color: #F8FAFC; }
+.prose.prose-invert h1,
+.prose.prose-invert h2,
+.prose.prose-invert h3 { color: #F8FAFC; font-weight: 700; }
+.prose.prose-invert ul > li::marker { color: #38BDF8; }
+.prose.prose-invert ol > li::marker { color: #38BDF8; }
+.prose.prose-invert code {
+  background: rgba(79,70,229,0.15);
+  border: 1px solid rgba(79,70,229,0.25);
+  border-radius: 6px;
+  padding: 1px 6px;
+  font-size: 0.85em;
+  color: #818CF8;
+}
+.prose.prose-invert pre {
+  background: rgba(5,7,13,0.8);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+}
+.prose.prose-invert blockquote {
+  border-right: 3px solid #38BDF8;
+  border-left: none;
+  padding-right: 12px;
+  color: #94A3B8;
+  font-style: normal;
+}
+
+/* ───────────────── Slide-in sidebar ───────────────── */
+@keyframes slide-in-right {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+@keyframes slide-in-left {
+  from { transform: translateX(-100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+.slide-in-right { animation: slide-in-right 0.3s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+.slide-in-left  { animation: slide-in-left  0.3s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+
+/* ───────────────── Chat bubble shadow ───────────────── */
+.chat-bubble-assistant {
+  box-shadow: 0 4px 20px -8px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05);
+}
+.chat-bubble-user {
+  box-shadow: 0 4px 20px -8px rgba(79,70,229,0.3);
+}
+
+/* ───────────────── Gradient ring (focus glow) ───────────────── */
+.focus-ring-brand:focus-within {
+  box-shadow: 0 0 0 2px rgba(79,70,229,0.5), 0 8px 30px -10px rgba(79,70,229,0.4);
+}
+
+/* ───────────────── Number counter animation ───────────────── */
+@keyframes count-up {
+  from { opacity: 0; transform: translateY(10px) scale(0.9); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+.count-up-enter { animation: count-up 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
