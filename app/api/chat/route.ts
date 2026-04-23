@@ -5,8 +5,10 @@ import { HumanMessage } from '@langchain/core/messages';
 import { CreditManager } from '@/src/lib/billing/credit-manager';
 import { trackAgentUsage } from '@/src/lib/billing/usage-tracker';
 import { adminAuth } from '@/src/lib/firebase-admin';
-import { rateLimit, rateLimitResponse } from '@/lib/security/rate-limit';
+import { rateLimit, rateLimitAgent, rateLimitResponse } from '@/lib/security/rate-limit';
 import { createRequestLogger } from '@/src/lib/logger';
+import { redactPII } from '@/src/lib/compliance/pii-redactor';
+import { generateFollowUpSuggestions } from '@/src/ai/suggestions/follow-ups';
 
 export const runtime = 'nodejs';
 
@@ -55,6 +57,11 @@ export async function POST(req: NextRequest) {
     }
   }
 
+  const userScopedRl = rateLimitAgent(userId, 'chat', { limit: 30, windowMs: 60_000 });
+  if (!userScopedRl.allowed) {
+    return rateLimitResponse();
+  }
+
   if (userId !== 'guest-system') {
     const creditManager = new CreditManager(userId);
     const creditResult = await creditManager.consumeCredits(5, 'Supervisor', 'gemini-2.5-flash');
@@ -80,7 +87,10 @@ export async function POST(req: NextRequest) {
     });
   }
 
-  const langchainMessages = messages.map((m: any) => new HumanMessage(xss(m.content)));
+  // PII redaction قبل تمرير المحتوى لأي LLM (audit + privacy).
+  const langchainMessages = messages.map((m: any) =>
+    new HumanMessage(redactPII(xss(m.content)).redacted),
+  );
   const encoder = new TextEncoder();
 
   const stream = new ReadableStream({
@@ -103,6 +113,7 @@ export async function POST(req: NextRequest) {
             isGuest: !!isGuest,
             messageCount: isGuest ? messages.length : 0,
             uiContext: uiContext || {},
+            userId,
           },
           {
             version: 'v2',
@@ -177,6 +188,20 @@ export async function POST(req: NextRequest) {
               }
             } catch { /* swallow */ }
           })();
+        }
+
+        // أرسل اقتراحات متابعة (best-effort، لا تُفشل الرد إذا فشلت)
+        try {
+          if (finalText && finalText.length > 30) {
+            const suggestions = await generateFollowUpSuggestions({
+              intent: finalIntent || 'GENERAL_CHAT',
+              lastAnswer: finalText,
+              userId,
+            });
+            send('suggestions', { items: suggestions });
+          }
+        } catch {
+          /* swallow */
         }
 
         send('done', { intent: finalIntent, length: finalText.length });

@@ -14,16 +14,27 @@ function cleanExpired() {
   }
 }
 
+export interface RateLimitOptions {
+  limit: number;
+  windowMs: number;
+  /** مفتاح إضافي اختياري — مثل userId أو agentName — يُضاف للمسار وعنوان IP. */
+  scope?: string;
+  /** إذا كان لدى المستخدم معرف موثوق، يُستخدم بديلاً لـ IP. */
+  userId?: string;
+}
+
 export function rateLimit(
   req: NextRequest,
-  options: { limit: number; windowMs: number }
+  options: RateLimitOptions,
 ): { success: boolean; remaining: number } {
   const ip =
     req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
     req.headers.get('x-real-ip') ||
     'unknown';
 
-  const key = `${req.nextUrl.pathname}:${ip}`;
+  const principal = options.userId || ip;
+  const scope = options.scope ? `:${options.scope}` : '';
+  const key = `${req.nextUrl.pathname}${scope}:${principal}`;
   const now = Date.now();
 
   cleanExpired();
@@ -49,6 +60,30 @@ export function rateLimitResponse(): NextResponse {
     {
       status: 429,
       headers: { 'Retry-After': '60' },
-    }
+    },
   );
+}
+
+/**
+ * فحص حد per-user لإيجنت محدد. يُستخدم داخل /api/chat قبل تشغيل الـ Orchestrator
+ * لتقييد الاستهلاك المُكلف لكل وكيل بدلاً من حد موحّد لكل المسار.
+ */
+export function rateLimitAgent(
+  userId: string | undefined,
+  agent: string,
+  options: { limit: number; windowMs: number },
+): { allowed: boolean; remaining: number; limit: number } {
+  const key = `agent:${agent}:${userId || 'guest-system'}`;
+  const now = Date.now();
+  cleanExpired();
+  const entry = store.get(key);
+  if (!entry || entry.resetAt < now) {
+    store.set(key, { count: 1, resetAt: now + options.windowMs });
+    return { allowed: true, remaining: options.limit - 1, limit: options.limit };
+  }
+  if (entry.count >= options.limit) {
+    return { allowed: false, remaining: 0, limit: options.limit };
+  }
+  entry.count += 1;
+  return { allowed: true, remaining: options.limit - entry.count, limit: options.limit };
 }

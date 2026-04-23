@@ -1,7 +1,6 @@
 // @ts-nocheck
 import { StateGraph, Annotation, MemorySaver, END } from '@langchain/langgraph';
 import { BaseMessage, HumanMessage, AIMessage } from '@langchain/core/messages';
-import { generateText } from 'ai';
 import { MODELS } from '@/src/lib/gemini';
 import { validateIdea } from '@/src/agents/idea-validator/agent';
 import { buildBusinessPlanStream } from '@/src/agents/plan-builder/agent';
@@ -10,7 +9,8 @@ import { getPersonalizedOpportunities } from '@/src/agents/opportunity-radar/age
 import { analyzeCompany } from '@/src/agents/success-museum/agent';
 import { cfoAgentAction } from '@/src/ai/agents/cfo-agent/agent';
 import { legalGuideAction } from '@/src/ai/agents/legal-guide/agent';
-import { instrumentAgent } from '@/src/lib/observability/agent-instrumentation';
+import { safeGenerateText, PromptInjectionBlockedError } from '@/src/lib/llm/gateway';
+import { rateLimitAgent } from '@/lib/security/rate-limit';
 
 export const SupervisorState = Annotation.Root({
   messages: Annotation<BaseMessage[]>({ reducer: (a, b) => a.concat(b) }),
@@ -19,6 +19,7 @@ export const SupervisorState = Annotation.Root({
   uiContext: Annotation<any>(),
   intent: Annotation<string>(),
   nextStep: Annotation<string>(),
+  userId: Annotation<string>(),
 });
 
 const INTENT_CLASSIFIER_PROMPT = `أنت المنسق الذكي لمنصة كلميرون تو. صنّف نية رسالة المستخدم إلى إحدى الفئات التالية فقط وأجب بالكلمة المفتاحية وحدها:
@@ -36,7 +37,6 @@ const INTENT_CLASSIFIER_PROMPT = `أنت المنسق الذكي لمنصة كل
 
 async function routerNode(state: typeof SupervisorState.State) {
   const lastMessage = state.messages[state.messages.length - 1]?.content as string;
-  return instrumentAgent('orchestrator', async () => {
 
   if (state.isGuest && (state.messageCount || 0) >= 4) {
     return {
@@ -45,12 +45,28 @@ async function routerNode(state: typeof SupervisorState.State) {
     };
   }
 
-  const { text: intent } = await generateText({
-    model: MODELS.LITE,
-    system: INTENT_CLASSIFIER_PROMPT,
-    prompt: `سياق الواجهة: ${JSON.stringify(state.uiContext || {})}
+  let intent = 'GENERAL_CHAT';
+  try {
+    const { result } = await safeGenerateText(
+      {
+        model: MODELS.LITE,
+        system: INTENT_CLASSIFIER_PROMPT,
+        prompt: `سياق الواجهة: ${JSON.stringify(state.uiContext || {})}
 رسالة المستخدم: ${lastMessage}`,
-  });
+      },
+      { agent: 'router', userId: state.userId, softCostBudgetUsd: 0.005 },
+    );
+    intent = result.text;
+  } catch (e) {
+    if (e instanceof PromptInjectionBlockedError) {
+      return {
+        intent: 'GENERAL_CHAT',
+        nextStep: '__end__',
+        messages: [new AIMessage('تم رفض الطلب: اكتُشفت محاولة حقن أوامر في الرسالة. يرجى إعادة الصياغة.')],
+      };
+    }
+    throw e;
+  }
 
   const cleaned = intent.trim().toUpperCase();
   const validIntents = [
@@ -74,8 +90,18 @@ async function routerNode(state: typeof SupervisorState.State) {
     GENERAL_CHAT: 'general_chat_node',
   };
 
-    return { intent: matched, nextStep: stepMap[matched] };
-  }, { model: 'gemini-lite', input: { lastMessage }, toolsUsed: ['intent.classify'] });
+  const userId = state.userId || 'guest-system';
+  const agentBucket = stepMap[matched].replace(/_node$/, '') || 'general_chat';
+  const rl = rateLimitAgent(userId, agentBucket, { limit: 15, windowMs: 60_000 });
+  if (!rl.allowed) {
+    return {
+      intent: matched,
+      nextStep: '__end__',
+      messages: [new AIMessage(`تجاوزت حد استخدام وكيل ${agentBucket} (${rl.limit}/دقيقة). جرّب بعد قليل.`)],
+    };
+  }
+
+  return { intent: matched, nextStep: stepMap[matched] };
 }
 
 async function ideaValidatorNode(state: typeof SupervisorState.State) {
@@ -192,12 +218,19 @@ async function legalGuideNode(state: typeof SupervisorState.State) {
 
 async function realEstateNode(state: typeof SupervisorState.State) {
   const lastMessage = state.messages[state.messages.length - 1]?.content as string;
-  const { text } = await generateText({
-    model: MODELS.PRO,
-    system: `أنت خبير عقارات استثمارية في مصر. متخصص في حساب ROI، قاعدة الـ1٪، تقييم الصفقات، وتحليل الأسواق العقارية المصرية لعام 2026. استخدم المعطيات الواقعية وقدم تحليلاً دقيقاً بالأرقام.`,
-    prompt: lastMessage,
-  });
-  return { messages: [new AIMessage(text)] };
+  try {
+    const { result } = await safeGenerateText({
+      model: MODELS.PRO,
+      system: `أنت خبير عقارات استثمارية في مصر. متخصص في حساب ROI، قاعدة الـ1٪، تقييم الصفقات، وتحليل الأسواق العقارية المصرية لعام 2026. استخدم المعطيات الواقعية وقدم تحليلاً دقيقاً بالأرقام.`,
+      prompt: lastMessage,
+    }, { agent: 'real-estate' });
+    return { messages: [new AIMessage(result.text)] };
+  } catch (e) {
+    if (e instanceof PromptInjectionBlockedError) {
+      return { messages: [new AIMessage('تم رفض الطلب: اكتُشفت محاولة حقن أوامر في الرسالة. يرجى إعادة الصياغة.')] };
+    }
+    throw e;
+  }
 }
 
 async function adminNode(state: typeof SupervisorState.State) {
@@ -208,12 +241,19 @@ async function adminNode(state: typeof SupervisorState.State) {
 
 async function generalChatNode(state: typeof SupervisorState.State) {
   const lastMessage = state.messages[state.messages.length - 1]?.content as string;
-  const { text } = await generateText({
-    model: MODELS.FLASH,
-    system: `أنت كلميرون، المستشار الاستراتيجي الذكي لمنصة كلميرون تو. تساعد رواد الأعمال المصريين على بناء شركاتهم وتحقيق أهدافهم. ردودك قوية، واضحة، موجهة للتطبيق العملي، ومكتوبة بالعربية الفصحى المعاصرة. استخدم Markdown لتنظيم إجاباتك.`,
-    prompt: lastMessage,
-  });
-  return { messages: [new AIMessage(text)] };
+  try {
+    const { result } = await safeGenerateText({
+      model: MODELS.FLASH,
+      system: `أنت كلميرون، المستشار الاستراتيجي الذكي لمنصة كلميرون تو. تساعد رواد الأعمال المصريين على بناء شركاتهم وتحقيق أهدافهم. ردودك قوية، واضحة، موجهة للتطبيق العملي، ومكتوبة بالعربية الفصحى المعاصرة. استخدم Markdown لتنظيم إجاباتك.`,
+      prompt: lastMessage,
+    }, { agent: 'general-chat' });
+    return { messages: [new AIMessage(result.text)] };
+  } catch (e) {
+    if (e instanceof PromptInjectionBlockedError) {
+      return { messages: [new AIMessage('تم رفض الطلب: اكتُشفت محاولة حقن أوامر في الرسالة. يرجى إعادة الصياغة.')] };
+    }
+    throw e;
+  }
 }
 
 function supervisorRouter(state: typeof SupervisorState.State) {
