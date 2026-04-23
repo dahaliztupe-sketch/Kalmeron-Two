@@ -37,3 +37,30 @@ export async function GET(req: NextRequest) {
     alerts: metrics.alertsRecent,
   });
 }
+
+export async function POST(req: NextRequest) {
+  let userId = 'guest';
+  const authH = req.headers.get('Authorization');
+  if (authH?.startsWith('Bearer ')) {
+    try { userId = (await adminAuth.verifyIdToken(authH.split(' ')[1]!)).uid; } catch {}
+  }
+  const body = await req.json().catch(() => ({}));
+  const action = body?.action;
+  const payload = body?.payload || {};
+
+  if (action === 'recordFinding') {
+    if (!(await isKnowledgeGraphEnabled())) {
+      return NextResponse.json({ ok: false, reason: 'kg_disabled' }, { status: 503 });
+    }
+    const { addEntity } = await import('@/src/lib/memory/knowledge-graph');
+    const node = await addEntity(userId, payload.type || 'Finding', {
+      content: payload.content,
+      department: payload.department,
+      source: payload.source || 'manual',
+      createdAt: new Date().toISOString(),
+    });
+    return NextResponse.json({ ok: true, node });
+  }
+
+  return NextResponse.json({ ok: false, reason: 'unknown_action' }, { status: 400 });
+}
