@@ -1,52 +1,67 @@
 "use client";
 
 import Link from "next/link";
-
-import Image from "next/image";
+import { BrandLogo } from "@/components/brand/BrandLogo";
 
 export function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="border-t border-neutral-900 bg-[#06060A] py-16 px-6">
-      <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-12">
-        <div className="space-y-6 text-center md:text-right">
-          <Image src="/brand/logo.svg" alt="Kalmeron Two Logo" width={180} height={45} className="mx-auto md:mx-0 h-10 w-auto" />
-          <p className="text-neutral-500 text-lg max-w-xs font-medium leading-relaxed">
-            شريكك المؤسس المدعوم بالذكاء الاصطناعي للسوق المصري، مصمم لتمكينك من اختراق الحواجز وبناء المستقبل.
+    <footer className="border-t border-white/[0.05] bg-[#05070D] py-12 px-6">
+      <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start gap-10">
+        <div className="space-y-4 max-w-sm">
+          <BrandLogo size={40} iconOnly />
+          <p className="text-neutral-500 text-sm leading-relaxed">
+            شريكك المؤسس المدعوم بالذكاء الاصطناعي للسوق المصري — مصمم لتمكينك من اختراق الحواجز وبناء المستقبل.
           </p>
         </div>
 
-        <div className="flex flex-wrap justify-center gap-x-16 gap-y-8">
-          <div className="flex flex-col gap-4 items-center md:items-start">
-            <span className="text-white font-black text-sm uppercase tracking-widest pb-2 border-b border-[rgb(var(--gold))]/20">المنصة</span>
-            <Link href="/dashboard" className="text-neutral-400 hover:text-[rgb(var(--gold))] text-md font-bold transition-colors">لوحة التحكم</Link>
-            <Link href="/chat" className="text-neutral-400 hover:text-[rgb(var(--gold))] text-md font-bold transition-colors">مستشار كلميرون</Link>
-            <Link href="/ideas/analyze" className="text-neutral-400 hover:text-[rgb(var(--gold))] text-md font-bold transition-colors">تحليل الفكرة</Link>
-          </div>
-          
-          <div className="flex flex-col gap-4 items-center md:items-start">
-            <span className="text-white font-black text-sm uppercase tracking-widest pb-2 border-b border-[rgb(var(--gold))]/20">قانوني</span>
-            <Link href="/privacy" className="text-neutral-400 hover:text-[rgb(var(--gold))] text-md font-bold transition-colors">سياسة الخصوصية</Link>
-            <Link href="/terms" className="text-neutral-400 hover:text-[rgb(var(--gold))] text-md font-bold transition-colors">شروط الاستخدام</Link>
-          </div>
-
-          <div className="flex flex-col gap-4 items-center md:items-start">
-            <span className="text-white font-black text-sm uppercase tracking-widest pb-2 border-b border-[rgb(var(--gold))]/20">المجتمع</span>
-            <Link href="/success-museum" className="text-neutral-400 hover:text-[rgb(var(--gold))] text-md font-bold transition-colors">متحف النجاح</Link>
-            <Link href="/opportunities" className="text-neutral-400 hover:text-[rgb(var(--gold))] text-md font-bold transition-colors">رادار الفرص</Link>
-          </div>
+        <div className="flex flex-wrap gap-x-12 gap-y-6">
+          <FooterCol heading="المنصة">
+            <FLink href="/dashboard">لوحة التحكم</FLink>
+            <FLink href="/chat">مستشار كلميرون</FLink>
+            <FLink href="/ideas/analyze">تحليل الفكرة</FLink>
+          </FooterCol>
+          <FooterCol heading="قانوني">
+            <FLink href="/privacy">سياسة الخصوصية</FLink>
+            <FLink href="/terms">شروط الاستخدام</FLink>
+            <FLink href="/compliance">الامتثال</FLink>
+          </FooterCol>
+          <FooterCol heading="المجتمع">
+            <FLink href="/success-museum">متحف النجاح</FLink>
+            <FLink href="/opportunities">رادار الفرص</FLink>
+            <FLink href="/marketplace">السوق</FLink>
+          </FooterCol>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto mt-16 pt-8 border-t border-neutral-900 flex flex-col md:flex-row justify-between items-center gap-4">
+      <div className="max-w-7xl mx-auto mt-10 pt-6 border-t border-white/[0.04] flex flex-col md:flex-row justify-between items-center gap-3">
         <p className="text-neutral-600 text-xs font-bold uppercase tracking-widest">
-            Kalmeron Two © {currentYear}
+          Kalmeron AI © {currentYear}
         </p>
-        <p className="text-neutral-600 text-[10px] text-center font-medium max-w-sm">
-          جميع الحقوق محفوظة. المنصة مصممة لدعم الابتكار في جمهورية مصر العربية.
+        <p className="text-neutral-600 text-[11px] text-center max-w-md">
+          جميع الحقوق محفوظة. مصممة لدعم الابتكار في جمهورية مصر العربية.
         </p>
       </div>
     </footer>
+  );
+}
+
+function FooterCol({ heading, children }: { heading: string; children: React.ReactNode }) {
+  return (
+    <div className="flex flex-col gap-3 min-w-[120px]">
+      <span className="text-cyan-300/80 font-bold text-[11px] uppercase tracking-[0.22em]">
+        {heading}
+      </span>
+      {children}
+    </div>
+  );
+}
+
+function FLink({ href, children }: { href: string; children: React.ReactNode }) {
+  return (
+    <Link href={href} className="text-neutral-400 hover:text-white text-sm font-medium transition-colors">
+      {children}
+    </Link>
   );
 }

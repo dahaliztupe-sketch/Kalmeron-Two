@@ -4,17 +4,16 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion, useScroll, useTransform, AnimatePresence } from "motion/react";
 import {
-  ArrowLeft, Sparkles, LogIn, UserPlus, Brain, Shield, Radar,
+  ArrowLeft, Sparkles, LogIn, Brain, Shield, Radar,
   Briefcase, Scale, FlaskConical, Rocket, Star, Check, Menu, X,
-  Bot, Zap, ChevronDown, MessageSquareText, Trophy,
+  Bot, Zap, ChevronDown, MessageSquareText, Trophy, UserPlus,
+  TrendingUp, Globe2, ShieldCheck,
 } from "lucide-react";
 import Link from "next/link";
 import { BrandLogo } from "@/components/brand/BrandLogo";
 import { useAuth } from "@/contexts/AuthContext";
 
-// ───────────────────────────────────────────────────────────────────────────
-// Data
-// ───────────────────────────────────────────────────────────────────────────
+// ───────────── Data ─────────────
 
 const SUGGESTIONS = [
   "حلل فكرة منصة تعليمية للمستقلين",
@@ -24,48 +23,18 @@ const SUGGESTIONS = [
 ];
 
 const FEATURES = [
-  {
-    icon: Brain,
-    title: "الدماغ المشترك",
-    desc: "ذاكرة ذكية تتعلم من كل محادثة وتربط الأفكار ببيانات شركتك.",
-    accent: "from-indigo-500/20 to-purple-500/10",
-    iconColor: "text-indigo-300",
-  },
-  {
-    icon: Bot,
-    title: "+50 وكيل ذكي",
-    desc: "فريق متكامل من المسوقين والمحاسبين والمحامين يعمل بدوام كامل لصالحك.",
-    accent: "from-blue-500/20 to-cyan-500/10",
-    iconColor: "text-blue-300",
-  },
-  {
-    icon: FlaskConical,
-    title: "مختبر السوق",
-    desc: "اختبر فكرتك مع مستهلكين تركيبيين قبل أن تنفق جنيهاً واحداً.",
-    accent: "from-fuchsia-500/20 to-pink-500/10",
-    iconColor: "text-fuchsia-300",
-  },
-  {
-    icon: Briefcase,
-    title: "المدير المالي (CFO)",
-    desc: "نماذج مالية وتوقعات سيولة جاهزة للمستثمرين.",
-    accent: "from-emerald-500/20 to-teal-500/10",
-    iconColor: "text-emerald-300",
-  },
-  {
-    icon: Scale,
-    title: "الحارس القانوني",
-    desc: "عقود ونماذج متوافقة مع قانون 151 المصري وLawAct GDPR.",
-    accent: "from-amber-500/20 to-orange-500/10",
-    iconColor: "text-amber-300",
-  },
-  {
-    icon: Radar,
-    title: "رادار الفرص",
-    desc: "تنبيهات لحظية بأحدث جولات التمويل والمسابقات والفعاليات.",
-    accent: "from-rose-500/20 to-red-500/10",
-    iconColor: "text-rose-300",
-  },
+  { icon: Brain, title: "الدماغ المشترك", desc: "ذاكرة ذكية تتعلم من كل محادثة وتربط الأفكار ببيانات شركتك.",
+    accent: "from-cyan-500/20 to-indigo-500/10", iconBg: "from-cyan-400 to-indigo-500" },
+  { icon: Bot, title: "+50 وكيل ذكي", desc: "فريق متكامل من المسوقين والمحاسبين والمحامين يعمل بدوام كامل لصالحك.",
+    accent: "from-indigo-500/20 to-violet-500/10", iconBg: "from-indigo-400 to-violet-500" },
+  { icon: FlaskConical, title: "مختبر السوق", desc: "اختبر فكرتك مع مستهلكين تركيبيين قبل أن تنفق جنيهاً واحداً.",
+    accent: "from-fuchsia-500/20 to-pink-500/10", iconBg: "from-fuchsia-400 to-pink-500" },
+  { icon: Briefcase, title: "المدير المالي (CFO)", desc: "نماذج مالية وتوقعات سيولة جاهزة للمستثمرين.",
+    accent: "from-emerald-500/20 to-cyan-500/10", iconBg: "from-emerald-400 to-cyan-500" },
+  { icon: Scale, title: "الحارس القانوني", desc: "عقود ونماذج متوافقة مع قانون 151 المصري وGDPR.",
+    accent: "from-amber-500/20 to-orange-500/10", iconBg: "from-amber-400 to-orange-500" },
+  { icon: Radar, title: "رادار الفرص", desc: "تنبيهات لحظية بأحدث جولات التمويل والمسابقات والفعاليات.",
+    accent: "from-rose-500/20 to-red-500/10", iconBg: "from-rose-400 to-red-500" },
 ];
 
 const STATS = [
@@ -87,38 +56,37 @@ const TESTIMONIALS = [
   { name: "كريم السيد", role: "CEO, GreenLogix", text: "فريق وكلاء بدوام كامل بسعر اشتراك واحد. تجربة غير عادية." },
 ];
 
-// ───────────────────────────────────────────────────────────────────────────
-// Aurora background
-// ───────────────────────────────────────────────────────────────────────────
+const TRUST_LOGOS = [
+  "Foodly", "MaktabaApp", "GreenLogix", "Egypt Innovate", "Flat6Labs", "AUC Ventures", "RiseUp", "Falak Startups",
+];
+
+// ───────────── Aurora ─────────────
 
 function Aurora() {
   return (
     <div className="absolute inset-0 -z-10 overflow-hidden pointer-events-none">
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(79,70,229,0.18),transparent_55%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(56,189,248,0.18),transparent_55%)]" />
       <motion.div
         animate={{ x: [0, 60, -40, 0], y: [0, 40, -30, 0] }}
         transition={{ duration: 22, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute top-[-15%] right-[-10%] w-[55vw] h-[55vw] rounded-full bg-indigo-600/25 blur-[140px]"
+        className="absolute top-[-15%] right-[-10%] w-[55vw] h-[55vw] rounded-full bg-cyan-500/20 blur-[140px]"
       />
       <motion.div
         animate={{ x: [0, -50, 30, 0], y: [0, -30, 50, 0] }}
         transition={{ duration: 26, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute bottom-[-15%] left-[-10%] w-[60vw] h-[60vw] rounded-full bg-blue-600/20 blur-[140px]"
+        className="absolute bottom-[-15%] left-[-10%] w-[60vw] h-[60vw] rounded-full bg-indigo-600/22 blur-[140px]"
       />
       <motion.div
         animate={{ x: [0, 30, -20, 0], y: [0, -40, 20, 0] }}
         transition={{ duration: 28, repeat: Infinity, ease: "easeInOut" }}
         className="absolute top-[35%] left-[40%] w-[35vw] h-[35vw] rounded-full bg-fuchsia-600/15 blur-[120px]"
       />
-      {/* Subtle grid */}
       <div className="absolute inset-0 opacity-[0.04] [background-image:linear-gradient(rgba(255,255,255,0.5)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.5)_1px,transparent_1px)] [background-size:48px_48px]" />
     </div>
   );
 }
 
-// ───────────────────────────────────────────────────────────────────────────
-// Top Navigation (desktop + mobile)
-// ───────────────────────────────────────────────────────────────────────────
+// ───────────── Top Nav ─────────────
 
 function TopNav() {
   const [open, setOpen] = useState(false);
@@ -141,14 +109,14 @@ function TopNav() {
     <header
       className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${
         scrolled
-          ? "backdrop-blur-xl bg-[#080C14]/70 border-b border-white/10"
+          ? "backdrop-blur-2xl bg-[#05070D]/75 border-b border-white/[0.06]"
           : "bg-transparent"
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 md:px-8 h-16 flex items-center justify-between">
-        <BrandLogo size={36} glow />
+        <BrandLogo size={38} glow iconOnly />
 
-        <nav className="hidden md:flex items-center gap-8">
+        <nav className="hidden md:flex items-center gap-7">
           {links.map((l) => (
             <a
               key={l.href}
@@ -156,7 +124,7 @@ function TopNav() {
               className="text-sm text-neutral-300 hover:text-white transition-colors relative group"
             >
               {l.label}
-              <span className="absolute -bottom-1 right-0 left-auto h-px w-0 bg-gradient-to-r from-indigo-400 to-blue-400 transition-all duration-300 group-hover:w-full" />
+              <span className="absolute -bottom-1 right-0 left-auto h-px w-0 bg-gradient-to-r from-cyan-400 to-indigo-400 transition-all duration-300 group-hover:w-full" />
             </a>
           ))}
         </nav>
@@ -170,7 +138,7 @@ function TopNav() {
           </Link>
           <Link
             href="/auth/signup"
-            className="text-sm font-semibold text-black bg-white hover:bg-neutral-200 px-5 py-2.5 rounded-full transition-all hover:scale-105 active:scale-95 flex items-center gap-2 shadow-lg shadow-white/10"
+            className="text-sm font-bold text-white btn-primary px-5 py-2.5 rounded-full"
           >
             ابدأ مجاناً
             <ArrowLeft className="w-4 h-4" />
@@ -186,7 +154,6 @@ function TopNav() {
         </button>
       </div>
 
-      {/* Mobile slide-over */}
       <AnimatePresence>
         {open && (
           <motion.div
@@ -195,7 +162,7 @@ function TopNav() {
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-50 md:hidden"
           >
-            <div className="absolute inset-0 bg-black/70 backdrop-blur-md" onClick={() => setOpen(false)} />
+            <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={() => setOpen(false)} />
             <motion.div
               initial={{ y: "-100%" }}
               animate={{ y: 0 }}
@@ -204,7 +171,7 @@ function TopNav() {
               className="absolute top-0 inset-x-0 bg-[#0B1020] border-b border-white/10 p-6 rounded-b-3xl shadow-2xl"
             >
               <div className="flex justify-between items-center mb-6">
-                <BrandLogo size={36} />
+                <BrandLogo size={38} iconOnly />
                 <button
                   onClick={() => setOpen(false)}
                   className="p-2 rounded-xl bg-white/5 border border-white/10"
@@ -234,7 +201,7 @@ function TopNav() {
                 </Link>
                 <Link
                   href="/auth/signup"
-                  className="text-center text-base font-bold text-black bg-white px-5 py-3 rounded-xl"
+                  className="btn-primary text-center text-base font-bold px-5 py-3 rounded-xl"
                 >
                   ابدأ مجاناً
                 </Link>
@@ -247,9 +214,7 @@ function TopNav() {
   );
 }
 
-// ───────────────────────────────────────────────────────────────────────────
-// Hero
-// ───────────────────────────────────────────────────────────────────────────
+// ───────────── Hero ─────────────
 
 function Hero() {
   const [query, setQuery] = useState("");
@@ -269,16 +234,20 @@ function Hero() {
       className="relative pt-32 pb-16 md:pt-40 md:pb-24 px-4"
     >
       <div className="max-w-5xl mx-auto text-center">
-        {/* Floating logo halo */}
+        {/* Real logo halo */}
         <motion.div
           initial={{ opacity: 0, scale: 0.85, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           transition={{ duration: 0.8, ease: "circOut" }}
-          className="relative w-28 h-28 md:w-36 md:h-36 mx-auto mb-8"
+          className="relative w-32 h-32 md:w-40 md:h-40 mx-auto mb-8"
         >
-          <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-indigo-500/40 via-blue-500/30 to-purple-500/40 blur-3xl animate-pulse" />
-          <div className="relative w-full h-full">
-            <BrandLogo size={144} showWordmark={false} href={null} className="w-full h-full" glow />
+          <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-cyan-500/40 via-indigo-500/40 to-fuchsia-500/40 blur-3xl logo-halo" />
+          <div className="relative w-full h-full rounded-3xl overflow-hidden border border-white/10 shadow-2xl subtle-float">
+            <img
+              src="/brand/kalmeron-logo.png"
+              alt="Kalmeron AI"
+              className="w-full h-full object-cover"
+            />
           </div>
         </motion.div>
 
@@ -286,7 +255,7 @@ function Hero() {
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.15 }}
-          className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/10 bg-white/5 backdrop-blur-md text-xs md:text-sm text-indigo-200 mb-6"
+          className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/10 bg-white/5 backdrop-blur-md text-xs md:text-sm text-cyan-200 mb-6"
         >
           <Sparkles className="w-3.5 h-3.5" />
           <span>Kalmeron AI · نظام تشغيل رواد الأعمال</span>
@@ -299,9 +268,7 @@ function Hero() {
           className="font-display text-4xl sm:text-5xl md:text-7xl font-extrabold tracking-tight leading-[1.05] mb-6"
         >
           <span className="block text-white">حوّل فكرتك</span>
-          <span className="block bg-gradient-to-r from-indigo-400 via-blue-300 to-purple-400 bg-clip-text text-transparent">
-            إلى شركة ناجحة
-          </span>
+          <span className="block brand-gradient-text">إلى شركة ناجحة</span>
         </motion.h1>
 
         <motion.p
@@ -322,7 +289,7 @@ function Hero() {
           onSubmit={submit}
           className="relative max-w-2xl mx-auto group"
         >
-          <div className="absolute -inset-px rounded-3xl bg-gradient-to-r from-indigo-500/40 via-blue-500/40 to-purple-500/40 opacity-0 group-focus-within:opacity-100 blur-md transition-opacity" />
+          <div className="absolute -inset-px rounded-3xl bg-gradient-to-r from-cyan-500/40 via-indigo-500/40 to-fuchsia-500/40 opacity-0 group-focus-within:opacity-100 blur-md transition-opacity" />
           <div className="relative flex items-center bg-[#0B1020]/85 backdrop-blur-xl border border-white/10 rounded-3xl p-2 shadow-[0_30px_80px_-20px_rgba(0,0,0,0.7)] focus-within:border-white/30">
             <input
               value={query}
@@ -333,7 +300,7 @@ function Hero() {
             <button
               type="submit"
               disabled={!query.trim()}
-              className="shrink-0 flex items-center gap-2 bg-white text-black font-semibold rounded-2xl px-4 py-3 md:px-5 md:py-3 disabled:opacity-40 hover:scale-[1.03] active:scale-95 transition-transform"
+              className="shrink-0 btn-primary rounded-2xl px-4 py-3 md:px-5 md:py-3 disabled:opacity-40 disabled:hover:translate-y-0"
             >
               <span className="hidden sm:inline">ابدأ الآن</span>
               <ArrowLeft className="w-5 h-5" />
@@ -352,7 +319,7 @@ function Hero() {
             <button
               key={t}
               onClick={() => setQuery(t)}
-              className="text-xs md:text-sm bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 text-neutral-200 px-3.5 py-2 rounded-full transition-all"
+              className="text-xs md:text-sm bg-white/5 border border-white/10 hover:bg-white/10 hover:border-cyan-400/30 text-neutral-200 px-3.5 py-2 rounded-full transition-all"
             >
               {t}
             </button>
@@ -368,16 +335,28 @@ function Hero() {
         >
           <Link
             href="/auth/signup"
-            className="flex items-center justify-center gap-2 text-base font-bold bg-white text-black px-6 py-3.5 rounded-full"
+            className="btn-primary flex items-center justify-center gap-2 text-base font-bold px-6 py-3.5 rounded-full"
           >
             ابدأ مجاناً <ArrowLeft className="w-4 h-4" />
           </Link>
           <Link
             href="/auth/login"
-            className="flex items-center justify-center gap-2 text-base text-white border border-white/15 px-6 py-3.5 rounded-full bg-white/5"
+            className="btn-ghost flex items-center justify-center gap-2 text-base px-6 py-3.5 rounded-full"
           >
             <LogIn className="w-4 h-4" /> تسجيل الدخول
           </Link>
+        </motion.div>
+
+        {/* Trust badges row */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.85 }}
+          className="hidden md:flex items-center justify-center gap-8 mt-12 text-neutral-500 text-xs"
+        >
+          <span className="flex items-center gap-2"><ShieldCheck className="w-4 h-4 text-emerald-400" /> متوافق مع قانون 151</span>
+          <span className="flex items-center gap-2"><Globe2 className="w-4 h-4 text-cyan-400" /> عربي أصيل</span>
+          <span className="flex items-center gap-2"><TrendingUp className="w-4 h-4 text-fuchsia-400" /> +1000 رائد أعمال</span>
         </motion.div>
 
         {/* Scroll cue */}
@@ -385,7 +364,7 @@ function Hero() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1.2 }}
-          className="hidden md:flex justify-center mt-16"
+          className="hidden md:flex justify-center mt-10"
         >
           <motion.div
             animate={{ y: [0, 10, 0] }}
@@ -401,9 +380,31 @@ function Hero() {
   );
 }
 
-// ───────────────────────────────────────────────────────────────────────────
-// Stats strip
-// ───────────────────────────────────────────────────────────────────────────
+// ───────────── Trust marquee ─────────────
+
+function TrustMarquee() {
+  return (
+    <section className="px-4 py-8 overflow-hidden">
+      <p className="text-center text-xs uppercase tracking-[0.3em] text-neutral-500 mb-6">
+        موثوق به من قِبل رواد الأعمال
+      </p>
+      <div className="relative max-w-6xl mx-auto overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_15%,black_85%,transparent)]">
+        <div className="marquee flex w-max gap-12">
+          {[...TRUST_LOGOS, ...TRUST_LOGOS].map((name, i) => (
+            <span
+              key={i}
+              className="font-display font-bold text-lg md:text-xl text-neutral-400 hover:text-white transition-colors whitespace-nowrap"
+            >
+              {name}
+            </span>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ───────────── Stats ─────────────
 
 function StatsStrip() {
   return (
@@ -417,9 +418,9 @@ function StatsStrip() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.4 }}
               transition={{ delay: i * 0.08 }}
-              className="rounded-2xl border border-white/10 bg-white/[0.03] backdrop-blur-md px-4 py-5 md:p-6 text-center"
+              className="rounded-2xl border border-white/10 bg-white/[0.03] backdrop-blur-md px-4 py-5 md:p-6 text-center hover:border-cyan-400/30 transition-colors"
             >
-              <div className="font-display text-3xl md:text-5xl font-extrabold bg-gradient-to-br from-white to-indigo-300 bg-clip-text text-transparent">
+              <div className="font-display text-3xl md:text-5xl font-extrabold brand-gradient-text">
                 {s.value}
               </div>
               <div className="text-xs md:text-sm text-neutral-400 mt-2">{s.label}</div>
@@ -431,9 +432,7 @@ function StatsStrip() {
   );
 }
 
-// ───────────────────────────────────────────────────────────────────────────
-// Features grid
-// ───────────────────────────────────────────────────────────────────────────
+// ───────────── Features ─────────────
 
 function Features() {
   return (
@@ -445,11 +444,12 @@ function Features() {
           viewport={{ once: true }}
           className="text-center mb-12 md:mb-16"
         >
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/10 bg-white/5 text-xs text-indigo-200 mb-4">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/10 bg-white/5 text-xs text-cyan-200 mb-4">
             <Zap className="w-3 h-3" /> فريق متكامل
           </div>
           <h2 className="font-display text-3xl md:text-5xl font-extrabold text-white mb-4">
-            كل ما تحتاجه شركتك في <span className="bg-gradient-to-r from-indigo-400 to-blue-400 bg-clip-text text-transparent">مكان واحد</span>
+            كل ما تحتاجه شركتك في{" "}
+            <span className="brand-gradient-text">مكان واحد</span>
           </h2>
           <p className="text-neutral-400 max-w-2xl mx-auto">
             من تحليل الفكرة وحتى التوسع. لكل قسم وكلاء متخصصون بدوام كامل.
@@ -471,8 +471,8 @@ function Features() {
               >
                 <div className={`absolute inset-0 bg-gradient-to-br ${f.accent} opacity-0 group-hover:opacity-100 transition-opacity`} />
                 <div className="relative">
-                  <div className={`w-12 h-12 rounded-2xl flex items-center justify-center bg-white/5 border border-white/10 mb-5 group-hover:scale-110 transition-transform`}>
-                    <Icon className={`w-6 h-6 ${f.iconColor}`} />
+                  <div className={`w-12 h-12 rounded-2xl flex items-center justify-center bg-gradient-to-br ${f.iconBg} mb-5 group-hover:scale-110 transition-transform shadow-[0_8px_24px_-6px_rgba(79,70,229,0.5)]`}>
+                    <Icon className="w-6 h-6 text-white" />
                   </div>
                   <h3 className="text-xl font-bold text-white mb-2">{f.title}</h3>
                   <p className="text-sm text-neutral-400 leading-relaxed">{f.desc}</p>
@@ -486,13 +486,11 @@ function Features() {
   );
 }
 
-// ───────────────────────────────────────────────────────────────────────────
-// How it works
-// ───────────────────────────────────────────────────────────────────────────
+// ───────────── How it works ─────────────
 
 function HowItWorks() {
   return (
-    <section id="how" className="relative px-4 py-20 md:py-28 bg-gradient-to-b from-transparent via-indigo-950/10 to-transparent">
+    <section id="how" className="relative px-4 py-20 md:py-28 bg-gradient-to-b from-transparent via-indigo-950/15 to-transparent">
       <div className="max-w-6xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -500,17 +498,16 @@ function HowItWorks() {
           viewport={{ once: true }}
           className="text-center mb-12 md:mb-16"
         >
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/10 bg-white/5 text-xs text-indigo-200 mb-4">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/10 bg-white/5 text-xs text-cyan-200 mb-4">
             <Rocket className="w-3 h-3" /> 3 خطوات فقط
           </div>
           <h2 className="font-display text-3xl md:text-5xl font-extrabold text-white mb-4">
-            من الفكرة إلى التشغيل في <span className="bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">دقائق</span>
+            من الفكرة إلى التشغيل في <span className="brand-gradient-text">دقائق</span>
           </h2>
         </motion.div>
 
         <div className="relative grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Connector line (desktop) */}
-          <div className="hidden md:block absolute top-12 right-[16%] left-[16%] h-px bg-gradient-to-r from-transparent via-indigo-500/40 to-transparent" />
+          <div className="hidden md:block absolute top-12 right-[16%] left-[16%] h-px bg-gradient-to-r from-transparent via-cyan-500/50 to-transparent" />
 
           {STEPS.map((s, i) => (
             <motion.div
@@ -521,11 +518,9 @@ function HowItWorks() {
               transition={{ delay: i * 0.15 }}
               className="relative flex flex-col items-center text-center p-6 rounded-3xl border border-white/10 bg-[#0B1020]/60 backdrop-blur-md"
             >
-              <div className="w-24 h-24 rounded-full bg-gradient-to-br from-indigo-500/20 to-blue-500/10 border border-white/10 flex items-center justify-center mb-5 relative">
-                <span className="font-display text-3xl font-extrabold bg-gradient-to-br from-indigo-300 to-blue-300 bg-clip-text text-transparent">
-                  {s.n}
-                </span>
-                <span className="absolute inset-0 rounded-full ring-1 ring-indigo-500/30 animate-pulse" />
+              <div className="w-24 h-24 rounded-full bg-gradient-to-br from-cyan-500/20 to-indigo-500/10 border border-white/10 flex items-center justify-center mb-5 relative">
+                <span className="font-display text-3xl font-extrabold brand-gradient-text">{s.n}</span>
+                <span className="absolute inset-0 rounded-full ring-1 ring-cyan-500/30 animate-pulse" />
               </div>
               <h3 className="text-xl font-bold text-white mb-2">{s.title}</h3>
               <p className="text-sm text-neutral-400 leading-relaxed">{s.desc}</p>
@@ -537,9 +532,7 @@ function HowItWorks() {
   );
 }
 
-// ───────────────────────────────────────────────────────────────────────────
-// Testimonials
-// ───────────────────────────────────────────────────────────────────────────
+// ───────────── Testimonials ─────────────
 
 function Testimonials() {
   return (
@@ -551,11 +544,11 @@ function Testimonials() {
           viewport={{ once: true }}
           className="text-center mb-12"
         >
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/10 bg-white/5 text-xs text-indigo-200 mb-4">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/10 bg-white/5 text-xs text-cyan-200 mb-4">
             <Trophy className="w-3 h-3" /> رواد الأعمال يثقون بنا
           </div>
           <h2 className="font-display text-3xl md:text-5xl font-extrabold text-white">
-            قصص <span className="bg-gradient-to-r from-amber-300 to-rose-300 bg-clip-text text-transparent">نجاح حقيقية</span>
+            قصص <span className="brand-gradient-text">نجاح حقيقية</span>
           </h2>
         </motion.div>
 
@@ -567,7 +560,7 @@ function Testimonials() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.3 }}
               transition={{ delay: i * 0.1 }}
-              className="rounded-3xl border border-white/10 bg-white/[0.03] backdrop-blur-md p-6 hover:border-white/20 transition-colors"
+              className="rounded-3xl border border-white/10 bg-white/[0.03] backdrop-blur-md p-6 hover:border-cyan-400/25 transition-colors"
             >
               <div className="flex gap-1 mb-3">
                 {[...Array(5)].map((_, k) => (
@@ -576,7 +569,7 @@ function Testimonials() {
               </div>
               <p className="text-neutral-200 leading-relaxed mb-5">"{t.text}"</p>
               <div className="flex items-center gap-3 pt-4 border-t border-white/10">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-cyan-500 to-fuchsia-600 flex items-center justify-center text-white font-bold">
                   {t.name.charAt(0)}
                 </div>
                 <div>
@@ -592,9 +585,7 @@ function Testimonials() {
   );
 }
 
-// ───────────────────────────────────────────────────────────────────────────
-// Final CTA
-// ───────────────────────────────────────────────────────────────────────────
+// ───────────── Final CTA ─────────────
 
 function FinalCTA() {
   return (
@@ -603,18 +594,18 @@ function FinalCTA() {
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, amount: 0.3 }}
-        className="relative max-w-5xl mx-auto rounded-[2rem] border border-white/10 bg-gradient-to-br from-indigo-900/40 via-blue-900/20 to-purple-900/30 backdrop-blur-xl p-8 md:p-16 text-center overflow-hidden"
+        className="relative max-w-5xl mx-auto rounded-[2rem] border border-white/10 bg-gradient-to-br from-indigo-900/40 via-cyan-900/15 to-fuchsia-900/30 backdrop-blur-xl p-8 md:p-16 text-center overflow-hidden"
       >
-        <div className="absolute -top-32 -right-32 w-80 h-80 rounded-full bg-indigo-500/30 blur-3xl" />
-        <div className="absolute -bottom-32 -left-32 w-80 h-80 rounded-full bg-blue-500/30 blur-3xl" />
+        <div className="absolute -top-32 -right-32 w-80 h-80 rounded-full bg-cyan-500/30 blur-3xl" />
+        <div className="absolute -bottom-32 -left-32 w-80 h-80 rounded-full bg-fuchsia-500/30 blur-3xl" />
 
         <div className="relative">
-          <BrandLogo size={64} showWordmark={false} href={null} className="mx-auto mb-6" glow />
+          <div className="relative w-20 h-20 mx-auto mb-6 rounded-2xl overflow-hidden border border-white/10 logo-halo">
+            <img src="/brand/kalmeron-logo.png" alt="Kalmeron AI" className="w-full h-full object-cover" />
+          </div>
           <h2 className="font-display text-3xl md:text-5xl font-extrabold text-white mb-4 leading-tight">
             ابدأ شركتك اليوم<br />
-            <span className="bg-gradient-to-r from-indigo-300 to-blue-300 bg-clip-text text-transparent">
-              بدون مخاطر، بدون التزام
-            </span>
+            <span className="brand-gradient-text">بدون مخاطر، بدون التزام</span>
           </h2>
           <p className="text-neutral-300 max-w-xl mx-auto mb-8">
             انضم لآلاف رواد الأعمال الذين يبنون مستقبلهم مع كلميرون. مجاناً للأبد للأفكار الأولى.
@@ -622,13 +613,13 @@ function FinalCTA() {
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Link
               href="/auth/signup"
-              className="flex items-center justify-center gap-2 text-base font-bold bg-white text-black px-7 py-4 rounded-full hover:scale-105 active:scale-95 transition-transform shadow-2xl shadow-indigo-500/20"
+              className="btn-primary flex items-center justify-center gap-2 text-base font-bold px-7 py-4 rounded-full"
             >
               <UserPlus className="w-5 h-5" /> أنشئ حسابك الآن
             </Link>
             <Link
               href="/chat"
-              className="flex items-center justify-center gap-2 text-base text-white border border-white/15 bg-white/5 backdrop-blur-md px-7 py-4 rounded-full hover:bg-white/10 transition-colors"
+              className="btn-ghost flex items-center justify-center gap-2 text-base px-7 py-4 rounded-full"
             >
               <MessageSquareText className="w-5 h-5" /> جرّب المساعد
             </Link>
@@ -644,25 +635,23 @@ function FinalCTA() {
   );
 }
 
-// ───────────────────────────────────────────────────────────────────────────
-// Footer
-// ───────────────────────────────────────────────────────────────────────────
+// ───────────── Footer ─────────────
 
-function Footer() {
+function PageFooter() {
   return (
     <footer className="border-t border-white/5 px-4 py-10 md:py-14">
       <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
         <div className="space-y-3">
-          <BrandLogo size={36} />
+          <BrandLogo size={40} iconOnly />
           <p className="text-xs text-neutral-500 max-w-sm">
             نظام تشغيل لرواد الأعمال — بُنيت في مصر للعالم العربي.
           </p>
         </div>
         <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-neutral-400">
-          <Link href="/pricing" className="hover:text-white transition-colors">الأسعار</Link>
-          <Link href="/privacy" className="hover:text-white transition-colors">الخصوصية</Link>
-          <Link href="/terms" className="hover:text-white transition-colors">الشروط</Link>
-          <Link href="/compliance" className="hover:text-white transition-colors">الامتثال</Link>
+          <Link href="/pricing" className="hover:text-cyan-300 transition-colors">الأسعار</Link>
+          <Link href="/privacy" className="hover:text-cyan-300 transition-colors">الخصوصية</Link>
+          <Link href="/terms" className="hover:text-cyan-300 transition-colors">الشروط</Link>
+          <Link href="/compliance" className="hover:text-cyan-300 transition-colors">الامتثال</Link>
         </div>
         <div className="text-xs text-neutral-600">
           © {new Date().getFullYear()} Kalmeron AI
@@ -672,15 +661,12 @@ function Footer() {
   );
 }
 
-// ───────────────────────────────────────────────────────────────────────────
-// Page
-// ───────────────────────────────────────────────────────────────────────────
+// ───────────── Page ─────────────
 
 export default function HomePage() {
   const { user, dbUser, loading } = useAuth();
   const router = useRouter();
 
-  // Redirect logged-in users to dashboard / onboarding
   useEffect(() => {
     if (!loading && user) {
       if (!dbUser?.profile_completed) router.replace("/onboarding");
@@ -689,18 +675,19 @@ export default function HomePage() {
   }, [user, dbUser, loading, router]);
 
   return (
-    <div dir="rtl" className="relative min-h-screen bg-[#070912] text-white overflow-x-hidden font-arabic">
+    <div dir="rtl" className="relative min-h-screen bg-[#05070D] text-white overflow-x-hidden font-arabic">
       <Aurora />
       <TopNav />
       <main>
         <Hero />
+        <TrustMarquee />
         <StatsStrip />
         <Features />
         <HowItWorks />
         <Testimonials />
         <FinalCTA />
       </main>
-      <Footer />
+      <PageFooter />
     </div>
   );
 }
