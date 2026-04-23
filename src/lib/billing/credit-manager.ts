@@ -30,10 +30,11 @@ export class CreditManager {
       const walletDoc = await transaction.get(walletRef);
       const wallet = walletDoc.data() as CreditWallet | undefined;
 
+      let createdNew = false;
+      let workingWallet: CreditWallet;
       if (!wallet) {
-        // Initialize default wallet if not exists (Freemium)
         const now = Timestamp.now();
-        const initialWallet: CreditWallet = {
+        workingWallet = {
           userId: this.userId,
           dailyBalance: 20,
           monthlyBalance: 100,
@@ -46,8 +47,9 @@ export class CreditManager {
           rolledOverCredits: 0,
           lastUpdated: now,
         };
-        transaction.set(walletRef, initialWallet);
-        return { success: false, message: 'Wallet initialized. Please retry.' };
+        createdNew = true;
+      } else {
+        workingWallet = wallet;
       }
 
       let remaining = amount;
@@ -56,48 +58,60 @@ export class CreditManager {
       let rolloverConsumed = 0;
 
       // 1. استهلاك الأرصدة اليومية أولاً
-      if (wallet.dailyBalance >= remaining) {
+      if (workingWallet.dailyBalance >= remaining) {
         dailyConsumed = remaining;
         remaining = 0;
       } else {
-        dailyConsumed = wallet.dailyBalance;
-        remaining -= wallet.dailyBalance;
+        dailyConsumed = workingWallet.dailyBalance;
+        remaining -= workingWallet.dailyBalance;
       }
 
       // 2. استهلاك الأرصدة الشهرية
-      if (remaining > 0 && wallet.monthlyBalance >= remaining) {
+      if (remaining > 0 && workingWallet.monthlyBalance >= remaining) {
         monthlyConsumed = remaining;
         remaining = 0;
       } else if (remaining > 0) {
-        monthlyConsumed = wallet.monthlyBalance;
-        remaining -= wallet.monthlyBalance;
+        monthlyConsumed = workingWallet.monthlyBalance;
+        remaining -= workingWallet.monthlyBalance;
       }
 
       // 3. استهلاك الأرصدة المرحلة (Rollover)
-      if (remaining > 0 && wallet.rolledOverCredits >= remaining) {
+      if (remaining > 0 && workingWallet.rolledOverCredits >= remaining) {
         rolloverConsumed = remaining;
         remaining = 0;
       } else if (remaining > 0) {
-          rolloverConsumed = wallet.rolledOverCredits;
-          remaining -= wallet.rolledOverCredits;
+          rolloverConsumed = workingWallet.rolledOverCredits;
+          remaining -= workingWallet.rolledOverCredits;
       }
 
       // 4. فشل - رصيد غير كافٍ
       if (remaining > 0) {
         return {
           success: false,
-          message: `رصيدك غير كافٍ. تحتاج ${amount} رصيدًا، والمتبقي لديك ${wallet.dailyBalance + wallet.monthlyBalance + wallet.rolledOverCredits} رصيدًا.`,
+          message: `رصيدك غير كافٍ. تحتاج ${amount} رصيدًا، والمتبقي لديك ${workingWallet.dailyBalance + workingWallet.monthlyBalance + workingWallet.rolledOverCredits} رصيدًا.`,
         };
       }
 
       // 5. تحديث المحفظة
-      transaction.update(walletRef, {
-        dailyBalance: wallet.dailyBalance - dailyConsumed,
-        monthlyBalance: wallet.monthlyBalance - monthlyConsumed,
-        rolledOverCredits: wallet.rolledOverCredits - rolloverConsumed,
-        lifetimeConsumed: wallet.lifetimeConsumed + amount,
+      const updatedWallet: CreditWallet = {
+        ...workingWallet,
+        dailyBalance: workingWallet.dailyBalance - dailyConsumed,
+        monthlyBalance: workingWallet.monthlyBalance - monthlyConsumed,
+        rolledOverCredits: workingWallet.rolledOverCredits - rolloverConsumed,
+        lifetimeConsumed: workingWallet.lifetimeConsumed + amount,
         lastUpdated: Timestamp.now(),
-      });
+      };
+      if (createdNew) {
+        transaction.set(walletRef, updatedWallet);
+      } else {
+        transaction.update(walletRef, {
+          dailyBalance: updatedWallet.dailyBalance,
+          monthlyBalance: updatedWallet.monthlyBalance,
+          rolledOverCredits: updatedWallet.rolledOverCredits,
+          lifetimeConsumed: updatedWallet.lifetimeConsumed,
+          lastUpdated: updatedWallet.lastUpdated,
+        });
+      }
 
       // 6. تسجيل المعاملة
       const transactionRef = adminDb.collection('credit_transactions').doc();
