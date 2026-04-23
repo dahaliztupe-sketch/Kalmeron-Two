@@ -4,7 +4,8 @@ import React, { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
-import { Globe, X, LogOut, Bell, Search, Sparkles } from "lucide-react";
+import { Globe, X, LogOut, Search, Sparkles } from "lucide-react";
+import { NotificationBell } from "@/components/ui/notification-bell";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -150,15 +151,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               <Globe className="h-[18px] w-[18px]" />
             </Button>
 
-            <Button
-              variant="ghost"
-              size="icon"
-              className="relative text-neutral-400 hover:text-cyan-300 h-9 w-9 rounded-xl hidden sm:flex"
-              aria-label={language === "ar" ? "الإشعارات" : "Notifications"}
-            >
-              <Bell className="h-[18px] w-[18px]" />
-              <span className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-fuchsia-400 animate-pulse" />
-            </Button>
+            <div className="hidden sm:block text-neutral-400 hover:text-cyan-300">
+              <NotificationBell />
+            </div>
 
             <div className="hidden sm:block">
               <CreditsIndicator />

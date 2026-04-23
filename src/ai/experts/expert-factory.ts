@@ -89,12 +89,32 @@ export async function saveExpert(expert: Expert): Promise<string> {
     createdAt: expert.createdAt ?? FieldValue.serverTimestamp(),
     updatedAt: FieldValue.serverTimestamp(),
   };
+  let id: string;
   if (expert.id) {
     await adminDb.collection(COLLECTION).doc(expert.id).set(payload, { merge: true });
-    return expert.id;
+    id = expert.id;
+  } else {
+    const ref = await adminDb.collection(COLLECTION).add(payload);
+    id = ref.id;
   }
-  const ref = await adminDb.collection(COLLECTION).add(payload);
-  return ref.id;
+  if (expert.workspaceId) {
+    const { afterAgentRun } = await import('@/src/lib/agents/hooks');
+    afterAgentRun({
+      workspaceId: expert.workspaceId,
+      userId: expert.creatorId,
+      agent: 'expert_factory',
+      event: 'expert.created',
+      payload: { id, name: expert.name, domain: expert.domain },
+      notification: {
+        type: 'expert.created',
+        title: 'تم إنشاء خبير جديد',
+        body: `${expert.name} — ${expert.domain}`,
+        href: `/experts`,
+      },
+      estimatedTokens: 1500,
+    }).catch(() => {});
+  }
+  return id;
 }
 
 export async function loadExpert(expertId: string): Promise<Expert | null> {

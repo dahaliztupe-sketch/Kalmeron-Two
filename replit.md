@@ -28,6 +28,50 @@ Arabic-language AI studio platform for Egyptian entrepreneurs.
 - `src/` — AI agents, orchestrator, RAG, memory, lib utilities
 - `proxy.ts` — Edge routing (Next.js 16.2 proxy convention, replaces middleware.ts)
 
+## Enterprise Operations Layer
+
+Kalmeron ships with a Fortune-500 grade operational stack:
+
+### Security & Access
+- **RBAC** (`src/lib/security/rbac.ts`) — roles: `owner`, `admin`, `member`, `viewer` with a per-resource permission matrix; `requirePermission(userId, workspaceId, action)` returns 403 on denial.
+- **API Keys** (`src/lib/security/api-keys.ts`) — scoped `kal_live_<24>` tokens stored as SHA-256 hashes, raw value shown once at creation. Revocable. Verified by `route-guard`'s `Bearer` handler alongside Firebase ID tokens.
+- **Platform Admin Gate** — `PLATFORM_ADMIN_UIDS` env (comma-separated). `requirePlatformAdmin: true` on the guard enforces.
+- **Unified Route Guard** (`src/lib/security/route-guard.ts`) — single entry point: `{ schema, requireAuth, rateLimit, requirePermission, requirePlatformAdmin, checkQuota, audit }`. Automatically emits audit entries on mutations.
+
+### Audit & Observability
+- **Audit Log** (`src/lib/audit/log.ts`) — append-only `audit_logs` Firestore collection. Fields: `actor`, `actorType` (user|api_key|system), `action`, `resource`, `resourceId`, `ip`, `userAgent`, `requestId`, `success`, `details`, `timestamp`.
+- **Agent Hooks** (`src/lib/agents/hooks.ts`) — `afterAgentRun()` records instrumented agent executions (duration, success).
+- **Live Events Feed** — `/status` polls `/api/admin/events` every 10s to tail the latest 50 audit rows.
+
+### Billing & Quotas
+- **Metering** (`src/lib/billing/metering.ts`) — records every agent invocation with input/output token and cost estimates. Daily/monthly per-workspace counters.
+- **Tier Limits** — `free`, `pro`, `enterprise` enforced at guard level (`checkQuota: 'agent_runs'|'meetings'|'launches'`). Over-quota returns `429` with Arabic message.
+
+### Notifications & Webhooks
+- **Notification Center** (`src/lib/notifications/center.ts`) — in-app notifications written on launch-complete, meeting-complete, expert-created, quota-warning. Bell component (`components/ui/notification-bell.tsx`) wired into `AppShell`.
+- **Outbound Webhooks** (`src/lib/webhooks/dispatcher.ts`) — subscribe URLs per workspace, HMAC-SHA256 signed (`x-kalmeron-signature: sha256=...`), exponential-backoff retry. Events: `launch.completed`, `meeting.completed`, `expert.created`.
+
+### GDPR & Self-Service
+- **Data Export** — `POST /api/account/export` returns a full JSON bundle across all collections the user owns.
+- **Account Deletion** — `POST /api/account/delete` soft-deletes with 30-day grace; purgeable via cron.
+- **Dashboard Pages** — `/settings/api-keys`, `/settings/webhooks`, `/settings/privacy`, `/settings/usage`.
+
+### Admin Console
+- `/admin/platform` — workspace list, user count, launch runs, recent audit.
+- `/admin/audit` — filterable audit-log browser.
+- `/status` — live agent events feed + health checks.
+
+### API Surface (enterprise)
+- `GET/POST/DELETE /api/account/api-keys` — manage tokens
+- `GET/POST/DELETE /api/account/webhooks` — manage subscriptions
+- `GET /api/account/notifications`, `POST /api/account/notifications/read-all`
+- `POST /api/account/export`, `POST /api/account/delete`
+- `GET /api/account/usage`, `GET /api/account/audit`
+- `GET /api/admin/platform`, `GET /api/admin/audit`, `GET /api/admin/events`
+
+### Tests
+`npm test` — 25/25 passing across 7 suites: `rbac`, `api-keys`, `metering`, `webhooks`, `omnichannel`, `expert-factory`, `route-guard`.
+
 ## AI Agent Architecture
 
 The `intelligentOrchestrator` (LangGraph StateGraph) routes to 10 specialized nodes:

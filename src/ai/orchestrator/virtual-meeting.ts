@@ -61,13 +61,31 @@ async function askDepartment(
 export async function conveneMeeting(
   topic: string,
   departmentIds: string[],
-  context: Record<string, any> = {}
+  context: Record<string, any> = {},
+  hookMeta: { workspaceId?: string; userId?: string } = {}
 ): Promise<MeetingResult> {
-  return instrumentAgent(
+  const result = await instrumentAgent(
     'virtual_meeting',
     () => conveneMeetingInner(topic, departmentIds, context),
-    { task: topic, input: { departmentIds } }
+    { task: topic, input: { departmentIds }, workspaceId: hookMeta.workspaceId }
   );
+  if (hookMeta.workspaceId) {
+    const { afterAgentRun } = await import('@/src/lib/agents/hooks');
+    afterAgentRun({
+      workspaceId: hookMeta.workspaceId,
+      userId: hookMeta.userId,
+      agent: 'virtual_meeting',
+      event: 'meeting.completed',
+      payload: { id: result.id, topic: result.topic, decisions: result.decisions },
+      notification: {
+        type: 'meeting.completed',
+        title: 'انتهى الاجتماع الافتراضي',
+        body: `${result.topic} — ${result.decisions.length} قرار`,
+        href: `/meetings`,
+      },
+    }).catch(() => {});
+  }
+  return result;
 }
 
 async function conveneMeetingInner(

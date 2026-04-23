@@ -193,9 +193,9 @@ export function buildLaunchPipeline() {
   return graph.compile();
 }
 
-export async function launchStartup(args: { workspaceId: string; idea: string; runId?: string }) {
+export async function launchStartup(args: { workspaceId: string; idea: string; runId?: string; userId?: string }) {
   const runId = args.runId || `run_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
-  return instrumentAgent(
+  const result = await instrumentAgent(
     'launchpad_pipeline',
     async () => {
       try {
@@ -216,6 +216,22 @@ export async function launchStartup(args: { workspaceId: string; idea: string; r
     },
     { task: args.idea, workspaceId: args.workspaceId }
   );
+  const { afterAgentRun } = await import('@/src/lib/agents/hooks');
+  afterAgentRun({
+    workspaceId: args.workspaceId,
+    userId: args.userId,
+    agent: 'launchpad_pipeline',
+    event: 'launch.completed',
+    payload: { runId, idea: args.idea },
+    notification: {
+      type: 'launch.completed',
+      title: 'انتهت حزمة الإطلاق',
+      body: `فكرة: ${args.idea.slice(0, 80)}`,
+      href: `/launchpad`,
+    },
+    estimatedTokens: 8000,
+  }).catch(() => {});
+  return result;
 }
 
 /** Lightweight status fetcher for the dashboard. */

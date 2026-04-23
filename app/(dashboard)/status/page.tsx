@@ -120,8 +120,49 @@ export default function StatusPage() {
               </ul>
             </Card>
           )}
+
+          <LiveEventsFeed />
         </div>
       ) : null}
     </PageShell>
+  );
+}
+
+function LiveEventsFeed() {
+  const [events, setEvents] = useState<any[]>([]);
+  const [err, setErr] = useState("");
+  async function load() {
+    try {
+      const r = await fetch("/api/admin/events", { cache: "no-store" });
+      if (r.status === 403) { setErr("forbidden"); return; }
+      const j = await r.json();
+      setEvents(j.entries || []);
+    } catch {}
+  }
+  useEffect(() => {
+    load();
+    const t = setInterval(load, 10_000);
+    return () => clearInterval(t);
+  }, []);
+  if (err === "forbidden") return null;
+  return (
+    <Card>
+      <div className="font-semibold mb-3">أحدث تشغيلات الوكلاء (كل 10 ثوانٍ)</div>
+      {events.length === 0 ? (
+        <div className="text-xs text-gray-500">لا توجد أحداث بعد</div>
+      ) : (
+        <ul className="divide-y text-xs" role="list">
+          {events.slice(0, 20).map((e: any) => (
+            <li key={e.id} className="py-1.5 flex justify-between gap-2">
+              <span className="font-mono truncate flex-1">{e.resource}</span>
+              <span className="text-gray-500">{e.workspaceId?.slice(0, 8) || "—"}</span>
+              <span className={e.success ? "text-green-600" : "text-red-600"}>
+                {e.success ? "✓" : "✗"}
+              </span>
+            </li>
+          ))}
+        </ul>
+      )}
+    </Card>
   );
 }
