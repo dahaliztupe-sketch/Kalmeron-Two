@@ -5,6 +5,59 @@ omitted unless they affect a user. The most recent release is at the top.
 
 ---
 
+## v2026.04.24-c — Generative-UI Wave (2026-04-24)
+
+A second-pass execution sprint that lands every remaining audit recommendation
+that does not require a separate infrastructure project (RAG, multi-tenant,
+mobile-offline). Together with v2026.04.24, this closes out 100 % of the
+DESIGN_AUDIT_2026 P0/P1 backlog and the Roadmap Phase 4-5 items.
+
+### Added
+
+- **`<AgentBlock>` extended from 5 → 9 variants** (`components/agent/AgentBlock.tsx`).
+  The Wave-3 primitive (`stat / list / table / callout / milestone`) now also
+  renders four agentic-UI block types from JSON returned by agents:
+  `chart` (area / bar via the Kalmeron chart kit), `form` (interactive — emits
+  values via `onFormSubmit`), `checklist` (interactive local toggle state),
+  and `timeline` (vertical event log with toned dots). Same shape-guard
+  approach (no zod dep) — invalid blocks render an "unknown block" placeholder
+  instead of crashing the surrounding stream. This is the audit's
+  highest-value follow-up to the original Wave-3 primitive (push from KPIs
+  toward fully agentic UI).
+- **Real Daily Brief generation** — `app/api/daily-brief/route.ts` now calls
+  the medium-tier router model (Gemini 2.5 Flash) with a strict zod schema, a
+  workspace-signal context, and a deterministic stub fallback. Response is
+  cached `private, max-age=21600`. The CHANGELOG note that this would "land
+  in v2026.05" — landed early.
+- **PII redactor (Arabic-aware)** — `src/lib/security/pii-redactor.ts`.
+  Detects 10 PII categories tuned for the MENA audience: Egyptian + Saudi +
+  international phone numbers, Egyptian + Saudi national IDs, IBAN, credit
+  card, email, Arabic addresses ("شارع …"), and IPv4. Returns a redacted
+  string and an audit trail (no raw values stored). Wired into the daily-brief
+  pipeline; ready to plug into the chat ingress next.
+- **Skip-to-content link** in `AppShell` — visible on focus only, jumps to
+  `#kalmeron-main`. Clears the WCAG 2.4.1 (Bypass Blocks) requirement that
+  was the last open a11y P1 item.
+- **Golden dataset expansion** — `test/eval/golden-dataset.json` grew from
+  108 to **130 cases**: nine new router cases (B2B SaaS, Family Office,
+  marketplace), three Gulf-flavored PII cases (IBAN, intl phone, Saudi ID),
+  three quality rubrics (pricing strategy, risk register, root-cause), three
+  new safety probes (spam bot, tax fraud, system-prompt extraction).
+
+### Changed
+
+- **CHANGELOG / STRATEGIC_MASTER_PLAN** updated. Master plan gains §18
+  ("Wave 6 — Generative-UI & Eval Hardening") summarizing the new surface
+  area and the closed audit lines.
+
+### Notes
+
+- Phases 6-9 of `docs/NEXT_DEVELOPMENT_ROADMAP.md` (real RAG over user data,
+  workflow automation, multi-tenant team mode, mobile + offline) are scoped as
+  separate engineering projects and remain on the roadmap.
+
+---
+
 ## v2026.04.24 — 45-Expert Audit · P0/P1 Wave (2026-04-24)
 
 A focused execution sprint addressing every Priority-0 and Priority-1

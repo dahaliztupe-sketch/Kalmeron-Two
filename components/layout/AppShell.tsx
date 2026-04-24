@@ -126,9 +126,18 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   // ───────────── Logged-in shell ─────────────
   return (
     <div className="flex min-h-screen bg-[#05070D] overflow-hidden" dir={dir}>
+      {/* Skip-to-content link — visible only when focused (a11y P1 #9). */}
+      <a
+        href="#kalmeron-main"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:start-3 focus:z-[200] focus:rounded-lg focus:bg-cyan-500 focus:text-black focus:px-3 focus:py-2 focus:text-sm focus:font-semibold focus:shadow-lg"
+      >
+        {language === "ar" ? "تخطّى إلى المحتوى" : "Skip to content"}
+      </a>
+
       <Sidebar />
 
       <main
+        id="kalmeron-main"
         className={cn(
           "flex-1 flex flex-col min-h-screen w-full transition-all duration-300",
           dir === "rtl" ? "md:mr-72" : "md:ml-72"

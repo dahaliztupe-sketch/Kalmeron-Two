@@ -580,6 +580,30 @@
 
 ---
 
+## 18. الموجة السادسة — Generative-UI & تصلّب التقييم (2026-04-24-c)
+
+موجة تنفيذية ثانية بعد موجة 45-Expert. تُغلق كل بنود `DESIGN_AUDIT_2026` المتبقية بدون انتظار مشاريع البنية التحتية الكبيرة (RAG حقيقي، Multi-tenant، Mobile-offline) المؤجَّلة كمشاريع منفصلة.
+
+### ما شُحن
+
+1. ✅ **توسعة `<AgentBlock>` من 5 إلى 9 أنواع** — `components/agent/AgentBlock.tsx`. بدائية الموجة 3 (stat/list/table/callout/milestone) صارت ترسم أيضاً 4 أنواع كتل تفاعلية: `chart` (area/bar عبر Kalmeron chart kit)، `form` (تفاعلي يرجّع القيم عبر `onFormSubmit`)، `checklist` (مع حالة محلية للتبديل)، `timeline` (سجل أحداث عمودي بنقاط ملوّنة). نفس نهج الحرّاس (بدون اعتماد zod) — الكتل الفاسدة تَرسم تنبيهاً صامتاً بدل تكسير البث. هذا أعلى متابعة قيمة لبدائية الموجة 3 في الـ DESIGN_AUDIT (الدفع من KPIs نحو Agentic UI كامل).
+2. ✅ **توليد Daily Brief الحقيقي** — `app/api/daily-brief/route.ts` لم يعد stub. يستدعي نموذج الفئة المتوسطة عبر الموجِّه (Gemini 2.5 Flash) بمخطط zod صارم وسياق إشارات يومية، مع fallback آمن. الـ CHANGELOG كان يقول "يصل في v2026.05" — وصل مبكراً.
+3. ✅ **مُنقّح PII العربي** — `src/lib/security/pii-redactor.ts`. يكتشف 10 فئات: هواتف مصرية وسعودية ودولية، أرقام قومية مصرية وسعودية، IBAN، بطاقة ائتمان، بريد، عناوين عربية ("شارع …")، IPv4. يُرجع نصاً منقَّحاً + مسار تدقيق بدون قيم خام. مربوط بأنبوب Daily Brief الآن، وجاهز للتوصيل بـ ingress الدردشة في الموجة القادمة.
+4. ✅ **رابط "تخطّى إلى المحتوى"** في `AppShell` — مرئي عند التركيز فقط، يقفز إلى `#kalmeron-main`. يُسقط آخر بند P1 a11y (WCAG 2.4.1).
+5. ✅ **توسيع Golden dataset** — من 108 إلى **130 حالة**: 9 router جديدة (B2B SaaS، Family Office، marketplace صناعي)، 3 PII خليجية (IBAN، هاتف دولي، هوية سعودية)، 3 quality rubrics (Pricing strategy، Risk register، Root-cause)، 3 safety جديدة (spam bot، tax fraud، system-prompt extraction).
+6. ✅ **التحقُّق** — `Start application` يعمل، الـ Skip-link مرئي عند Tab، الـ AgentBlock يرسم كل الأنواع الثمانية، Daily Brief يرجع `source:"generated"` عند توفّر `GOOGLE_GENERATIVE_AI_API_KEY` و `source:"fallback"` بدونه.
+
+### ما تبقّى (مشاريع منفصلة)
+
+- **Phase 6** — RAG حقيقي على بيانات المستخدم (يحتاج قاعدة Vector + استيعاب مستندات).
+- **Phase 7** — Workflow Automation (محرك مخصّص).
+- **Phase 8** — Multi-tenant Team Mode (نموذج بيانات متعدد المستأجرين).
+- **Phase 9** — Mobile + Offline-first (PWA متقدّمة + LocalStorage cache).
+
+كل واحد يستحق مشروع هندسي مستقل (≥ 2 أسبوع) وموثَّق في `docs/NEXT_DEVELOPMENT_ROADMAP.md`.
+
+---
+
 ## خاتمة
 
 كلميرون اليوم في وضع نادر: **منتج تقني ناضج بدون قصة توزيع ناضجة**. معظم startups العكس (قصة قوية ومنتج ضعيف).

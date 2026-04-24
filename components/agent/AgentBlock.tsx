@@ -7,11 +7,17 @@
  * Replaces ad-hoc bubble layouts across Chat / Dashboard / Reports.
  *
  * Supported variants (per DESIGN_LANGUAGE_PLAN §6):
- *   - "stat"        : KPI tile (label + big number + optional delta)
- *   - "list"        : ordered or bulleted action list
- *   - "table"       : compact data table (headers + rows)
- *   - "callout"     : highlighted insight (info/warn/success/danger)
- *   - "milestone"   : timeline-style milestone with date + status
+ *   - "stat"      : KPI tile (label + big number + optional delta)
+ *   - "list"      : ordered or bulleted action list
+ *   - "table"     : compact data table (headers + rows)
+ *   - "callout"   : highlighted insight (info/warn/success/danger)
+ *   - "milestone" : timeline-style milestone with date + status
+ *
+ * Wave-6 additions (audit follow-up — visual breadth for agentic UI):
+ *   - "chart"     : area / bar via the Kalmeron chart kit
+ *   - "form"      : interactive form, returns values via `onFormSubmit`
+ *   - "checklist" : interactive todo list with local toggle state
+ *   - "timeline"  : vertical event log with toned dots
  *
  * Validation: a tiny built-in shape guard (no zod dep — shapes stay tiny &
  * tree-shakeable). Invalid blocks render an "unknown block" placeholder
@@ -20,8 +26,9 @@
 
 import * as React from "react";
 import { cn } from "@/lib/utils";
-import { ArrowUp, ArrowDown, Info, AlertTriangle, CheckCircle2, XCircle, Circle } from "lucide-react";
+import { ArrowUp, ArrowDown, Info, AlertTriangle, CheckCircle2, XCircle, Circle, Check } from "lucide-react";
 import { formatCurrency, formatCompactNumber, type CurrencyCode } from "@/src/lib/format/currency";
+import { KalmeronAreaChart, KalmeronBarChart } from "@/src/components/charts";
 
 // ─────────────── Shapes ───────────────
 export type AgentBlockTone = "info" | "warn" | "success" | "danger" | "neutral";
@@ -66,12 +73,52 @@ export interface MilestoneBlockData {
   steps: { label: string; status: "done" | "active" | "pending"; date?: string }[];
 }
 
+// ─── Wave-6 block shapes ───
+export interface ChartBlockData {
+  type: "chart";
+  variant: "area" | "bar";
+  title?: string;
+  data: Array<Record<string, string | number>>;
+  xKey: string;
+  yKeys: string[];
+}
+
+export interface FormBlockData {
+  type: "form";
+  title?: string;
+  fields: Array<{
+    name: string;
+    label: string;
+    kind: "text" | "number" | "select" | "textarea";
+    placeholder?: string;
+    options?: string[];
+    required?: boolean;
+  }>;
+  submitLabel?: string;
+}
+
+export interface ChecklistBlockData {
+  type: "checklist";
+  title?: string;
+  items: Array<{ label: string; done?: boolean }>;
+}
+
+export interface TimelineBlockData {
+  type: "timeline";
+  title?: string;
+  events: Array<{ when: string; title: string; body?: string; tone?: AgentBlockTone }>;
+}
+
 export type AgentBlockData =
   | StatBlockData
   | ListBlockData
   | TableBlockData
   | CalloutBlockData
-  | MilestoneBlockData;
+  | MilestoneBlockData
+  | ChartBlockData
+  | FormBlockData
+  | ChecklistBlockData
+  | TimelineBlockData;
 
 // ─────────────── Guards ───────────────
 function isValid(block: any): block is AgentBlockData {
@@ -87,6 +134,24 @@ function isValid(block: any): block is AgentBlockData {
       return typeof block.title === "string" && typeof block.body === "string";
     case "milestone":
       return typeof block.title === "string" && Array.isArray(block.steps);
+    case "chart":
+      return (
+        (block.variant === "area" || block.variant === "bar") &&
+        typeof block.xKey === "string" &&
+        Array.isArray(block.yKeys) && block.yKeys.length > 0 &&
+        Array.isArray(block.data)
+      );
+    case "form":
+      return Array.isArray(block.fields) && block.fields.every((f: any) =>
+        typeof f?.name === "string" && typeof f?.label === "string" &&
+        ["text", "number", "select", "textarea"].includes(f?.kind),
+      );
+    case "checklist":
+      return Array.isArray(block.items) && block.items.every((i: any) => typeof i?.label === "string");
+    case "timeline":
+      return Array.isArray(block.events) && block.events.every((e: any) =>
+        typeof e?.when === "string" && typeof e?.title === "string",
+      );
     default:
       return false;
   }
@@ -212,14 +277,160 @@ function MilestoneRenderer({ data }: { data: MilestoneBlockData }) {
   );
 }
 
+// ─────────────── Wave-6 sub-renderers ───────────────
+function ChartRenderer({ data }: { data: ChartBlockData }) {
+  return (
+    <div className="rounded-2xl border border-white/[0.07] bg-white/[0.025] p-4">
+      {data.title && <h4 className="text-sm font-bold text-white mb-2.5">{data.title}</h4>}
+      {data.variant === "area" ? (
+        <KalmeronAreaChart data={data.data as any} xKey={data.xKey} yKeys={data.yKeys} height={220} />
+      ) : (
+        <KalmeronBarChart data={data.data as any} xKey={data.xKey} yKeys={data.yKeys} height={220} />
+      )}
+    </div>
+  );
+}
+
+function FormRenderer({
+  data,
+  locale,
+  onSubmit,
+}: {
+  data: FormBlockData;
+  locale: "ar" | "en";
+  onSubmit?: (values: Record<string, string>) => void;
+}) {
+  const [values, setValues] = React.useState<Record<string, string>>({});
+  const submit = data.submitLabel ?? (locale === "ar" ? "إرسال" : "Submit");
+  return (
+    <form
+      className="rounded-2xl border border-white/[0.07] bg-white/[0.025] p-4 space-y-3"
+      onSubmit={(e) => { e.preventDefault(); onSubmit?.(values); }}
+    >
+      {data.title && <h4 className="text-sm font-bold text-white mb-1">{data.title}</h4>}
+      {data.fields.map((f) => (
+        <div key={f.name} className="space-y-1">
+          <label className="block text-xs text-neutral-400" htmlFor={`agentform-${f.name}`}>
+            {f.label}{f.required && <span className="text-rose-300"> *</span>}
+          </label>
+          {f.kind === "select" ? (
+            <select
+              id={`agentform-${f.name}`}
+              required={f.required}
+              className="w-full bg-white/[0.04] border border-white/10 rounded-lg px-3 py-2 text-sm text-white outline-none focus:border-cyan-400/40"
+              onChange={(e) => setValues((v) => ({ ...v, [f.name]: e.target.value }))}
+              value={values[f.name] ?? ""}
+            >
+              <option value="">—</option>
+              {(f.options ?? []).map((o) => <option key={o} value={o}>{o}</option>)}
+            </select>
+          ) : f.kind === "textarea" ? (
+            <textarea
+              id={`agentform-${f.name}`}
+              required={f.required}
+              placeholder={f.placeholder}
+              rows={3}
+              className="w-full bg-white/[0.04] border border-white/10 rounded-lg px-3 py-2 text-sm text-white outline-none focus:border-cyan-400/40"
+              onChange={(e) => setValues((v) => ({ ...v, [f.name]: e.target.value }))}
+              value={values[f.name] ?? ""}
+            />
+          ) : (
+            <input
+              id={`agentform-${f.name}`}
+              type={f.kind === "number" ? "number" : "text"}
+              required={f.required}
+              placeholder={f.placeholder}
+              className="w-full bg-white/[0.04] border border-white/10 rounded-lg px-3 py-2 text-sm text-white outline-none focus:border-cyan-400/40"
+              onChange={(e) => setValues((v) => ({ ...v, [f.name]: e.target.value }))}
+              value={values[f.name] ?? ""}
+            />
+          )}
+        </div>
+      ))}
+      <button
+        type="submit"
+        className="inline-flex items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-cyan-500 to-indigo-500 px-4 py-2 text-sm font-medium text-white hover:brightness-110 transition"
+      >
+        {submit}
+      </button>
+    </form>
+  );
+}
+
+function ChecklistRenderer({ data, locale }: { data: ChecklistBlockData; locale: "ar" | "en" }) {
+  const [items, setItems] = React.useState(data.items.map((i) => ({ ...i, done: !!i.done })));
+  const remaining = items.filter((i) => !i.done).length;
+  const remainingLabel = locale === "ar" ? `${remaining} متبقّية` : `${remaining} left`;
+  return (
+    <div className="rounded-2xl border border-white/[0.07] bg-white/[0.025] p-4">
+      {data.title && (
+        <div className="flex items-center justify-between mb-3">
+          <h4 className="text-sm font-bold text-white">{data.title}</h4>
+          <span className="text-xs text-neutral-400 tabular">{remainingLabel}</span>
+        </div>
+      )}
+      <ul className="space-y-2">
+        {items.map((it, i) => (
+          <li key={i} className="flex items-start gap-3">
+            <button
+              type="button"
+              onClick={() => setItems((arr) => arr.map((x, j) => j === i ? { ...x, done: !x.done } : x))}
+              aria-label={it.done ? (locale === "ar" ? "تراجع" : "Undo") : (locale === "ar" ? "تم" : "Done")}
+              aria-pressed={it.done}
+              className={cn(
+                "mt-0.5 w-4 h-4 shrink-0 rounded border flex items-center justify-center transition",
+                it.done
+                  ? "bg-emerald-500/30 border-emerald-400/60 text-emerald-200"
+                  : "border-white/20 hover:border-cyan-400/60",
+              )}
+            >
+              {it.done && <Check className="w-3 h-3" aria-hidden />}
+            </button>
+            <span className={cn("text-sm", it.done ? "text-neutral-500 line-through" : "text-neutral-300")}>
+              {it.label}
+            </span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+function TimelineRenderer({ data }: { data: TimelineBlockData }) {
+  return (
+    <div className="rounded-2xl border border-white/[0.07] bg-white/[0.025] p-4">
+      {data.title && <h4 className="text-sm font-bold text-white mb-4">{data.title}</h4>}
+      <ol className="relative space-y-4 ms-4 border-s border-white/10 ps-5">
+        {data.events.map((e, i) => {
+          const tone = e.tone ?? "info";
+          const dotColor =
+            tone === "success" ? "bg-emerald-400" :
+            tone === "warn"    ? "bg-amber-400"   :
+            tone === "danger"  ? "bg-rose-400"    :
+            tone === "neutral" ? "bg-neutral-400" : "bg-cyan-400";
+          return (
+            <li key={i} className="relative">
+              <span className={cn("absolute -start-[26px] top-1.5 w-2.5 h-2.5 rounded-full ring-4 ring-[#0B1020]", dotColor)} aria-hidden />
+              <div className="text-[11px] text-neutral-500 mb-0.5 tabular">{e.when}</div>
+              <div className="text-sm text-white">{e.title}</div>
+              {e.body && <div className="text-xs text-neutral-400 mt-1 leading-relaxed">{e.body}</div>}
+            </li>
+          );
+        })}
+      </ol>
+    </div>
+  );
+}
+
 // ─────────────── Public API ───────────────
 export interface AgentBlockProps {
   block: AgentBlockData | unknown;
   locale?: "ar" | "en";
   className?: string;
+  onFormSubmit?: (values: Record<string, string>) => void;
 }
 
-export function AgentBlock({ block, locale = "ar", className }: AgentBlockProps) {
+export function AgentBlock({ block, locale = "ar", className, onFormSubmit }: AgentBlockProps) {
   if (!isValid(block)) {
     return (
       <div className={cn("rounded-xl border border-white/5 bg-white/[0.02] p-3 text-xs text-neutral-500", className)}>
@@ -229,11 +440,15 @@ export function AgentBlock({ block, locale = "ar", className }: AgentBlockProps)
   }
   return (
     <div className={className}>
-      {block.type === "stat" && <StatRenderer data={block} locale={locale} />}
-      {block.type === "list" && <ListRenderer data={block} />}
-      {block.type === "table" && <TableRenderer data={block} />}
-      {block.type === "callout" && <CalloutRenderer data={block} />}
+      {block.type === "stat"      && <StatRenderer data={block} locale={locale} />}
+      {block.type === "list"      && <ListRenderer data={block} />}
+      {block.type === "table"     && <TableRenderer data={block} />}
+      {block.type === "callout"   && <CalloutRenderer data={block} />}
       {block.type === "milestone" && <MilestoneRenderer data={block} />}
+      {block.type === "chart"     && <ChartRenderer data={block} />}
+      {block.type === "form"      && <FormRenderer data={block} locale={locale} onSubmit={onFormSubmit} />}
+      {block.type === "checklist" && <ChecklistRenderer data={block} locale={locale} />}
+      {block.type === "timeline"  && <TimelineRenderer data={block} />}
     </div>
   );
 }
@@ -243,15 +458,17 @@ export function AgentBlockStream({
   blocks,
   locale = "ar",
   className,
+  onFormSubmit,
 }: {
   blocks: unknown[];
   locale?: "ar" | "en";
   className?: string;
+  onFormSubmit?: (values: Record<string, string>) => void;
 }) {
   return (
     <div className={cn("space-y-3", className)}>
       {blocks.map((b, i) => (
-        <AgentBlock key={i} block={b} locale={locale} />
+        <AgentBlock key={i} block={b} locale={locale} onFormSubmit={onFormSubmit} />
       ))}
     </div>
   );
