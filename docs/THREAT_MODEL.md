@@ -63,7 +63,7 @@ Kalmeron Two is a multi-tenant Next.js 16 application that orchestrates 16 speci
 | Tampering | Cross-tenant write | `firestore.rules` deny-all fallback + per-collection owner checks | ✅ |
 | Tampering | Audit log mutation by client | `audit_logs` not exposed to client rules; only Admin SDK writes | ✅ |
 | Information Disclosure | Cross-tenant read | Skill collection scoped via `workspaces/{wid}/members/{uid}` existence check | ✅ |
-| EoP | Member promotes themselves to owner | `setRole` requires server-side caller; client cannot mutate `workspace_members/*` | 🟡 needs explicit rule (P1) |
+| EoP | Member promotes themselves to owner | Explicit `match /workspaces/{wid}/members/{uid}` rule denies all client writes; mutations only via Admin SDK in `/api/workspace/members/*` | ✅ (closed 2026-04-24) |
 
 ### TB3 — Gemini
 
@@ -79,7 +79,7 @@ Kalmeron Two is a multi-tenant Next.js 16 application that orchestrates 16 speci
 
 | Threat | Mitigation | Status |
 |---|---|---|
-| Cypher injection | Parameterized queries only (driver enforces bind variables) | 🟡 needs lint rule (P2) |
+| Cypher injection | Parameterized queries only + `scripts/cypher-lint.mjs` runs in CI to block string-concatenated queries | ✅ (closed 2026-04-24) |
 | Connection string leak | Stored in env, never logged | ✅ |
 
 ### TB5 — Stripe
@@ -103,7 +103,7 @@ Kalmeron Two is a multi-tenant Next.js 16 application that orchestrates 16 speci
 |---|---|---|
 | Token storage on device | Use Expo SecureStore (Keychain/Keystore) only | 🟡 verify (P1) |
 | Reverse engineering of API key | API keys are user-issued, scoped, revocable | ✅ |
-| MITM | Certificate pinning for API base URL | 🔴 not implemented |
+| MITM | Certificate pinning via `react-native-ssl-pinning` (SPKI dual-pin); see `src/mobile-app/CERT_PINNING.md` | ✅ (implemented 2026-04-24, awaiting first release) |
 | Biometric bypass | Re-prompt biometric every cold start; gate sensitive screens | 🟡 verify (P1) |
 
 ### TB8 — WebGPU
@@ -119,7 +119,7 @@ Kalmeron Two is a multi-tenant Next.js 16 application that orchestrates 16 speci
 
 1. **Indirect prompt injection through RAG** — partially mitigated; needs ongoing red-team eval (handled by `/api/cron/red-team`).
 2. **Webhook SSRF** — needs URL allow-list and DNS pinning before public GA.
-3. **Mobile cert pinning missing** — acceptable for closed beta, must ship before app-store submission.
+3. ~~**Mobile cert pinning missing**~~ — closed 2026-04-24; SPKI dual-pin via `react-native-ssl-pinning`, runbook in `src/mobile-app/CERT_PINNING.md`.
 4. **Cross-tenant read via mis-scoped Firestore listener** — covered by rules, but needs unit tests in CI (P0-2).
 5. **Cost blowup from coordinated free-tier abuse** — quotas exist; need alerting at 70 % of monthly budget.
 

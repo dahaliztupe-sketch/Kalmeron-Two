@@ -24,6 +24,15 @@ const PLAN_ICONS: Record<PlanId, React.ComponentType<{ className?: string }>> = 
   enterprise: Building2,
 };
 
+// Map plan count → tailwind grid class. Tailwind purges unknown class strings,
+// so listing them statically keeps them in the build.
+const GRID_BY_COUNT: Record<number, string> = {
+  1: "grid-cols-1",
+  2: "grid-cols-2",
+  3: "grid-cols-3",
+  4: "grid-cols-4",
+};
+
 export function PricingDesktop({
   plans,
   currentPlan,
@@ -31,8 +40,9 @@ export function PricingDesktop({
   billing,
   onSelect,
 }: Props) {
+  const cols = GRID_BY_COUNT[plans.length] ?? "grid-cols-3";
   return (
-    <div className="grid grid-cols-4 gap-5 max-w-7xl mx-auto">
+    <div className={cn("grid gap-5 max-w-7xl mx-auto", cols)}>
       {plans.map((plan, idx) => {
         const isCurrent = currentPlan === plan.id;
         const isLoading = loadingPlan === plan.id;

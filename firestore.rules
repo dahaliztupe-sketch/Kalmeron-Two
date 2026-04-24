@@ -105,6 +105,30 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // --- Workspaces & Membership (privilege-escalation hardening) ---
+    // Closes EoP item in docs/THREAT_MODEL.md TB2:
+    //   "Member promotes themselves to owner".
+    //
+    // Rules:
+    //   - Workspace metadata: read by members; mutations server-side only.
+    //   - Membership records: ANY mutation (create/update/delete) must go
+    //     through Admin SDK in /api/workspace/members/*. Clients cannot
+    //     promote themselves to admin/owner, cannot add other users, and
+    //     cannot remove members. Reads are allowed only to existing members.
+    match /workspaces/{wid} {
+      allow read: if isSignedIn()
+                  && exists(/databases/$(database)/documents/workspaces/$(wid)/members/$(request.auth.uid));
+      allow create, update, delete: if false;
+
+      match /members/{memberUid} {
+        allow read: if isSignedIn()
+                    && exists(/databases/$(database)/documents/workspaces/$(wid)/members/$(request.auth.uid));
+        // No client writes. EVER. setRole, addMember, removeMember are
+        // server-only mutations (audited in /api/workspace/members/*).
+        allow create, update, delete: if false;
+      }
+    }
+
     // --- Public Read-Only Collections ---
     match /opportunities/{doc} {
       allow read: if true;

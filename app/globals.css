@@ -80,8 +80,8 @@
     --secondary-foreground:  4 6 11;
 
     /* Backward-compat — `--tech-blue` still referenced in a couple of legacy
-       gradients. `--gold` was retired in Wave 5 (all consumers migrated to
-       --brand-cyan). */
+       gradients. The retired `--brand-gold` token has been fully migrated
+       to `--brand-cyan` across all consumers. */
     --tech-blue: 79 70 229;
 
     --muted:                 17 26 51;

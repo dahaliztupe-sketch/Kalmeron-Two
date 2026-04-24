@@ -30,4 +30,21 @@ jobs:
       - name: Run AI eval suite
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-        run: npm run eval
+          EVAL_MIN_PASS_RATE: '0.80'
+        run: |
+          npm run eval | tee eval-output.txt
+          # Extract overall pass-rate from eval output and fail if below threshold.
+          # The harness prints a final line `Overall pass rate: 0.XX`.
+          rate=$(grep -oE 'Overall pass rate:[[:space:]]*[0-9.]+' eval-output.txt | tail -1 | grep -oE '[0-9.]+$' || echo "0")
+          echo "Detected overall pass rate: $rate (threshold $EVAL_MIN_PASS_RATE)"
+          awk -v r="$rate" -v t="$EVAL_MIN_PASS_RATE" 'BEGIN { exit (r+0 >= t+0) ? 0 : 1 }' || {
+            echo "::error::AI eval pass-rate $rate is below required $EVAL_MIN_PASS_RATE — failing PR."
+            exit 1
+          }
+
+      - name: Upload eval output
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: eval-output
+          path: eval-output.txt

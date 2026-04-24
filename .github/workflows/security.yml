@@ -90,3 +90,19 @@ jobs:
       - run: npm ci --ignore-scripts
       - name: Run lexicon lint (strict)
         run: npm run lint:lexicon
+
+  cypher-injection:
+    # Closes 🟡 on TB4 in docs/THREAT_MODEL.md.
+    # Blocks string-concatenated Cypher queries; requires parameterized binds.
+    name: Cypher injection lint
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "20"
+          cache: "npm"
+      - name: Run cypher-lint
+        run: node scripts/cypher-lint.mjs

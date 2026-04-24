@@ -2,15 +2,17 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { AlertTriangle } from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
 import { useAuth } from "@/contexts/AuthContext";
-import { PLANS, PLAN_ORDER, type PlanId } from "@/src/lib/billing/plans";
+import { PLANS, MAIN_PLAN_ORDER, type PlanId } from "@/src/lib/billing/plans";
 import { PricingHero } from "@/components/pricing/PricingHero";
 import { PricingDesktop } from "@/components/pricing/PricingDesktop";
 import { PricingMobile } from "@/components/pricing/PricingMobile";
 import { PricingComparison } from "@/components/pricing/PricingComparison";
 import { PricingFAQ } from "@/components/pricing/PricingFAQ";
 import { PricingTrust } from "@/components/pricing/PricingTrust";
+import { PricingEnterpriseBanner } from "@/components/pricing/PricingEnterpriseBanner";
 import { toast } from "sonner";
 
 export type BillingCycle = "monthly" | "annual";
@@ -20,6 +22,28 @@ export default function PricingPage() {
   const [currentPlan, setCurrentPlan] = useState<PlanId>("free");
   const [loadingPlan, setLoadingPlan] = useState<PlanId | null>(null);
   const [billing, setBilling] = useState<BillingCycle>("monthly");
+  const [billingAvailable, setBillingAvailable] = useState<boolean>(true);
+
+  // Probe whether self-serve Stripe billing is configured. If the server has
+  // no Stripe price IDs, we surface a soft banner instead of letting the user
+  // click into a silent failure.
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch("/api/billing/status", { cache: "no-store" });
+        if (!res.ok) return;
+        const data = await res.json();
+        if (!cancelled) setBillingAvailable(Boolean(data.stripeConfigured));
+      } catch {
+        // Network error → leave the banner hidden; the checkout endpoint has
+        // its own 503 fallback that explains the error in Arabic.
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   useEffect(() => {
     const load = async () => {
@@ -50,6 +74,10 @@ export default function PricingPage() {
       toast.message("سيتواصل معك فريق المبيعات قريباً للخطة المؤسسية.");
       return;
     }
+    if (planId !== "free" && !billingAvailable) {
+      toast.error("الفوترة الذاتية غير مفعّلة حالياً. تواصل مع المبيعات للترقية.");
+      return;
+    }
     setLoadingPlan(planId);
     try {
       const token = await user.getIdToken().catch(() => null);
@@ -73,17 +101,40 @@ export default function PricingPage() {
     }
   };
 
-  const planList = useMemo(() => PLAN_ORDER.map((id) => PLANS[id]), []);
+  const mainPlanList = useMemo(
+    () => MAIN_PLAN_ORDER.map((id) => PLANS[id]),
+    [],
+  );
+  const enterprisePlan = PLANS.enterprise;
 
   const content = (
     <div className={user ? "-m-4 md:-m-8" : ""}>
         {/* HERO with mesh gradient + starfield */}
         <PricingHero billing={billing} setBilling={setBilling} />
 
-        {/* DESKTOP: 4-column premium card grid */}
+        {/* Stripe-not-configured banner (soft) */}
+        {!billingAvailable && (
+          <div className="max-w-7xl mx-auto px-4 md:px-8 -mt-10 mb-4 relative z-20">
+            <div className="rounded-2xl border border-amber-400/30 bg-amber-400/[0.06] backdrop-blur-xl px-5 py-3 flex items-start gap-3 text-sm text-amber-100">
+              <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5 text-amber-300" />
+              <div className="flex-1 leading-relaxed">
+                الفوترة الذاتية عبر Stripe قيد الإعداد حالياً. للترقية الفورية،
+                <Link
+                  href="/contact?intent=billing"
+                  className="ms-1 font-bold text-amber-200 underline decoration-dotted underline-offset-4 hover:text-white"
+                >
+                  تواصل مع فريق المبيعات
+                </Link>
+                — سنعالج طلبك يدوياً خلال يوم عمل.
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* DESKTOP: 3-column premium card grid (Enterprise rendered as banner below) */}
         <div className="hidden lg:block px-8 -mt-16 relative z-10">
           <PricingDesktop
-            plans={planList}
+            plans={mainPlanList}
             currentPlan={currentPlan}
             loadingPlan={loadingPlan}
             billing={billing}
@@ -91,25 +142,31 @@ export default function PricingPage() {
           />
         </div>
 
-        {/* MOBILE / TABLET: snap carousel + sticky CTA */}
+        {/* MOBILE / TABLET: snap carousel + sticky CTA — also 3 cards */}
         <div className="lg:hidden px-4 -mt-8 relative z-10">
           <PricingMobile
-            plans={planList}
+            plans={mainPlanList}
             currentPlan={currentPlan}
             loadingPlan={loadingPlan}
             billing={billing}
             onSelect={handleSelect}
           />
         </div>
+
+        {/* ENTERPRISE banner (replaces the old 4th column) */}
+        <PricingEnterpriseBanner plan={enterprisePlan} />
 
         {/* TRUST strip */}
         <div className="px-4 md:px-8 mt-16 md:mt-24">
           <PricingTrust />
         </div>
 
-        {/* FEATURE COMPARISON (desktop) */}
+        {/* FEATURE COMPARISON (desktop) — keeps Enterprise column for full comparison */}
         <div className="hidden md:block px-8 mt-20">
-          <PricingComparison plans={planList} currentPlan={currentPlan} />
+          <PricingComparison
+            plans={[...mainPlanList, enterprisePlan]}
+            currentPlan={currentPlan}
+          />
         </div>
 
         {/* FAQ */}
@@ -138,32 +195,31 @@ export default function PricingPage() {
             <div className="relative w-9 h-9 rounded-xl border border-white/10 bg-[#070A18]/70 flex items-center justify-center">
               <img
                 src="/brand/kalmeron-mark.svg"
-                alt="Kalmeron AI"
-                className="w-[78%] h-[78%] object-contain"
+                alt="Kalmeron"
+                className="w-6 h-6 object-contain"
               />
             </div>
-            <div className="leading-none">
-              <span className="block font-display text-base font-extrabold text-white">KALMERON</span>
-              <span className="block text-[9px] uppercase tracking-[0.3em] text-cyan-300/80 mt-1">AI Studio</span>
-            </div>
+            <span className="font-display text-lg font-extrabold text-white">
+              Kalmeron
+            </span>
           </Link>
-          <div className="flex items-center gap-2 md:gap-3">
+          <div className="flex items-center gap-3">
             <Link
-              href="/auth/login"
-              className="text-sm text-neutral-400 hover:text-white transition px-3 py-2"
+              href="/login"
+              className="text-sm text-text-secondary hover:text-white transition"
             >
               تسجيل الدخول
             </Link>
             <Link
-              href="/auth/signup"
-              className="btn-primary text-sm font-bold rounded-full px-4 py-2"
+              href="/signup"
+              className="rounded-xl bg-white text-black px-4 py-2 text-sm font-bold hover:bg-neutral-100 transition"
             >
               ابدأ مجاناً
             </Link>
           </div>
         </div>
       </header>
-      {content}
+      <main>{content}</main>
     </div>
   );
 }

@@ -154,6 +154,26 @@ export const PLANS: Record<PlanId, Plan> = {
 
 export const PLAN_ORDER: PlanId[] = ['free', 'pro', 'founder', 'enterprise'];
 
+/**
+ * Plans that render in the main 3-column pricing grid.
+ * Enterprise is intentionally excluded — it appears as a separate banner
+ * (it is sales-led with custom pricing, not self-serve).
+ */
+export const MAIN_PLAN_ORDER: PlanId[] = ['free', 'pro', 'founder'];
+
+/**
+ * Returns true when at least one Stripe Price ID is configured for the
+ * paid plans. Used by the pricing page to show a configuration warning
+ * when self-serve billing is disabled.
+ */
+export function isStripeConfigured(): boolean {
+  for (const id of ['pro', 'founder'] as PlanId[]) {
+    const ids = getStripePriceIds(id);
+    if (ids.monthlyUsd || ids.annualUsd || ids.monthlyEgp || ids.annualEgp) return true;
+  }
+  return false;
+}
+
 export function getPlan(id: string | null | undefined): Plan {
   if (!id) return PLANS.free;
   return PLANS[id as PlanId] || PLANS.free;
