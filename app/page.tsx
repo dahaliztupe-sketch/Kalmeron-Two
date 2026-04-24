@@ -735,34 +735,36 @@ function LiveDemoSection() {
         <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
           className="rounded-3xl border border-white/10 bg-[#0B1020]/80 backdrop-blur-xl overflow-hidden shadow-2xl"
         >
-          <div className="flex items-center gap-2 p-4 border-b border-white/[0.06] bg-white/[0.02]">
-            <div className="w-3 h-3 rounded-full bg-red-500/60" />
-            <div className="w-3 h-3 rounded-full bg-amber-500/60" />
-            <div className="w-3 h-3 rounded-full bg-emerald-500/60" />
-            <div className="flex-1 text-center">
-              <span className="text-xs text-neutral-500">kalmeron.app/chat</span>
+          <div className="flex items-center gap-2 p-3 sm:p-4 border-b border-white/[0.06] bg-white/[0.02]">
+            <div className="flex items-center gap-1.5 shrink-0">
+              <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-red-500/60" />
+              <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-amber-500/60" />
+              <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-emerald-500/60" />
             </div>
-            <div className="flex items-center gap-1.5 text-xs text-emerald-400">
+            <div className="flex-1 text-center min-w-0">
+              <span className="text-[11px] sm:text-xs text-neutral-500 truncate block">kalmeron.app/chat</span>
+            </div>
+            <div className="flex items-center gap-1.5 text-[11px] sm:text-xs text-emerald-400 shrink-0">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
               مباشر
             </div>
           </div>
 
-          <div className="p-5 md:p-8 space-y-5">
-            <div className="flex gap-3 items-end justify-start">
+          <div className="p-4 sm:p-5 md:p-8 space-y-5">
+            <div className="flex gap-2 sm:gap-3 items-end justify-start">
               <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-violet-500 flex items-center justify-center shrink-0 text-white text-xs font-bold">أ</div>
-              <div className="max-w-[80%] bg-indigo-500/10 border border-indigo-500/20 rounded-2xl rounded-br-md px-4 py-3 text-sm text-white">
+              <div className="min-w-0 max-w-[85%] sm:max-w-[80%] bg-indigo-500/10 border border-indigo-500/20 rounded-2xl rounded-br-md px-3 sm:px-4 py-3 text-sm text-white break-words">
                 {conv.user}
               </div>
             </div>
 
-            <div className="flex gap-3 items-start justify-end flex-row-reverse">
+            <div className="flex gap-2 sm:gap-3 items-start justify-end flex-row-reverse">
               <div className={`w-8 h-8 rounded-full bg-gradient-to-br ${conv.color === "cyan" ? "from-cyan-500 to-indigo-500" : conv.color === "emerald" ? "from-emerald-500 to-cyan-500" : "from-amber-500 to-orange-500"} flex items-center justify-center shrink-0`}>
                 <Icon className="w-4 h-4 text-white" />
               </div>
-              <div className="max-w-[80%] bg-white/[0.04] border border-white/10 rounded-2xl rounded-bl-md px-4 py-4">
+              <div className="min-w-0 max-w-[85%] sm:max-w-[80%] bg-white/[0.04] border border-white/10 rounded-2xl rounded-bl-md px-3 sm:px-4 py-4">
                 <div className="text-xs text-neutral-500 mb-2 font-medium">🤖 {conv.agent}</div>
-                <div className="text-sm text-neutral-100 leading-relaxed whitespace-pre-line">
+                <div className="text-sm text-neutral-100 leading-relaxed whitespace-pre-line break-words">
                   {displayedText}
                   {isTyping && (
                     <span className="inline-flex gap-1 mr-1">
@@ -794,6 +796,13 @@ function LiveDemoSection() {
 // COMPARISON
 // ─────────────────────────────────────────────
 
+function ComparisonCell({ value, kalmeron = false }: { value: boolean | string; kalmeron?: boolean }) {
+  if (value === true) return <CheckCircle2 className={`${kalmeron ? "w-5 h-5" : "w-4 h-4"} text-emerald-400 mx-auto`} />;
+  if (value === false) return <XCircle className={`${kalmeron ? "w-5 h-5" : "w-4 h-4"} text-red-400/60 mx-auto`} />;
+  if (value === "جزئي") return <Minus className="w-4 h-4 text-amber-400 mx-auto" />;
+  return <span className="text-[10px] text-center text-red-300 font-medium leading-tight block break-words">{value}</span>;
+}
+
 function ComparisonSection() {
   return (
     <section id="compare" className="relative px-4 py-20 md:py-32">
@@ -808,13 +817,62 @@ function ComparisonSection() {
             بدل ما تدفع للجميع —<br />
             <span className="brand-gradient-text">كلميرون يكفيك</span>
           </h2>
-          <p className="text-neutral-400 max-w-xl mx-auto">
-            المؤسسون يدفعون ₌15,000+ شهرياً لمستشارين متفرقين. كلميرون يعمل كلهم بكسر التكلفة.
+          <p className="text-neutral-400 max-w-xl mx-auto text-sm md:text-base">
+            المؤسسون يدفعون 15,000+ ج.م شهرياً لمستشارين متفرقين. كلميرون يعمل كلهم بكسر التكلفة.
           </p>
         </motion.div>
 
+        {/* Mobile: stacked card list (no horizontal squeeze) */}
         <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
-          className="rounded-3xl border border-white/10 overflow-hidden"
+          className="md:hidden rounded-3xl border border-white/10 overflow-hidden divide-y divide-white/[0.06]"
+        >
+          <div className="p-4 bg-white/[0.03] flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2 min-w-0">
+              <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-cyan-500 to-indigo-500 flex items-center justify-center shrink-0">
+                <Bot className="w-3.5 h-3.5 text-white" />
+              </div>
+              <span className="font-bold text-white text-sm truncate">كلميرون</span>
+            </div>
+            <span className="text-[10px] text-emerald-400 font-medium bg-emerald-400/10 px-2 py-0.5 rounded-full shrink-0">أفضل قيمة</span>
+          </div>
+          {COMPARISON_DATA.map((row, i) => (
+            <div key={row.feature} className={`p-4 ${i % 2 === 0 ? "" : "bg-white/[0.015]"}`}>
+              <div className="text-sm text-neutral-200 font-medium mb-3">{row.feature}</div>
+              <div className="grid grid-cols-3 gap-2 text-center">
+                <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] py-2.5 px-2 flex flex-col items-center gap-1">
+                  <span className="text-[10px] text-neutral-500">كلميرون</span>
+                  <ComparisonCell value={row.kalmeron} kalmeron />
+                </div>
+                <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] py-2.5 px-2 flex flex-col items-center gap-1">
+                  <span className="text-[10px] text-neutral-500">مستشارون</span>
+                  <ComparisonCell value={row.consultant} />
+                </div>
+                <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] py-2.5 px-2 flex flex-col items-center gap-1">
+                  <span className="text-[10px] text-neutral-500">أدوات</span>
+                  <ComparisonCell value={row.tools} />
+                </div>
+              </div>
+            </div>
+          ))}
+          <div className="p-4 bg-gradient-to-r from-indigo-500/10 to-cyan-500/5">
+            <div className="text-sm font-bold text-white mb-3">التكلفة الشهرية</div>
+            <div className="grid grid-cols-3 gap-2 text-center">
+              <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/5 py-2 px-1">
+                <span className="text-emerald-400 font-extrabold text-xs sm:text-sm break-words">من 0 ج.م</span>
+              </div>
+              <div className="rounded-xl border border-red-500/20 bg-red-500/5 py-2 px-1">
+                <span className="text-red-400 font-bold text-xs break-words">+15,000 ج.م</span>
+              </div>
+              <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 py-2 px-1">
+                <span className="text-amber-400 font-bold text-xs">وقت كثير</span>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Tablet & desktop: full grid table */}
+        <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+          className="hidden md:block rounded-3xl border border-white/10 overflow-hidden"
         >
           <div className="grid grid-cols-4 bg-white/[0.03] border-b border-white/10">
             <div className="col-span-1 p-4 md:p-5 text-xs md:text-sm font-medium text-neutral-400">الميزة</div>
@@ -841,23 +899,13 @@ function ComparisonSection() {
             >
               <div className="col-span-1 p-3 md:p-4 text-xs md:text-sm text-neutral-300 flex items-center">{row.feature}</div>
               <div className="p-3 md:p-4 flex items-center justify-center">
-                {row.kalmeron === true ? (
-                  <CheckCircle2 className="w-5 h-5 text-emerald-400" />
-                ) : (
-                  <XCircle className="w-5 h-5 text-red-400" />
-                )}
+                <ComparisonCell value={row.kalmeron} kalmeron />
               </div>
               <div className="p-3 md:p-4 flex items-center justify-center">
-                {row.consultant === true ? <CheckCircle2 className="w-4 h-4 text-emerald-400" /> :
-                  row.consultant === false ? <XCircle className="w-4 h-4 text-red-400/60" /> :
-                    row.consultant === "جزئي" ? <Minus className="w-4 h-4 text-amber-400" /> :
-                      <span className="text-[10px] text-center text-red-300 font-medium leading-tight">{row.consultant}</span>}
+                <ComparisonCell value={row.consultant} />
               </div>
               <div className="p-3 md:p-4 flex items-center justify-center">
-                {row.tools === true ? <CheckCircle2 className="w-4 h-4 text-emerald-400" /> :
-                  row.tools === false ? <XCircle className="w-4 h-4 text-red-400/60" /> :
-                    row.tools === "جزئي" ? <Minus className="w-4 h-4 text-amber-400" /> :
-                      <span className="text-[10px] text-center text-amber-300">{row.tools}</span>}
+                <ComparisonCell value={row.tools} />
               </div>
             </motion.div>
           ))}
@@ -929,9 +977,9 @@ function TestimonialsSection() {
                 <div className={`w-11 h-11 rounded-full bg-gradient-to-br ${t.color} flex items-center justify-center text-white font-bold text-lg shrink-0`}>
                   {t.avatar}
                 </div>
-                <div>
-                  <div className="font-bold text-white text-sm">{t.name}</div>
-                  <div className="text-xs text-neutral-400">{t.role}</div>
+                <div className="min-w-0 flex-1">
+                  <div className="font-bold text-white text-sm truncate">{t.name}</div>
+                  <div className="text-xs text-neutral-400 break-words">{t.role}</div>
                   <div className="flex gap-0.5 mt-1">
                     {Array.from({ length: t.stars }).map((_, j) => (
                       <Star key={j} className="w-3 h-3 fill-amber-400 text-amber-400" />
@@ -939,7 +987,7 @@ function TestimonialsSection() {
                   </div>
                 </div>
               </div>
-              <p className="text-sm text-neutral-300 leading-relaxed mb-4">"{t.text}"</p>
+              <p className="text-sm text-neutral-300 leading-relaxed mb-4">&ldquo;{t.text}&rdquo;</p>
               <div className="flex items-center gap-2 pt-3 border-t border-white/[0.06]">
                 <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
                 <span className="text-xs font-medium text-emerald-400">{t.metric}</span>
@@ -953,19 +1001,19 @@ function TestimonialsSection() {
         >
           {TESTIMONIALS.slice(3).map((t, i) => (
             <div key={t.name} className="rounded-3xl border border-white/10 bg-white/[0.03] p-5 hover:border-white/20 transition-all">
-              <div className="flex items-start gap-3 mb-3">
+              <div className="flex flex-wrap items-start gap-3 mb-3">
                 <div className={`w-9 h-9 rounded-full bg-gradient-to-br ${t.color} flex items-center justify-center text-white font-bold shrink-0`}>
                   {t.avatar}
                 </div>
-                <div>
-                  <div className="font-bold text-white text-sm">{t.name}</div>
-                  <div className="text-xs text-neutral-400">{t.role}</div>
+                <div className="min-w-0 flex-1">
+                  <div className="font-bold text-white text-sm truncate">{t.name}</div>
+                  <div className="text-xs text-neutral-400 truncate">{t.role}</div>
                 </div>
-                <div className="mr-auto flex items-center gap-1.5 text-xs text-emerald-400 bg-emerald-400/10 px-2 py-1 rounded-full">
-                  <CheckCircle2 className="w-3 h-3" /> {t.metric}
+                <div className="flex items-center gap-1.5 text-[11px] sm:text-xs text-emerald-400 bg-emerald-400/10 px-2 py-1 rounded-full max-w-full break-words">
+                  <CheckCircle2 className="w-3 h-3 shrink-0" /> <span className="break-words">{t.metric}</span>
                 </div>
               </div>
-              <p className="text-sm text-neutral-300 leading-relaxed">"{t.text}"</p>
+              <p className="text-sm text-neutral-300 leading-relaxed">&ldquo;{t.text}&rdquo;</p>
             </div>
           ))}
         </motion.div>
@@ -1056,12 +1104,12 @@ function FinalCTA() {
             <Sparkles className="w-3.5 h-3.5" /> ابدأ مجاناً — بدون بطاقة ائتمان
           </div>
 
-          <h2 className="font-display text-4xl md:text-6xl lg:text-7xl font-extrabold text-white mb-6 leading-tight">
+          <h2 className="font-display text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-extrabold text-white mb-6 leading-tight">
             ابدأ رحلتك<br /><span className="brand-gradient-text">الآن</span>
           </h2>
 
-          <p className="text-neutral-300 text-lg mb-10 leading-relaxed">
-            +1000 رائد أعمال بدأوا بنفس السؤال اللي في دماغك الآن.<br />
+          <p className="text-neutral-300 text-base sm:text-lg mb-10 leading-relaxed">
+            +1000 رائد أعمال بدأوا بنفس السؤال اللي في دماغك الآن.<br className="hidden sm:block" />
             كلميرون جاهز يساعدك تحوّله لشركة حقيقية.
           </p>
 
