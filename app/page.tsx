@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { motion, useScroll, useTransform, AnimatePresence, useInView } from "motion/react";
+import { motion, useScroll, useTransform, AnimatePresence, useInView, useReducedMotion } from "motion/react";
 import {
   ArrowLeft, Sparkles, LogIn, Brain, Shield, Radar,
   Briefcase, Scale, FlaskConical, Rocket, Check, Menu, X,
@@ -201,7 +201,7 @@ const TESTIMONIALS = [
 ];
 
 const STATS = [
-  { value: 50, suffix: "+", label: "مساعد ذكي متخصص", icon: Bot },
+  { value: 16, suffix: "", label: "مساعد ذكي متخصص", icon: Bot },
   { value: 7, suffix: "", label: "أقسام تشغيلية", icon: Layers },
   { value: 1000, suffix: "+", label: "رائد أعمال يثق بنا", icon: Users },
   { value: 3, suffix: "x", label: "أسرع في التأسيس", icon: Zap },
@@ -411,9 +411,11 @@ function TopNav() {
 function Hero() {
   const [query, setQuery] = useState("");
   const router = useRouter();
+  const reduce = useReducedMotion();
   const { scrollY } = useScroll();
-  const heroY = useTransform(scrollY, [0, 700], [0, 140]);
-  const heroOpacity = useTransform(scrollY, [0, 500], [1, 0.3]);
+  // Skip parallax y-translate when prefers-reduced-motion is set; keep gentle opacity fade.
+  const heroY = useTransform(scrollY, [0, 700], reduce ? [0, 0] : [0, 140]);
+  const heroOpacity = useTransform(scrollY, [0, 500], reduce ? [1, 1] : [1, 0.3]);
   const [suggestionIdx, setSuggestionIdx] = useState(0);
 
   useEffect(() => {

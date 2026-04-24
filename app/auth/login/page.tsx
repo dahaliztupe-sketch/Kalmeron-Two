@@ -3,13 +3,14 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
-import { motion } from "motion/react";
+import { motion, useReducedMotion } from "motion/react";
 import { Loader2, Chrome, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 
 export default function LoginPage() {
   const { user, dbUser, loading, signInWithGoogle } = useAuth();
   const router = useRouter();
+  const reduce = useReducedMotion();
 
   useEffect(() => {
     if (!loading && user) {
@@ -37,9 +38,9 @@ export default function LoginPage() {
       </Link>
 
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
+        initial={reduce ? { opacity: 0 } : { opacity: 0, y: 20 }}
+        animate={reduce ? { opacity: 1 } : { opacity: 1, y: 0 }}
+        transition={{ duration: reduce ? 0.2 : 0.5 }}
         className="w-full max-w-md z-10 p-6"
       >
         <div className="glass-panel rounded-[2.5rem] p-8 md:p-10 shadow-2xl text-center space-y-7">

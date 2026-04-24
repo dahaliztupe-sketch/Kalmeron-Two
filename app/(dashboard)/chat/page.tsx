@@ -169,7 +169,7 @@ function EmptyState({ onSuggestion }: { onSuggestion: (s: string) => void }) {
       <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
         <h3 className="text-xl md:text-2xl font-bold text-white mb-2">أهلاً! أنا كلميرون</h3>
         <p className="text-neutral-400 text-sm leading-relaxed max-w-md mb-8">
-          فريق من +50 وكيلاً ذكياً تحت تصرفك. اسألني عن أي شيء — فكرتك، شركتك، سوقك، أو مستقبلك.
+          فريق من 16 مساعداً ذكياً عبر 7 أقسام تحت تصرفك. اسألني عن أي شيء — فكرتك، شركتك، سوقك، أو مستقبلك.
         </p>
       </motion.div>
 

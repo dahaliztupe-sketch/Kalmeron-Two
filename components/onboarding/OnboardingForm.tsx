@@ -207,7 +207,7 @@ export function OnboardingForm() {
                   </div>
                   <div className="space-y-3 text-sm text-neutral-300">
                     {[
-                      { icon: "🤖", text: "+50 وكيلاً ذكياً في خدمتك" },
+                      { icon: "🤖", text: "16 مساعداً ذكياً في خدمتك عبر 7 أقسام" },
                       { icon: "📊", text: "خطط عمل وتحليلات مالية فورية" },
                       { icon: "⚖️", text: "إرشاد قانوني متوافق مع قانون مصر" },
                       { icon: "🎯", text: "فرص تمويل مخصصة لمرحلتك" },

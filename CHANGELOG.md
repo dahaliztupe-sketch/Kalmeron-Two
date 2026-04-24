@@ -5,6 +5,14 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the 
 
 ## [Unreleased]
 
+### Changed — Wave 4 (Final Copy & Motion Cleanup, 2026-04-24)
+- **Brand-count copy fully unified** to "16 مساعداً ذكياً (عبر 7 أقسام)". The remaining "+50 / 50+ وكيل" leaks were removed from `app/auth/signup/page.tsx` (PERKS), `app/compare/page.tsx` (feature row), `app/mcp-server/page.tsx` (page description + the "Tools" feature card), `app/llms.txt/route.ts` (Arabic summary + the English LLM-crawler paragraph), `components/onboarding/OnboardingForm.tsx` (welcome bullet), `app/(dashboard)/chat/page.tsx` (empty-state intro), `src/lib/seo/comparisons.ts` (3 hero intros: ChatGPT, Claude, Manus), `src/lib/seo/blog-posts.ts` (long-form post body), and the landing-page `STATS` block in `app/page.tsx` (`value: 50, suffix: "+"` → `value: 16, suffix: ""`).
+- **Lexicon hardened**: `src/lib/copy/lexicon.ts` `agentPlural.aliases` now lists both `"+50 وكيل ذكي"` AND `"50+ وكيل"` so any future reviewer sweep flags either form as a forbidden alias.
+- **Reduced-motion support extended** to the public top-of-funnel:
+  - `app/page.tsx` `<Hero>` — `useReducedMotion()` collapses the parallax `useTransform` ranges (`heroY` / `heroOpacity`) to no-op when active. Eliminates the 140 px scroll-driven slide and the 1 → 0.3 opacity fade.
+  - `app/auth/login/page.tsx` and `app/auth/signup/page.tsx` — wrapper `motion.div` now drops the `y: 20` initial transform when reduced, fading only with shorter duration.
+- **`globals.css` gold tokens re-documented** (not removed): `--color-brand-gold` (in `@theme`) and `--gold` (in `:root`) carry an explicit DEPRECATED block-comment explaining that ~15 components still depend on the generated `text-brand-gold` / `bg-brand-gold` Tailwind utilities and `rgb(var(--gold))` literals. The tokens stay as aliases of cyan/indigo to avoid mass regression while the per-consumer migration is scheduled.
+
 ### Added — Wave 3 (Design Language Execution, 2026-04-24)
 - **`<CommandPalette>`** (`components/ui/CommandPalette.tsx`) — vanilla ⌘K palette built atop `@base-ui/react/dialog`. Searches `NAV_SECTIONS` (single source of truth), keyboard-navigable (↑/↓/Enter/Esc), ranked by label-position, RTL-aware. Wired globally in `AppShell.tsx`. The header search button (previously a no-op) now opens it; new `useCommandPaletteShortcut` hook registers `Meta/Ctrl+K`.
 - **`<AgentBlock>` Generative-UI primitive** (`components/agent/AgentBlock.tsx`) — single canonical renderer for AI-streamed structured output. Five variants: `stat` (KPI tile with optional currency / compact / delta), `list`, `table`, `callout` (info/warn/success/danger/neutral), `milestone` (timeline). Built-in shape guard renders an unknown-block placeholder instead of crashing the stream. Companion `<AgentBlockStream>` for arrays.

@@ -31,7 +31,7 @@ interface ComparisonRow {
 
 const ROWS: ComparisonRow[] = [
   { category: "الذكاء الاصطناعي", feature: "مساعد ذكاء اصطناعي متعدد الأغراض", kalmeron: true, consultants: false, chatgpt: true, notion: false },
-  { category: "الذكاء الاصطناعي", feature: "+50 وكيل ذكي متخصص", kalmeron: true, consultants: false, chatgpt: false, notion: false, note: "كلميرون وحده يقدم هذا المستوى من التخصص" },
+  { category: "الذكاء الاصطناعي", feature: "16 مساعداً ذكياً متخصصاً عبر 7 أقسام", kalmeron: true, consultants: false, chatgpt: false, notion: false, note: "كلميرون وحده يقدم هذا المستوى من التخصص" },
   { category: "الذكاء الاصطناعي", feature: "تنسيق تلقائي بين الوكلاء", kalmeron: true, consultants: false, chatgpt: false, notion: false },
   { category: "الذكاء الاصطناعي", feature: "ذاكرة طويلة الأمد وتعلم من سياقك", kalmeron: true, consultants: "partial", chatgpt: false, notion: false },
   { category: "الذكاء الاصطناعي", feature: "دعم عربي مصري أصيل", kalmeron: true, consultants: "partial", chatgpt: "partial", notion: false, note: "فهم العامية المصرية والسياق المحلي" },

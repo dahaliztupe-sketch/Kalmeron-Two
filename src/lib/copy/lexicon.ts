@@ -45,7 +45,7 @@ export const LEXICON = {
   agentPlural: {
     canonical: "مساعدوك الأذكياء",
     english: "Your AI assistants",
-    aliases: ["+50 وكيل ذكي", "AI agents", "agents", "وكلاء"],
+    aliases: ["+50 وكيل ذكي", "50+ وكيل", "AI agents", "agents", "وكلاء"],
     context: "الجمع — يُفضَّل «فريق كلميرون» في سياقات أخرى",
   },
   team: {

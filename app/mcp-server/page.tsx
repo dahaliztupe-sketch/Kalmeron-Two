@@ -20,13 +20,13 @@ export default function McpServerPage() {
     <SeoLandingShell
       eyebrow="MCP Server رسمي"
       title="Kalmeron MCP Server"
-      description="استخدم 50+ وكيل عربي مباشرة من Claude Desktop، Cursor، Continue، VSCode، وأي MCP client. الـ AI الخاص بك يصبح متخصصاً في السوق العربي."
+      description="استخدم 16 مساعداً ذكياً عربياً مباشرة من Claude Desktop، Cursor، Continue، VSCode، وأي MCP client. الـ AI الخاص بك يصبح متخصصاً في السوق العربي."
       breadcrumbs={[{ label: "MCP Server" }]}
     >
       <section className="grid md:grid-cols-2 gap-6 mb-16">
         {[
           { icon: Plug, title: "Plug-and-Play", desc: "تكامل في 30 ثانية مع أي MCP client. لا حاجة لـ custom integrations." },
-          { icon: Cpu, title: "50+ Tool", desc: "كل وكيل من كلميرون متاح كـ MCP tool: legal، finance، marketing، إلخ." },
+          { icon: Cpu, title: "16 Tools", desc: "كل مساعد من كلميرون متاح كـ MCP tool: legal، finance، marketing، إلخ." },
           { icon: Shield, title: "آمن وموثق", desc: "OAuth 2.0، scoped permissions، audit logs لكل tool call." },
           { icon: Boxes, title: "مفتوح المصدر", desc: "GitHub repo مع Apache 2.0. ساهم وأضف وكلاء خاصة بك." },
         ].map((f) => (
