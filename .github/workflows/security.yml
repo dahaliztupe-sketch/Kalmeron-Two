@@ -8,10 +8,15 @@ on:
   schedule:
     - cron: "0 6 * * 1"
 
+permissions:
+  contents: read
+
 jobs:
   audit:
     name: npm audit (production deps)
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
@@ -49,6 +54,8 @@ jobs:
   secret-scan:
     name: Gitleaks (secret scan)
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v6
         with:
@@ -63,6 +70,8 @@ jobs:
     # (trademark casing, banned phrases, locale mix-ups).
     name: Lexicon (Arabic style guide)
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6

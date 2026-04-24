@@ -80,7 +80,7 @@ async function routerNode(state: typeof SupervisorState.State) {
     };
   }
 
-  let intent = 'GENERAL_CHAT';
+  let intent: string;
   try {
     const { result } = await safeGenerateText(
       {
@@ -207,7 +207,7 @@ async function mistakeShieldNode(state: typeof SupervisorState.State) {
 async function successMuseumNode(state: typeof SupervisorState.State) {
   const lastMessage = state.messages[state.messages.length - 1]?.content as string;
   try {
-    const companyMatch = lastMessage.match(/["«»""]([^"«»""]+)["«»""]/) ||
+    const companyMatch = lastMessage.match(/["«»]([^"«»]+)["«»]/) ||
       lastMessage.match(/شركة\s+(\S+)/) ||
       lastMessage.match(/نجاح\s+(\S+)/);
     const companyName = companyMatch ? companyMatch[1] : lastMessage.slice(0, 50);

@@ -9,7 +9,10 @@ import { NextRequest, NextResponse } from 'next/server';
   export const maxDuration = 60;
 
   export async function POST(req: NextRequest) {
-    const requestId = req.headers.get('X-Request-ID') || crypto.randomUUID();
+    // Always generate the requestId server-side. Never trust an
+    // X-Request-ID header — it could be used to bypass per-request
+    // tracing/security checks or spoof another user's request.
+    const requestId = crypto.randomUUID();
     const log = createRequestLogger(requestId);
     const rl = rateLimit(req, { limit: 20, windowMs: 60_000 });
     if (!rl.success) return rateLimitResponse();

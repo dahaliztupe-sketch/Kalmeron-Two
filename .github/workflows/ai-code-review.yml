@@ -3,9 +3,16 @@ on:
   pull_request:
     types: [opened, synchronize]
 
+permissions:
+  contents: read
+  pull-requests: write
+
 jobs:
   review:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
     steps:
       - uses: actions/checkout@v6
       - name: AI Code Review

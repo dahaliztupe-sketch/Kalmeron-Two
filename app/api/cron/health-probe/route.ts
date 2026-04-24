@@ -31,8 +31,8 @@ async function handle(req: NextRequest): Promise<NextResponse> {
   const baseUrl = origin.startsWith('http') ? origin : `https://${origin}`;
 
   const start = Date.now();
-  let status: 'healthy' | 'degraded' | 'down' = 'down';
-  let payload: unknown = null;
+  let status: 'healthy' | 'degraded' | 'down';
+  let payload: unknown;
   try {
     const res = await fetch(`${baseUrl}/api/health`, { cache: 'no-store' });
     payload = await res.json();

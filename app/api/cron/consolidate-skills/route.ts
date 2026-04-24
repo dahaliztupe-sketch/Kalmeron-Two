@@ -14,6 +14,7 @@ import {
   listWorkspaceIdsWithSkills,
   type ConsolidationReport,
 } from '@/src/lib/learning/loop';
+import { sanitizeLogValue } from '@/src/lib/security/sanitize-log';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -58,7 +59,11 @@ async function handle(req: NextRequest): Promise<NextResponse> {
       perWorkspace.push({ workspaceId: wid, report });
     } catch (e) {
       const msg = e instanceof Error ? e.message : 'failed';
-      console.error('[cron:consolidate-skills]', wid, msg);
+      console.error(
+        '[cron:consolidate-skills]',
+        sanitizeLogValue(wid),
+        sanitizeLogValue(msg),
+      );
     }
   }
 
