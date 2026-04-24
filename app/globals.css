@@ -20,7 +20,7 @@
   --color-brand-fuchsia:  #C026D3;
   --color-brand-rose:     #E11D48;
 
-  /* Backward-compat */
+  /* Backward-compat — DEPRECATED. Old "gold" naming. Use --color-brand-cyan. */
   --color-brand-gold:     #38BDF8;
 
   /* ── Surface ladder (deep → elevated) ── */
@@ -93,7 +93,9 @@
     --destructive:           244 63 94;
     --destructive-foreground:255 255 255;
 
+    /* --border holds raw white RGB; consumers compose alpha via rgb(var(--border) / X). */
     --border: 255 255 255;
+    --border-subtle: 255 255 255;        /* alpha applied at use site, e.g. rgb(var(--border-subtle) / 0.08) */
     --input:  17 26 51;
     --ring:   79 70 229;
 
@@ -166,7 +168,8 @@
     font-family: 'IBM Plex Sans Arabic', 'Tajawal', 'Plus Jakarta Sans', system-ui, sans-serif;
     font-feature-settings: "kern" 1, "calt" 1, "liga" 1, "ss01" 1;
     font-optical-sizing: auto;
-    font-variant-numeric: tabular-nums;
+    /* Numerals: proportional by default; opt-in to tabular via .tabular utility. */
+    font-variant-numeric: proportional-nums;
     line-height: 1.65;
     @apply antialiased;
     -webkit-font-smoothing: antialiased;

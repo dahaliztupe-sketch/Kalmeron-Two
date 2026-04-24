@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { AppShell } from "@/components/layout/AppShell";
 import { useAuth } from "@/contexts/AuthContext";
-import { motion } from "motion/react";
+import { motion, useReducedMotion } from "motion/react";
 import {
   Activity, Bot, AlertTriangle, DollarSign, Target,
   Hourglass, Loader2, ArrowLeft, CheckCircle2, MapPin,
@@ -42,6 +42,15 @@ const containerV: Variants = {
   hidden: { opacity: 0 },
   show: { opacity: 1, transition: { staggerChildren: 0.06 } },
 };
+// Reduced-motion fallback — fade only, no transform, no stagger.
+const itemVReduced: Variants = {
+  hidden: { opacity: 0 },
+  show: { opacity: 1, transition: { duration: 0 } },
+};
+const containerVReduced: Variants = {
+  hidden: { opacity: 0 },
+  show: { opacity: 1, transition: { duration: 0 } },
+};
 
 const QUICK_ACTIONS = [
   { icon: Brain, label: "محلل الأفكار", desc: "حلّل فكرتك الجديدة", href: "/chat?q=حلل فكرتي الجديدة", color: "from-cyan-500 to-indigo-500", bg: "bg-cyan-500/5 border-cyan-500/20 hover:border-cyan-400/40" },
@@ -57,6 +66,7 @@ export default function DashboardPage() {
   const [data, setData] = useState<DashboardData | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const reduce = useReducedMotion();
 
   useEffect(() => {
     let cancel = false;
@@ -71,14 +81,24 @@ export default function DashboardPage() {
         const j = await r.json();
         if (!cancel) { setData(j); setError(null); }
       } catch (e: any) {
-        if (!cancel) setError("تعذر تحميل البيانات.");
+        if (!cancel) setError("تعذّر تحميل البيانات.");
       } finally {
         if (!cancel) setLoading(false);
       }
     };
     load();
-    const id = setInterval(load, 12000);
-    return () => { cancel = true; clearInterval(id); };
+    // Poll every 30s, but skip while tab is hidden — saves battery + Firestore reads.
+    const id = setInterval(() => {
+      if (typeof document !== "undefined" && document.visibilityState === "hidden") return;
+      load();
+    }, 30000);
+    const onVis = () => { if (document.visibilityState === "visible") load(); };
+    if (typeof document !== "undefined") document.addEventListener("visibilitychange", onVis);
+    return () => {
+      cancel = true;
+      clearInterval(id);
+      if (typeof document !== "undefined") document.removeEventListener("visibilitychange", onVis);
+    };
   }, [user]);
 
   const stageIndex = data ? Math.max(0, data.progress.stages.indexOf(data.progress.stage)) : 0;
@@ -116,10 +136,10 @@ export default function DashboardPage() {
         ) : error || !data ? (
           <div className="glass-panel p-6 rounded-2xl text-rose-300 text-sm">{error || "لا توجد بيانات."}</div>
         ) : (
-          <motion.div variants={containerV} initial="hidden" animate="show" className="space-y-4 md:space-y-5">
+          <motion.div variants={reduce ? containerVReduced : containerV} initial="hidden" animate="show" className="space-y-4 md:space-y-5">
 
             {/* Welcome + Progress */}
-            <motion.div variants={itemV} className="glass-panel rounded-3xl p-6 relative overflow-hidden">
+            <motion.div variants={reduce ? itemVReduced : itemV} className="glass-panel rounded-3xl p-6 relative overflow-hidden">
               <div className="absolute -top-24 -left-24 w-72 h-72 rounded-full bg-indigo-600/10 blur-3xl pointer-events-none" />
               <div className="absolute -bottom-20 -right-20 w-64 h-64 rounded-full bg-cyan-600/8 blur-3xl pointer-events-none" />
               <div className="relative grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -168,7 +188,7 @@ export default function DashboardPage() {
             </motion.div>
 
             {/* Quick Actions */}
-            <motion.div variants={itemV}>
+            <motion.div variants={reduce ? itemVReduced : itemV}>
               <h2 className="text-sm font-semibold text-neutral-400 mb-3 flex items-center gap-2">
                 <Zap className="w-4 h-4 text-amber-400" /> إجراءات سريعة
               </h2>
@@ -196,7 +216,7 @@ export default function DashboardPage() {
             {/* Main Content Grid */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-5">
               {/* Team Activity */}
-              <motion.div variants={itemV} className="glass-panel rounded-3xl p-6 md:col-span-2">
+              <motion.div variants={reduce ? itemVReduced : itemV} className="glass-panel rounded-3xl p-6 md:col-span-2">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-2">
                     <Activity className="w-4 h-4 text-brand-blue" />
@@ -240,7 +260,7 @@ export default function DashboardPage() {
               </motion.div>
 
               {/* Alerts + Pending */}
-              <motion.div variants={itemV} className="space-y-4">
+              <motion.div variants={reduce ? itemVReduced : itemV} className="space-y-4">
                 {/* Pending Tasks */}
                 <div className="glass-panel rounded-3xl p-5">
                   <div className="flex items-center gap-2 mb-3">
@@ -291,7 +311,7 @@ export default function DashboardPage() {
             {/* Bottom Row: Chart + Opportunity */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
               {/* Cost Chart */}
-              <motion.div variants={itemV} className="glass-panel rounded-3xl p-6">
+              <motion.div variants={reduce ? itemVReduced : itemV} className="glass-panel rounded-3xl p-6">
                 <div className="flex items-center gap-2 mb-4">
                   <LineChart className="w-4 h-4 text-emerald-400" />
                   <h3 className="text-base font-bold text-white">منحنى الاستهلاك (آخر 7 أيام)</h3>
@@ -311,7 +331,7 @@ export default function DashboardPage() {
               </motion.div>
 
               {/* Opportunity */}
-              <motion.div variants={itemV} className="glass-panel rounded-3xl p-6 relative overflow-hidden">
+              <motion.div variants={reduce ? itemVReduced : itemV} className="glass-panel rounded-3xl p-6 relative overflow-hidden">
                 <div className="absolute -bottom-10 -right-10 w-48 h-48 rounded-full bg-brand-blue/10 blur-3xl pointer-events-none" />
                 <div className="relative">
                   <div className="flex items-center gap-2 mb-3">

@@ -9,7 +9,7 @@ import { NotificationBell } from "@/components/ui/notification-bell";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { motion, AnimatePresence } from "motion/react";
+import { motion, AnimatePresence, useReducedMotion } from "motion/react";
 import { Sidebar } from "./Sidebar";
 import { Footer } from "./Footer";
 import { CreditsIndicator } from "./CreditsIndicator";
@@ -18,13 +18,18 @@ import { BrandLogo } from "@/components/brand/BrandLogo";
 import { AnimatedBrandMark } from "@/components/brand/AnimatedBrandMark";
 import Loading from "@/app/loading";
 import { NAV_SECTIONS } from "@/lib/navigation";
+import { CommandPalette, useCommandPaletteShortcut } from "@/components/ui/CommandPalette";
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const { user, dbUser, loading, signOut: logout } = useAuth();
   const { language, setLanguage } = useLanguage();
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [paletteOpen, setPaletteOpen] = useState(false);
+  const reduce = useReducedMotion();
   const dir = language === "ar" ? "rtl" : "ltr";
+
+  useCommandPaletteShortcut(setPaletteOpen);
 
   if (loading) return <Loading />;
 
@@ -73,8 +78,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
             <p className="text-[15px] md:text-lg text-neutral-300/90 max-w-xl mx-auto leading-[1.85]">
               {language === "ar"
-                ? "سبعة أقسام وأكثر من ٥٠ مساعداً ذكياً يعملون كفريقك المؤسّس على مدار الساعة."
-                : "7 departments and 50+ AI agents working as your full-time founding team."}
+                ? "سبعة أقسام وستة عشر مساعداً ذكياً متخصّصاً يعملون كفريقك المؤسّس على مدار الساعة."
+                : "7 departments and 16 specialized AI assistants working as your full-time founding team."}
             </p>
           </motion.div>
 
@@ -144,15 +149,17 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               </p>
             </div>
 
-            {/* Desktop premium search */}
+            {/* Desktop premium search — opens Command Palette */}
             <button
               type="button"
+              onClick={() => setPaletteOpen(true)}
               className="hidden md:flex items-center gap-2.5 px-3.5 h-10 rounded-xl bg-white/[0.03] border border-white/[0.07] hover:border-white/15 hover:bg-white/[0.05] transition-all w-80 group focus-visible:ring-2 focus-visible:ring-indigo-400/60 focus-visible:ring-offset-2 focus-visible:ring-offset-[#04060B] outline-none"
-              aria-label={language === "ar" ? "بحث" : "Search"}
+              aria-label={language === "ar" ? "افتح لوحة الأوامر" : "Open command palette"}
+              aria-keyshortcuts="Meta+K Control+K"
             >
-              <Search className="w-4 h-4 text-neutral-500 group-hover:text-cyan-300 transition-colors" />
+              <Search className="w-4 h-4 text-neutral-500 group-hover:text-cyan-300 transition-colors" aria-hidden />
               <span className="flex-1 text-start text-[13px] text-neutral-500 group-hover:text-neutral-400 transition-colors truncate">
-                {language === "ar" ? "ابحث في وكلائك أو خططك…" : "Search agents, plans…"}
+                {language === "ar" ? "ابحث في كلميرون…" : "Search Kalmeron…"}
               </span>
               <kbd className="text-[10px] font-mono text-neutral-400 bg-white/[0.04] border border-white/10 rounded-md px-1.5 py-0.5 shadow-[inset_0_-1px_0_rgb(0_0_0/0.3)]">
                 ⌘K
@@ -217,10 +224,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <AnimatePresence mode="wait">
             <motion.div
               key={pathname}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
+              initial={reduce ? false : { opacity: 0, y: 10 }}
+              animate={reduce ? { opacity: 1 } : { opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.25, ease: "easeOut" }}
+              transition={{ duration: reduce ? 0 : 0.25, ease: "easeOut" }}
               className="p-4 md:p-8"
             >
               {children}
@@ -231,6 +238,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       </main>
 
       <MobileBottomNav onOpenMenu={() => setMobileMenuOpen(true)} />
+
+      {/* Global ⌘K command palette */}
+      <CommandPalette open={paletteOpen} onOpenChange={setPaletteOpen} locale={language} />
 
       {/* Mobile sectioned menu */}
       <AnimatePresence>

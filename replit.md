@@ -2,6 +2,21 @@
 
 Arabic-language AI Operating System for Egyptian entrepreneurs. World-class platform with **16 production agents** (Strategy, Research, Finance, Legal, Real-Estate, Support) plus a `/ai-experts/[slug]` directory of 12 SEO-only persona pages. The "50+" figure refers to the long-term roadmap — production count is 16. See `docs/agents/README.md` for the canonical list.
 
+The brand tagline is **"مقرّ عمليات شركتك الذكي"** (canonical in `src/lib/copy/lexicon.ts → LEXICON.tagline`). Voice/tone, lexicon, and microcopy live under `src/lib/copy/{voice,lexicon,microcopy}.ts` and must be the source for all user-facing strings.
+
+## Recent Major Updates (Session 2026-04-24 — Wave 3: Design Language Execution)
+- **`DESIGN_AUDIT_2026.md`** delivered: 52-expert review across 12 domains, P0–P3 roadmap, 74 % readiness baseline.
+- **`<CommandPalette>`** (`components/ui/CommandPalette.tsx`): global ⌘K palette built atop `@base-ui/react/dialog` (no `cmdk` dep). Wired into `AppShell.tsx` — header search button + global `Meta/Ctrl+K` shortcut. Searches the canonical `NAV_SECTIONS`, keyboard-navigable, RTL-aware, reduced-motion safe.
+- **`<AgentBlock>` Generative-UI primitive** (`components/agent/AgentBlock.tsx`): single renderer for streamed structured output — five variants (`stat`, `list`, `table`, `callout`, `milestone`). Shape-guarded; renders an unknown-block placeholder instead of crashing the surrounding stream.
+- **Currency formatter** (`src/lib/format/currency.ts`): `formatCurrency` / `formatCompactNumber` / `annualToMonthly` for EGP / SAR / AED / USD via `Intl.NumberFormat`; defensive against `NaN`/`null`.
+- **i18n message bundles** (`messages/{ar,en}.json`) expanded from ~37 lines (LearnedSkills only) to ~150 keys spanning `Common`, `Nav`, `CTA`, `Trust`, `Dashboard`, `CommandPalette`, `Pricing`, `Errors`.
+- **"50+ وكيلاً" → "16 مساعداً ذكياً"** unified across `app/layout.tsx` (description + OG + Twitter + JSON-LD) and `components/layout/AppShell.tsx` (logged-out hero). Aligns marketing surface with the canonical fact above.
+- **Reduced-motion support** added to `AppShell.tsx` (route transition) and `app/(dashboard)/dashboard/page.tsx` (all 7 `motion.div` variants). New `itemVReduced` / `containerVReduced` fade-only variants kick in when `useReducedMotion()` is true.
+- **Dashboard polling**: 12 s → 30 s + skipped while the tab is hidden + reload on `visibilitychange` (saves Firestore reads & battery on idle tabs).
+- **Tagline canonicalised** to "مقرّ عمليات شركتك الذكي" across metadata + OG cards + JSON-LD.
+- **`globals.css` token cleanup**: `--color-brand-gold` marked DEPRECATED (kept as alias); body-level `tabular-nums` → `proportional-nums` (opt-in via `.tabular`); new `--border-subtle` documents the alpha-at-use-site pattern.
+- **Dead asset removed**: `public/brand/kalmeron-logo-original.jpg`.
+
 ## Recent Major Updates (Session 2026-04-24 — Wave 2: Documentation → Code)
 - **Consent ledger** built: `src/lib/consent/state.ts` (append-only, 6 consent types) + `/api/consent/{grant,withdraw,list}` endpoints + Firestore rules (`consent_events` read-own, server-write only).
 - **Analytics** built: `src/lib/analytics/track.ts` — Firestore source-of-truth, optional PostHog mirror, automatic PII stripping, never throws on user-facing path.

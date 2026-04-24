@@ -64,18 +64,18 @@ export async function generateMetadata(): Promise<Metadata> {
       default: "Kalmeron AI | نظام تشغيل رواد الأعمال",
       template: "%s | Kalmeron AI"
     },
-    description: "نظام تشغيل لرواد الأعمال يضم 7 أقسام و50+ وكيلاً ذكياً. حوّل فكرتك إلى شركة ناجحة مع شريكك المؤسس الذكي.",
+    description: "مقرّ عمليات شركتك الذكي: 7 أقسام و16 مساعداً ذكياً متخصصاً يعملون كفريقك المؤسّس. حوّل فكرتك إلى شركة ناجحة.",
     keywords: [
       "ذكاء اصطناعي", "ريادة أعمال", "مصر", "خطط عمل", "تمويل ناشئ",
       "Kalmeron", "كلميرون", "startup Egypt", "AI business", "مستشار ذكي"
     ],
     manifest: "/manifest.json",
     openGraph: {
-      title: "Kalmeron AI | نظام تشغيل رواد الأعمال",
-      description: "7 أقسام و50+ وكيلاً ذكياً يعملون كفريقك المؤسس.",
+      title: "Kalmeron AI | مقرّ عمليات شركتك الذكي",
+      description: "7 أقسام و16 مساعداً ذكياً يعملون كفريقك المؤسّس.",
       images: [
         {
-          url: `/api/og?title=${encodeURIComponent("نظام تشغيل رواد الأعمال")}&type=default`,
+          url: `/api/og?title=${encodeURIComponent("مقرّ عمليات شركتك الذكي")}&type=default`,
           width: 1200,
           height: 630,
           alt: "Kalmeron AI",
@@ -89,9 +89,9 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     twitter: {
       card: "summary_large_image",
-      title: "Kalmeron AI | نظام تشغيل رواد الأعمال",
-      description: "7 أقسام و50+ وكيلاً ذكياً يعملون كفريقك المؤسس.",
-      images: [`/api/og?title=${encodeURIComponent("نظام تشغيل رواد الأعمال")}&type=default`],
+      title: "Kalmeron AI | مقرّ عمليات شركتك الذكي",
+      description: "7 أقسام و16 مساعداً ذكياً يعملون كفريقك المؤسّس.",
+      images: [`/api/og?title=${encodeURIComponent("مقرّ عمليات شركتك الذكي")}&type=default`],
     },
     alternates: {
       canonical: siteUrl,
@@ -118,7 +118,7 @@ const jsonLd = {
   "name": "Kalmeron AI",
   "applicationCategory": "BusinessApplication",
   "operatingSystem": "Web",
-  "description": "نظام تشغيل لرواد الأعمال يضم 7 أقسام و50+ وكيلاً ذكياً.",
+  "description": "مقرّ عمليات شركتك الذكي: 7 أقسام و16 مساعداً ذكياً متخصصاً.",
   "url": siteUrl,
   "image": `${siteUrl}/brand/logo.svg`,
   "inLanguage": "ar",

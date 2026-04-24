@@ -5,6 +5,22 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the 
 
 ## [Unreleased]
 
+### Added — Wave 3 (Design Language Execution, 2026-04-24)
+- **`<CommandPalette>`** (`components/ui/CommandPalette.tsx`) — vanilla ⌘K palette built atop `@base-ui/react/dialog`. Searches `NAV_SECTIONS` (single source of truth), keyboard-navigable (↑/↓/Enter/Esc), ranked by label-position, RTL-aware. Wired globally in `AppShell.tsx`. The header search button (previously a no-op) now opens it; new `useCommandPaletteShortcut` hook registers `Meta/Ctrl+K`.
+- **`<AgentBlock>` Generative-UI primitive** (`components/agent/AgentBlock.tsx`) — single canonical renderer for AI-streamed structured output. Five variants: `stat` (KPI tile with optional currency / compact / delta), `list`, `table`, `callout` (info/warn/success/danger/neutral), `milestone` (timeline). Built-in shape guard renders an unknown-block placeholder instead of crashing the stream. Companion `<AgentBlockStream>` for arrays.
+- **Currency formatter** (`src/lib/format/currency.ts`) — `formatCurrency`, `formatCompactNumber`, `annualToMonthly` helpers + `CURRENCY_LABEL_AR/EN` maps for EGP/SAR/AED/USD. Locale-aware `Intl.NumberFormat`, defensive against `NaN`/`null`, smart fraction-digits.
+- **i18n message bundles expanded**: `messages/{ar,en}.json` grew from `LearnedSkills`-only (37 lines) to ~150 keys covering `Common`, `Nav`, `CTA`, `Trust`, `Dashboard`, `CommandPalette`, `Pricing`, `Errors` (plus the existing `LearnedSkills` namespace). Every public surface can now be wired through `next-intl`.
+
+### Changed — Wave 3
+- **Brand copy unified to "16 production agents"**: `app/layout.tsx` (metadata description + OG/Twitter + JSON-LD) and `components/layout/AppShell.tsx` (logged-out hero) all now say "7 أقسام و16 مساعداً ذكياً" instead of the inconsistent "50+ وكيلاً". Aligns the marketing surface with the canonical fact in `replit.md` line 3 (16 production + 12 SEO-only `/ai-experts/[slug]` pages).
+- **Reduced-motion support** added to dashboard (`app/(dashboard)/dashboard/page.tsx`) and `AppShell.tsx`. New `itemVReduced` / `containerVReduced` variants fade only — no transform, no stagger — when `useReducedMotion()` is true. The route-transition `motion.div` in AppShell similarly skips the `y: 10` slide.
+- **Dashboard polling**: 12s → 30s, and skipped while the tab is hidden via `document.visibilityState`. A `visibilitychange` listener triggers a fresh load on tab-return. Saves Firestore reads + battery on idle tabs.
+- **Tagline canonicalised** from "نظام تشغيل لرواد الأعمال" to "مقرّ عمليات شركتك الذكي" (the `LEXICON.tagline` canonical) across metadata, OG cards, and JSON-LD.
+- **`globals.css` token cleanup**: `--color-brand-gold` flagged DEPRECATED with a comment (kept as alias for back-compat); body-level `font-variant-numeric: tabular-nums` switched to `proportional-nums` (tabular is now opt-in via the existing `.tabular` utility — Arabic body copy was getting awkwardly spaced numerals); new `--border-subtle` token documents the alpha-at-use-site convention.
+
+### Removed — Wave 3
+- `public/brand/kalmeron-logo-original.jpg` (unused legacy asset, ~uncompressed JPEG).
+
 ### Added — Wave 2 (Documentation → Code, 2026-04-24)
 - **Consent ledger** module (`src/lib/consent/state.ts`) with append-only event store and `grantConsent` / `withdrawConsent` / `hasConsent` / `withdrawAll` helpers.
 - **Analytics** module (`src/lib/analytics/track.ts`) — Firestore source-of-truth + best-effort PostHog mirror with PII stripping.
