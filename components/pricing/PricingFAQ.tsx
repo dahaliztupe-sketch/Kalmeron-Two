@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
 import { motion } from "motion/react";
 import { Plus } from "lucide-react";
 import { cn } from "@/src/lib/utils";

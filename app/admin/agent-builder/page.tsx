@@ -1,6 +1,5 @@
 'use client';
 
-import React from 'react';
 import { AppShell } from "@/components/layout/AppShell";
 import { Play, Save, Plus, Database, Cpu, MessageSquare } from 'lucide-react';
 

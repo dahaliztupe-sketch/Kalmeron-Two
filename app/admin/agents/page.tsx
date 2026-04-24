@@ -1,7 +1,6 @@
 'use client';
 
-import React from 'react';
-import { Activity, ShieldCheck, Eye, Search, AlertCircle } from 'lucide-react';
+import { Activity, ShieldCheck, Eye, AlertCircle } from 'lucide-react';
 import { AppShell } from "@/components/layout/AppShell";
 
 export default function AdminAgentsHub() {

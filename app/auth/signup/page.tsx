@@ -4,7 +4,7 @@ import { Suspense, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { motion, useReducedMotion } from "motion/react";
-import { Loader2, Chrome, Check, ArrowLeft } from "lucide-react";
+import { Loader2, Globe, Check, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { ReferralCapture, attributeReferralIfAny } from "@/components/auth/ReferralCapture";
@@ -88,7 +88,7 @@ export default function SignUpPage() {
             onClick={handleGoogleSignUp}
             className="w-full flex items-center justify-center gap-3 h-14 rounded-2xl bg-white text-black font-bold text-base hover:bg-neutral-100 transition-all hover:scale-[1.02] active:scale-[0.99] shadow-lg"
           >
-            <Chrome className="w-5 h-5" />
+            <Globe className="w-5 h-5" />
             التسجيل باستخدام Google
           </button>
 

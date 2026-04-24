@@ -11,8 +11,8 @@ import {
 import { DocumentUploader } from "@/components/rag/DocumentUploader";
 import {
   BarChart3, TrendingUp, TrendingDown, Wallet, Calculator,
-  Sparkles, ArrowLeft, RefreshCw, Lightbulb, Info, Zap,
-  Target, ChevronDown, DollarSign, PiggyBank, AlertTriangle,
+  Sparkles, ArrowLeft, Lightbulb, Zap,
+  Target, PiggyBank, AlertTriangle,
 } from "lucide-react";
 import { cn } from "@/src/lib/utils";
 
@@ -57,7 +57,7 @@ export default function CFODashboard() {
   const totalExpenses = projections.reduce((s, r) => s + r.expenses, 0);
   const totalProfit = projections.reduce((s, r) => s + r.profit, 0);
   const profitMargin = ((totalProfit / totalRevenue) * 100).toFixed(1);
-  const runway = Math.ceil((monthlyRevenue * (expenseRatio / 100)) > 0 ? 12 / (growthRate / 100 + 0.001) : Infinity);
+  const _runway = Math.ceil((monthlyRevenue * (expenseRatio / 100)) > 0 ? 12 / (growthRate / 100 + 0.001) : Infinity);
 
   const breakEvenMonth = projections.findIndex(p => p.profit > 0);
 
@@ -228,7 +228,7 @@ export default function CFODashboard() {
             <Zap className="w-4 h-4 text-amber-400" /> اسأل المدير المالي سؤالاً محدداً
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            {QUICK_INSIGHTS.map((item, i) => {
+            {QUICK_INSIGHTS.map((item, _i) => {
               const Icon = item.icon;
               return (
                 <Link key={item.q} href={`/chat?q=${encodeURIComponent(item.q)}`}

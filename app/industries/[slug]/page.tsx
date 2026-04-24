@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getIndustryBySlug, getAllIndustrySlugs } from "@/src/lib/seo/industries";
 import { getUseCaseBySlug } from "@/src/lib/seo/use-cases";
-import { SeoLandingShell, FeatureCheck } from "@/components/seo/SeoLandingShell";
+import { SeoLandingShell } from "@/components/seo/SeoLandingShell";
 import { TrendingUp, Target, AlertTriangle } from "lucide-react";
 
 interface PageProps {

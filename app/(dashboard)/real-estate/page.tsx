@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Home, DollarSign, Calculator, Search } from 'lucide-react';
+import { Home, Calculator, Search } from 'lucide-react';
 import { AppShell } from "@/components/layout/AppShell";
 
 export default function RealEstateAnalyzer() {

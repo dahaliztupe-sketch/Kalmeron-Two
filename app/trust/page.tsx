@@ -11,7 +11,6 @@
  * Static content is intentional — this page is part of the legal surface
  * area and changes should be reviewed.
  */
-import React from 'react';
 import Link from 'next/link';
 
 export const metadata = {

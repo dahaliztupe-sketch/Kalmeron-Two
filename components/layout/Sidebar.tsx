@@ -7,7 +7,6 @@ import { useAuth } from "@/contexts/AuthContext";
 import { motion, type Variants } from "motion/react";
 import { Settings as SettingsIcon, LogOut, ChevronLeft, Sparkles } from "lucide-react";
 import { NAV_SECTIONS, FOOTER_NAV, isActive, type NavItem } from "@/src/lib/navigation";
-import { BrandLogo } from "@/components/brand/BrandLogo";
 import { WorkspaceSwitcher } from "@/components/workspaces/WorkspaceSwitcher";
 
 const containerV: Variants = {

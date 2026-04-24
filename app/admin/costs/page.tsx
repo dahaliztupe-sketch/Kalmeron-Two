@@ -3,7 +3,6 @@
  * `/api/cron/aggregate-costs` cron. Falls back to a clear empty-state when no
  * rollup data is available yet (e.g. fresh install or in dev).
  */
-import React from 'react';
 import { AppShell } from "@/components/layout/AppShell";
 import { BentoGrid, BentoCard } from "@/src/components/ui/BentoGrid";
 import { DollarSign, Activity, AlertTriangle, Users, TrendingUp } from 'lucide-react';

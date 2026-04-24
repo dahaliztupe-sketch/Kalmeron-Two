@@ -195,7 +195,7 @@ export function guardedRoute<T extends ZodType>(
         actorType: auth.actorType,
         apiKeyScopes: auth.apiKeyScopes,
         workspaceId,
-        body,
+        body: body as never,
         log,
         requestId,
       });

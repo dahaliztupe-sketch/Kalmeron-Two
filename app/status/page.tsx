@@ -4,7 +4,6 @@
  *
  * Reads `_health/probe-summary` written by `/api/cron/health-probe`.
  */
-import React from 'react';
 import { adminDb } from '@/src/lib/firebase-admin';
 
 export const runtime = 'nodejs';

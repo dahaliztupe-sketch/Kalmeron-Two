@@ -13,7 +13,7 @@
  * If either is missing the suite skips itself rather than failing the build.
  */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { describe, it, expect, beforeAll, afterAll, beforeEach } from 'vitest';
+import { describe, it, beforeAll, afterAll, beforeEach } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
@@ -36,7 +36,7 @@ async function loadLib() {
   return lib;
 }
 
-const itIfAvailable = async () => {
+const _itIfAvailable = async () => {
   const l = await loadLib();
   return l ? it : it.skip;
 };

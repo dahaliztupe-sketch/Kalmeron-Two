@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Package, Truck, Activity, ArrowRightLeft } from 'lucide-react';
 import { AppShell } from "@/components/layout/AppShell";
 import { DocumentUploader } from "@/components/rag/DocumentUploader";

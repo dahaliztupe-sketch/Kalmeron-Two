@@ -36,7 +36,7 @@ interface RankedItem extends NavItem {
   score: number;
 }
 
-function rank(query: string, items: NavItem[], sections: typeof NAV_SECTIONS): RankedItem[] {
+function rank(query: string, _items: NavItem[], sections: typeof NAV_SECTIONS): RankedItem[] {
   if (!query.trim()) {
     // Empty query → top 8 from primary section.
     return sections[0].items.slice(0, 8).map((it) => ({
@@ -78,6 +78,7 @@ export function CommandPalette({ open, onOpenChange, locale = "ar" }: CommandPal
       const t = setTimeout(() => inputRef.current?.focus(), 30);
       return () => clearTimeout(t);
     }
+    return undefined;
   }, [open]);
 
   // Keep activeIndex inside bounds when results change.

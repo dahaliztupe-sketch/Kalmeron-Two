@@ -54,7 +54,7 @@ export async function unreadCount(userId: string): Promise<number> {
   return snap.data().count;
 }
 
-export async function markRead(userId: string, ids: string[]) {
+export async function markRead(_userId: string, ids: string[]) {
   const batch = adminDb.batch();
   for (const id of ids) {
     const ref = adminDb.collection(COL).doc(id);

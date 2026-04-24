@@ -1,17 +1,16 @@
 "use client";
 
-import React, { useEffect, useState, useRef, useCallback } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { RoiCalculator } from "@/components/marketing/RoiCalculator";
 import { useRouter } from "next/navigation";
 import { motion, useScroll, useTransform, AnimatePresence, useInView, useReducedMotion } from "motion/react";
 import {
   ArrowLeft, Sparkles, LogIn, Brain, Shield, Radar,
   Briefcase, Scale, FlaskConical, Rocket, Check, Menu, X,
-  Bot, Zap, ChevronDown, MessageSquareText, Trophy, UserPlus,
-  TrendingUp, Globe2, ShieldCheck, Star, Play, ArrowRight,
-  BarChart3, Clock, Users, DollarSign, Layers, Target,
+  Bot, Zap, ChevronDown, MessageSquareText, Trophy,
+  TrendingUp, Globe2, ShieldCheck, Star, Play, Users, Layers, Target,
   CheckCircle2, XCircle, Minus, ChevronRight, Cpu, Network,
-  FileText, Lightbulb, PieChart, Building2, Coins, BookOpen,
+  FileText,
 } from "lucide-react";
 import Link from "next/link";
 import { BrandLogo } from "@/components/brand/BrandLogo";
@@ -677,7 +676,7 @@ function LiveDemoSection() {
   const [activeConv, setActiveConv] = useState(0);
   const [displayedText, setDisplayedText] = useState("");
   const [isTyping, setIsTyping] = useState(false);
-  const [showFull, setShowFull] = useState(false);
+  const [_showFull, setShowFull] = useState(false);
 
   const conv = LIVE_DEMO_CONVERSATIONS[activeConv];
 
@@ -945,7 +944,7 @@ function ComparisonSection() {
 // ─────────────────────────────────────────────
 
 function TestimonialsSection() {
-  const [active, setActive] = useState(0);
+  const [_active, setActive] = useState(0);
   useEffect(() => {
     const t = setInterval(() => setActive((i) => (i + 1) % TESTIMONIALS.length), 5000);
     return () => clearInterval(t);
@@ -1000,7 +999,7 @@ function TestimonialsSection() {
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
           className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4"
         >
-          {TESTIMONIALS.slice(3).map((t, i) => (
+          {TESTIMONIALS.slice(3).map((t, _i) => (
             <div key={t.name} className="rounded-3xl border border-white/10 bg-white/[0.03] p-5 hover:border-white/20 transition-all">
               <div className="flex flex-wrap items-start gap-3 mb-3">
                 <div className={`w-9 h-9 rounded-full bg-gradient-to-br ${t.color} flex items-center justify-center text-white font-bold shrink-0`}>

@@ -1,6 +1,5 @@
 'use client';
 
-import React from 'react';
 import { AppShell } from "@/components/layout/AppShell";
 import { DownloadCloud, Star, Store, Verified } from 'lucide-react';
 import { motion } from 'motion/react';

@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server';
-import { streamText } from 'ai';
 import { runCoordinator } from '@/src/ai/supervisor/coordinator';
 
 export async function POST(req: Request) {

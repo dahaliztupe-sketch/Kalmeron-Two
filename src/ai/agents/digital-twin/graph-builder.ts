@@ -24,7 +24,7 @@ export const graphBuilderAgent = new Agent({
         startupId: z.string(),
         entities: z.array(z.object({
           type: z.enum(['Startup', 'Founder', 'Product', 'Competitor', 'Customer', 'Metric', 'Milestone']),
-          properties: z.record(z.any()),
+          properties: z.record(z.string(), z.any()),
         })),
         relationships: z.array(z.object({
           from: z.string(),

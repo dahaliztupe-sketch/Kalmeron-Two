@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import Link from "next/link";
 import { getComparisonBySlug, getAllComparisonSlugs } from "@/src/lib/seo/comparisons";
 import { SeoLandingShell } from "@/components/seo/SeoLandingShell";
 import { Check, X, Minus } from "lucide-react";

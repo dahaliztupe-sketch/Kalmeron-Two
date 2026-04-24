@@ -8,7 +8,7 @@ import {
   Activity, Bot, AlertTriangle, DollarSign, Target,
   Hourglass, Loader2, ArrowLeft, CheckCircle2, MapPin,
   LineChart, Zap, MessageSquare, Brain, Scale, Briefcase,
-  FlaskConical, Shield, Radar, Plus, TrendingUp, Sparkles,
+  FlaskConical, Shield, Radar, Sparkles,
 } from "lucide-react";
 import { KalmeronAreaChart } from "@/src/components/charts";
 import Link from "next/link";

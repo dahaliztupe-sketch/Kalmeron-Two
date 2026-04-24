@@ -15,7 +15,7 @@ const postSchema = z.discriminatedUnion('action', [
     vmId: z.string().min(1).max(128),
     task: z.object({
       kind: z.enum(['shell', 'browse', 'email', 'fs-read', 'fs-write', 'custom']),
-      payload: z.record(z.any()),
+      payload: z.record(z.string(), z.any()),
     }),
     timeoutMs: z.number().int().min(1000).max(300_000).default(60_000),
   }),

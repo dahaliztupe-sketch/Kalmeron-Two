@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { motion } from "motion/react";
-import { ArrowLeft, Home, MessageSquare, Search, Compass } from "lucide-react";
+import { ArrowLeft, Home, MessageSquare, Compass } from "lucide-react";
 
 export default function NotFound() {
   const links = [
@@ -62,7 +62,7 @@ export default function NotFound() {
           transition={{ delay: 0.35 }}
           className="flex flex-wrap items-center justify-center gap-3 mb-8"
         >
-          {links.map((l, i) => {
+          {links.map((l, _i) => {
             const Icon = l.icon;
             return (
               <Link key={l.href} href={l.href}

@@ -28,7 +28,7 @@ export function buildGraphTools(userId: string) {
       description: 'يضيف معرفة جديدة (عقدة) إلى الدماغ المشترك ويربطها بالمشروع.',
       parameters: z.object({
         type: z.string().describe('نوع الكيان: Lead, Insight, Competitor, Customer, Risk, ...'),
-        properties: z.record(z.any()).describe('خصائص الكيان (name, description, source, ...)'),
+        properties: z.record(z.string(), z.any()).describe('خصائص الكيان (name, description, source, ...)'),
         linkTo: z.string().optional().describe('id لعقدة موجودة لربطها بهذه العقدة الجديدة'),
         relationType: z.string().default('RELATED_TO'),
       }),
@@ -80,7 +80,7 @@ export const globalGraphTools = {
     parameters: z.object({
       userId: z.string(),
       type: z.string(),
-      properties: z.record(z.any()),
+      properties: z.record(z.string(), z.any()),
       linkTo: z.string().optional(),
       relationType: z.string().default('RELATED_TO'),
     }),

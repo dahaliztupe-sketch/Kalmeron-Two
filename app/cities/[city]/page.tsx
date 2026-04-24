@@ -8,7 +8,7 @@ import {
 } from "@/src/lib/seo/cities";
 import { SeoLandingShell } from "@/components/seo/SeoLandingShell";
 import { localBusinessSchema, breadcrumbSchema } from "@/src/lib/seo/schema";
-import { MapPin, TrendingUp, Building2, Trophy } from "lucide-react";
+import {TrendingUp, Building2, Trophy } from "lucide-react";
 import { safeJsonLd } from "@/src/lib/security/safe-json-ld";
 
 interface PageProps {

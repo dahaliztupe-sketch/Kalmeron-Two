@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import { motion } from "motion/react";
 import { Sparkles, Zap } from "lucide-react";
 import { cn } from "@/src/lib/utils";

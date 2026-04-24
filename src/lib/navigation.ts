@@ -1,7 +1,7 @@
 import {
   LayoutDashboard, MessageSquareText, Map, Megaphone, TrendingUp,
   Settings as SettingsIcon, Wallet, Users as UsersIcon, Heart, Scale,
-  FlaskConical, Trophy, ShieldAlert, Radar, FileText, Briefcase,
+  FlaskConical, Trophy, ShieldAlert, Radar, FileText,
   Building2, ScrollText, Lightbulb, Store, User as UserIcon,
   Target, Brain, CreditCard, Inbox as InboxIcon, Sparkles, Cpu,
   BarChart3, Calculator,

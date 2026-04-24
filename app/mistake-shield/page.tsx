@@ -6,8 +6,8 @@ import { motion, AnimatePresence } from "motion/react";
 import Link from "next/link";
 import {
   ShieldAlert, AlertTriangle, ArrowLeft, CheckCircle2, XCircle,
-  Lightbulb, TrendingDown, Coins, Users, Clock, Zap, Sparkles,
-  BarChart3, Brain, Scale, ChevronDown, ChevronUp,
+  Lightbulb, TrendingDown, Coins, Users, Zap, Sparkles,
+  BarChart3, Scale, ChevronDown, ChevronUp,
 } from "lucide-react";
 import { cn } from "@/src/lib/utils";
 

@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
 import { adminAuth, adminDb } from '@/src/lib/firebase-admin';
-import { getPlan, PLANS, type PlanId } from '@/src/lib/billing/plans';
+import { getPlan, type PlanId } from '@/src/lib/billing/plans';
 
 export const runtime = 'nodejs';
 

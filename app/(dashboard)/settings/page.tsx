@@ -16,14 +16,12 @@ import {
   CreditCard,
   Lock,
   Upload,
-  Sparkles,
   AlertTriangle,
   Check,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { motion } from "motion/react";
-import { Ltr } from "@/components/Ltr";
 import { BillingTab } from "@/components/billing/BillingTab";
 
 type ToggleProps = {

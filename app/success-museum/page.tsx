@@ -5,10 +5,9 @@ import { AppShell } from "@/components/layout/AppShell";
 import { motion, AnimatePresence } from "motion/react";
 import Link from "next/link";
 import {
-  Trophy, ArrowLeft, Star, TrendingUp, Rocket, Globe2, Users,
-  Coins, Clock, Zap, Brain, Target, BookOpen, Sparkles,
-  Building2, ChevronDown, ChevronUp, ExternalLink,
-  Lightbulb, BarChart3, CheckCircle2,
+  Trophy, Globe2, Users,
+  Coins, Clock, Brain, BookOpen, Sparkles, ChevronDown, ChevronUp,
+  Lightbulb, CheckCircle2,
 } from "lucide-react";
 import { cn } from "@/src/lib/utils";
 

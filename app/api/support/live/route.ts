@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 
 export const runtime = 'nodejs'; // For WebSockets, Node.js runtime is often required on Vercel over pure edge
 
-export async function GET(req: Request) {
+export async function GET(_req: Request) {
   // In a real 2026 Next.js + Vercel setup, WebSocket termination would be handled
   // either via a dedicated WS server, custom Vercel WebSocket configuration, 
   // or by returning a token to connect directly to the Gemini Live API proxy.

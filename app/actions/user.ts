@@ -10,7 +10,7 @@ const UserSchema = z.object({
   startupStage: z.enum(['idea', 'validation', 'launch', 'growth', 'scale']),
 });
 
-export async function updateUserProfile(prevState: any, formData: FormData) {
+export async function updateUserProfile(_prevState: any, formData: FormData) {
   const log = createRequestLogger(crypto.randomUUID());
   try {
     const validated = UserSchema.parse({

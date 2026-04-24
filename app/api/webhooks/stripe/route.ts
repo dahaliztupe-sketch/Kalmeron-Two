@@ -91,7 +91,7 @@ export async function POST(req: NextRequest) {
     switch (event.type) {
       case 'checkout.session.completed': {
         const s = event.data.object as Stripe.Checkout.Session;
-        const uid = (s.metadata?.firebaseUid as string) || (s.subscription_data as any)?.metadata?.firebaseUid;
+        const uid = s.metadata?.firebaseUid as string | undefined;
         const planId = (s.metadata?.planId as PlanId) || 'pro';
         if (uid) await applyPlanToUser(uid, planId);
         break;

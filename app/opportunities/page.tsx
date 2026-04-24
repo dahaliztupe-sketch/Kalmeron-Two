@@ -1,13 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { AppShell } from "@/components/layout/AppShell";
-import { motion, AnimatePresence } from "motion/react";
+import { motion } from "motion/react";
 import Link from "next/link";
 import {
-  Target, ArrowLeft, Calendar, Coins, Trophy, Building2, Zap, Radar,
-  ExternalLink, Filter, Search, Clock, CheckCircle2, Loader2, Sparkles,
-  Globe2, Users, TrendingUp, BookOpen, GraduationCap, Rocket, Star,
+  Target, ArrowLeft, Calendar, Coins, Trophy, Building2, Zap, Radar, Search, Sparkles, Star,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { cn } from "@/src/lib/utils";

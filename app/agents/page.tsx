@@ -5,15 +5,11 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "motion/react";
 import { AppShell } from "@/components/layout/AppShell";
 import {
-  Search, Sparkles, Filter, ArrowLeft, Star, CheckCircle2,
+  Search, Sparkles, ArrowLeft, Star, CheckCircle2,
   Brain, FlaskConical, Scale, Radar, Shield, MessageSquare,
-  TrendingUp, BarChart3, PieChart, Lightbulb, Target, Zap,
-  Users, Globe2, FileText, Calculator, Rocket, BookOpen,
-  Building2, Briefcase, Coins, Lock, Clock, Award, Cpu,
-  ShoppingCart, HeartPulse, GraduationCap, Leaf, Home,
-  Phone, Mail, Package, Truck, Megaphone, LineChart,
-  CreditCard, Receipt, Banknote, ClipboardList, Camera,
-  Database, Code, Wifi, Monitor, PenLine, ChevronDown,
+  TrendingUp, BarChart3, PieChart, Lightbulb, Target,
+  Users, Globe2, FileText, Calculator, Rocket,
+  Building2, Briefcase, Coins, Lock, Cpu, LineChart, Receipt, Banknote, ClipboardList, ChevronDown,
   AlertTriangle,
 } from "lucide-react";
 import { cn } from "@/src/lib/utils";

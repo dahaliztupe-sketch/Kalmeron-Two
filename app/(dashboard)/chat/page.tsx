@@ -7,16 +7,14 @@ import { useAuth } from "@/contexts/AuthContext";
 import { db } from "@/src/lib/firebase";
 import {
   doc, getDoc, setDoc, updateDoc, serverTimestamp,
-  collection, getDocs, addDoc, query, orderBy, limit, deleteDoc,
+  collection, getDocs, query, orderBy, limit, deleteDoc,
 } from "firebase/firestore";
 import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
-  Loader2, Send, Paperclip, X, Square, Lightbulb, FileText,
-  ShieldAlert, Radar, Plus, MessageSquare, Trash2, ChevronLeft,
-  Copy, Check, Download, Bot, Brain, Scale, Briefcase, FlaskConical, Shield,
-  Zap, MoreHorizontal, Sparkles, PanelLeftClose, PanelLeftOpen,
+  Loader2, Send, Paperclip, X, Square, FileText,
+  ShieldAlert, Radar, Plus, MessageSquare, Trash2,
+  Copy, Check, Brain, Scale, Briefcase, PanelLeftClose, PanelLeftOpen,
 } from "lucide-react";
 import { cn } from "@/src/lib/utils";
 import ReactMarkdown from "react-markdown";

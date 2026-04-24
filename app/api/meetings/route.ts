@@ -7,7 +7,7 @@ import { guardedRoute } from '@/src/lib/security/route-guard';
 const postSchema = z.object({
   topic: z.string().min(5).max(2000),
   departmentIds: z.array(z.string().min(1).max(64)).min(1).max(12),
-  context: z.record(z.any()).optional(),
+  context: z.record(z.string(), z.any()).optional(),
 });
 
 export const GET = guardedRoute(

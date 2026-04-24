@@ -14,7 +14,7 @@ const bodySchema = z.object({
     .max(500)
     .default('المستشار الاستراتيجي العام لرواد الأعمال المصريين'),
   message: z.string().min(2).max(4000),
-  uiContext: z.record(z.unknown()).optional(),
+  uiContext: z.record(z.string(), z.unknown()).optional(),
   draft: z.string().max(8000).optional(),
 });
 

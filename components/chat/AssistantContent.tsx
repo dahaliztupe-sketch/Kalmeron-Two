@@ -20,7 +20,6 @@
  * structured JSON gets richer visuals at zero plumbing cost.
  */
 
-import * as React from "react";
 import ReactMarkdown from "react-markdown";
 import { AgentBlockStream } from "@/components/agent/AgentBlock";
 

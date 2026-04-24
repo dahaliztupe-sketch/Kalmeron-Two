@@ -177,7 +177,7 @@ export const AgentRegistry: Record<string, AgentDefinition> = {
     softCostBudgetUsd: 0.08,
     inputSchema: z.object({
       task: z.enum(['build-model', 'analyze-scenario', 'forecast-cashflow', 'evaluate-investment', 'stress-test']),
-      parameters: z.record(z.any()),
+      parameters: z.record(z.string(), z.any()),
     }),
     action: cfoAgentAction,
     thinkingLabelAr: 'إجراء تحليل مالي تفصيلي...',

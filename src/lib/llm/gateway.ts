@@ -293,7 +293,7 @@ export async function safeGenerateObject<SCHEMA extends z.ZodType>(
     costUsd: cost,
   });
 
-  return { result, meta: { agent: ctx.agent, userId, durationMs, piiHits, injectionBlocked: false } };
+  return { result: result as never, meta: { agent: ctx.agent, userId, durationMs, piiHits, injectionBlocked: false } };
 }
 
 /** Wrapper around `streamText` (preflight on inputs only). */

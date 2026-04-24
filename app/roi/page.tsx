@@ -5,9 +5,8 @@ import Link from "next/link";
 import { motion } from "motion/react";
 import { AppShell } from "@/components/layout/AppShell";
 import {
-  Calculator, TrendingUp, Clock, DollarSign, Zap, CheckCircle2,
-  ArrowLeft, Sparkles, Users, BarChart3, Coins, Target, Rocket,
-  Shield, Brain,
+  Calculator, Clock, Zap, CheckCircle2,
+  ArrowLeft, Sparkles, Users, BarChart3, Rocket, Brain,
 } from "lucide-react";
 import { cn } from "@/src/lib/utils";
 
@@ -63,7 +62,7 @@ export default function ROICalculatorPage() {
   const results = useMemo(() => {
     const tasksData = selectedTasks.map(t => TASK_TIME[t]).filter(Boolean);
     const totalConsultantDays = tasksData.reduce((s, t) => s + t.consultant, 0);
-    const totalKalmeronHours = tasksData.reduce((s, t) => s + t.kalmeron * 24, 0);
+    const _totalKalmeronHours = tasksData.reduce((s, t) => s + t.kalmeron * 24, 0);
     const totalKalmeronRealHours = tasksData.reduce((s, t) => s + t.kalmeron, 0);
 
     const consultantCost = selectedTasks.reduce((s, t) => {

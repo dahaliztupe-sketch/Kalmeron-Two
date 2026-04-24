@@ -2,15 +2,14 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { motion, AnimatePresence } from "motion/react";
+import { motion } from "motion/react";
 import { AppShell } from "@/components/layout/AppShell";
 import { useAuth } from "@/contexts/AuthContext";
 import { db } from "@/src/lib/firebase";
 import { collection, getDocs, orderBy, query, limit } from "firebase/firestore";
 import {
-  FlaskConical, Plus, ArrowLeft, Loader2, Microscope, Play, CheckCircle2,
-  XCircle, Users, BarChart3, Lightbulb, Target, Sparkles, Clock, Zap,
-  Brain, TrendingUp, AlertTriangle,
+  FlaskConical, Plus, ArrowLeft, Loader2, Microscope, Play, CheckCircle2, Users, BarChart3, Lightbulb, Target, Clock, Zap,
+  Brain,
 } from "lucide-react";
 import { cn } from "@/src/lib/utils";
 
@@ -159,7 +158,7 @@ export default function MarketLabPage() {
               </div>
 
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                {HOW_IT_WORKS.map((s, i) => {
+                {HOW_IT_WORKS.map((s, _i) => {
                   const Icon = s.icon;
                   return (
                     <div key={s.step} className="text-center">
