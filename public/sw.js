@@ -1,7 +1,11 @@
-/* Kalmeron service worker — Phase 9 (offline shell). */
-const CACHE_VERSION = "kalmeron-shell-v1";
+/* Kalmeron service worker — Phase 9 (offline shell). v2 adds an explicit
+ * /offline route as the navigation fallback so the cached shell still
+ * functions when the user is fully offline. */
+const CACHE_VERSION = "kalmeron-shell-v2";
+const OFFLINE_URL = "/offline";
 const SHELL_ASSETS = [
   "/",
+  OFFLINE_URL,
   "/manifest.json",
   "/brand/kalmeron-mark.svg",
   "/logo.jpg",
@@ -61,7 +65,8 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // Network-first for navigations, falling back to cached shell.
+  // Network-first for navigations, falling back to the cached shell or
+  // — as a last resort — the dedicated /offline page.
   if (req.mode === "navigate") {
     event.respondWith(
       fetch(req)
@@ -72,7 +77,12 @@ self.addEventListener("fetch", (event) => {
         })
         .catch(async () => {
           const cached = await caches.match(req);
-          return cached || (await caches.match("/")) || Response.error();
+          return (
+            cached ||
+            (await caches.match(OFFLINE_URL)) ||
+            (await caches.match("/")) ||
+            Response.error()
+          );
         })
     );
   }

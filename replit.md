@@ -4,6 +4,12 @@ Arabic-language AI Operating System for Egyptian entrepreneurs. World-class plat
 
 The brand tagline is **"مقرّ عمليات شركتك الذكي"** (canonical in `src/lib/copy/lexicon.ts → LEXICON.tagline`). Voice/tone, lexicon, and microcopy live under `src/lib/copy/{voice,lexicon,microcopy}.ts` and must be the source for all user-facing strings.
 
+## Recent Major Updates (Session 2026-04-24 — Wave 6 Closeout: Roadmap → Reality)
+- **`<AgentBlock>` wired into the chat surface** — `components/chat/AssistantContent.tsx` detects JSON `{"blocks":[…]}` or fenced ` ```json ` payloads in assistant messages and renders them through `<AgentBlockStream>`. Markdown path is the unchanged fallback. Any agent that opts in gets charts, forms, checklists, and timelines without further plumbing.
+- **Workflow runner v1** — `src/lib/workflows/runner.ts` + `library.ts`: tiny JSON-spec engine (2-10 sequential steps, `{{input.x}}` / `{{steps.id.text}}` interpolation, deterministic stub when no API key). Five seed workflows: `idea-to-mvp`, `fundraise-readiness`, `weekly-investor-update`, `compliance-egypt`, `saas-pricing`. `POST /api/workflows/run` (PII-redacted inputs, per-step timing), `GET /api/workflows/list`. Interactive UI at `/workflows-runner`.
+- **PWA hardening** — `public/manifest.json` adds `lang/dir`, `scope`, three `shortcuts` (Chat / Daily-Brief / Dashboard), and `display_override`. `public/sw.js` v2 pre-caches a dedicated `/offline` page used as navigation fallback.
+- **Multi-tenant isolation audit** — `docs/MULTI_TENANT_ISOLATION.md` documents the per-user / per-workspace modes, the five defence-in-depth layers, the per-collection ownership matrix, the developer guarantees, and the negative tests that must keep failing.
+
 ## Recent Major Updates (Session 2026-04-24 — 45-Expert Audit Execution P0/P1)
 Comprehensive business audit (`docs/BUSINESS_EXPERT_PANEL_45_REPORT.md`) by 45 cross-functional experts produced a 7-category roadmap. This session shipped every P0/P1 item that does not require external negotiations or new API keys:
 - **Multi-provider LLM gateway** (`src/lib/llm/providers.ts`): tier-mapped Gemini / Anthropic / OpenAI with deterministic fallback chain. Lazy adapters mean zero new dependencies until env keys are set. Operational playbook in `docs/HEDGING_PLAN.md`. `routeWithFallback()` exported from `src/lib/model-router.ts` for incremental adoption.

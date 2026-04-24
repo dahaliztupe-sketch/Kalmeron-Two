@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import ReactMarkdown from "react-markdown";
+import { AssistantContent } from "@/components/chat/AssistantContent";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "motion/react";
 import { ThoughtChain, type Phase } from "@/components/chat/ThoughtChain";
@@ -227,9 +228,13 @@ function MessageBubble({ m, isStreaming, activePhases }: { m: ChatMessage; isStr
         )}
 
         {m.content && (
-          <div className="prose prose-sm prose-invert max-w-none" dir="auto">
-            <ReactMarkdown>{m.content}</ReactMarkdown>
-          </div>
+          isUser ? (
+            <div className="prose prose-sm prose-invert max-w-none" dir="auto">
+              <ReactMarkdown>{m.content}</ReactMarkdown>
+            </div>
+          ) : (
+            <AssistantContent content={m.content} />
+          )
         )}
 
         {m.role === "assistant" && m.citations && m.citations.length > 0 && (

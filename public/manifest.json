@@ -1,23 +1,39 @@
 {
-  "name": "Kalmeron AI",
+  "name": "Kalmeron AI — مقرّ عمليات شركتك الذكي",
   "short_name": "Kalmeron",
   "description": "شريكك المؤسس الافتراضي والذكي لرواد الأعمال.",
   "start_url": "/chat",
+  "scope": "/",
   "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone"],
   "background_color": "#0A0A0F",
   "theme_color": "#0A0A0F",
   "orientation": "portrait",
+  "lang": "ar",
+  "dir": "rtl",
+  "categories": ["productivity", "business", "finance"],
   "icons": [
+    { "src": "/icons/icon-192x192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icons/icon-512x512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ],
+  "shortcuts": [
     {
-      "src": "/icons/icon-192x192.png",
-      "sizes": "192x192",
-      "type": "image/png"
+      "name": "الدردشة",
+      "short_name": "دردشة",
+      "url": "/chat",
+      "description": "افتح حواراً جديداً مع المساعد"
     },
     {
-      "src": "/icons/icon-512x512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
+      "name": "الملخّص اليومي",
+      "short_name": "اليومي",
+      "url": "/daily-brief",
+      "description": "أهمّ شذوذ، قرار، ورسالة لليوم"
+    },
+    {
+      "name": "لوحة التحكّم",
+      "short_name": "اللوحة",
+      "url": "/dashboard",
+      "description": "نظرة سريعة على كل المؤشّرات"
     }
   ]
 }

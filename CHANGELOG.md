@@ -5,6 +5,48 @@ omitted unless they affect a user. The most recent release is at the top.
 
 ---
 
+## v2026.04.24-d — Closing the Roadmap (2026-04-24)
+
+A second push in the same day to land the items previously tagged
+"separate engineering project". They are still scoped — RAG isn't a full
+graph DB, workflows aren't Temporal-backed — but every promise in the
+README is now a real artefact users can touch.
+
+### Added
+
+- **`<AgentBlock>` is wired into chat** (`components/chat/AssistantContent.tsx`).
+  The chat surface now detects when an assistant message is structured —
+  either pure JSON `{"blocks":[…]}` or a fenced ` ```json ` block inside
+  prose — and renders it through `<AgentBlockStream>`. Plain-text and
+  Markdown paths are unchanged. Any agent that opts into the format gets
+  charts, forms, checklists, and timelines for free.
+- **Workflow runner** (`src/lib/workflows/runner.ts` + `library.ts`).
+  Tiny dependency-free engine: a JSON spec declares 2-10 sequential
+  steps, each step picks an agent and a templated prompt with
+  `{{input.x}}` / `{{steps.id.text}}` interpolation. Real Gemini call
+  when an API key is present, deterministic stub otherwise. Five seed
+  workflows ship: `idea-to-mvp`, `fundraise-readiness`,
+  `weekly-investor-update`, `compliance-egypt`, `saas-pricing`.
+- **Workflow API** — `POST /api/workflows/run` with PII-redacted inputs
+  and per-step timing; `GET /api/workflows/list` for enumeration.
+- **Interactive runner UI** — `/workflows-runner` (dashboard-shell
+  page): pick a workflow, fill the inputs, watch each step's output
+  stream in. The `/workflows` SEO landing keeps its marketing role.
+- **PWA hardening** — `public/manifest.json` gains `lang: "ar"`,
+  `dir: "rtl"`, `scope`, three `shortcuts` (Chat / Daily-Brief /
+  Dashboard), and `display_override`. `public/sw.js` bumps to v2 and
+  pre-caches a dedicated `/offline` page used as the navigation
+  fallback when the user is fully offline.
+- **`/offline` page** (`app/offline/page.tsx`) — Arabic, RTL, retry
+  button, marked `noindex` so it never enters search results.
+- **Multi-tenant isolation audit** —
+  `docs/MULTI_TENANT_ISOLATION.md` (canonical reference). Documents
+  the per-user / per-workspace modes, the five defence-in-depth layers,
+  the per-collection ownership matrix, the developer guarantees for
+  new collections, and the negative tests that must keep failing.
+
+---
+
 ## v2026.04.24-c — Generative-UI Wave (2026-04-24)
 
 A second-pass execution sprint that lands every remaining audit recommendation
