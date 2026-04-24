@@ -11,6 +11,41 @@ import { cfoAgentAction } from '@/src/ai/agents/cfo-agent/agent';
 import { legalGuideAction } from '@/src/ai/agents/legal-guide/agent';
 import { safeGenerateText, PromptInjectionBlockedError } from '@/src/lib/llm/gateway';
 import { rateLimitAgent } from '@/lib/security/rate-limit';
+import { runCouncilSafe } from '@/src/ai/panel';
+
+/**
+ * مفتاح تشغيل "مجلس الإدارة الافتراضي" (Panel of Experts) لكل وكيل.
+ * عند التفعيل، يمر مخرج الوكيل عبر تداول داخلي مكوّن من 4 خبراء دائمين
+ * + 3-4 متخصصين مختارين ديناميكياً، ويُسلَّم بتنسيق موحّد.
+ *
+ * يمكن تعطيله عبر متغير البيئة KALMERON_COUNCIL=off للاختبارات.
+ */
+const COUNCIL_ENABLED = process.env.KALMERON_COUNCIL !== 'off';
+
+/** مساعد لتشغيل المجلس مع fallback إلى مخرج الوكيل الأصلي عند الفشل. */
+async function withCouncil(opts: {
+  agentName: string;
+  agentDisplayNameAr: string;
+  agentRoleAr: string;
+  userMessage: string;
+  uiContext?: any;
+  userId?: string;
+  draft?: string;
+  fallback: string;
+}): Promise<string> {
+  if (!COUNCIL_ENABLED) return opts.fallback || opts.draft || '';
+  const { markdown, result } = await runCouncilSafe({
+    agentName: opts.agentName,
+    agentDisplayNameAr: opts.agentDisplayNameAr,
+    agentRoleAr: opts.agentRoleAr,
+    userMessage: opts.userMessage,
+    uiContext: opts.uiContext,
+    userId: opts.userId,
+    draft: opts.draft,
+  });
+  if (!result) return opts.fallback || markdown;
+  return markdown;
+}
 
 export const SupervisorState = Annotation.Root({
   messages: Annotation<BaseMessage[]>({ reducer: (a, b) => a.concat(b) }),
@@ -106,40 +141,67 @@ async function routerNode(state: typeof SupervisorState.State) {
 
 async function ideaValidatorNode(state: typeof SupervisorState.State) {
   const lastMessage = state.messages[state.messages.length - 1]?.content as string;
+  let draft = '';
   try {
-    const result = await validateIdea(lastMessage);
-    return { messages: [new AIMessage(result)] };
+    draft = await validateIdea(lastMessage);
   } catch (e) {
-    return { messages: [new AIMessage('حدث خطأ أثناء تحليل الفكرة. يرجى المحاولة مجدداً.')] };
+    draft = '';
   }
+  const text = await withCouncil({
+    agentName: 'idea-validator',
+    agentDisplayNameAr: 'مُحلّل الأفكار',
+    agentRoleAr: 'متخصص في تقييم أفكار المشاريع الريادية وتحليل SWOT والجدوى للسوق المصري',
+    userMessage: lastMessage,
+    uiContext: state.uiContext,
+    userId: state.userId,
+    draft,
+    fallback: draft || 'حدث خطأ أثناء تحليل الفكرة. يرجى المحاولة مجدداً.',
+  });
+  return { messages: [new AIMessage(text)] };
 }
 
 async function planBuilderNode(state: typeof SupervisorState.State) {
   const lastMessage = state.messages[state.messages.length - 1]?.content as string;
+  let draft = '';
   try {
     const stream = await buildBusinessPlanStream(lastMessage, []);
-    let fullText = '';
-    for await (const chunk of stream.textStream) {
-      fullText += chunk;
-    }
-    return { messages: [new AIMessage(fullText || 'جاري بناء خطة العمل...')] };
+    for await (const chunk of stream.textStream) draft += chunk;
   } catch (e) {
-    return { messages: [new AIMessage('حدث خطأ أثناء بناء خطة العمل. يرجى المحاولة مجدداً.')] };
+    draft = '';
   }
+  const text = await withCouncil({
+    agentName: 'plan-builder',
+    agentDisplayNameAr: 'بنّاء الخطط',
+    agentRoleAr: 'متخصص في بناء خطط العمل التفصيلية للمشاريع المصرية',
+    userMessage: lastMessage,
+    uiContext: state.uiContext,
+    userId: state.userId,
+    draft,
+    fallback: draft || 'حدث خطأ أثناء بناء خطة العمل. يرجى المحاولة مجدداً.',
+  });
+  return { messages: [new AIMessage(text)] };
 }
 
 async function mistakeShieldNode(state: typeof SupervisorState.State) {
   const lastMessage = state.messages[state.messages.length - 1]?.content as string;
   const uiContext = state.uiContext || {};
+  let draft = '';
   try {
-    const result = await getProactiveWarnings(
-      uiContext.stage || 'general',
-      lastMessage
-    );
-    return { messages: [new AIMessage(result)] };
+    draft = await getProactiveWarnings(uiContext.stage || 'general', lastMessage);
   } catch (e) {
-    return { messages: [new AIMessage('حدث خطأ في وكيل حارس الأخطاء. يرجى المحاولة مجدداً.')] };
+    draft = '';
   }
+  const text = await withCouncil({
+    agentName: 'mistake-shield',
+    agentDisplayNameAr: 'حارس الأخطاء',
+    agentRoleAr: 'يكشف الأخطاء القاتلة والمخاطر الخفية في المشاريع المصرية الناشئة',
+    userMessage: lastMessage,
+    uiContext,
+    userId: state.userId,
+    draft,
+    fallback: draft || 'حدث خطأ في وكيل حارس الأخطاء. يرجى المحاولة مجدداً.',
+  });
+  return { messages: [new AIMessage(text)] };
 }
 
 async function successMuseumNode(state: typeof SupervisorState.State) {
@@ -165,13 +227,24 @@ ${analysis.lessonsForEgyptianEntrepreneurs.map((l: string) => `- ${l}`).join('\n
 
 ### الخلاصة
 ${analysis.keyTakeaways}`;
-    return { messages: [new AIMessage(formatted)] };
+    const text = await withCouncil({
+      agentName: 'success-museum',
+      agentDisplayNameAr: 'متحف النجاح',
+      agentRoleAr: 'يستخرج الدروس العملية من قصص نجاح الشركات للمؤسسين المصريين',
+      userMessage: lastMessage,
+      uiContext: state.uiContext,
+      userId: state.userId,
+      draft: formatted,
+      fallback: formatted,
+    });
+    return { messages: [new AIMessage(text)] };
   } catch (e) {
     return { messages: [new AIMessage('حدث خطأ في تحليل قصة النجاح. يرجى المحاولة مجدداً.')] };
   }
 }
 
 async function opportunityRadarNode(state: typeof SupervisorState.State) {
+  const lastMessage = state.messages[state.messages.length - 1]?.content as string;
   const uiContext = state.uiContext || {};
   try {
     const opportunities = await getPersonalizedOpportunities(
@@ -187,7 +260,17 @@ ${opportunities.map((opp: any, i: number) => `### ${i + 1}. ${opp.title}
 ${opp.description}
 🔗 [التقديم الآن](${opp.link})
 ---`).join('\n')}`;
-    return { messages: [new AIMessage(formatted)] };
+    const text = await withCouncil({
+      agentName: 'opportunity-radar',
+      agentDisplayNameAr: 'رادار الفرص',
+      agentRoleAr: 'يرشّح أفضل المنح والفعاليات والتمويل لرائد الأعمال المصري',
+      userMessage: lastMessage,
+      uiContext,
+      userId: state.userId,
+      draft: formatted,
+      fallback: formatted,
+    });
+    return { messages: [new AIMessage(text)] };
   } catch (e) {
     return { messages: [new AIMessage('حدث خطأ في البحث عن الفرص. يرجى المحاولة مجدداً.')] };
   }
@@ -195,36 +278,63 @@ ${opp.description}
 
 async function cfoAgentNode(state: typeof SupervisorState.State) {
   const lastMessage = state.messages[state.messages.length - 1]?.content as string;
+  let draft = '';
   try {
-    const result = await cfoAgentAction({
+    draft = await cfoAgentAction({
       task: 'analyze-scenario',
       parameters: { description: lastMessage },
     });
-    return { messages: [new AIMessage(result)] };
   } catch (e) {
-    return { messages: [new AIMessage('حدث خطأ في وكيل المدير المالي. يرجى المحاولة مجدداً.')] };
+    draft = '';
   }
+  const text = await withCouncil({
+    agentName: 'cfo-agent',
+    agentDisplayNameAr: 'المدير المالي',
+    agentRoleAr: 'مدير مالي يبني نمذجة مالية وتدفقات نقدية وتقييماً للسوق المصري',
+    userMessage: lastMessage,
+    uiContext: state.uiContext,
+    userId: state.userId,
+    draft,
+    fallback: draft || 'حدث خطأ في وكيل المدير المالي. يرجى المحاولة مجدداً.',
+  });
+  return { messages: [new AIMessage(text)] };
 }
 
 async function legalGuideNode(state: typeof SupervisorState.State) {
   const lastMessage = state.messages[state.messages.length - 1]?.content as string;
+  let draft = '';
   try {
-    const result = await legalGuideAction({ query: lastMessage });
-    return { messages: [new AIMessage(result)] };
+    draft = await legalGuideAction({ query: lastMessage });
   } catch (e) {
-    return { messages: [new AIMessage('حدث خطأ في المرشد القانوني. يرجى المحاولة مجدداً.')] };
+    draft = '';
   }
+  const text = await withCouncil({
+    agentName: 'legal-guide',
+    agentDisplayNameAr: 'المرشد القانوني',
+    agentRoleAr: 'مستشار قانوني متخصص في تأسيس الشركات والعقود والتشريعات المصرية',
+    userMessage: lastMessage,
+    uiContext: state.uiContext,
+    userId: state.userId,
+    draft,
+    fallback: draft || 'حدث خطأ في المرشد القانوني. يرجى المحاولة مجدداً.',
+  });
+  return { messages: [new AIMessage(text)] };
 }
 
 async function realEstateNode(state: typeof SupervisorState.State) {
   const lastMessage = state.messages[state.messages.length - 1]?.content as string;
   try {
-    const { result } = await safeGenerateText({
-      model: MODELS.PRO,
-      system: `أنت خبير عقارات استثمارية في مصر. متخصص في حساب ROI، قاعدة الـ1٪، تقييم الصفقات، وتحليل الأسواق العقارية المصرية لعام 2026. استخدم المعطيات الواقعية وقدم تحليلاً دقيقاً بالأرقام.`,
-      prompt: lastMessage,
-    }, { agent: 'real-estate' });
-    return { messages: [new AIMessage(result.text)] };
+    const text = await withCouncil({
+      agentName: 'real-estate',
+      agentDisplayNameAr: 'خبير العقارات',
+      agentRoleAr:
+        'خبير عقارات استثمارية في مصر متخصص في حساب ROI، قاعدة الـ1٪، تقييم الصفقات، وتحليل الأسواق العقارية لعام 2026',
+      userMessage: lastMessage,
+      uiContext: state.uiContext,
+      userId: state.userId,
+      fallback: 'حدث خطأ في خبير العقارات. يرجى المحاولة مجدداً.',
+    });
+    return { messages: [new AIMessage(text)] };
   } catch (e) {
     if (e instanceof PromptInjectionBlockedError) {
       return { messages: [new AIMessage('تم رفض الطلب: اكتُشفت محاولة حقن أوامر في الرسالة. يرجى إعادة الصياغة.')] };
@@ -242,12 +352,17 @@ async function adminNode(state: typeof SupervisorState.State) {
 async function generalChatNode(state: typeof SupervisorState.State) {
   const lastMessage = state.messages[state.messages.length - 1]?.content as string;
   try {
-    const { result } = await safeGenerateText({
-      model: MODELS.FLASH,
-      system: `أنت كلميرون، المستشار الاستراتيجي الذكي لمنصة كلميرون تو. تساعد رواد الأعمال المصريين على بناء شركاتهم وتحقيق أهدافهم. ردودك قوية، واضحة، موجهة للتطبيق العملي، ومكتوبة بالعربية الفصحى المعاصرة. استخدم Markdown لتنظيم إجاباتك.`,
-      prompt: lastMessage,
-    }, { agent: 'general-chat' });
-    return { messages: [new AIMessage(result.text)] };
+    const text = await withCouncil({
+      agentName: 'general-chat',
+      agentDisplayNameAr: 'كلميرون',
+      agentRoleAr:
+        'المستشار الاستراتيجي العام لرواد الأعمال المصريين، يقدم نصائح قوية وموجهة للتطبيق العملي بالعربية الفصحى المعاصرة',
+      userMessage: lastMessage,
+      uiContext: state.uiContext,
+      userId: state.userId,
+      fallback: 'حدث خطأ في الردّ. يرجى المحاولة مجدداً.',
+    });
+    return { messages: [new AIMessage(text)] };
   } catch (e) {
     if (e instanceof PromptInjectionBlockedError) {
       return { messages: [new AIMessage('تم رفض الطلب: اكتُشفت محاولة حقن أوامر في الرسالة. يرجى إعادة الصياغة.')] };

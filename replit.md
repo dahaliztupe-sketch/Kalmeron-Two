@@ -768,3 +768,37 @@ snapshot. Gated by `ADMIN_EMAILS` env var.
 `event: citations` `{ items: Citation[] }` emitted before
 `event: done` whenever the user has matching documents. `done` payload now
 includes `citations: <count>`.
+
+### Phase 10 — Panel of Experts (مجلس الإدارة الافتراضي)
+Each user-facing agent (idea-validator, plan-builder, mistake-shield,
+success-museum, opportunity-radar, cfo-agent, legal-guide, real-estate,
+general-chat) now runs through an internal "council of experts" before
+returning to the user, transforming every agent from a single-LLM call
+into a deliberating multi-perspective panel.
+
+- `src/ai/panel/experts.ts` — 4 permanent experts (Critical Analyst,
+  Context Engineer, Quality Auditor, Ethical Reviewer) that run on every
+  request, plus 12 specialized experts split across 3 panels (Strategic,
+  Technical, Marketing — 4 each).
+- `src/ai/panel/router.ts` — internal LITE-model router that classifies
+  the task domain and selects 3-4 specialized experts to inject. Falls
+  back to a balanced mixed panel on error.
+- `src/ai/panel/types.ts` — Zod schema enforcing the unified output:
+  `diagnosis` → 3 `options` (each with pros/cons) → `recommendation` →
+  `confidence` (0-100) → `implementationSteps` → optional
+  `qualityNotes` (5-criteria audit + ethical review).
+- `src/ai/panel/council.ts` — `runCouncil()` performs a single PRO
+  structured-generation call that embodies all selected experts and
+  returns the unified output + a Markdown render
+  (`formatCouncilAsMarkdown`). `runCouncilSafe()` never throws; returns
+  fallback markdown on injection/error.
+- `src/ai/orchestrator/supervisor.ts` — every supervisor node now wraps
+  its agent's draft (when applicable) through `withCouncil()`. Disabled
+  with `KALMERON_COUNCIL=off` env flag.
+- `app/api/council/route.ts` — POST endpoint for direct testing/
+  embedding the council outside the supervisor (rate-limited 10/min).
+- Token efficiency: 1 LITE router call + 1 PRO structured call per
+  request — simulates 7-8 expert deliberation without 7-8 round trips.
+- Tests: `test/panel.test.ts` (10 tests, all passing) cover expert
+  registry shape, roster builder, schema validation, and markdown
+  formatter.
