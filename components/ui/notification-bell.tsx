@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState, useRef } from "react";
-import { apiJson } from "@/lib/api-client";
+import { apiJson } from "@/src/lib/api-client";
 import { useAuth } from "@/contexts/AuthContext";
 
 interface Item {

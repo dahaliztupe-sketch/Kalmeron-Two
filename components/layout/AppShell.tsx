@@ -8,7 +8,7 @@ import { Globe, X, LogOut, Search, Sparkles } from "lucide-react";
 import { NotificationBell } from "@/components/ui/notification-bell";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { cn } from "@/lib/utils";
+import { cn } from "@/src/lib/utils";
 import { motion, AnimatePresence, useReducedMotion } from "motion/react";
 import { Sidebar } from "./Sidebar";
 import { Footer } from "./Footer";
@@ -17,7 +17,7 @@ import { MobileBottomNav } from "./MobileBottomNav";
 import { BrandLogo } from "@/components/brand/BrandLogo";
 import { AnimatedBrandMark } from "@/components/brand/AnimatedBrandMark";
 import Loading from "@/app/loading";
-import { NAV_SECTIONS } from "@/lib/navigation";
+import { NAV_SECTIONS } from "@/src/lib/navigation";
 import { CommandPalette, useCommandPaletteShortcut } from "@/components/ui/CommandPalette";
 
 export function AppShell({ children }: { children: React.ReactNode }) {

@@ -10,7 +10,7 @@ import { analyzeCompany } from '@/src/agents/success-museum/agent';
 import { cfoAgentAction } from '@/src/ai/agents/cfo-agent/agent';
 import { legalGuideAction } from '@/src/ai/agents/legal-guide/agent';
 import { safeGenerateText, PromptInjectionBlockedError } from '@/src/lib/llm/gateway';
-import { rateLimitAgent } from '@/lib/security/rate-limit';
+import { rateLimitAgent } from '@/src/lib/security/rate-limit';
 import { runCouncilSafe } from '@/src/ai/panel';
 
 /**

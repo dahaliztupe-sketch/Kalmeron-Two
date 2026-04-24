@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { KalmeronAreaChart } from "@/src/components/charts";
 import Link from "next/link";
-import { cn } from "@/lib/utils";
+import { cn } from "@/src/lib/utils";
 
 const STAGE_LABELS: Record<string, string> = {
   idea: "فكرة",

@@ -21,8 +21,8 @@ import * as React from "react";
 import { Dialog as DialogPrimitive } from "@base-ui/react/dialog";
 import { useRouter } from "next/navigation";
 import { Search, CornerDownLeft, ArrowUp, ArrowDown } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { NAV_SECTIONS, FLAT_NAV, type NavItem } from "@/lib/navigation";
+import { cn } from "@/src/lib/utils";
+import { NAV_SECTIONS, FLAT_NAV, type NavItem } from "@/src/lib/navigation";
 
 interface CommandPaletteProps {
   open: boolean;

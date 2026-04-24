@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { AppShell } from "@/components/layout/AppShell";
 import { Megaphone, TrendingUp, Settings, Wallet, Users, Heart, Scale, Activity, Bot, FileText } from "lucide-react";
 import Link from "next/link";
-import { cn } from "@/lib/utils";
+import { cn } from "@/src/lib/utils";
 
 const DEPARTMENTS = {
   marketing: {

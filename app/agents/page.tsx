@@ -16,7 +16,7 @@ import {
   Database, Code, Wifi, Monitor, PenLine, ChevronDown,
   AlertTriangle,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/src/lib/utils";
 
 type Dept = "all" | "idea" | "cfo" | "legal" | "market" | "radar" | "shield" | "brain";
 

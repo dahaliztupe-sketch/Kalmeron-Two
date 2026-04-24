@@ -12,7 +12,7 @@ import {
   XCircle, Users, BarChart3, Lightbulb, Target, Sparkles, Clock, Zap,
   Brain, TrendingUp, AlertTriangle,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/src/lib/utils";
 
 interface Experiment {
   id: string;

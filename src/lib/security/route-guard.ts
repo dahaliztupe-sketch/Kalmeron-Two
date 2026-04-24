@@ -5,7 +5,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z, ZodType } from 'zod';
 import { adminAuth } from '@/src/lib/firebase-admin';
-import { rateLimit, rateLimitResponse } from '@/lib/security/rate-limit';
+import { rateLimit, rateLimitResponse } from '@/src/lib/security/rate-limit';
 import { createRequestLogger } from '@/src/lib/logger';
 import { verifyApiKey } from '@/src/lib/security/api-keys';
 import { requirePermission, isPlatformAdmin, type Permission } from '@/src/lib/security/rbac';

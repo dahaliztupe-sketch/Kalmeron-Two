@@ -25,7 +25,7 @@
  */
 
 import * as React from "react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/src/lib/utils";
 import { ArrowUp, ArrowDown, Info, AlertTriangle, CheckCircle2, XCircle, Circle, Check } from "lucide-react";
 import { formatCurrency, formatCompactNumber, type CurrencyCode } from "@/src/lib/format/currency";
 import { KalmeronAreaChart, KalmeronBarChart } from "@/src/components/charts";

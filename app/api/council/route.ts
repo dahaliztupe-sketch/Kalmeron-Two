@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { runCouncilSafe } from '@/src/ai/panel';
-import { rateLimit, rateLimitResponse } from '@/lib/security/rate-limit';
+import { rateLimit, rateLimitResponse } from '@/src/lib/security/rate-limit';
 
 export const runtime = 'nodejs';
 

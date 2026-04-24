@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { PageShell, Card, Skeleton, ErrorBlock } from "@/components/ui/page-shell";
-import { apiJson } from "@/lib/api-client";
+import { apiJson } from "@/src/lib/api-client";
 import { useAuth } from "@/contexts/AuthContext";
 
 interface Summary {

@@ -6,7 +6,7 @@ import { motion } from "motion/react";
 import {
   LayoutDashboard, MessageSquareText, Map, Compass, Menu,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/src/lib/utils";
 
 type Item = {
   href: string;

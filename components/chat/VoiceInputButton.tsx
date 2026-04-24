@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Mic, MicOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { cn } from "@/src/lib/utils";
 
 interface Props {
   onTranscript: (text: string) => void;

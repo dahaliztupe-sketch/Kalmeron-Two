@@ -9,7 +9,7 @@ import {
   Lightbulb, TrendingDown, Coins, Users, Clock, Zap, Sparkles,
   BarChart3, Brain, Scale, ChevronDown, ChevronUp,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/src/lib/utils";
 
 type Severity = "critical" | "high" | "medium";
 

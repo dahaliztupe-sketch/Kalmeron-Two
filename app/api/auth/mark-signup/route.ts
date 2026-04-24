@@ -10,7 +10,7 @@
 import { NextRequest } from 'next/server';
 import { adminAuth } from '@/src/lib/firebase-admin';
 import { markTtfvStage } from '@/src/lib/analytics/ttfv';
-import { rateLimit, rateLimitResponse } from '@/lib/security/rate-limit';
+import { rateLimit, rateLimitResponse } from '@/src/lib/security/rate-limit';
 
 export const runtime = 'nodejs';
 

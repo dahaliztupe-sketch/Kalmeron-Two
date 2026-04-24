@@ -9,7 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Loader2, Lightbulb, CheckCircle2, ChevronRight } from "lucide-react";
-import { db } from "@/lib/firebase";
+import { db } from "@/src/lib/firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { toast } from "sonner";
 import ReactMarkdown from 'react-markdown';

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { adminAuth } from '@/src/lib/firebase-admin';
 import { getReferralStats, recordReferral, ensureReferralCode } from '@/src/lib/referrals/manager';
-import { rateLimit, rateLimitResponse } from '@/lib/security/rate-limit';
+import { rateLimit, rateLimitResponse } from '@/src/lib/security/rate-limit';
 
 export const runtime = 'nodejs';
 

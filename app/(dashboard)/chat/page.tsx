@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef, useCallback, Suspense } from "react
 import { useSearchParams } from "next/navigation";
 import { AppShell } from "@/components/layout/AppShell";
 import { useAuth } from "@/contexts/AuthContext";
-import { db } from "@/lib/firebase";
+import { db } from "@/src/lib/firebase";
 import {
   doc, getDoc, setDoc, updateDoc, serverTimestamp,
   collection, getDocs, addDoc, query, orderBy, limit, deleteDoc,
@@ -18,7 +18,7 @@ import {
   Copy, Check, Download, Bot, Brain, Scale, Briefcase, FlaskConical, Shield,
   Zap, MoreHorizontal, Sparkles, PanelLeftClose, PanelLeftOpen,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/src/lib/utils";
 import ReactMarkdown from "react-markdown";
 import { AssistantContent } from "@/components/chat/AssistantContent";
 import { toast } from "sonner";

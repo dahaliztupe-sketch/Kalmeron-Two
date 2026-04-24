@@ -3,7 +3,7 @@
 import React from "react";
 import { motion } from "motion/react";
 import { Check, Minus } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/src/lib/utils";
 import type { Plan, PlanId } from "@/src/lib/billing/plans";
 
 interface Row {

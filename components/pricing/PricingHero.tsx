@@ -3,7 +3,7 @@
 import React from "react";
 import { motion } from "motion/react";
 import { Sparkles, Zap } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/src/lib/utils";
 import type { BillingCycle } from "@/app/pricing/page";
 
 interface Props {

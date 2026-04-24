@@ -2,7 +2,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { adminAuth } from '@/src/lib/firebase-admin';
 import { ingestDocument } from '@/src/lib/rag/user-rag';
-import { rateLimit } from '@/lib/security/rate-limit';
+import { rateLimit } from '@/src/lib/security/rate-limit';
 const pdf = require('pdf-parse');
 import * as XLSX from 'xlsx';
 

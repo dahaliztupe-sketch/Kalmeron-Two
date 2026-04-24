@@ -10,7 +10,7 @@ import {
   Globe2, Users, TrendingUp, BookOpen, GraduationCap, Rocket, Star,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
-import { cn } from "@/lib/utils";
+import { cn } from "@/src/lib/utils";
 
 type OppCategory = "all" | "funding" | "hackathon" | "incubator" | "competition" | "event";
 

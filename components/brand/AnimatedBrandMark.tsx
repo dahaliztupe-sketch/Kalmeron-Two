@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "motion/react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/src/lib/utils";
 
 type Props = {
   size?: number;

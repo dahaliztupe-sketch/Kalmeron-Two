@@ -5,7 +5,7 @@ import { HumanMessage } from '@langchain/core/messages';
 import { CreditManager } from '@/src/lib/billing/credit-manager';
 import { trackAgentUsage } from '@/src/lib/billing/usage-tracker';
 import { adminAuth } from '@/src/lib/firebase-admin';
-import { rateLimit, rateLimitAgent, rateLimitResponse } from '@/lib/security/rate-limit';
+import { rateLimit, rateLimitAgent, rateLimitResponse } from '@/src/lib/security/rate-limit';
 import { createRequestLogger } from '@/src/lib/logger';
 import { redactPII } from '@/src/lib/compliance/pii-redactor';
 import { generateFollowUpSuggestions } from '@/src/ai/suggestions/follow-ups';

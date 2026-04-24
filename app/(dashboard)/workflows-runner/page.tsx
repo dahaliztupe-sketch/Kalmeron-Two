@@ -13,7 +13,7 @@ import * as React from "react";
 import { AppShell } from "@/components/layout/AppShell";
 import { Button } from "@/components/ui/button";
 import { Loader2, Play, ChevronDown, CheckCircle2, AlertTriangle, Workflow as WorkflowIcon } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/src/lib/utils";
 import { WORKFLOW_LIBRARY, findWorkflow } from "@/src/lib/workflows/library";
 import type { WorkflowRunResult } from "@/src/lib/workflows/runner";
 

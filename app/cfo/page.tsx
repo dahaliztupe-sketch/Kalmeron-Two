@@ -14,7 +14,7 @@ import {
   Sparkles, ArrowLeft, RefreshCw, Lightbulb, Info, Zap,
   Target, ChevronDown, DollarSign, PiggyBank, AlertTriangle,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/src/lib/utils";
 
 function formatEGP(n: number) {
   if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M ج.م`;

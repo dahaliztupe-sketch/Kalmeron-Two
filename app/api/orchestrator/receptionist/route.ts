@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
   import xss from 'xss';
   import { adminAuth } from '@/src/lib/firebase-admin';
-  import { rateLimit, rateLimitResponse } from '@/lib/security/rate-limit';
+  import { rateLimit, rateLimitResponse } from '@/src/lib/security/rate-limit';
   import { receptionistRespond } from '@/src/ai/receptionist/agent';
   import { createRequestLogger } from '@/src/lib/logger';
 

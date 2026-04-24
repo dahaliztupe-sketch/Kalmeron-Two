@@ -52,3 +52,15 @@ export async function compressText(text: string): Promise<string> {
   
     return summary;
   }
+
+// ──────────────────────────────────────────────────────────────────────────
+// Legacy raw GoogleGenAI client (formerly /lib/gemini.ts).
+// Used by /api/ideas/analyze. Prefer the `google()` AI SDK adapter above.
+// ──────────────────────────────────────────────────────────────────────────
+import { GoogleGenAI } from '@google/genai';
+
+const _legacyApiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_GENERATIVE_AI_API_KEY;
+if (!_legacyApiKey) {
+  console.warn('[gemini] Missing GEMINI_API_KEY / GOOGLE_GENERATIVE_AI_API_KEY for legacy `ai` client');
+}
+export const ai = new GoogleGenAI({ apiKey: _legacyApiKey || '' });

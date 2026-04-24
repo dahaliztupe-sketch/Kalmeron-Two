@@ -9,7 +9,7 @@ import {
   ArrowLeft, Sparkles, Users, BarChart3, Coins, Target, Rocket,
   Shield, Brain,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/src/lib/utils";
 
 function formatEGP(n: number) {
   if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)} مليون ج.م`;

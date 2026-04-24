@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { subscribe, unsubscribe, isValidEmail } from '@/src/lib/newsletter/subscribers';
-import { rateLimit, rateLimitResponse } from '@/lib/security/rate-limit';
+import { rateLimit, rateLimitResponse } from '@/src/lib/security/rate-limit';
 
 export const runtime = 'nodejs';
 

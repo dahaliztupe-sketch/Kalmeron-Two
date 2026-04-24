@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { ai } from '@/lib/gemini';
-import { rateLimit, rateLimitResponse } from '@/lib/security/rate-limit';
+import { ai } from '@/src/lib/gemini';
+import { rateLimit, rateLimitResponse } from '@/src/lib/security/rate-limit';
 import xss from 'xss';
 
 export async function POST(request: NextRequest) {

@@ -9,7 +9,7 @@
 import { NextRequest } from 'next/server';
 import Stripe from 'stripe';
 import { adminAuth, adminDb } from '@/src/lib/firebase-admin';
-import { rateLimit, rateLimitResponse } from '@/lib/security/rate-limit';
+import { rateLimit, rateLimitResponse } from '@/src/lib/security/rate-limit';
 
 export const runtime = 'nodejs';
 

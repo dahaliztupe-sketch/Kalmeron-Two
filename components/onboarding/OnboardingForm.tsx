@@ -7,7 +7,7 @@ import { doc, updateDoc } from "firebase/firestore";
 import { db } from "@/src/lib/firebase";
 import { Loader2, Rocket, Sparkles, MapPin, Briefcase, CheckCircle2, ArrowLeft, ArrowRight, Brain, FlaskConical, Scale, Radar, Shield, Building2, ShoppingCart, HeartPulse, GraduationCap, Cpu, Leaf, Home, Banknote, Utensils } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/src/lib/utils";
 
 const STAGES = [
   { id: "idea", label: "فكرة أولية", desc: "عندي فكرة لكن لم أبدأ بعد", icon: "💡" },

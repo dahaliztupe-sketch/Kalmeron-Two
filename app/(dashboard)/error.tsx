@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { AlertTriangle, RefreshCcw, Home } from "lucide-react";
 import Link from "next/link";
-import { cn } from "@/lib/utils";
+import { cn } from "@/src/lib/utils";
 
 export default function DashboardError({
   error,

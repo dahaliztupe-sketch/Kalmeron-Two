@@ -5,7 +5,7 @@ import { AppShell } from "@/components/layout/AppShell";
 import { useAuth } from "@/contexts/AuthContext";
 import { motion } from "motion/react";
 import { Loader2, CheckCircle2, Clock, AlertCircle, PauseCircle, Hourglass } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/src/lib/utils";
 
 type TaskItem = {
   taskId: string;

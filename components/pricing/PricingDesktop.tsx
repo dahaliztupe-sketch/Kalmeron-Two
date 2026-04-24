@@ -4,7 +4,7 @@ import React from "react";
 import { motion } from "motion/react";
 import { Check, Crown, Loader2, Rocket, Sparkles, Building2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { cn } from "@/src/lib/utils";
 import type { Plan, PlanId } from "@/src/lib/billing/plans";
 import type { BillingCycle } from "@/app/pricing/page";
 import { PlanPriceDisplay } from "./PlanPriceDisplay";

@@ -922,9 +922,19 @@ into a deliberating multi-perspective panel.
 - `middleware.ts` يلتقط `?ref=` ويحفظه ككوكي 60 يومًا +
   `app/api/affiliate/track/route.ts` (sha256 لعنوان IP، collection
   `affiliate_clicks`).
-- **مُتخطّى عمدًا**: P1-3 (توحيد `lib/` ↔ `src/lib/` — تعديل واسع
-  الأثر، مؤجل لجلسة مخصّصة)، P1-2 (compare/[slug] موجود مسبقًا
-  ديناميكيًا عبر `src/lib/seo/comparisons.ts`).
+- **P1-3 توحيد `lib/` ↔ `src/lib/`** (مكتمل لاحقًا في الجلسة):
+  - نُقل `lib/security/rate-limit.ts` و`lib/api-client.ts` و`lib/navigation.ts`
+    إلى `src/lib/`.
+  - `lib/firebase.ts` و`lib/utils.ts` كانا تكرارًا — حُذفا (المحتوى
+    موجود مسبقًا في `src/lib/`).
+  - `lib/gemini.ts` كان فريدًا (يصدّر `ai` من `@google/genai`) —
+    دُمج كقسم legacy في `src/lib/gemini.ts` يدعم `GEMINI_API_KEY`
+    و`GOOGLE_GENERATIVE_AI_API_KEY`.
+  - أُعيدت كتابة 56 ملف TS/TSX لتستخدم `@/src/lib/...` بدل `@/lib/...`.
+  - `components.json` (shadcn) حُدِّث: `"utils": "@/src/lib/utils"`.
+  - مجلّد `lib/` حُذف بالكامل.
+- **مُتخطّى**: P1-2 (compare/[slug] موجود مسبقًا ديناميكيًا عبر
+  `src/lib/seo/comparisons.ts`).
 
 ### P2 — أولوية متوسطة
 - `app/crews/finance/page.tsx` (Finance Crew $499/mo SKU).

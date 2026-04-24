@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { PageShell, Card } from "@/components/ui/page-shell";
-import { apiFetch, apiJson } from "@/lib/api-client";
+import { apiFetch, apiJson } from "@/src/lib/api-client";
 import { toast } from "sonner";
 
 export default function PrivacyPage() {
