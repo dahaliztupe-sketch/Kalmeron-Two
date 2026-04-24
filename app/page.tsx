@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState, useRef, useCallback } from "react";
+import { RoiCalculator } from "@/components/marketing/RoiCalculator";
 import { useRouter } from "next/navigation";
 import { motion, useScroll, useTransform, AnimatePresence, useInView, useReducedMotion } from "motion/react";
 import {
@@ -1079,6 +1080,24 @@ function HowItWorks() {
 // FINAL CTA
 // ─────────────────────────────────────────────
 
+function RoiSection() {
+  return (
+    <section className="relative px-4 py-16 md:py-24">
+      <div className="max-w-4xl mx-auto">
+        <div className="text-center mb-8">
+          <h2 className="font-display text-3xl md:text-4xl font-bold text-white mb-3">
+            احسب توفيرك خلال 30 ثانية
+          </h2>
+          <p className="text-neutral-400 text-sm md:text-base max-w-2xl mx-auto">
+            معظم المؤسسين بيوفروا أكثر من 5,000 ج.م شهرياً مقارنة بالاستعانة بمستشارين تقليديين.
+          </p>
+        </div>
+        <RoiCalculator variant="full" />
+      </div>
+    </section>
+  );
+}
+
 function FinalCTA() {
   const [query, setQuery] = useState("");
   const router = useRouter();
@@ -1224,6 +1243,7 @@ export default function HomePage() {
       <LiveDemoSection />
       <ComparisonSection />
       <HowItWorks />
+      <RoiSection />
       <TestimonialsSection />
       <FinalCTA />
       <Footer />

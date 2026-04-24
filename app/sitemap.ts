@@ -42,6 +42,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${siteUrl}/terms`, lastModified: now, changeFrequency: 'yearly', priority: 0.3 },
     { url: `${siteUrl}/auth/signup`, lastModified: now, changeFrequency: 'monthly', priority: 0.7 },
     { url: `${siteUrl}/auth/login`, lastModified: now, changeFrequency: 'monthly', priority: 0.5 },
+    // Added in P0/P1 wave (45-expert audit)
+    { url: `${siteUrl}/en`, lastModified: now, changeFrequency: 'weekly', priority: 0.9 },
+    { url: `${siteUrl}/roi`, lastModified: now, changeFrequency: 'monthly', priority: 0.85 },
+    { url: `${siteUrl}/first-100`, lastModified: now, changeFrequency: 'daily', priority: 0.85 },
+    { url: `${siteUrl}/affiliate`, lastModified: now, changeFrequency: 'monthly', priority: 0.8 },
+    { url: `${siteUrl}/changelog`, lastModified: now, changeFrequency: 'weekly', priority: 0.7 },
   ];
 
   const useCasePages: MetadataRoute.Sitemap = getAllUseCaseSlugs().map((slug) => ({

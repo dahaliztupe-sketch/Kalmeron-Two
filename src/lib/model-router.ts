@@ -136,6 +136,34 @@ export async function recordRoutedCost(args: {
   return cost;
 }
 
+/**
+ * Hedging-aware variant of `routeModel`.  Returns the *primary* model plus a
+ * provider chain to walk on transport errors. See `docs/HEDGING_PLAN.md`.
+ *
+ * Agent code can opt-in incrementally:
+ *   const routed = routeWithFallback(task);
+ *   const { result, usedProvider } = await withProviderFallback(
+ *     routed.tier,
+ *     async (model) => generateWithProvider(model, prompt),
+ *   );
+ *   await recordRoutedCost({ ..., provider: usedProvider });
+ */
+export async function routeWithFallback(task: string, override?: TaskTier) {
+  const tier = override ?? classifyTaskTier(task);
+  const { pickProvider, withProviderFallback } = await import('@/src/lib/llm/providers');
+  const orderEnv = (process.env.KALMERON_PROVIDER_ORDER ?? '')
+    .split(',')
+    .map((s) => s.trim())
+    .filter(Boolean) as Array<'gemini' | 'anthropic' | 'openai'>;
+  const order = orderEnv.length > 0 ? orderEnv : undefined;
+  return {
+    tier,
+    primary: pickProvider(tier, order),
+    runWithFallback: <T>(attempt: Parameters<typeof withProviderFallback<T>>[1]) =>
+      withProviderFallback(tier, attempt, order),
+  };
+}
+
 // إبقاء التوافق مع الواجهة القديمة المستخدمة في ملفات أخرى من القاعدة
 export type TaskComplexity = 'simple' | 'medium' | 'complex';
 export function classifyTaskComplexity(task: string): TaskComplexity {

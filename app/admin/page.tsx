@@ -11,6 +11,7 @@ import { Activity, AlertTriangle, DollarSign, ShieldCheck, Loader2, Trash2, Bot 
 import Link from "next/link";
 import { DriftWidget } from "@/components/admin/DriftWidget";
 import { CostByModelWidget } from "@/components/admin/CostByModelWidget";
+import { TtfvWidget } from "@/components/admin/TtfvWidget";
 
 interface Snapshot {
   agents: Record<string, { invocations: number; failures: number; avgLatencyMs: number; successRate: number; totalCostUsd: number }>;
@@ -158,10 +159,11 @@ export default function AdminCommandCenter() {
           </Card>
         )}
 
-        {/* Drift + Cost-by-Model widgets (Phase 4) */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        {/* Drift + Cost-by-Model + TTFV widgets */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           <DriftWidget windowDays={7} />
           <CostByModelWidget />
+          <TtfvWidget />
         </div>
 
         {/* Fleet Control */}

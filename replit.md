@@ -4,6 +4,25 @@ Arabic-language AI Operating System for Egyptian entrepreneurs. World-class plat
 
 The brand tagline is **"مقرّ عمليات شركتك الذكي"** (canonical in `src/lib/copy/lexicon.ts → LEXICON.tagline`). Voice/tone, lexicon, and microcopy live under `src/lib/copy/{voice,lexicon,microcopy}.ts` and must be the source for all user-facing strings.
 
+## Recent Major Updates (Session 2026-04-24 — 45-Expert Audit Execution P0/P1)
+Comprehensive business audit (`docs/BUSINESS_EXPERT_PANEL_45_REPORT.md`) by 45 cross-functional experts produced a 7-category roadmap. This session shipped every P0/P1 item that does not require external negotiations or new API keys:
+- **Multi-provider LLM gateway** (`src/lib/llm/providers.ts`): tier-mapped Gemini / Anthropic / OpenAI with deterministic fallback chain. Lazy adapters mean zero new dependencies until env keys are set. Operational playbook in `docs/HEDGING_PLAN.md`. `routeWithFallback()` exported from `src/lib/model-router.ts` for incremental adoption.
+- **Two-layer prompt cache** (`src/lib/llm/prompt-cache.ts`): in-memory LRU (500 entries / 6 h TTL) backed by Firestore `prompt_cache` (24 h TTL). SHA-256-keyed; never collapses semantically-similar prompts (embedding-based merge deferred to RAG-Lite in P1).
+- **Time-to-First-Value (TTFV) instrumentation** (`src/lib/analytics/ttfv.ts` + `components/admin/TtfvWidget.tsx` + `app/api/admin/ttfv-summary/route.ts`): per-user cold/warm timestamps, daily rollups, admin tile. Re-uses the existing `agent_re_used` analytics slot via `properties.kind = 'ttfv'` to avoid schema churn — see refreshed `docs/FUNNEL_ANALYTICS.md`.
+- **ROI Calculator** (`components/marketing/RoiCalculator.tsx`): embeddable widget; wired into `/`, `/compare`, and the standalone `/roi` page. Conservative defaults (8 h × 800 EGP/h) → 30-second self-serve calculation in EGP.
+- **Trust badges** (`components/marketing/TrustBadges.tsx`): Egyptian Law 151, Saudi PDPL, GDPR, TLS 1.3 / AES-256. Wired into `components/layout/Footer.tsx` and `/compare`.
+- **First-100 Lifetime Deal** (`app/first-100/page.tsx`): seat counter, benefits/expectations grid, FAQ, CTA — pre-launch traction lever locking in 100 customers at 9 USD/mo forever in exchange for testimonials.
+- **Affiliate program landing** (`app/affiliate/page.tsx`): 30 % recurring × 12 months, three tiers, terms + FAQ, mailto-CTA until partner portal ships in P2.
+- **Public changelog** (`app/changelog/page.tsx`): server-rendered Markdown reader pulling from `CHANGELOG.md` (now created); transparency anchor.
+- **Operational Mirror "Daily Brief"** (`app/(dashboard)/daily-brief/page.tsx` + `app/api/daily-brief/route.ts`): one anomaly + one decision + one ready-to-send message per morning. Returns deterministic stub today; LangGraph wiring follows in v2026.05.
+- **English landing page** (`app/en/page.tsx`): LTR mirror with Hreflang + alternateLocale OG metadata for SEO discoverability and Gulf English-speakers.
+- **Sitemap** updated (`app/sitemap.ts`): added `/en`, `/roi`, `/first-100`, `/affiliate`, `/changelog`.
+- **Footer** (`components/layout/Footer.tsx`): added links to changelog, affiliate, first-100, plus the new TrustBadges row.
+- **Admin** (`app/admin/page.tsx`): widget grid extended from 2 → 3 columns to host the new `TtfvWidget` alongside `DriftWidget` and `CostByModelWidget`.
+- **Golden dataset** (`test/eval/golden-dataset.json`): 51 → 85 cases (29 routing, 3 quality rubric, 2 safety / prompt-injection).
+- **Documentation pack**: `docs/HEDGING_PLAN.md`, `docs/PIA_TEMPLATE.md`, `docs/PITCH_DECK.md` (12-slide pre-seed), `docs/FOUNDERS_LETTER_TEMPLATE.md` (monthly), refreshed `docs/FUNNEL_ANALYTICS.md`, new `CHANGELOG.md`.
+- **Out-of-scope (organizational, deferred)**: hire DPO, sign WhatsApp BSP, negotiate distribution partners, fund the influencer affiliate roster, file PIAs for each agent — all require human action / external accounts and remain on the roadmap.
+
 ## Recent Major Updates (Session 2026-04-24 — Wave 5: Foundation Cleanup & Quality Moat)
 - **Lexicon CI lint** (`scripts/lexicon-lint.ts`, runnable via `npm run lint:lexicon`): word-boundary-aware scanner over `app/` and `components/` that fails on any forbidden alias listed in `src/lib/copy/lexicon.ts`. Includes a stoplist for generic English overlaps (`agent`, `space`, `seed`, etc.), a `// lexicon-allow` escape-hatch with 3-line lookback for multi-line JSX, and an explicit allowlist for technical surfaces that are *intentionally* exempt (`/mcp-server`, `/api-docs`, `/llms.txt`, `/ai-experts/*`, `/experts`). Currently passes clean.
 - **Backup verification** (`scripts/verify-backup.ts`, runnable via `npm run verify:backup`): nightly-cron-ready check that the latest Firestore backup is < 36 h old, contains all required collections (`users`, `workspaces`, `business_plans`), and has a non-zero document count. Tries the native GCS export first, falls back to the logical snapshot collection.

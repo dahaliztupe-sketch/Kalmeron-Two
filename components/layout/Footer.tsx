@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { BrandLogo } from "@/components/brand/BrandLogo";
+import { TrustBadges } from "@/components/marketing/TrustBadges";
 
 export function Footer() {
   const currentYear = new Date().getFullYear();
@@ -31,11 +32,19 @@ export function Footer() {
             <FLink href="/success-museum">متحف النجاح</FLink>
             <FLink href="/opportunities">رادار الفرص</FLink>
             <FLink href="/marketplace">السوق</FLink>
+            <FLink href="/changelog">سجل التحديثات</FLink>
+            <FLink href="/affiliate">برنامج الشركاء</FLink>
+            <FLink href="/first-100">عرض أول 100 شركة</FLink>
           </FooterCol>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto mt-10 pt-6 border-t border-white/[0.04] flex flex-col md:flex-row justify-between items-center gap-3">
+      {/* Trust badges (P0 / QW-2 from the 45-expert business audit) */}
+      <div className="max-w-7xl mx-auto mt-10 pt-6 border-t border-white/[0.04]">
+        <TrustBadges />
+      </div>
+
+      <div className="max-w-7xl mx-auto mt-6 pt-6 border-t border-white/[0.04] flex flex-col md:flex-row justify-between items-center gap-3">
         <p className="text-neutral-600 text-xs font-bold uppercase tracking-widest">
           Kalmeron AI © {currentYear}
         </p>

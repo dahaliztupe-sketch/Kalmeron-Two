@@ -9,6 +9,8 @@ import {
   Clock, DollarSign, BarChart3, Target, Sparkles,
 } from "lucide-react";
 import { BrandLogo } from "@/components/brand/BrandLogo";
+import { RoiCalculator } from "@/components/marketing/RoiCalculator";
+import { TrustBadges } from "@/components/marketing/TrustBadges";
 
 const tools = [
   { id: "kalmeron", name: "كلميرون", badge: "الأفضل قيمة", isKalmeron: true },
@@ -146,6 +148,26 @@ export default function ComparePage() {
               </motion.div>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* ROI Calculator */}
+      <section className="px-4 py-10">
+        <div className="max-w-4xl mx-auto">
+          <h2 className="font-display text-2xl font-bold text-white text-center mb-2">
+            ROI شخصي حسب استخدامك
+          </h2>
+          <p className="text-neutral-500 text-sm text-center mb-6">
+            حرّك المؤشرات بالأرقام الحقيقية لمصاريفك وشوف توفيرك السنوي.
+          </p>
+          <RoiCalculator variant="full" />
+        </div>
+      </section>
+
+      {/* Trust Badges */}
+      <section className="px-4 py-6">
+        <div className="max-w-4xl mx-auto">
+          <TrustBadges />
         </div>
       </section>
 
