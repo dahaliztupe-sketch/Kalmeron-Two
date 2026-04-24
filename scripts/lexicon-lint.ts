@@ -30,6 +30,12 @@ const ALLOWED_FILES = new Set([
   'app/ai-experts/page.tsx',
   'app/ai-experts/[slug]/page.tsx',
   'app/(dashboard)/experts/page.tsx',
+  // English locale landing — explicitly uses English brand terms
+  // ("AI agents", "AI CFO", "AI team") for the international audience.
+  'app/en/page.tsx',
+  // Departmental Crew product page — markets the Finance crew as a
+  // standalone SKU with intentional product names ("CFO Agent", etc.).
+  'app/crews/finance/page.tsx',
 ]);
 const SKIP_DIRS = new Set(['node_modules', '.next', 'dist', 'build', '.local']);
 /** Generic English words that overlap with JS identifiers, Tailwind classes,

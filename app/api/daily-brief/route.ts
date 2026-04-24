@@ -53,6 +53,7 @@ const STUB_LIBRARY: BriefBlock[][] = [
     {
       type: 'message',
       title: 'رسالة جاهزة للمورد Y',
+      // lexicon-allow — "وحدة" here means "unit (of product)", not the lexicon "department" sense.
       body: 'السلام عليكم، أ. [الاسم]،\n\nنحتاج 200 وحدة من المنتج B للتوصيل خلال 36 ساعة. سعر الوحدة 95 ج.م مقبول. الدفع تحويل بنكي عند الاستلام.\n\nهل يمكن التأكيد قبل الساعة 4 عصراً اليوم؟\n\nشكراً.',
       ctaLabel: 'افتح المحادثة لتحرير الرسالة',
     },

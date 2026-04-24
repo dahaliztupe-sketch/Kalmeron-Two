@@ -24,16 +24,25 @@ jobs:
           node-version: "20"
           cache: "npm"
       - run: npm ci --ignore-scripts
-      - name: Audit production dependencies (fail on high or critical)
-        run: npm audit --omit=dev --audit-level=high
+      - name: Audit production dependencies (fail on high or critical, with allowlist)
+        # The `xlsx` package ships two high-severity advisories
+        # (GHSA-4r6h-8v6p-xvw6, GHSA-5pgg-2g8v-p4x9) with no fix on npm —
+        # the upstream fix lives only on the SheetJS CDN. We allowlist
+        # those specific advisory IDs so CI fails on any *new* high/critical
+        # issue but does not block on the known-no-fix xlsx ones.
+        run: |
+          npm audit --omit=dev --json > audit-report.json || true
+          node scripts/check-audit.mjs audit-report.json
       - name: Generate full audit report (informational)
         if: always()
-        run: npm audit --json > audit-report.json || true
+        run: npm audit --json > audit-report-full.json || true
       - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: npm-audit-report
-          path: audit-report.json
+          path: |
+            audit-report.json
+            audit-report-full.json
           retention-days: 30
 
   codeql:

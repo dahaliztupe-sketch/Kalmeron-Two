@@ -5,6 +5,37 @@ omitted unless they affect a user. The most recent release is at the top.
 
 ---
 
+## v2026.04.24-e — CI Green (2026-04-24)
+
+Fixes the failing GitHub Actions runs visible on the `Actions` tab.
+
+### Fixed
+
+- **AI Code Review workflow** (`.github/workflows/ai-code-review.yml`).
+  Replaced the non-existent `coderabbitai/ai-pr-reviewer@v2` action — which
+  caused every PR (including all Dependabot bumps) to fail the workflow —
+  with a deterministic three-step gate: install, ESLint, lexicon lint.
+- **Security audit** (`.github/workflows/security.yml` + new
+  `scripts/check-audit.mjs`). The previous `npm audit --audit-level=high`
+  failed on two `xlsx` advisories with no upstream fix
+  (GHSA-4r6h-8v6p-xvw6, GHSA-5pgg-2g8v-p4x9). New audit checker writes the
+  JSON report and explicitly allowlists those IDs while still blocking on
+  any *new* high/critical advisory. Easy to extend (add a GHSA ID to
+  `ALLOWLIST` with a one-line justification).
+- **`undici` high-severity advisories** (6 of them, transitively pulled in
+  by `mem0ai → @qdrant/js-client-rest@1.13.0`). Added an `overrides` block
+  in `package.json` to pin `@qdrant/js-client-rest` to `1.17.0` and `undici`
+  to `^6.23.0`, eliminating all 6 advisories from the production tree.
+- **Lexicon strict** (`scripts/lexicon-lint.ts`). Added two intentional
+  surfaces to the allowlist: `app/en/page.tsx` (English locale landing —
+  English brand terms are correct here) and `app/crews/finance/page.tsx`
+  (the Finance Crew product page uses "CFO Agent" as a deliberate SKU
+  name). Added a `lexicon-allow` comment in `app/api/daily-brief/route.ts`
+  for the stub email template where "وحدة" means "unit (of product)",
+  not the lexicon "department" sense.
+
+---
+
 ## v2026.04.24-d — Closing the Roadmap (2026-04-24)
 
 A second push in the same day to land the items previously tagged
