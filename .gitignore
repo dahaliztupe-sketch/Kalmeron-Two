@@ -32,3 +32,21 @@ test-results/
 
 # Local
 .local/tmp/
+
+# Python (services/)
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+.pythonlibs/
+.venv/
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+pyproject.toml
+uv.lock
+
+# Eval reports (regenerated each run)
+eval-reports/
+test/eval/results.json

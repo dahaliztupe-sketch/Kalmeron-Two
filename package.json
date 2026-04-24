@@ -16,8 +16,10 @@
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "eval": "tsx test/eval/run-eval.ts",
+    "eval:report": "tsx test/eval/run-eval.ts --json && python3 services/eval-analyzer/analyze.py",
     "lint:lexicon": "tsx scripts/lexicon-lint.ts",
-    "verify:backup": "tsx scripts/verify-backup.ts"
+    "verify:backup": "tsx scripts/verify-backup.ts",
+    "pdf-worker:dev": "cd services/pdf-worker && uvicorn main:app --host 0.0.0.0 --port 8000 --reload"
   },
   "dependencies": {
     "@ag-ui/client": "^0.0.52",

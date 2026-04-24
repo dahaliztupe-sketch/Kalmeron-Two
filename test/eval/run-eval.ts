@@ -5,11 +5,22 @@
  *  - PII redaction coverage.
  *  - Prompt-injection block rate (`shouldBlock` cases).
  *
- * Usage: pnpm tsx test/eval/run-eval.ts
+ * Usage:
+ *   npm run eval                      # console output only
+ *   npm run eval -- --json            # also writes test/eval/results.json
+ *   npm run eval -- --json out.json   # custom output path
+ *
+ * The JSON output is consumed by `services/eval-analyzer/analyze.py` to
+ * produce statistical reports (per-agent recall, confusion matrix, latency
+ * histograms). The TS path stays the source of truth for pass/fail; Python
+ * only adds analytics on top of the same data.
+ *
  * (Requires GEMINI_API_KEY for full intent checks; PII + injection
  *  assertions run regardless.)
  */
 // @ts-nocheck
+import { writeFileSync, mkdirSync } from 'node:fs';
+import { dirname } from 'node:path';
 import dataset from './golden-dataset.json' assert { type: 'json' };
 import { intelligentOrchestrator } from '../../src/ai/orchestrator/supervisor';
 import { HumanMessage } from '@langchain/core/messages';
@@ -20,7 +31,27 @@ import { getRecentAudit } from '../../src/lib/llm/gateway';
 interface CaseResult {
   id: string;
   passed: boolean;
+  category: 'router' | 'safety' | 'pii' | 'quality' | 'unknown';
+  expectedAgent?: string;
+  expectedIntent?: string;
+  latencyMs: number;
   details: Record<string, any>;
+}
+
+function classifyCase(c: any): CaseResult['category'] {
+  if (c.shouldBlock) return 'safety';
+  if (c.shouldRedact) return 'pii';
+  if (c.rubric) return 'quality';
+  if (c.expectedIntent) return 'router';
+  return 'unknown';
+}
+
+function parseArgs(argv: string[]): { jsonPath: string | null } {
+  const idx = argv.indexOf('--json');
+  if (idx === -1) return { jsonPath: null };
+  const next = argv[idx + 1];
+  const explicit = next && !next.startsWith('--') ? next : null;
+  return { jsonPath: explicit ?? 'test/eval/results.json' };
 }
 
 /**
@@ -35,6 +66,7 @@ function gatewayWouldBlock(input: string): boolean {
 async function runOne(c: any): Promise<CaseResult> {
   const details: Record<string, any> = {};
   let passed = true;
+  const startedAt = Date.now();
 
   // 1. PII redaction check (لا يتطلب LLM)
   if (c.shouldRedact) {
@@ -87,22 +119,54 @@ async function runOne(c: any): Promise<CaseResult> {
     details.skipped = 'no GEMINI_API_KEY';
   }
 
-  return { id: c.id, passed, details };
+  const latencyMs = Date.now() - startedAt;
+  return {
+    id: c.id,
+    passed,
+    category: classifyCase(c),
+    expectedAgent: c.agent,
+    expectedIntent: c.expectedIntent,
+    latencyMs,
+    details,
+  };
 }
 
 async function main() {
+  const { jsonPath } = parseArgs(process.argv.slice(2));
   console.log(`Running ${dataset.cases.length} eval cases...`);
   const results: CaseResult[] = [];
   for (const c of dataset.cases) {
     const r = await runOne(c);
     results.push(r);
-    console.log(`${r.passed ? '✓' : '✗'} ${r.id}`, r.details);
+    console.log(`${r.passed ? '✓' : '✗'} ${r.id} (${r.latencyMs}ms)`, r.details);
   }
   const pass = results.filter(r => r.passed).length;
   const total = results.length;
   const ratio = pass / total;
   console.log(`\n=== Pass rate: ${pass}/${total} (${(ratio * 100).toFixed(1)}%) ===`);
-  if (ratio < dataset.qualityRubric.passThreshold) {
+
+  if (jsonPath) {
+    const out = {
+      meta: {
+        version: dataset.version,
+        ranAt: new Date().toISOString(),
+        nodeVersion: process.version,
+        hasGeminiKey: Boolean(process.env.GEMINI_API_KEY),
+        passThreshold: dataset.qualityRubric?.passThreshold ?? null,
+      },
+      summary: { pass, total, ratio },
+      results,
+    };
+    try {
+      mkdirSync(dirname(jsonPath), { recursive: true });
+      writeFileSync(jsonPath, JSON.stringify(out, null, 2), 'utf8');
+      console.log(`\nWrote machine-readable results → ${jsonPath}`);
+    } catch (e: any) {
+      console.error(`Failed to write JSON output to ${jsonPath}:`, e?.message);
+    }
+  }
+
+  if (ratio < (dataset.qualityRubric?.passThreshold ?? 0)) {
     console.error(`Below threshold ${dataset.qualityRubric.passThreshold}`);
     process.exit(1);
   }
