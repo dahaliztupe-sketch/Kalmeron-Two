@@ -3,13 +3,44 @@ import { Input as InputPrimitive } from "@base-ui/react/input"
 
 import { cn } from "@/lib/utils"
 
+/**
+ * Input — Kalmeron Design System v2
+ * Refined focus ring, premium glass background, RTL-aware,
+ * proper Arabic placeholder weight, and invalid state.
+ */
 function Input({ className, type, ...props }: React.ComponentProps<"input">) {
   return (
     <InputPrimitive
       type={type}
       data-slot="input"
       className={cn(
-        "h-8 w-full min-w-0 rounded-lg border border-input bg-transparent px-2.5 py-1 text-base transition-colors outline-none file:inline-flex file:h-6 file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:cursor-not-allowed disabled:bg-input/50 disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 md:text-sm dark:bg-input/30 dark:disabled:bg-input/80 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40",
+        // Base layout
+        "h-10 w-full min-w-0 rounded-xl px-3.5 py-2",
+        // Surface
+        "bg-white/[0.03] border border-white/[0.08]",
+        "text-[14px] text-white",
+        // Placeholder (Arabic placeholders need slightly heavier weight to feel balanced)
+        "placeholder:text-neutral-500 placeholder:font-normal",
+        // Transitions
+        "transition-[border-color,background,box-shadow] duration-200 ease-out",
+        // File-input
+        "file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-white file:me-3",
+        // Focus state — premium ring + brand background tint
+        "outline-none",
+        "focus-visible:border-indigo-400/60 focus-visible:bg-white/[0.05]",
+        "focus-visible:shadow-[0_0_0_3px_rgb(99_102_241/0.18),0_8px_30px_-10px_rgb(79_70_229/0.40)]",
+        // Disabled
+        "disabled:pointer-events-none disabled:cursor-not-allowed",
+        "disabled:bg-white/[0.02] disabled:opacity-50",
+        // Invalid
+        "aria-invalid:border-rose-400/60",
+        "aria-invalid:focus-visible:shadow-[0_0_0_3px_rgb(244_63_94/0.18),0_8px_30px_-10px_rgb(244_63_94/0.40)]",
+        // Hover (subtle)
+        "hover:border-white/[0.14]",
+        // Selection inside input
+        "selection:bg-indigo-500/40 selection:text-white",
+        // Better mobile sizing
+        "md:text-[13.5px]",
         className
       )}
       {...props}

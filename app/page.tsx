@@ -447,54 +447,55 @@ function Hero() {
         </motion.div>
 
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
-          className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-cyan-500/30 bg-cyan-500/5 backdrop-blur-md text-xs md:text-sm text-cyan-300 mb-6"
+          className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full border border-cyan-400/25 bg-[linear-gradient(180deg,rgba(56,189,248,0.10),rgba(56,189,248,0.03))] backdrop-blur-md text-[11px] md:text-xs font-semibold uppercase tracking-[0.18em] text-cyan-200 mb-7 shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_8px_24px_-12px_rgba(56,189,248,0.4)]"
         >
-          <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
+          <span className="live-dot" />
+          <Sparkles className="w-3 h-3 text-cyan-300" />
           <span>كلميرون · مقرّ عمليات شركتك الذكي</span>
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
         </motion.div>
 
-        <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
-          className="font-display text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-extrabold tracking-tight leading-[1.03] mb-6"
+        <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+          className="font-display font-extrabold tracking-tight leading-[1.08] mb-6"
+          style={{ fontSize: "clamp(2.5rem, 1.8rem + 4.2vw, 5.5rem)" }}
         >
-          <span className="block text-white">فريقك المؤسس</span>
-          <span className="block brand-gradient-text">يعمل 24/7 لصالحك</span>
+          <span className="block text-white drop-shadow-[0_2px_20px_rgba(255,255,255,0.08)]">فريقك المؤسس</span>
+          <span className="block brand-gradient-text pb-2">يعمل ٢٤/٧ لصالحك</span>
         </motion.h1>
 
         <motion.p initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
-          className="text-base sm:text-lg md:text-xl text-neutral-300 max-w-3xl mx-auto mb-4 leading-relaxed"
+          className="text-[15px] sm:text-[17px] md:text-xl text-neutral-300/95 max-w-3xl mx-auto mb-5 leading-[1.85]"
         >
           بدل ما تدفع آلاف الجنيهات لمستشار مالي ومحامي ومحلل سوق ومسوق —<br className="hidden md:block" />
-          <span className="text-white font-bold">+50 مساعداً ذكياً</span> متخصّصاً يعمل كفريقك كاملاً في منصّة واحدة، بالعربية الأصيلة.
+          <span className="text-white font-bold">+٥٠ مساعداً ذكياً</span> متخصّصاً يعمل كفريقك كاملاً في منصّة واحدة، بالعربية الأصيلة.
         </motion.p>
 
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.35 }}
-          className="flex flex-wrap items-center justify-center gap-4 text-xs text-neutral-400 mb-10"
+          className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-[12px] font-medium text-neutral-400 mb-10"
         >
-          <span className="flex items-center gap-1.5"><ShieldCheck className="w-3.5 h-3.5 text-emerald-400" /> متوافق مع قانون 151</span>
-          <span className="w-px h-3 bg-white/15" />
-          <span className="flex items-center gap-1.5"><Globe2 className="w-3.5 h-3.5 text-cyan-400" /> عربي مصري أصيل</span>
-          <span className="w-px h-3 bg-white/15" />
-          <span className="flex items-center gap-1.5"><TrendingUp className="w-3.5 h-3.5 text-fuchsia-400" /> +1000 رائد أعمال</span>
-          <span className="w-px h-3 bg-white/15" />
-          <span className="flex items-center gap-1.5"><Zap className="w-3.5 h-3.5 text-amber-400" /> مجاناً للبداية</span>
+          <span className="flex items-center gap-1.5 transition-colors hover:text-emerald-300"><ShieldCheck className="w-3.5 h-3.5 text-emerald-400" /> متوافق مع قانون ١٥١</span>
+          <span className="w-1 h-1 rounded-full bg-white/15" />
+          <span className="flex items-center gap-1.5 transition-colors hover:text-cyan-300"><Globe2 className="w-3.5 h-3.5 text-cyan-400" /> عربي مصري أصيل</span>
+          <span className="w-1 h-1 rounded-full bg-white/15" />
+          <span className="flex items-center gap-1.5 transition-colors hover:text-fuchsia-300"><TrendingUp className="w-3.5 h-3.5 text-fuchsia-400" /> +١٠٠٠ رائد أعمال</span>
+          <span className="w-1 h-1 rounded-full bg-white/15" />
+          <span className="flex items-center gap-1.5 transition-colors hover:text-amber-300"><Zap className="w-3.5 h-3.5 text-amber-400" /> مجاناً للبداية</span>
         </motion.div>
 
         <motion.form initial={{ opacity: 0, y: 24, scale: 0.96 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={{ delay: 0.45, ease: "easeOut" }}
           onSubmit={submit} className="relative max-w-2xl mx-auto group mb-6"
         >
-          <div className="absolute -inset-[1px] rounded-3xl bg-gradient-to-r from-cyan-500/50 via-indigo-500/50 to-fuchsia-500/50 opacity-0 group-focus-within:opacity-100 blur-md transition-opacity duration-500" />
-          <div className="relative flex items-center bg-[#0B1020]/90 backdrop-blur-xl border border-white/10 rounded-3xl p-2 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.8)] focus-within:border-white/25 transition-all">
+          <div className="absolute -inset-[1.5px] rounded-3xl bg-gradient-to-r from-cyan-500/60 via-indigo-500/60 to-fuchsia-500/60 opacity-0 group-focus-within:opacity-100 blur-lg transition-opacity duration-500" />
+          <div className="relative flex items-center bg-[linear-gradient(180deg,rgba(15,23,42,0.92),rgba(8,12,28,0.96))] backdrop-blur-xl border border-white/[0.10] rounded-3xl p-2 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.85),inset_0_1px_0_rgba(255,255,255,0.05)] focus-within:border-white/25 transition-all duration-300">
             <input
               value={query} onChange={(e) => setQuery(e.target.value)}
               placeholder="بم تفكر اليوم؟ احكي فكرتك بالعامية…"
-              className="flex-1 bg-transparent border-none outline-none text-white px-4 py-3.5 text-base md:text-lg placeholder-neutral-500"
+              className="flex-1 bg-transparent border-none outline-none text-white px-5 py-4 text-base md:text-lg placeholder:text-neutral-500"
             />
             <button type="submit" disabled={!query.trim()}
-              className="shrink-0 btn-primary rounded-2xl px-5 py-3 md:px-6 md:py-3.5 disabled:opacity-40 disabled:hover:translate-y-0 text-sm font-bold"
+              className="shrink-0 btn-primary rounded-2xl px-5 py-3.5 md:px-7 md:py-4 disabled:opacity-40 disabled:hover:translate-y-0 text-sm font-bold gap-2"
             >
-              <span className="hidden sm:inline ml-2">ابدأ الآن</span>
-              <ArrowLeft className="w-5 h-5" />
+              <span className="hidden sm:inline">ابدأ الآن</span>
+              <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
             </button>
           </div>
         </motion.form>

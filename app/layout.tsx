@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Noto_Kufi_Arabic, Plus_Jakarta_Sans, Syne } from "next/font/google";
+import { IBM_Plex_Sans_Arabic, Tajawal, Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { AuthProvider } from "@/contexts/AuthContext";
@@ -14,13 +14,25 @@ import { NextIntlClientProvider } from 'next-intl';
 import { getLocale, getMessages } from 'next-intl/server';
 import { LanguageProvider } from "@/contexts/LanguageContext";
 
-const notoKufiArabic = Noto_Kufi_Arabic({
-  variable: "--font-noto",
+// ═══ Premium Arabic typography stack ═══
+// IBM Plex Sans Arabic — primary display + UI (architectural, modern, IBM-grade)
+const plexArabic = IBM_Plex_Sans_Arabic({
+  variable: "--font-plex-ar",
   subsets: ["arabic"],
-  weight: ["400", "500", "600", "700", "800", "900"],
+  weight: ["300", "400", "500", "600", "700"],
+  display: "swap",
+  preload: true,
+});
+
+// Tajawal — secondary fallback, excellent for long-form Arabic body
+const tajawal = Tajawal({
+  variable: "--font-tajawal",
+  subsets: ["arabic"],
+  weight: ["400", "500", "700", "800"],
   display: "swap",
 });
 
+// Plus Jakarta — Latin pages + numerals
 const plusJakarta = Plus_Jakarta_Sans({
   variable: "--font-jakarta",
   subsets: ["latin"],
@@ -28,15 +40,16 @@ const plusJakarta = Plus_Jakarta_Sans({
   display: "swap",
 });
 
-const syne = Syne({
-  variable: "--font-syne",
+// JetBrains Mono — code blocks, KBD, tabular data
+const jetBrainsMono = JetBrains_Mono({
+  variable: "--font-mono",
   subsets: ["latin"],
-  weight: ["500", "600", "700", "800"],
+  weight: ["400", "500", "600"],
   display: "swap",
 });
 
 export const viewport: Viewport = {
-  themeColor: "#080C14",
+  themeColor: "#04060B",
   width: "device-width",
   initialScale: 1,
   maximumScale: 5,
@@ -122,7 +135,7 @@ export default async function RootLayout({
   const messages = await getMessages();
 
   return (
-    <html lang={locale} dir={locale === 'ar' ? 'rtl' : 'ltr'} className={cn(notoKufiArabic.variable, plusJakarta.variable, syne.variable)} suppressHydrationWarning>
+    <html lang={locale} dir={locale === 'ar' ? 'rtl' : 'ltr'} className={cn(plexArabic.variable, tajawal.variable, plusJakarta.variable, jetBrainsMono.variable)} suppressHydrationWarning>
       <head>
         {/* Performance: pre-warm critical third-party origins */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -135,7 +148,7 @@ export default async function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
-      <body className="antialiased bg-[#080C14] text-[#F1F5F9]">
+      <body className="antialiased bg-[#04060B] text-[#F8FAFC] selection:bg-indigo-500/40">
         <NextIntlClientProvider messages={messages}>
             <ThemeProvider attribute="class" defaultTheme="dark" forcedTheme="dark" enableSystem={false}>
               <LanguageProvider>
