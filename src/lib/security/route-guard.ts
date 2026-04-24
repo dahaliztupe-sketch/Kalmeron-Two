@@ -71,10 +71,17 @@ async function verifyAuth(req: NextRequest): Promise<{
   }
 }
 
-function extractWorkspaceId(req: NextRequest, body: any): string | null {
-  if (body?.workspaceId && typeof body.workspaceId === 'string') return body.workspaceId;
+function extractWorkspaceId(req: NextRequest, body: unknown): string | null {
+  if (body && typeof body === 'object' && 'workspaceId' in body) {
+    const wid = (body as { workspaceId?: unknown }).workspaceId;
+    if (typeof wid === 'string' && wid.length > 0) return wid;
+  }
   const q = req.nextUrl.searchParams.get('workspaceId');
   return q || null;
+}
+
+function toAuditActorType(t: ActorType | null): 'user' | 'api_key' | 'system' | 'admin' {
+  return t ?? 'system';
 }
 
 export function guardedRoute<T extends ZodType>(
@@ -84,7 +91,7 @@ export function guardedRoute<T extends ZodType>(
   return async (req: NextRequest): Promise<NextResponse | Response> => {
     const requestId = req.headers.get('X-Request-ID') || crypto.randomUUID();
     const log = createRequestLogger(requestId);
-    const client = extractClientInfo(req as any);
+    const client = extractClientInfo(req);
 
     // 1) Rate limit
     const rl = rateLimit(req, opts.rateLimit ?? { limit: 30, windowMs: 60_000 });
@@ -105,7 +112,7 @@ export function guardedRoute<T extends ZodType>(
     }
 
     // 3) Validate body (POST/PUT/PATCH only)
-    let body: any = {};
+    let body: unknown = {};
     const method = req.method.toUpperCase();
     if (opts.schema && ['POST', 'PUT', 'PATCH'].includes(method)) {
       try {
@@ -157,7 +164,7 @@ export function guardedRoute<T extends ZodType>(
       if (!q.ok) {
         await writeAudit({
           actorId: auth.userId,
-          actorType: (auth.actorType as any) || 'system',
+          actorType: toAuditActorType(auth.actorType),
           action: 'quota_exceeded',
           resource: opts.audit ? opts.audit.resource : 'quota',
           workspaceId,
@@ -195,7 +202,7 @@ export function guardedRoute<T extends ZodType>(
       if (opts.audit && ['POST', 'PUT', 'PATCH', 'DELETE'].includes(method)) {
         writeAudit({
           actorId: auth.userId,
-          actorType: (auth.actorType as any) || 'system',
+          actorType: toAuditActorType(auth.actorType),
           action: opts.audit.action,
           resource: opts.audit.resource,
           workspaceId: workspaceId || undefined,
@@ -208,23 +215,24 @@ export function guardedRoute<T extends ZodType>(
         res.headers.set('X-Request-ID', requestId);
       }
       return res;
-    } catch (err: any) {
-      log.error?.({ err: err?.message || String(err), path: req.nextUrl.pathname }, 'route_error');
+    } catch (err: unknown) {
+      const errMessage = err instanceof Error ? err.message : String(err);
+      log.error?.({ err: errMessage, path: req.nextUrl.pathname }, 'route_error');
       if (opts.audit) {
         writeAudit({
           actorId: auth.userId,
-          actorType: (auth.actorType as any) || 'system',
+          actorType: toAuditActorType(auth.actorType),
           action: opts.audit.action,
           resource: opts.audit.resource,
           workspaceId: workspaceId || undefined,
           requestId,
           success: false,
-          errorMessage: err?.message || 'unknown',
+          errorMessage: errMessage,
           ...client,
         }).catch(() => {});
       }
       return NextResponse.json(
-        { error: 'internal_error', message: err?.message || 'خطأ غير متوقع' },
+        { error: 'internal_error', message: errMessage || 'خطأ غير متوقع' },
         { status: 500, headers: { 'X-Request-ID': requestId } }
       );
     }

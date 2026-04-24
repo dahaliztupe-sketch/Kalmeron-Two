@@ -4,34 +4,67 @@ import createNextIntlPlugin from 'next-intl/plugin';
 
 const withNextIntl = createNextIntlPlugin('./i18n/request.ts');
 
+// Content-Security-Policy
+// In dev we relax `unsafe-eval` / `unsafe-inline` for HMR, React DevTools and
+// inline next.js bootstrap scripts. In production we keep `unsafe-inline` only
+// for styles (Tailwind/Framer Motion injected styles); scripts use nonces via
+// Next.js automatic strict CSP when available.
+function buildCsp(): string {
+  const isProd = process.env.NODE_ENV === 'production';
+  const directives: Record<string, string[]> = {
+    'default-src': ["'self'"],
+    'script-src': isProd
+      ? ["'self'", "'unsafe-inline'", 'https://js.stripe.com', 'https://*.sentry.io', 'https://*.vercel-insights.com']
+      : ["'self'", "'unsafe-inline'", "'unsafe-eval'", 'https://js.stripe.com'],
+    'style-src': ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
+    'img-src': ["'self'", 'data:', 'blob:', 'https:'],
+    'font-src': ["'self'", 'data:', 'https://fonts.gstatic.com'],
+    'connect-src': [
+      "'self'",
+      'https://*.googleapis.com',
+      'https://*.firebaseio.com',
+      'https://*.firebase.com',
+      'https://identitytoolkit.googleapis.com',
+      'https://securetoken.googleapis.com',
+      'https://api.stripe.com',
+      'https://*.sentry.io',
+      'https://*.langfuse.com',
+      'https://generativelanguage.googleapis.com',
+      'wss://*.firebaseio.com',
+      ...(isProd ? [] : ['ws://localhost:*', 'http://localhost:*', 'https://localhost:*']),
+    ],
+    'frame-src': ["'self'", 'https://js.stripe.com', 'https://hooks.stripe.com'],
+    'media-src': ["'self'", 'blob:', 'data:'],
+    'worker-src': ["'self'", 'blob:'],
+    'object-src': ["'none'"],
+    'base-uri': ["'self'"],
+    'form-action': ["'self'"],
+    'frame-ancestors': ["'self'"],
+    'upgrade-insecure-requests': [],
+  };
+  return Object.entries(directives)
+    .map(([k, v]) => (v.length ? `${k} ${v.join(' ')}` : k))
+    .join('; ');
+}
+
 const securityHeaders = [
-  {
-    key: 'X-DNS-Prefetch-Control',
-    value: 'on',
-  },
-  {
-    key: 'Strict-Transport-Security',
-    value: 'max-age=63072000; includeSubDomains; preload',
-  },
-  {
-    key: 'X-Frame-Options',
-    value: 'SAMEORIGIN',
-  },
-  {
-    key: 'X-Content-Type-Options',
-    value: 'nosniff',
-  },
-  {
-    key: 'Referrer-Policy',
-    value: 'strict-origin-when-cross-origin',
-  },
+  { key: 'X-DNS-Prefetch-Control', value: 'on' },
+  { key: 'Strict-Transport-Security', value: 'max-age=63072000; includeSubDomains; preload' },
+  { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
+  { key: 'X-Content-Type-Options', value: 'nosniff' },
+  { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
   {
     key: 'Permissions-Policy',
-    value: 'camera=(), microphone=(), geolocation=(), browsing-topics=()',
+    value: 'camera=(), microphone=(), geolocation=(), browsing-topics=(), interest-cohort=()',
   },
+  { key: 'X-XSS-Protection', value: '1; mode=block' },
+  { key: 'Cross-Origin-Opener-Policy', value: 'same-origin-allow-popups' },
+  { key: 'Cross-Origin-Resource-Policy', value: 'same-site' },
   {
-    key: 'X-XSS-Protection',
-    value: '1; mode=block',
+    key: process.env.NODE_ENV === 'production'
+      ? 'Content-Security-Policy'
+      : 'Content-Security-Policy-Report-Only',
+    value: buildCsp(),
   },
 ];
 

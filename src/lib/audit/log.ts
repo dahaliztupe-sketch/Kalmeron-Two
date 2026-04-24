@@ -65,7 +65,7 @@ export async function queryAudit(opts: {
 }
 
 export function extractClientInfo(req: Request | { headers: Headers }) {
-  const h = (req as any).headers as Headers;
+  const h = req.headers;
   const ip =
     h.get('x-forwarded-for')?.split(',')[0]?.trim() ||
     h.get('x-real-ip') ||

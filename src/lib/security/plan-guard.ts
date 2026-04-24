@@ -96,7 +96,7 @@ export function gatekeep(
  */
 export function checkToolCall(
   toolName: string,
-  toolArgs: Record<string, any>,
+  toolArgs: Record<string, unknown>,
   decision: PlanGuardDecision,
   untrusted: UntrustedSource[] = []
 ): ToolCallCheck {

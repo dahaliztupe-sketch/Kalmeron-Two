@@ -10,6 +10,9 @@
     "start": "next start -p 5000 -H 0.0.0.0",
     "lint": "eslint .",
     "clean": "next clean",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:rules": "vitest run test/firestore-rules.test.ts",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "eval": "tsx test/eval/run-eval.ts"

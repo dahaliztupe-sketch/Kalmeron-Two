@@ -1,24 +1,29 @@
-# Security Specification: Task Management System
+# Security Specification — Kalmeron Two
 
-## 1. Data Invariants
-- A `Task` cannot exist without a valid `createdBy` and `assignee` UID.
-- `taskId` is immutable once document is created.
-- `status` transitions must follow a valid flow (e.g., pending -> in_progress -> completed).
-- `parentTaskId` references must point to an existing task in the same collection.
+> This document is intentionally short. The authoritative sources are:
+> - **Threat model:** [`docs/THREAT_MODEL.md`](docs/THREAT_MODEL.md)
+> - **Audit report:** [`docs/EXPERT_PANEL_AUDIT_REPORT.md`](docs/EXPERT_PANEL_AUDIT_REPORT.md)
+> - **Runbook:** [`docs/RUNBOOK.md`](docs/RUNBOOK.md)
+> - **SLOs:** [`docs/SLO.md`](docs/SLO.md)
 
-## 2. The "Dirty Dozen" Payloads (Examples to guard against)
-1. Creating a task with empty `taskId`.
-2. Updating `status` from `completed` to `in_progress`.
-3. Hijacking `createdBy` during `TaskUpdate`.
-4. Injecting a 1MB string into `description`.
-5. Setting `assignee` to an invalid UID.
-6. Deleting a task without being the owner.
-7. Accessing tasks of another user.
-8. Creating a task with a `parentTaskId` that does not exist.
-9. Modifying `createdAt` during an update.
-10. Spoofing `workflowId`.
-11. Setting priority to an unsupported value.
-12. Attempting mass updates to status via bulk operations.
+This file is preserved only for legacy backlinks. Do not add new content here — extend the documents above instead.
 
-## 3. The Test Runner (Plan)
-- `firestore.rules.test.ts` will verify that all 12 payloads return PERMISSION_DENIED.
+## 1. Scope (one paragraph)
+Kalmeron Two is a multi-tenant Arabic AI OS. The security boundary lives at the
+Next.js API layer; everything below it (Firestore, Neo4j, Stripe, Gemini) is
+called from the trusted server, never from the browser. Authentication is
+Firebase Auth ID tokens (web/mobile) or workspace-scoped API keys
+(`kal_live_…`) for programmatic access. Authorization is RBAC over
+`workspace_members/{wid_uid}`.
+
+## 2. Data invariants
+- Every Firestore document under a workspace must include `workspaceId`.
+- `audit_logs` is append-only — enforced by Firestore rules (no update / delete).
+- `api_keys` store only SHA-256 hashes; the raw value is shown to the user
+  exactly once at creation.
+- `users` documents may only be read by their owner or a platform admin.
+
+## 3. Test plan
+Firestore rules tests live in `test/firestore-rules.test.ts` and run in CI via
+`npm run test:rules`. They cover the "Dirty Dozen" anti-payloads from the
+previous draft of this spec, now formalized in the rules-test file itself.

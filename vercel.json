@@ -1,12 +1,18 @@
 {
+  "$schema": "https://openapi.vercel.sh/vercel.json",
   "crons": [
+    { "path": "/api/cron/red-team", "schedule": "0 2 * * *" },
+    { "path": "/api/cron/consolidate-skills", "schedule": "0 3 * * *" },
+    { "path": "/api/cron/health-probe", "schedule": "*/5 * * * *" },
+    { "path": "/api/cron/firestore-backup", "schedule": "0 4 * * *" }
+  ],
+  "headers": [
     {
-      "path": "/api/cron/red-team",
-      "schedule": "0 2 * * *"
-    },
-    {
-      "path": "/api/cron/consolidate-skills",
-      "schedule": "0 3 * * *"
+      "source": "/api/health",
+      "headers": [
+        { "key": "Cache-Control", "value": "no-store, max-age=0" },
+        { "key": "X-Robots-Tag", "value": "noindex" }
+      ]
     }
   ]
 }

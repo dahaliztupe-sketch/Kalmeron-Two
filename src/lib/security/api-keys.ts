@@ -61,12 +61,12 @@ export async function listApiKeys(workspaceId: string, ownerId: string) {
     .where('ownerId', '==', ownerId)
     .get();
   return snap.docs.map((d) => {
-    const data = d.data() as any;
+    const data = d.data() as Partial<ApiKeyRecord>;
     return {
       id: d.id,
-      name: data.name,
-      prefix: data.prefix,
-      scopes: data.scopes || [],
+      name: data.name ?? '',
+      prefix: data.prefix ?? '',
+      scopes: data.scopes ?? [],
       createdAt: data.createdAt?.toMillis?.() ?? null,
       lastUsedAt: data.lastUsedAt?.toMillis?.() ?? null,
       revoked: !!data.revokedAt,
@@ -78,7 +78,8 @@ export async function revokeApiKey(id: string, ownerId: string): Promise<boolean
   const ref = adminDb.collection(COL).doc(id);
   const doc = await ref.get();
   if (!doc.exists) return false;
-  if ((doc.data() as any).ownerId !== ownerId) return false;
+  const data = doc.data() as Partial<ApiKeyRecord> | undefined;
+  if (!data || data.ownerId !== ownerId) return false;
   await ref.update({ revokedAt: FieldValue.serverTimestamp() });
   return true;
 }
@@ -95,15 +96,16 @@ export async function verifyApiKey(raw: string): Promise<{
   const snap = await adminDb.collection(COL).where('hash', '==', hash).limit(1).get();
   if (snap.empty) return { ok: false };
   const doc = snap.docs[0];
-  const data = doc.data() as any;
-  if (data.revokedAt) return { ok: false };
+  if (!doc) return { ok: false };
+  const data = doc.data() as Partial<ApiKeyRecord> | undefined;
+  if (!data || data.revokedAt) return { ok: false };
   // fire-and-forget touch
   doc.ref.update({ lastUsedAt: FieldValue.serverTimestamp() }).catch(() => {});
   return {
     ok: true,
     ownerId: data.ownerId,
     workspaceId: data.workspaceId,
-    scopes: data.scopes || [],
+    scopes: data.scopes ?? [],
     id: doc.id,
   };
 }

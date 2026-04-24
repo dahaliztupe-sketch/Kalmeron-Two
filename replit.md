@@ -1,6 +1,18 @@
 # Kalmeron AI (ai-studio-applet)
 
-Arabic-language AI Operating System for Egyptian entrepreneurs. World-class platform with 50+ specialized AI agents across 7 departments.
+Arabic-language AI Operating System for Egyptian entrepreneurs. World-class platform with **16 production agents** (Strategy, Research, Finance, Legal, Real-Estate, Support) plus a `/ai-experts/[slug]` directory of 12 SEO-only persona pages. The "50+" figure refers to the long-term roadmap — production count is 16. See `docs/agents/README.md` for the canonical list.
+
+## Recent Major Updates (Session 2026-04-24 — 39-Expert Audit Execution)
+- **Audit:** delivered `docs/EXPERT_PANEL_AUDIT_REPORT.md` (full P0–P3 roadmap, 68 % production readiness baseline) and the matching `docs/EXPERT_PANEL_AUDIT_PLAN.md`.
+- **P0 Security:** removed every `as any` from `src/lib/security/*` and `src/lib/audit/log.ts`; added `toAuditActorType()` helper; `Partial<…>` typing for Firestore document reads.
+- **P0 Reliability:** `lib/security/rate-limit.ts` rewritten with a pluggable backend — Upstash Redis / Vercel KV via REST, in-memory fallback; new `rateLimitAsync` / `rateLimitAgentAsync` API alongside the legacy sync API for back-compat.
+- **P0 Headers:** strict CSP (Report-Only in dev, enforced in prod) + COOP/CORP added to `next.config.ts`.
+- **P0 Crons:** new `/api/cron/health-probe` (every 5 min) and `/api/cron/firestore-backup` (native GCS export with logical-snapshot fallback). Wired in `vercel.json`. `/api/health` now returns `Cache-Control: no-store`.
+- **P0 CI Security:** `.github/dependabot.yml` (grouped npm + actions) and `.github/workflows/security.yml` (npm audit, CodeQL, Gitleaks).
+- **P0 Docs:** new `docs/THREAT_MODEL.md` (STRIDE + OWASP LLM Top 10), `docs/RUNBOOK.md` (6 incident playbooks), `docs/SLO.md` (per-agent + headline SLOs), `docs/agents/` (system cards index + Idea Validator + Legal Guide + CFO + template), `docs/api/openapi.yaml` + `/api-docs` Scalar reference.
+- **P0 Tests:** `test/firestore-rules.test.ts` (lazy-loads `@firebase/rules-unit-testing`, skips if absent); 6 new E2E specs under `e2e/` (landing, auth, chat, billing, api-docs, security-headers).
+- **P0 Cleanup:** deleted placeholder docs (`docs_AI_MODELS.md`, etc.), `test.txt`, `tsbuildinfo`; expanded `.gitignore`; reconciled "16 vs 50+" agent contradiction (canonical = 16 production agents, /ai-experts pages are SEO).
+- **P1 Architecture docs:** `docs/COST_DASHBOARD.md`, `docs/CONSENT_LEDGER.md`, `docs/FUNNEL_ANALYTICS.md`, `test/eval/README.md`.
 
 ## Recent Major Updates (Session 2025-04-23)
 
@@ -213,7 +225,7 @@ ChatGPT/Claude/Manus/Lovable in the MENA market.
 - **Sitemap**: now ~250+ URLs, includes templates/glossary/cities/feature pages.
 
 ### Session 2 additions (Apr 23 2026)
-- `/ai-experts` directory + `/ai-experts/[slug]` for 12 specialized agents
+- `/ai-experts` directory + `/ai-experts/[slug]` for 12 SEO persona pages (these are static marketing pages, not orchestratable agents)
   (CFO, legal, idea-validator, marketing, opportunity-radar, mistake-shield,
   success-museum, plan-builder, HR, compliance, SEO, content-creator). Each
   page emits a `Service` JSON-LD block. Renamed from `/experts` to avoid

@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Agent Governance — بوابة سياسات للإجراءات الحساسة.
  * يجب أن تستدعى قبل تنفيذ أي أداة محتملة الخطر.
@@ -41,7 +40,7 @@ export interface PolicyContext {
   userId: string;
   agentId: string;
   toolName: string;
-  args: any;
+  args: Record<string, unknown>;
   /** أعلى من 0 يعني الوكيل يعمل بدرجة استقلالية أعلى. */
   autonomyLevel?: number; // 0..10
 }

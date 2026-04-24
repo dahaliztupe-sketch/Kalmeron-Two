@@ -82,10 +82,12 @@ export async function getUserRole(userId: string, workspaceId: string): Promise<
     if (!doc.exists) {
       // Legacy fallback: owner record may live on the workspace doc itself.
       const ws = await adminDb.collection('workspaces').doc(workspaceId).get();
-      if (ws.exists && (ws.data() as any)?.ownerId === userId) return 'owner';
+      const wsData = ws.exists ? (ws.data() as { ownerId?: string } | undefined) : undefined;
+      if (wsData?.ownerId === userId) return 'owner';
       return null;
     }
-    return ((doc.data() as any).role as Role) ?? null;
+    const memberData = doc.data() as { role?: Role } | undefined;
+    return memberData?.role ?? null;
   } catch {
     return null;
   }

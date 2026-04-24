@@ -202,7 +202,7 @@ export function term(key: keyof typeof LEXICON): string {
 export function canonicalize(input: string): string {
   for (const entry of Object.values(LEXICON)) {
     if (entry.canonical === input) return input;
-    if (entry.aliases.includes(input)) return entry.canonical;
+    if ((entry.aliases as readonly string[]).includes(input)) return entry.canonical;
   }
   return input;
 }

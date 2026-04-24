@@ -15,3 +15,20 @@ coverage/
 # Next.js
 out/
 .env
+
+# TypeScript incremental build info
+*.tsbuildinfo
+tsconfig.tsbuildinfo
+
+# OS / editors
+Thumbs.db
+.idea/
+.vscode/
+
+# Test artifacts
+playwright-report/
+test-results/
+.vitest-cache/
+
+# Local
+.local/tmp/

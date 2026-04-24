@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils";
 
 interface CalmCardProps {
-  children: React.ReactNode;
+  children?: React.ReactNode;
   /** أيقونة اختيارية تظهر أعلى البطاقة */
   icon?: React.ComponentType<{ className?: string }>;
   /** عنوان فرعي */

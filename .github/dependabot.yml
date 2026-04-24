@@ -1,0 +1,40 @@
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "07:00"
+      timezone: "Africa/Cairo"
+    open-pull-requests-limit: 10
+    versioning-strategy: "increase"
+    groups:
+      production-minor-and-patch:
+        dependency-type: "production"
+        update-types: ["minor", "patch"]
+      development-minor-and-patch:
+        dependency-type: "development"
+        update-types: ["minor", "patch"]
+    ignore:
+      # Major framework upgrades require manual review.
+      - dependency-name: "next"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "react"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "react-dom"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "typescript"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "tailwindcss"
+        update-types: ["version-update:semver-major"]
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "npm"
+    directory: "/KalmeronMobile"
+    schedule:
+      interval: "weekly"

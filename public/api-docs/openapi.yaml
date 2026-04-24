@@ -1,0 +1,258 @@
+openapi: 3.1.0
+info:
+  title: Kalmeron Two — Public API
+  version: 0.1.0
+  description: |
+    Programmatic access to Kalmeron Two. All endpoints require either a
+    Firebase ID token or a workspace-scoped API key (`kal_live_…`).
+  contact:
+    email: dev@kalmeron.com
+  license:
+    name: Proprietary
+servers:
+  - url: https://app.kalmeron.com
+    description: Production
+  - url: http://localhost:5000
+    description: Local dev
+
+security:
+  - bearerAuth: []
+  - apiKeyAuth: []
+
+tags:
+  - name: Health
+  - name: Account
+  - name: Agents
+  - name: Webhooks
+  - name: Workspaces
+
+paths:
+  /api/health:
+    get:
+      tags: [Health]
+      summary: Health snapshot of all subsystems
+      security: []
+      responses:
+        "200":
+          description: Always 200; status field is `healthy`/`degraded`.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthResponse"
+
+  /api/chat:
+    post:
+      tags: [Agents]
+      summary: Stream a response from the orchestrator
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [messages]
+              properties:
+                workspaceId: { type: string }
+                messages:
+                  type: array
+                  items: { $ref: "#/components/schemas/ChatMessage" }
+                intent:
+                  type: string
+                  enum:
+                    - idea_validation
+                    - business_plan
+                    - mistake_shield
+                    - success_research
+                    - opportunity_search
+                    - cfo_analysis
+                    - legal_review
+                    - real_estate
+                    - general_chat
+      responses:
+        "200":
+          description: Server-sent events stream.
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "429": { $ref: "#/components/responses/RateLimited" }
+
+  /api/account/api-keys:
+    get:
+      tags: [Account]
+      summary: List API keys for the current workspace
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/ApiKey" }
+    post:
+      tags: [Account]
+      summary: Create a new API key (raw value returned **once**)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, scopes, workspaceId]
+              properties:
+                workspaceId: { type: string }
+                name: { type: string, maxLength: 80 }
+                scopes:
+                  type: array
+                  items: { type: string }
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiKey"
+                  - type: object
+                    properties:
+                      raw:
+                        type: string
+                        description: Shown ONCE; store it securely.
+    delete:
+      tags: [Account]
+      summary: Revoke an API key
+      parameters:
+        - in: query
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        "204": { description: Revoked }
+
+  /api/account/webhooks:
+    get:
+      tags: [Webhooks]
+      summary: List webhook subscriptions
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/WebhookSubscription" }
+    post:
+      tags: [Webhooks]
+      summary: Subscribe to events
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [workspaceId, url, events]
+              properties:
+                workspaceId: { type: string }
+                url: { type: string, format: uri }
+                events:
+                  type: array
+                  items:
+                    type: string
+                    enum: [launch.completed, meeting.completed, expert.created]
+      responses:
+        "201": { description: Created }
+
+  /api/account/export:
+    post:
+      tags: [Account]
+      summary: GDPR/PDPL data export — full JSON bundle
+      responses:
+        "200": { description: JSON bundle of all owned data }
+
+  /api/account/delete:
+    post:
+      tags: [Account]
+      summary: Soft-delete the account with 30-day grace period
+      responses:
+        "200": { description: Deletion scheduled }
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: Firebase-ID-Token
+    apiKeyAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: kal_live_<24>
+
+  responses:
+    Unauthorized:
+      description: Missing or invalid token
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+    Forbidden:
+      description: Insufficient permission
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+    RateLimited:
+      description: Too many requests
+      headers:
+        Retry-After:
+          schema: { type: integer }
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+
+  schemas:
+    Error:
+      type: object
+      required: [error, message]
+      properties:
+        error: { type: string }
+        message: { type: string }
+        details: { type: object, additionalProperties: true }
+
+    HealthResponse:
+      type: object
+      properties:
+        status: { type: string, enum: [healthy, degraded] }
+        timestamp: { type: string, format: date-time }
+        version: { type: string }
+        checks:
+          type: object
+          additionalProperties: { type: string }
+        meta:
+          type: object
+          additionalProperties: true
+
+    ChatMessage:
+      type: object
+      required: [role, content]
+      properties:
+        role: { type: string, enum: [user, assistant, system] }
+        content: { type: string }
+
+    ApiKey:
+      type: object
+      properties:
+        id: { type: string }
+        name: { type: string }
+        prefix: { type: string }
+        scopes:
+          type: array
+          items: { type: string }
+        createdAt: { type: integer, format: int64, nullable: true }
+        lastUsedAt: { type: integer, format: int64, nullable: true }
+        revoked: { type: boolean }
+
+    WebhookSubscription:
+      type: object
+      properties:
+        id: { type: string }
+        url: { type: string, format: uri }
+        events:
+          type: array
+          items: { type: string }
+        active: { type: boolean }
