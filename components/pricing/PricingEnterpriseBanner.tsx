@@ -3,7 +3,6 @@
 import { motion } from "motion/react";
 import { Building2, ArrowLeft } from "lucide-react";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import type { Plan } from "@/src/lib/billing/plans";
 
 interface Props {
@@ -58,15 +57,13 @@ export function PricingEnterpriseBanner({ plan }: Props) {
             <div className="font-display text-2xl font-extrabold brand-gradient-text text-center md:text-right">
               تسعير مخصّص
             </div>
-            <Button
-              asChild
-              className="h-12 rounded-xl bg-gradient-to-r from-brand-cyan to-brand-blue text-black font-bold hover:shadow-lg hover:shadow-brand-cyan/40"
+            <Link
+              href="/contact?intent=enterprise"
+              className="inline-flex items-center justify-center h-12 px-5 rounded-xl bg-gradient-to-r from-brand-cyan to-brand-blue text-black font-bold hover:shadow-lg hover:shadow-brand-cyan/40 transition-shadow"
             >
-              <Link href="/contact?intent=enterprise">
-                <span>تواصل مع المبيعات</span>
-                <ArrowLeft className="h-4 w-4 ms-2" />
-              </Link>
-            </Button>
+              <span>تواصل مع المبيعات</span>
+              <ArrowLeft className="h-4 w-4 ms-2" />
+            </Link>
             <p className="text-[11px] text-text-secondary/70 text-center md:text-right">
               ردّ خلال يوم عمل واحد
             </p>

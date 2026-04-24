@@ -1,6 +1,7 @@
 "use client";
   import { useEffect, useRef, useState } from 'react';
   import { AppShell } from '@/components/layout/AppShell';
+  import { useAuth } from '@/contexts/AuthContext';
 
   interface Snapshot {
     agents: Record<string, any>;
@@ -10,6 +11,7 @@
   }
 
   export default function MissionControlPage() {
+    const { user, loading: authLoading } = useAuth();
     const [data, setData] = useState<Snapshot | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [live, setLive] = useState(false);
@@ -17,7 +19,19 @@
     const pulseTimer = useRef<any>(null);
 
     useEffect(() => {
-      const es = new EventSource('/api/admin/mission-control/stream');
+      if (authLoading) return;
+      if (!user) {
+        setError('يجب تسجيل الدخول بحساب Platform Admin.');
+        return;
+      }
+      let es: EventSource | null = null;
+      let cancelled = false;
+
+      (async () => {
+        try {
+          const token = await user.getIdToken();
+          if (cancelled) return;
+          es = new EventSource(`/api/admin/mission-control/stream?token=${encodeURIComponent(token)}`);
 
       es.addEventListener('open', () => setLive(true));
       es.addEventListener('snapshot', (e: MessageEvent) => {
@@ -45,10 +59,18 @@
           setData(prev => prev ? { ...prev, alertsRecent: [...prev.alertsRecent, a].slice(-50) } : prev);
         } catch {}
       });
-      es.onerror = () => { setLive(false); setError('انقطع البث المباشر، يحاول إعادة الاتصال...'); };
+          es.onerror = () => { setLive(false); setError('انقطع البث المباشر — قد تكون انتهت صلاحية الرمز، حدّث الصفحة.'); };
+        } catch (e) {
+          if (!cancelled) setError(e instanceof Error ? e.message : 'تعذّر الاتصال');
+        }
+      })();
 
-      return () => { es.close(); if (pulseTimer.current) clearTimeout(pulseTimer.current); };
-    }, []);
+      return () => {
+        cancelled = true;
+        if (es) es.close();
+        if (pulseTimer.current) clearTimeout(pulseTimer.current);
+      };
+    }, [user, authLoading]);
 
     return (
       <AppShell>

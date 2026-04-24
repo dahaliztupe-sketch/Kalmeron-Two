@@ -1,10 +1,37 @@
-import { NextRequest } from 'next/server';
+/**
+ * /api/admin/mission-control/stream — SSE feed of live ops metrics.
+ *
+ * 🔒 Platform admin only. Because the browser EventSource API cannot send
+ *    custom Authorization headers, this endpoint accepts the Firebase ID
+ *    token via the `?token=...` query parameter. The token is short-lived
+ *    (1 hour) so accidental logging has bounded blast radius. Closed
+ *    2026-04-24 as part of the Boardroom audit.
+ */
+import type { NextRequest } from 'next/server';
+import { NextResponse } from 'next/server';
 import { getMetricsSnapshot, monitorEvents } from '@/src/ai/organization/compliance/monitor';
+import { adminAuth } from '@/src/lib/firebase-admin';
+import { isPlatformAdmin } from '@/src/lib/security/rbac';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-export async function GET(_req: NextRequest) {
+export async function GET(req: NextRequest) {
+  const token = new URL(req.url).searchParams.get('token');
+  if (!token) {
+    return NextResponse.json({ error: 'unauthorized', message: 'Missing ?token query parameter' }, { status: 401 });
+  }
+  let uid: string;
+  try {
+    const decoded = await adminAuth.verifyIdToken(token);
+    uid = decoded.uid;
+  } catch {
+    return NextResponse.json({ error: 'invalid_token' }, { status: 401 });
+  }
+  if (!isPlatformAdmin(uid)) {
+    return NextResponse.json({ error: 'forbidden' }, { status: 403 });
+  }
+
   const encoder = new TextEncoder();
 
   const stream = new ReadableStream({
@@ -37,7 +64,7 @@ export async function GET(_req: NextRequest) {
         try { controller.close(); } catch { /* already closed */ }
       };
 
-      _req.signal.addEventListener('abort', close);
+      req.signal.addEventListener('abort', close);
     },
   });
 

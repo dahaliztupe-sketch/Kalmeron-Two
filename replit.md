@@ -1000,3 +1000,55 @@ into a deliberating multi-perspective panel.
 ### مرجع
 - خطة العمل: `.local/tasks/VIRTUAL_BOARDROOM_ACTION_PLAN.md`
 - التقرير المرجعي: `docs/VIRTUAL_BOARDROOM_201_REPORT.md`
+
+## Audit Sweep — 24 أبريل 2026 (المرحلة الثانية)
+
+تنفيذ بنود مؤجَّلة + إصلاحات أمنية اكتُشفت أثناء الفحص الشامل.
+
+### إصلاحات أمنية حرجة (اكتُشفت أثناء المسح)
+ثلاث مسارات `/api/admin/*` كانت **غير مُصادَقَة** تماماً وتكشف بيانات
+داخلية للعموم:
+- `/api/admin/mission-control` — لقطة مقاييس الوكلاء (تكاليف، نجاح،
+  زمن، تنبيهات).
+- `/api/admin/mission-control/stream` — بثّ SSE للمقاييس المباشرة.
+- `/api/admin/ttfv-summary` — Time-To-First-Value الإحصائي.
+
+**الإصلاح:**
+- ملف جديد `src/lib/security/require-admin.ts` — حارس موحَّد يتحقّق من
+  Firebase ID Token + قائمة `PLATFORM_ADMIN_UIDS`. يُرجع 401/403
+  بصيغة JSON عربية واضحة.
+- جميع المسارات الثلاثة مُحَمَّاة الآن. SSE يستقبل التوكن عبر
+  `?token=` (لأنّ `EventSource` لا يدعم Authorization headers).
+- صفحة `app/admin/mission-control/page.tsx` حُدِّثت لتستخرج التوكن من
+  `useAuth()` وتمرّره في query string.
+- التحقّق العملي: `curl /api/admin/funnel` → `401 unauthorized` ✓
+  (كان `200` مع البيانات الحسّاسة قبل الإصلاح).
+
+### T-P1-5 — Funnel Dashboard (كان مؤجَّلاً، أُنجِز الآن)
+- `app/api/admin/funnel/route.ts` — يقرأ `analytics_events` من Firestore
+  ويحسب 7 مراحل (visit → activation → paid) في نوافذ 7 و 30 يوماً.
+  المعرّفات مجمّعة (distinct userId) — لا يُكشف أيّ معرّف فردي.
+- `app/admin/funnel/page.tsx` — لوحة عربية RTL تعرض:
+  - بطاقتي ملخّص: Visit→Activation و Activation→Paid (مع عتبات صحّة
+    5% و 10%).
+  - جدول مفصَّل لكلّ مرحلة + معدّل التحويل من المرحلة السابقة.
+- `docs/FUNNEL_ANALYTICS.md` — توثيق رسمي لتاكسونومي 11 حدثاً، طريقة
+  الحساب، عتبات الصحّة، تحذير cohort-naive، خارطة طريق
+  (BigQuery cohort في Q3 2026).
+
+### إصلاح TS Error
+- `components/pricing/PricingEnterpriseBanner.tsx` — استبدال
+  `<Button asChild>` (غير مدعوم) بـ `<Link>` مع classes الأزرار يدوياً.
+
+### فحص شامل (نتائج للمراجعة المستقبلية، لم يُغيَّر شيء)
+- **depcheck**: 15 dep + 5 devDep مُرشَّحة للحذف، لكن أكثرها false-positive
+  (postcss/autoprefixer/tailwind تُستخدم في build pipeline لا في
+  imports). مُرشَّحات حقيقية للحذف في PR منفصل:
+  `@firebase/eslint-plugin-security-rules`, `@hookform/resolvers`,
+  `@jackchen_me/open-multi-agent`, `pino-pretty`.
+- **`app/page.tsx`**: 71KB / 1251 سطراً — لا يزال مرشَّحاً للتقسيم في
+  PR منفصل بمراجعة بصرية.
+- **76 مساراً API** بعد إضافة Funnel.
+- **`tsc --noEmit` كامل**: يفشل بـ stack overflow (مشكلة معروفة في
+  TypeScript مع type inference عميق، ليست خطأً في كودنا). فحص
+  مستهدف للملفات المُعدَّلة نجح. يُنصح بترقية TS إلى 5.7+ في PR منفصل.
