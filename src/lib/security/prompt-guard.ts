@@ -1,5 +1,4 @@
 // @ts-nocheck
-import { createHash } from 'crypto';
 
 // 1. الطبقة الأولى: التطهير الدلالي (Semantic Sanitization)
 export function sanitizeInput(input: string): string {
@@ -16,9 +15,7 @@ export function isolateUserInput(input: string): string {
 }
 
 // 3. الطبقة الثالثة: التحقق من سلامة التحكم في التدفق (Prompt Control-Flow Integrity)
-export function validatePromptIntegrity(systemPrompt: string, userInput: string): boolean {
-  // حساب بصمة تعليمات النظام
-  const systemHash = createHash('sha256').update(systemPrompt).digest('hex');
+export function validatePromptIntegrity(_systemPrompt: string, userInput: string): boolean {
   // التحقق من أن مدخلات المستخدم لا تحاول محاكاة تعليمات النظام
   const suspiciousPatterns = [
     'you are now',
@@ -26,8 +23,8 @@ export function validatePromptIntegrity(systemPrompt: string, userInput: string)
     'ignore your instructions',
     'system prompt',
   ];
-  
-  return !suspiciousPatterns.some(pattern => 
+
+  return !suspiciousPatterns.some(pattern =>
     userInput.toLowerCase().includes(pattern.toLowerCase())
   );
 }

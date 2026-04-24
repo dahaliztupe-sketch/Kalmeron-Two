@@ -69,7 +69,7 @@ export interface Entity {
 
 /** Add or merge an entity scoped to a user/project. */
 export async function addEntity(userId: string, type: string, properties: Record<string, any>) {
-  const id = properties.id || `${type}_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+  const id = properties.id || `${type}_${Date.now()}_${(typeof crypto !== 'undefined' && 'randomUUID' in crypto ? crypto.randomUUID().replace(/-/g, '') : Math.random().toString(36).slice(2)).slice(0, 6)}`;
   return withSession(async (s) => {
     const res = await s.run(
       `MERGE (u:User {userId: $userId})

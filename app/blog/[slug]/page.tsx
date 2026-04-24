@@ -4,6 +4,7 @@ import Link from "next/link";
 import { getBlogPostBySlug, getAllBlogSlugs, BLOG_POSTS } from "@/src/lib/seo/blog-posts";
 import { SeoLandingShell } from "@/components/seo/SeoLandingShell";
 import { Calendar, Clock, User } from "lucide-react";
+import { escapeHtml, safeJsonLd } from "@/src/lib/security/safe-json-ld";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -53,7 +54,7 @@ function renderMarkdown(content: string) {
         {listBuffer.map((item, i) => (
           <li key={i} className="text-zinc-300 leading-relaxed flex gap-2">
             <span className="text-cyan-400 flex-shrink-0">·</span>
-            <span dangerouslySetInnerHTML={{ __html: item.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>") }} />
+            <span dangerouslySetInnerHTML={{ __html: escapeHtml(item).replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>") }} />
           </li>
         ))}
       </ul>
@@ -89,7 +90,7 @@ function renderMarkdown(content: string) {
         <p
           key={out.length}
           className="text-zinc-300 leading-relaxed my-4"
-          dangerouslySetInnerHTML={{ __html: line.replace(/\*\*(.+?)\*\*/g, "<strong class='text-white'>$1</strong>") }}
+          dangerouslySetInnerHTML={{ __html: escapeHtml(line).replace(/\*\*(.+?)\*\*/g, "<strong class='text-white'>$1</strong>") }}
         />
       );
     }
@@ -119,7 +120,7 @@ export default async function BlogPostPage({ params }: PageProps) {
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }} />
       <SeoLandingShell
         eyebrow={post.category}
         title={post.titleAr}

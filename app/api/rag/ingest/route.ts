@@ -62,7 +62,7 @@ export async function POST(req: NextRequest) {
     const { text, source } = await extractText(file);
     if (!text.trim()) return NextResponse.json({ error: 'empty_document' }, { status: 422 });
 
-    const documentId = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
+    const documentId = `${Date.now().toString(36)}-${(typeof crypto !== 'undefined' && 'randomUUID' in crypto ? crypto.randomUUID().replace(/-/g, '') : Math.random().toString(36).slice(2)).slice(0, 6)}`;
     const r = await ingestDocument({
       userId,
       documentId,

@@ -8,6 +8,7 @@ import {
 } from "@/src/lib/seo/glossary";
 import { SeoLandingShell } from "@/components/seo/SeoLandingShell";
 import { definedTermSchema, breadcrumbSchema } from "@/src/lib/seo/schema";
+import { safeJsonLd } from "@/src/lib/security/safe-json-ld";
 
 interface PageProps {
   params: Promise<{ term: string }>;
@@ -55,7 +56,7 @@ export default async function GlossaryTermPage({ params }: PageProps) {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}
       />
       <SeoLandingShell
         eyebrow={t.termEn}

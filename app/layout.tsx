@@ -13,6 +13,7 @@ import { WebVitals } from "@/components/analytics/WebVitals";
 import { NextIntlClientProvider } from 'next-intl';
 import { getLocale, getMessages } from 'next-intl/server';
 import { LanguageProvider } from "@/contexts/LanguageContext";
+import { safeJsonLd } from "@/src/lib/security/safe-json-ld";
 
 // ═══ Premium Arabic typography stack ═══
 // IBM Plex Sans Arabic — primary display + UI (architectural, modern, IBM-grade)
@@ -148,7 +149,7 @@ export default async function RootLayout({
         <link rel="dns-prefetch" href="https://cdn.jsdelivr.net" />
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+          dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}
         />
       </head>
       <body className="antialiased bg-[#04060B] text-[#F8FAFC] selection:bg-indigo-500/40">

@@ -115,8 +115,16 @@ export function getCostSnapshot(): {
 // ============= Helpers =============
 async function sha256(input: string): Promise<string> {
   try {
-    const { createHash } = await import('crypto');
-    return createHash('sha256').update(input).digest('hex').slice(0, 16);
+    const { createHmac, createHash } = await import('crypto');
+    // Inputs may contain user-supplied prompt text (PII/secrets). Use HMAC
+    // with a server-side pepper so a leaked audit log cannot be brute-forced
+    // back to the original prompt.
+    const pepper =
+      process.env.LLM_AUDIT_HASH_PEPPER ||
+      process.env.FIREBASE_ADMIN_PRIVATE_KEY ||
+      'kalmeron-default-llm-audit-pepper';
+    const key = createHash('sha256').update(pepper).digest();
+    return createHmac('sha256', key).update(input).digest('hex').slice(0, 16);
   } catch {
     let h = 0;
     for (let i = 0; i < input.length; i++) {

@@ -9,6 +9,7 @@ import {
 import { SeoLandingShell } from "@/components/seo/SeoLandingShell";
 import { howToSchema, breadcrumbSchema } from "@/src/lib/seo/schema";
 import { Clock, Award, FileText, Download, ArrowLeft } from "lucide-react";
+import { safeJsonLd } from "@/src/lib/security/safe-json-ld";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -66,7 +67,7 @@ export default async function TemplatePage({ params }: PageProps) {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}
       />
       <SeoLandingShell
         eyebrow={`قالب ${t.format.toUpperCase()} · ${DIFFICULTY_AR[t.difficulty]}`}

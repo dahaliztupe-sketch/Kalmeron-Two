@@ -194,7 +194,7 @@ export function buildLaunchPipeline() {
 }
 
 export async function launchStartup(args: { workspaceId: string; idea: string; runId?: string; userId?: string }) {
-  const runId = args.runId || `run_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+  const runId = args.runId || `run_${Date.now()}_${(typeof crypto !== 'undefined' && 'randomUUID' in crypto ? crypto.randomUUID().replace(/-/g, '') : Math.random().toString(36).slice(2)).slice(0, 6)}`;
   const result = await instrumentAgent(
     'launchpad_pipeline',
     async () => {

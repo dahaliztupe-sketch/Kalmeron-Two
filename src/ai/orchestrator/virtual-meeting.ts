@@ -118,7 +118,7 @@ async function conveneMeetingInner(
   } catch { /* keep raw */ }
 
   const record: MeetingResult = {
-    id: `meet_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+    id: `meet_${Date.now()}_${(typeof crypto !== 'undefined' && 'randomUUID' in crypto ? crypto.randomUUID().replace(/-/g, '') : Math.random().toString(36).slice(2)).slice(0, 6)}`,
     topic,
     departmentIds,
     opinions,

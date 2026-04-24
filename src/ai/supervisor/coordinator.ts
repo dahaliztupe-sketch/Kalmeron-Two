@@ -19,7 +19,9 @@ export async function runCoordinator(userGoal: string) {
   }
 
   await logTrace({
-    traceId: Math.random().toString(36),
+    traceId: (typeof crypto !== 'undefined' && 'randomUUID' in crypto)
+      ? crypto.randomUUID()
+      : Date.now().toString(36) + '-' + Math.random().toString(36).slice(2),
     agentName: 'coordinator',
     userId: 'anonymous',
     timestamp: new Date(),

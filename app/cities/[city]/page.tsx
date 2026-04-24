@@ -9,6 +9,7 @@ import {
 import { SeoLandingShell } from "@/components/seo/SeoLandingShell";
 import { localBusinessSchema, breadcrumbSchema } from "@/src/lib/seo/schema";
 import { MapPin, TrendingUp, Building2, Trophy } from "lucide-react";
+import { safeJsonLd } from "@/src/lib/security/safe-json-ld";
 
 interface PageProps {
   params: Promise<{ city: string }>;
@@ -60,7 +61,7 @@ export default async function CityPage({ params }: PageProps) {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}
       />
       <SeoLandingShell
         eyebrow={`📍 ${c.countryAr}`}
