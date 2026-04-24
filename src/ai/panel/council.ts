@@ -148,9 +148,36 @@ export function formatCouncilAsMarkdown(
     )
     .join('\n\n');
 
+  const optionsTable =
+    out.options && out.options.length >= 2
+      ? `\n\n#### 🔍 جدول مقارنة سريع\n\n| الخيار | أهم ميزة | أهم مخاطرة |\n|---|---|---|\n` +
+        out.options
+          .map(
+            (opt) =>
+              `| ${opt.title} | ${opt.pros?.[0] || '—'} | ${opt.cons?.[0] || '—'} |`,
+          )
+          .join('\n')
+      : '';
+
   const stepsBlock = out.implementationSteps
     .map((s, i) => `${i + 1}. ${s}`)
     .join('\n');
+
+  const quickActions =
+    out.implementationSteps && out.implementationSteps.length > 0
+      ? `\n\n### ⚡ إجراءات سريعة\n\`\`\`kalmeron-actions\n${JSON.stringify(
+          {
+            type: 'quick_actions',
+            actions: out.implementationSteps.slice(0, 3).map((step, i) => ({
+              id: `step_${i + 1}`,
+              label: step.length > 80 ? step.slice(0, 77) + '…' : step,
+              kind: 'next_step',
+            })),
+          },
+          null,
+          2,
+        )}\n\`\`\``
+      : '';
 
   const quality = out.qualityNotes
     ? `\n\n### 📊 تدقيق الجودة\n` +
@@ -166,10 +193,11 @@ export function formatCouncilAsMarkdown(
     `## 🏛️ مجلس ${agentDisplayNameAr || 'الخبراء'}\n` +
     `*مجال التداول: ${meta.domain} — الخبراء: ${expertsAr}*\n\n` +
     `### 1) التشخيص\n${out.diagnosis}\n\n` +
-    `### 2) الخيارات الاستراتيجية\n${optionsBlock}\n\n` +
-    `### 3) التوصية النهائية\n${out.recommendation}\n\n` +
+    `### 2) الخيارات الاستراتيجية\n${optionsBlock}${optionsTable}\n\n` +
+    `### 3) التوصية النهائية\n> 💡 ${out.recommendation}\n\n` +
     `### 4) مستوى الثقة\n**${out.confidence}%**\n\n` +
     `### 5) خطوات التنفيذ\n${stepsBlock}` +
+    quickActions +
     quality
   );
 }

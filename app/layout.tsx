@@ -53,6 +53,9 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 5,
+  // P0 quick win: declare both color schemes so browser UI (forms, scrollbars)
+  // matches our dark-first design without flicker on system-light setups.
+  colorScheme: "dark light",
 };
 
 const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://kalmeron.app';

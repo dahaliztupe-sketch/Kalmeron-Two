@@ -5,6 +5,14 @@ import { Timestamp } from 'firebase-admin/firestore';
 
 export const runtime = 'nodejs';
 
+/**
+ * P0-1 LOCKDOWN — direct plan writes are admin-only now.
+ *
+ * Before: any authenticated user could POST { plan: 'founder' } and self-promote.
+ * After:  paid plans must come from `/api/webhooks/stripe`. This endpoint
+ *         remains for support/admin overrides (e.g. comping a founder),
+ *         gated by the `admin: true` custom claim.
+ */
 export async function POST(req: NextRequest) {
   const authHeader = req.headers.get('Authorization');
   if (!authHeader?.startsWith('Bearer ')) {
@@ -14,15 +22,28 @@ export async function POST(req: NextRequest) {
     });
   }
   const token = authHeader.split(' ')[1];
-  let userId: string;
+  let callerUid: string;
+  let isAdmin = false;
   try {
     const decoded = await adminAuth.verifyIdToken(token!);
-    userId = decoded.uid;
+    callerUid = decoded.uid;
+    isAdmin = decoded.admin === true || decoded.role === 'admin';
   } catch {
     return new Response(JSON.stringify({ error: 'Invalid token' }), {
       status: 401,
       headers: { 'Content-Type': 'application/json' },
     });
+  }
+
+  if (!isAdmin) {
+    return new Response(
+      JSON.stringify({
+        error: 'Forbidden',
+        message: 'الترقية للخطط المدفوعة تتم عبر بوابة الدفع. هذا المسار مخصص للإدارة فقط.',
+        upgradeEndpoint: '/api/billing/checkout',
+      }),
+      { status: 403, headers: { 'Content-Type': 'application/json' } },
+    );
   }
 
   let body: any;
@@ -36,6 +57,8 @@ export async function POST(req: NextRequest) {
   }
 
   const planId = body?.plan as PlanId;
+  // Admin may target any user; default to themselves.
+  const targetUid: string = (typeof body?.targetUid === 'string' && body.targetUid) || callerUid;
   if (!planId || !PLANS[planId]) {
     return new Response(JSON.stringify({ error: 'Unknown plan' }), {
       status: 400,
@@ -57,21 +80,22 @@ export async function POST(req: NextRequest) {
   const now = Timestamp.now();
 
   try {
-    await adminDb.collection('users').doc(userId).set(
+    await adminDb.collection('users').doc(targetUid).set(
       {
         plan: plan.id,
         planUpdatedAt: now,
+        adminGrantedBy: callerUid,
       },
       { merge: true }
     );
 
-    const walletRef = adminDb.collection('user_credits').doc(userId);
+    const walletRef = adminDb.collection('user_credits').doc(targetUid);
     const walletDoc = await walletRef.get();
     const wallet = walletDoc.data() as any;
 
     if (!walletDoc.exists) {
       await walletRef.set({
-        userId,
+        userId: targetUid,
         plan: plan.id,
         dailyBalance: plan.dailyCredits,
         monthlyBalance: plan.monthlyCredits,

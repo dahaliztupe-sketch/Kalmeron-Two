@@ -6,6 +6,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { motion, useReducedMotion } from "motion/react";
 import { Loader2, Chrome, Check, ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { ReferralCapture, attributeReferralIfAny } from "@/components/auth/ReferralCapture";
 
 const PERKS = [
@@ -61,7 +62,7 @@ export default function SignUpPage() {
             <div className="relative w-20 h-20">
               <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-cyan-500/40 via-indigo-500/40 to-fuchsia-500/40 blur-2xl logo-halo" />
               <div className="relative w-full h-full rounded-2xl border border-white/10 bg-[#070A18]/70 flex items-center justify-center">
-                <img src="/brand/kalmeron-mark.svg" alt="Kalmeron AI" className="w-[78%] h-[78%] object-contain" />
+                <Image src="/brand/kalmeron-mark.svg" alt="Kalmeron AI" width={120} height={120} className="w-[78%] h-[78%] object-contain" priority />
               </div>
             </div>
             <div>

@@ -3,6 +3,9 @@ import { adminDb } from '@/src/lib/firebase-admin';
 import { isKnowledgeGraphEnabled } from '@/src/lib/memory/knowledge-graph';
 
 export const runtime = 'nodejs';
+// P0 quick win: prevent edge/CDN caching of dynamic health snapshot.
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 type CheckStatus = 'connected' | 'unreachable' | 'disabled' | 'configured' | 'unconfigured' | 'protected' | 'unprotected';
 

@@ -884,3 +884,65 @@ into a deliberating multi-perspective panel.
 - Tests: `test/panel.test.ts` (10 tests, all passing) cover expert
   registry shape, roster builder, schema validation, and markdown
   formatter.
+
+## Virtual Boardroom 201 — Execution Phase (24 Apr 2026)
+
+تنفيذ خطة Virtual Boardroom 201 بالكامل (P0 + P1 + P2 + Quick Wins). P3
+(Edge AI / AR-VR / Cert Pinning) خارج النطاق بطلب المستخدم.
+
+### Quick Wins
+- Sentry `tracesSampleRate` رُفع من 0.1 إلى 0.2 في `sentry.client/server/edge.config.ts`.
+- `/api/health` صار `force-dynamic` + `revalidate = 0`.
+- حذف الملف المكرّر `src/components/ui/Ltr.tsx`.
+- `app/layout.tsx` يدعم `colorScheme: "dark light"`.
+- وظيفة CI صارمة لمصطلحات Lexicon في `.github/workflows/security.yml`.
+
+### P0 — أولوية حرجة
+- **P0-1 Stripe Production**: `src/lib/billing/plans.ts` مُوسَّع بـ
+  `StripePriceIds` + `getStripePriceIds()` + `planFromStripePriceId()`.
+  مسارات جديدة: `app/api/billing/checkout/route.ts` (Checkout Session)،
+  `app/api/billing/portal/route.ts` (Customer Portal)،
+  `app/api/webhooks/stripe/route.ts` (موقَّع + idempotency + مصدر وحيد
+  للـ entitlement). `app/api/user/plan/route.ts` صار admin-only مع دعم
+  `targetUid`.
+- **P0-2 Context Quarantine**: `src/lib/security/context-quarantine.ts`
+  يجرّد أنماط الحقن ويغلّف المحتوى بأسوار `<retrieved>`، مع تسجيل في
+  Firestore `injection_attempts`. مدمج في `crag.ts` و`self-rag.ts` و
+  `disco-rag.ts` ومسار RAG داخل `app/api/chat/route.ts`.
+- **P0-3 TTFV instrumentation**: `chat/route.ts` يستدعي
+  `markTtfvStage('first_message')` قبل البث و`'first_value'` عند أول
+  delta. مسار جديد `app/api/auth/mark-signup/route.ts` لتسجيل مرحلة
+  التسجيل.
+
+### P1 — أولوية عالية
+- `app/api/first-100/seats/route.ts` + استطلاع حيّ في
+  `app/first-100/page.tsx` مع حالة "أُغلقت المقاعد".
+- ترحيل `next/image` في صفحات `auth/login` و`auth/signup` (Logo3D
+  fallback مُحتفظ به كـ `<img>` مع تعطيل eslint سطريّ).
+- `middleware.ts` يلتقط `?ref=` ويحفظه ككوكي 60 يومًا +
+  `app/api/affiliate/track/route.ts` (sha256 لعنوان IP، collection
+  `affiliate_clicks`).
+- **مُتخطّى عمدًا**: P1-3 (توحيد `lib/` ↔ `src/lib/` — تعديل واسع
+  الأثر، مؤجل لجلسة مخصّصة)، P1-2 (compare/[slug] موجود مسبقًا
+  ديناميكيًا عبر `src/lib/seo/comparisons.ts`).
+
+### P2 — أولوية متوسطة
+- `app/crews/finance/page.tsx` (Finance Crew $499/mo SKU).
+- `app/admin/slo/page.tsx` (لوحة Burn-rate لـ 28 يومًا تقرأ من
+  `health_probe_runs` و`cron_runs` و TTFV).
+- `app/api/cron/restore-drill/route.ts` (تحقّق أسبوعي من النسخ
+  الاحتياطية، محميّ بـ `CRON_SECRET`).
+- **P2-4 Generative UI defaults**: مُنسِّق المجلس
+  `src/ai/panel/council.ts` يولّد الآن:
+  1. جدول مقارنة Markdown للخيارات.
+  2. Callout `> 💡` للتوصية.
+  3. كتلة `kalmeron-actions` JSON (نوع `quick_actions`) قابلة للتقاط من
+     واجهة الدردشة لعرض شِبس إجراءات.
+
+### Env (`.env.example`)
+أُنشِئ `.env.example` يحتوي مفاتيح Firebase + Stripe (بكل أسعار EGP/USD
+شهريًا/سنويًا + Finance Crew) + Sentry + `CRON_SECRET`.
+
+### مرجع
+- خطة العمل: `.local/tasks/VIRTUAL_BOARDROOM_ACTION_PLAN.md`
+- التقرير المرجعي: `docs/VIRTUAL_BOARDROOM_201_REPORT.md`

@@ -65,6 +65,7 @@ export default function Logo3D({
   useEffect(() => setSupported(hasWebGL()), []);
 
   if (supported === false) {
+    // eslint-disable-next-line @next/next/no-img-element
     return <img src={fallbackSrc} alt={alt} style={{ height: size, width: "auto" }} />;
   }
   if (supported === null) {

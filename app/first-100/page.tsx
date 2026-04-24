@@ -15,16 +15,38 @@ const TOTAL_SEATS = 100;
  * exchange for a public testimonial + PR participation.
  */
 export default function First100Page() {
-  // Seat counter is static for now (would read Firestore in production).
-  // The audit recommends starting with `seatsTaken=0` and bumping it as
-  // sign-ups land in `first_100_signups` collection.
-  const [seatsTaken] = useState(0);
+  // P1-1: live counter — polls /api/first-100/seats every 60s.
+  // Falls back to 0 (shows full availability) if the API is unreachable.
+  const [seatsTaken, setSeatsTaken] = useState(0);
+  const [closed, setClosed] = useState(false);
   const [now, setNow] = useState<Date | null>(null);
 
   useEffect(() => {
     setNow(new Date());
-    const t = setInterval(() => setNow(new Date()), 60_000);
-    return () => clearInterval(t);
+    let cancelled = false;
+
+    const fetchSeats = async () => {
+      try {
+        const r = await fetch("/api/first-100/seats", { cache: "no-store" });
+        if (!r.ok) return;
+        const d = await r.json();
+        if (!cancelled) {
+          setSeatsTaken(typeof d.taken === "number" ? d.taken : 0);
+          setClosed(!!d.closed);
+          setNow(new Date());
+        }
+      } catch {
+        /* swallow — keep last known value */
+      }
+    };
+    void fetchSeats();
+    const t = setInterval(() => {
+      void fetchSeats();
+    }, 60_000);
+    return () => {
+      cancelled = true;
+      clearInterval(t);
+    };
   }, []);
 
   const seatsLeft = Math.max(0, TOTAL_SEATS - seatsTaken);
@@ -176,12 +198,18 @@ export default function First100Page() {
 
         {/* CTA */}
         <div className="flex flex-col sm:flex-row gap-4 items-center justify-center mb-16">
-          <Link
-            href="/auth/signup?plan=first100"
-            className="rounded-full bg-gradient-to-l from-cyan-500 to-violet-500 px-8 py-4 text-white font-semibold hover:opacity-90 transition shadow-lg shadow-cyan-500/20"
-          >
-            احجز مقعدك الآن — 9$/شهر
-          </Link>
+          {closed ? (
+            <div className="rounded-full border border-amber-500/30 bg-amber-500/10 px-8 py-4 text-amber-300 font-semibold">
+              نفدت المقاعد المئة — انضم لقائمة "أوّل 500" قريباً
+            </div>
+          ) : (
+            <Link
+              href="/auth/signup?plan=first100"
+              className="rounded-full bg-gradient-to-l from-cyan-500 to-violet-500 px-8 py-4 text-white font-semibold hover:opacity-90 transition shadow-lg shadow-cyan-500/20"
+            >
+              احجز مقعدك الآن — 9$/شهر
+            </Link>
+          )}
           <Link
             href="/pricing"
             className="rounded-full border border-white/[0.1] px-8 py-4 text-white font-medium hover:bg-white/[0.04] transition"

@@ -1,6 +1,17 @@
 export type PlanId = 'free' | 'pro' | 'founder' | 'enterprise';
 export type BillingCycle = 'monthly' | 'annual';
 
+export interface StripePriceIds {
+  /** Stripe Price ID for the monthly plan (USD). Read from env at runtime. */
+  monthlyUsd?: string;
+  /** Stripe Price ID for the annual plan (USD). */
+  annualUsd?: string;
+  /** Stripe Price ID for the monthly plan in EGP, if configured. */
+  monthlyEgp?: string;
+  /** Stripe Price ID for the annual plan in EGP, if configured. */
+  annualEgp?: string;
+}
+
 export interface Plan {
   id: PlanId;
   nameAr: string;
@@ -16,6 +27,34 @@ export interface Plan {
   unlimited: boolean;
   highlighted?: boolean;
   featuresAr: string[];
+  /** Stripe identifiers, resolved from env vars. Empty for `free`/`enterprise`. */
+  stripe?: StripePriceIds;
+}
+
+/**
+ * Resolves Stripe price IDs for a given plan from environment variables.
+ * Naming convention: STRIPE_PRICE_<PLAN>_<CYCLE>_<CURRENCY>
+ *   e.g. STRIPE_PRICE_PRO_MONTHLY_USD, STRIPE_PRICE_FOUNDER_ANNUAL_EGP
+ */
+export function getStripePriceIds(planId: PlanId): StripePriceIds {
+  const u = planId.toUpperCase();
+  return {
+    monthlyUsd: process.env[`STRIPE_PRICE_${u}_MONTHLY_USD`],
+    annualUsd:  process.env[`STRIPE_PRICE_${u}_ANNUAL_USD`],
+    monthlyEgp: process.env[`STRIPE_PRICE_${u}_MONTHLY_EGP`],
+    annualEgp:  process.env[`STRIPE_PRICE_${u}_ANNUAL_EGP`],
+  };
+}
+
+/** Map a Stripe Price ID back to a (planId, cycle) pair, for webhook handling. */
+export function planFromStripePriceId(priceId: string): { planId: PlanId; cycle: BillingCycle } | null {
+  const order: PlanId[] = ['pro', 'founder', 'free', 'enterprise'];
+  for (const planId of order) {
+    const ids = getStripePriceIds(planId);
+    if (ids.monthlyUsd === priceId || ids.monthlyEgp === priceId) return { planId, cycle: 'monthly' };
+    if (ids.annualUsd === priceId || ids.annualEgp === priceId) return { planId, cycle: 'annual' };
+  }
+  return null;
 }
 
 /** Annual savings discount. 33% mirrors the strategic plan recommendation. */
