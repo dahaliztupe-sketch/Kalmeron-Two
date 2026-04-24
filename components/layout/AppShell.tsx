@@ -50,7 +50,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-white/10 bg-white/5 backdrop-blur-md text-xs text-cyan-200 mb-5">
               <Sparkles className="w-3.5 h-3.5" />
-              <span>{language === "ar" ? "نظام تشغيل رواد الأعمال" : "Operating System for Founders"}</span>
+              <span>{language === "ar" ? "مقرّ عمليات شركتك الذكي" : "Your Smart Company HQ"}</span>
             </div>
 
             <h2 className="font-display text-4xl md:text-6xl font-extrabold tracking-tight mb-5 leading-tight">
@@ -64,7 +64,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
             <p className="text-base md:text-lg text-neutral-300 max-w-lg mx-auto leading-relaxed">
               {language === "ar"
-                ? "7 أقسام و+50 وكيلاً ذكياً يعملون كفريقك المؤسس على مدار الساعة."
+                ? "سبعة أقسام وأكثر من 50 مساعداً ذكياً يعملون كفريقك المؤسّس على مدار الساعة."
                 : "7 departments and 50+ AI agents working as your full-time founding team."}
             </p>
           </motion.div>

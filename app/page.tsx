@@ -43,9 +43,9 @@ const DEPARTMENTS = [
   },
   {
     icon: Bot,
-    title: "+50 وكيل ذكي",
-    subtitle: "AI Agent Army",
-    desc: "فريق متكامل من المسوقين والمحاسبين والمحامين والمحللين يعمل بدوام كامل لصالحك. كل واحد خبير في مجاله.",
+    title: "+50 مساعداً ذكياً",
+    subtitle: "Your AI Team",
+    desc: "فريق متكامل من المسوّقين والمحاسبين والمحامين والمحلّلين يعمل بدوام كامل لصالحك. كل واحد متخصّص في مجاله.",
     color: "indigo",
     gradient: "from-indigo-500 to-violet-500",
     bg: "from-indigo-500/10 to-violet-500/5",
@@ -450,7 +450,7 @@ function Hero() {
           className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-cyan-500/30 bg-cyan-500/5 backdrop-blur-md text-xs md:text-sm text-cyan-300 mb-6"
         >
           <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
-          <span>Kalmeron AI · نظام تشغيل رواد الأعمال الأول عربياً</span>
+          <span>كلميرون · مقرّ عمليات شركتك الذكي</span>
           <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
         </motion.div>
 
@@ -465,7 +465,7 @@ function Hero() {
           className="text-base sm:text-lg md:text-xl text-neutral-300 max-w-3xl mx-auto mb-4 leading-relaxed"
         >
           بدل ما تدفع آلاف الجنيهات لمستشار مالي ومحامي ومحلل سوق ومسوق —<br className="hidden md:block" />
-          <span className="text-white font-bold">+50 وكيلاً ذكياً</span> متخصصاً يعمل كفريقك كله في منصة واحدة بالعربي.
+          <span className="text-white font-bold">+50 مساعداً ذكياً</span> متخصّصاً يعمل كفريقك كاملاً في منصّة واحدة، بالعربية الأصيلة.
         </motion.p>
 
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.35 }}
@@ -1107,7 +1107,7 @@ function Footer() {
           <div className="col-span-2 md:col-span-1">
             <BrandLogo size={36} glow iconOnly />
             <p className="text-sm text-neutral-500 mt-3 leading-relaxed max-w-xs">
-              نظام تشغيل رواد الأعمال. +50 وكيلاً ذكياً يعملون كفريقك المؤسس.
+              مقرّ عمليات شركتك الذكي. +50 مساعداً ذكياً يعملون كفريقك المؤسّس.
             </p>
           </div>
           {cols.map((col) => (

@@ -1,58 +1,89 @@
 import type { Metadata } from "next";
 import { SeoLandingShell, FeatureCheck } from "@/components/seo/SeoLandingShell";
+import { CalmCard } from "@/components/ui/CalmCard";
+import { SectionHeader } from "@/components/ui/SectionHeader";
 import { Activity, TrendingUp, AlertCircle, Globe } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Live Market Pulse | كلميرون",
+  title: "نبض السوق | كلميرون",
   description:
-    "نبض السوق المباشر: تتبع التمويلات، الـ exits، التغيرات التنظيمية، والفرص في 22 دولة عربية بشكل مستمر.",
+    "نبض السوق: نظام ذكي يراقب التمويلات والتغيّرات التنظيمية وفرص الشراكة في 22 دولة عربية، ويُنبّهك بما يخصّك أنت فقط.",
   alternates: { canonical: "/market-pulse" },
 };
+
+const PILLARS = [
+  {
+    icon: TrendingUp,
+    title: "تمويلات منطقتنا",
+    description:
+      "كل جولة تمويل في المنطقة، من التأسيسية حتى الجولات المتأخّرة، مع تفاصيل التقييم.",
+  },
+  {
+    icon: AlertCircle,
+    title: "التغييرات التنظيمية",
+    description:
+      "قوانين جديدة، تحديثات الجهات الرقابية في بلدك، وتأثيرها المباشر على شركتك.",
+  },
+  {
+    icon: Globe,
+    title: "فرص الشراكة",
+    description:
+      "مناقصات حكومية، طلبات عروض، صناديق شركات كبرى تبحث عن شركات ناشئة.",
+  },
+  {
+    icon: Activity,
+    title: "حركة منافسيك",
+    description:
+      "إطلاقات جديدة، تعيينات، تمويلات، توسّعات — كل ما يفعله منافسوك في مكان واحد.",
+  },
+];
 
 export default function MarketPulsePage() {
   return (
     <SeoLandingShell
       eyebrow="مراقبة فورية"
-      title="Live Market Pulse"
-      description="نظام يراقب 1000+ مصدر يومياً: تمويلات، exits، تغيرات قانونية، tenders، فرص شراكة. ينبهك بما يخصك فقط."
-      breadcrumbs={[{ label: "Market Pulse" }]}
+      title="نبض السوق"
+      description="نظام يراقب أكثر من ألف مصدر يومياً ويُصفّيها لك. تستلم فقط ما يخصّ مرحلتك وقطاعك — لا ضوضاء ولا إغراق بالمعلومات."
+      breadcrumbs={[{ label: "نبض السوق" }]}
     >
-      <section className="grid md:grid-cols-2 gap-6 mb-16">
-        {[
-          { icon: TrendingUp, title: "تمويلات MENA", desc: "كل round في المنطقة، من pre-seed لـ Series D، مع تفاصيل valuation." },
-          { icon: AlertCircle, title: "تغييرات تنظيمية", desc: "قوانين جديدة، تحديثات الجهات (CBE، SAMA، VARA)، تأثيرها على شركتك." },
-          { icon: Globe, title: "فرص الشراكة", desc: "tenders حكومية، RFPs، corporate VCs تبحث عن startups." },
-          { icon: Activity, title: "حركة المنافسين", desc: "تتبع launches، hires، funding، expansions للمنافسين الرئيسيين." },
-        ].map((f) => (
-          <div key={f.title} className="rounded-2xl bg-white/[0.03] border border-white/10 p-6">
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-500/20 to-indigo-600/20 flex items-center justify-center mb-4">
-              <f.icon className="w-6 h-6 text-cyan-400" />
-            </div>
-            <h3 className="text-xl font-semibold text-white mb-2">{f.title}</h3>
-            <p className="text-zinc-400">{f.desc}</p>
-          </div>
+      <SectionHeader
+        eyebrow="الأركان الأربعة"
+        title="ما الذي يراقبه كلميرون من أجلك؟"
+        description="أربع زوايا تغطّي كل ما يحرّك سوقك."
+      />
+      <section className="grid md:grid-cols-2 gap-5 mb-20">
+        {PILLARS.map((p) => (
+          <CalmCard
+            key={p.title}
+            icon={p.icon}
+            title={p.title}
+            description={p.description}
+          />
         ))}
       </section>
 
-      <section className="mb-16">
-        <h2 className="text-3xl font-bold text-white mb-6">ما يميزه</h2>
+      <SectionHeader
+        title="ما يميّز نبض السوق"
+        description="ستّ خصائص تحوّله من خلاصة أخبار إلى ميزة تنافسية حقيقية."
+      />
+      <section className="mb-20">
         <ul className="space-y-3">
-          <FeatureCheck>تغطية 22 دولة عربية باللغتين (عربي + إنجليزي)</FeatureCheck>
-          <FeatureCheck>1000+ مصدر: Wamda، Magnitt، Crunchbase، صحف محلية، LinkedIn</FeatureCheck>
-          <FeatureCheck>AI يفلتر noise ويوصل لك ما يخص قطاعك ومرحلتك فقط</FeatureCheck>
-          <FeatureCheck>Daily digest عبر email + Slack/Telegram</FeatureCheck>
-          <FeatureCheck>{'Custom alerts (مثلاً: "أي funding في fintech مصري > $1M")'}</FeatureCheck>
-          <FeatureCheck>تحليل أسبوعي للترندات مع توصيات</FeatureCheck>
+          <FeatureCheck>تغطية اثنتين وعشرين دولة عربية بالعربية والإنجليزية.</FeatureCheck>
+          <FeatureCheck>أكثر من ألف مصدر: Wamda، Magnitt، Crunchbase، صحف محلية، LinkedIn.</FeatureCheck>
+          <FeatureCheck>ذكاء يُصفّي الضوضاء ويُرسل لك ما يخصّ قطاعك ومرحلتك فقط.</FeatureCheck>
+          <FeatureCheck>إيجاز يومي عبر البريد + Slack أو Telegram حسب تفضيلك.</FeatureCheck>
+          <FeatureCheck>تنبيهات مخصّصة (مثلاً: «أيّ تمويل في القطاع المالي المصري فوق مليون دولار»).</FeatureCheck>
+          <FeatureCheck>تحليل أسبوعي للاتجاهات مع توصيات قابلة للتنفيذ.</FeatureCheck>
         </ul>
       </section>
 
       <section className="rounded-2xl bg-gradient-to-br from-cyan-500/10 to-indigo-600/10 border border-cyan-500/20 p-8">
-        <h3 className="text-2xl font-bold text-white mb-3">عينة من تنبيهات اليوم</h3>
-        <ul className="space-y-3 text-sm text-zinc-300">
-          <li>• fintech سعودي (السعر: $1B) أعلن Series C $80M بقيادة STV</li>
-          <li>• البنك المركزي المصري أصدر تعليمات جديدة للـ digital wallets</li>
-          <li>• Microsoft Egypt تطلق $5M cloud credits للستارت أبس</li>
-          <li>• 3 منافسين لك (في edtech) رفعوا total $30M هذا الشهر</li>
+        <h3 className="text-2xl font-bold text-white mb-4">عيّنة من تنبيهات اليوم</h3>
+        <ul className="space-y-3 text-sm text-zinc-300 leading-relaxed">
+          <li>• شركة مالية سعودية أعلنت جولة بقيمة 80 مليون دولار بقيادة STV.</li>
+          <li>• البنك المركزي المصري أصدر تعليمات جديدة للمحافظ الرقمية.</li>
+          <li>• مايكروسوفت مصر تطلق 5 ملايين دولار رصيد سحابي للشركات الناشئة.</li>
+          <li>• ثلاثة من منافسيك في قطاع التعليم رفعوا 30 مليون دولار هذا الشهر.</li>
         </ul>
       </section>
     </SeoLandingShell>

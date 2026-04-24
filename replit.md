@@ -149,6 +149,38 @@ A "best-in-the-world" push — programmatic SEO, viral growth, social previews,
 AI-search optimization, and richer pricing — to compete head-to-head with
 ChatGPT/Claude/Manus/Lovable in the MENA market.
 
+### Session 4 additions (Apr 24 2026 — Design & Language Overhaul)
+- **Strategic doc**: `DESIGN_LANGUAGE_PLAN.md` — diagnoses 7 design/language
+  issues, applies 14 behavioral-design principles (Hick, Fitts, Miller,
+  Loss Aversion, Anchoring, Endowed Progress, Zeigarnik, IKEA Effect, etc.)
+  with cited research. Includes a full lexicon migration table.
+- **Copy infrastructure** (`src/lib/copy/`):
+  - `voice.ts` — voice & tone guide + canonical agent system prompt.
+  - `lexicon.ts` — 30+ canonical Arabic terms with alias maps + helpers
+    (`term()`, `canonicalize()`, `forbiddenAliasesRegex()` for lint scripts).
+  - `microcopy.ts` — every CTA/badge/empty-state/trust-label, each annotated
+    with the behavioral principle it leverages (Friction Reduction, Goal
+    Gradient, Loss Aversion, etc.).
+- **New design primitives** (`components/ui/`):
+  `Eyebrow`, `SectionHeader`, `PrimaryCTA` + `SecondaryCTA`, `TrustBar`,
+  `StatBlock` + `StatGrid` (capped at 4 to honor Miller's Law), `CalmCard`.
+- **Renamed killer features** to native Arabic terminology:
+  - Founder Mode → **وضع التركيز**
+  - Live Market Pulse → **نبض السوق**
+  - Investor Deck Generator → **مُنشئ عرض المستثمرين**
+  - Founder Network → **مجلس المؤسّسين**
+  - Workflows → **مسارات العمل**
+  - AI Agents → **مساعدوك الأذكياء**
+  - Operating System → **مقرّ عمليات شركتك الذكي**
+- **Rewrote 5 feature pages** (`/founder-mode`, `/market-pulse`,
+  `/investor-deck`, `/founder-network`, `/workflows`) with new lexicon,
+  `CalmCard` replacing inline cards, `SectionHeader` for consistent rhythm.
+- **Refactored `SeoLandingShell`** — Trust Bar above the fold, footer
+  reduced to 4 columns (was 5), psychology-tuned CTAs from `microcopy.ts`,
+  4 nav items max (Hick's Law).
+- **Cleaned hero copy** in `app/page.tsx` and `AppShell.tsx` — removed
+  legacy "+50 وكيل" / "نظام التشغيل" phrasing from all public surfaces.
+
 ### Session 3 additions (Apr 23 2026 — Strategic Overhaul)
 - **Massive content expansion**: `use-cases.ts` (40+), `industries.ts` (25+),
   `comparisons.ts` (18+), `blog-posts.ts` (15+) — Arabic-first, MENA-specific.

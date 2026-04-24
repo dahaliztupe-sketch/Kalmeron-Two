@@ -549,6 +549,37 @@
 
 ---
 
+## 17. التنفيذ في الجلسة الرابعة — التصميم واللغة (Apr 24 2026)
+
+تركّزت هذه الجلسة على رفع جودة التصميم، تقليل الزحمة، وتوحيد المصطلحات
+العربية بدعم من علم النفس السلوكي. التفاصيل في `DESIGN_LANGUAGE_PLAN.md`.
+
+1. ✅ **DESIGN_LANGUAGE_PLAN.md** — وثيقة استراتيجية شاملة مع 14 مبدأً نفسياً مطبَّقاً (Hick, Fitts, Miller, Loss Aversion, Anchoring, إلخ)
+2. ✅ **Voice & Tone Guide** — `src/lib/copy/voice.ts` (5 سمات صوت + 7 افعل + 7 لا تفعل + برومبت موحَّد للوكلاء)
+3. ✅ **معجم موحَّد** — `src/lib/copy/lexicon.ts` يضم 30+ مصطلحاً معتمداً عربياً مع map للمرادفات المرفوضة + helpers `term()`، `canonicalize()`، `forbiddenAliasesRegex()`
+4. ✅ **مكتبة Microcopy** — `src/lib/copy/microcopy.ts` لكل CTA و badge و empty state و trust label (مع توثيق المبدأ النفسي لكل CTA)
+5. ✅ **مكوّنات تصميم موحَّدة جديدة**:
+   - `Eyebrow` — شارة قسم بأربع نغمات لونية
+   - `SectionHeader` — رأس قسم بإيقاع موحَّد
+   - `PrimaryCTA` و `SecondaryCTA` — Fitts's Law مطبَّق
+   - `TrustBar` — Social Proof فوق الـ fold
+   - `StatBlock` و `StatGrid` — Anchoring effect (≤ 4 لاحترام Miller)
+   - `CalmCard` — بطاقة هادئة بصرياً (تقليل Cognitive Load)
+6. ✅ **إعادة بناء `SeoLandingShell`** — Hero بـ Trust Bar، Footer من 4 أعمدة (كان 5)، CTAs مدعومة بعلم النفس، Hick's Law مطبَّق
+7. ✅ **إعادة تسمية الميزات المحورية** بمصطلحات عربية أصيلة:
+   - Founder Mode → **وضع التركيز**
+   - Live Market Pulse → **نبض السوق**
+   - Investor Deck Generator → **مُنشئ عرض المستثمرين**
+   - Founder Network → **مجلس المؤسّسين**
+   - Workflows → **مسارات العمل**
+   - AI Agents → **مساعدوك الأذكياء**
+   - Operating System → **مقرّ عمليات شركتك الذكي**
+8. ✅ **إعادة كتابة الصفحات الخمس** المحورية (`/founder-mode`, `/market-pulse`, `/investor-deck`, `/founder-network`, `/workflows`) بالمعجم الجديد، استبدال البطاقات اليدوية بـ `CalmCard`، وإضافة `SectionHeader` لإيقاع موحَّد
+9. ✅ **تنظيف Hero الرئيسي** و `AppShell` — إزالة "+50 وكيل" و "نظام التشغيل" من كل الواجهات العامّة
+10. ✅ **التحقّق** — كل الصفحات الـ 11 المُعدّلة ترجع HTTP 200
+
+---
+
 ## خاتمة
 
 كلميرون اليوم في وضع نادر: **منتج تقني ناضج بدون قصة توزيع ناضجة**. معظم startups العكس (قصة قوية ومنتج ضعيف).

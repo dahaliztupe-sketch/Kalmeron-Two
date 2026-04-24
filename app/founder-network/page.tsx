@@ -1,60 +1,91 @@
 import type { Metadata } from "next";
 import { SeoLandingShell, FeatureCheck } from "@/components/seo/SeoLandingShell";
+import { CalmCard } from "@/components/ui/CalmCard";
+import { SectionHeader } from "@/components/ui/SectionHeader";
 import { Users, Handshake, Coffee, MessageCircle } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Founder Network | كلميرون",
+  title: "مجلس المؤسّسين | كلميرون",
   description:
-    "شبكة المؤسسين العرب: 5000+ founder، intros ذكية، mastermind groups، مجتمع private، وفرص شراكة حقيقية.",
+    "مجلس المؤسّسين: مجتمع حصري لخمسة آلاف مؤسّس عربي. تعارفات ذكية، حلقات عمل صغيرة، نقاشات صريحة، وفرص شراكة حقيقية.",
   alternates: { canonical: "/founder-network" },
 };
+
+const PILLARS = [
+  {
+    icon: Users,
+    title: "أكثر من 5000 مؤسّس",
+    description:
+      "من اثنتين وعشرين دولة عربية، عبر عشرين قطاعاً، من المرحلة التأسيسية حتى المتقدّمة.",
+  },
+  {
+    icon: Handshake,
+    title: "تعارفات ذكية",
+    description:
+      "يحلّل كلميرون تحدّيك ويربطك بثلاثة مؤسّسين تجاوزوا المشكلة نفسها.",
+  },
+  {
+    icon: Coffee,
+    title: "حلقات عمل صغيرة",
+    description:
+      "مجموعات من ثمانية مؤسّسين متشابهين في المرحلة، تجتمع شهرياً لتبادل الخبرات.",
+  },
+  {
+    icon: MessageCircle,
+    title: "منتدى خاصّ",
+    description:
+      "نقاشات صريحة عن التمويل والتوظيف والإخفاقات — بعيداً عن واجهات الإعلام.",
+  },
+];
 
 export default function FounderNetworkPage() {
   return (
     <SeoLandingShell
       eyebrow="مجتمع حصري"
-      title="Founder Network"
-      description="أكبر شبكة مؤسسين عرب. AI يربطك بمن يحل مشكلتك بالضبط، lifetime peer learning."
-      breadcrumbs={[{ label: "Founder Network" }]}
+      title="مجلس المؤسّسين"
+      description="أكبر تجمّع للمؤسّسين العرب. كلميرون يربطك بمن خاض تحدّيك بالفعل، ويفتح أمامك أبواب التعلّم النظير لنظير."
+      breadcrumbs={[{ label: "مجلس المؤسّسين" }]}
     >
-      <section className="grid md:grid-cols-2 gap-6 mb-16">
-        {[
-          { icon: Users, title: "5000+ Founder", desc: "من 22 دولة عربية، عبر 20+ صناعة، من pre-seed إلى Series C+." },
-          { icon: Handshake, title: "Smart Intros", desc: "AI يحلل تحديك ويربطك بـ 3 founders تجاوزوا نفس المشكلة." },
-          { icon: Coffee, title: "Mastermind Groups", desc: "مجموعات صغيرة (8 founders) متشابهين في المرحلة، تجتمع شهرياً." },
-          { icon: MessageCircle, title: "Private Forum", desc: "نقاشات candid عن fundraising، hiring، failures - بعيد عن LinkedIn." },
-        ].map((f) => (
-          <div key={f.title} className="rounded-2xl bg-white/[0.03] border border-white/10 p-6">
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-500/20 to-indigo-600/20 flex items-center justify-center mb-4">
-              <f.icon className="w-6 h-6 text-cyan-400" />
-            </div>
-            <h3 className="text-xl font-semibold text-white mb-2">{f.title}</h3>
-            <p className="text-zinc-400">{f.desc}</p>
-          </div>
+      <SectionHeader
+        eyebrow="الأركان الأربعة"
+        title="ما يميّز مجلس المؤسّسين"
+        description="أربعة عناصر تجعل هذا المجتمع مختلفاً عن أيّ شبكة أخرى."
+      />
+      <section className="grid md:grid-cols-2 gap-5 mb-20">
+        {PILLARS.map((p) => (
+          <CalmCard
+            key={p.title}
+            icon={p.icon}
+            title={p.title}
+            description={p.description}
+          />
         ))}
       </section>
 
-      <section className="mb-16">
-        <h2 className="text-3xl font-bold text-white mb-6">ما تحصل عليه</h2>
+      <SectionHeader
+        title="ما تحصل عليه شهرياً"
+        description="ستّ مزايا ملموسة تُضاف لاشتراكك."
+      />
+      <section className="mb-20">
         <ul className="space-y-3">
-          <FeatureCheck>3 intros شهرياً مع founders ذوي خبرة في تحديك</FeatureCheck>
-          <FeatureCheck>Mastermind group من 8 founders متشابهين في المرحلة</FeatureCheck>
-          <FeatureCheck>Monthly virtual events: AMAs مع founders بارزين</FeatureCheck>
-          <FeatureCheck>Quarterly in-person meetups في القاهرة، الرياض، دبي</FeatureCheck>
-          <FeatureCheck>Private channels حسب القطاع (fintech، edtech، إلخ)</FeatureCheck>
-          <FeatureCheck>Job board: hire من شبكة الفاوندرز قبل LinkedIn</FeatureCheck>
+          <FeatureCheck>ثلاث تعارفات شهرياً مع مؤسّسين خبروا تحدّيك.</FeatureCheck>
+          <FeatureCheck>حلقة عمل من ثمانية مؤسّسين متشابهين في مرحلتك.</FeatureCheck>
+          <FeatureCheck>لقاءات افتراضية شهرية مع مؤسّسين بارزين.</FeatureCheck>
+          <FeatureCheck>لقاءات حضورية فصلية في القاهرة والرياض ودبي.</FeatureCheck>
+          <FeatureCheck>قنوات خاصّة حسب القطاع (مالي، تعليمي، صحي، إلخ).</FeatureCheck>
+          <FeatureCheck>لوحة وظائف: وظّف من شبكة المؤسّسين قبل المنصّات العامّة.</FeatureCheck>
         </ul>
       </section>
 
       <section className="rounded-2xl bg-gradient-to-br from-cyan-500/10 to-indigo-600/10 border border-cyan-500/20 p-8 mb-12">
-        <h3 className="text-2xl font-bold text-white mb-4">معايير الانضمام</h3>
-        <p className="text-zinc-300 mb-4">
-          الـ network انتقائية لضمان جودة النقاشات. نقبل founders/co-founders نشطين فقط:
+        <h3 className="text-2xl font-bold text-white mb-4">شروط الانضمام</h3>
+        <p className="text-zinc-300 mb-4 leading-relaxed">
+          المجلس انتقائي بطبعه لضمان جودة النقاشات. نقبل المؤسّسين والشركاء المؤسّسين النشطين فقط:
         </p>
-        <ul className="space-y-2 text-sm text-zinc-400">
-          <li>• Founder/co-founder لشركة نشطة (revenue أو traction قابل للقياس)</li>
-          <li>• مقيم في MENA أو يبني للسوق العربي</li>
-          <li>• مستعد للمشاركة بأمانة (give before you take)</li>
+        <ul className="space-y-2 text-sm text-zinc-400 leading-relaxed">
+          <li>• مؤسّس أو شريك مؤسّس لشركة نشطة (إيرادات أو زخم قابل للقياس).</li>
+          <li>• مقيم في المنطقة العربية أو يبني للسوق العربي.</li>
+          <li>• مستعدّ للمشاركة بصدق ومبدأ «ما تعطيه قبل ما تأخذه».</li>
         </ul>
       </section>
     </SeoLandingShell>
