@@ -67,7 +67,7 @@ export function CreditsIndicator() {
         "hidden sm:flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-bold transition-all",
         low
           ? "border-rose-500/40 bg-rose-500/10 text-rose-200 hover:bg-rose-500/20"
-          : "border-white/10 bg-white/[0.04] text-white hover:border-brand-gold/40 hover:text-brand-gold"
+          : "border-white/10 bg-white/[0.04] text-white hover:border-brand-cyan/40 hover:text-brand-cyan"
       )}
     >
       <Coins className="h-3.5 w-3.5" />

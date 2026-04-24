@@ -30,7 +30,7 @@ const ROWS: Row[] = [
   },
   {
     category: "الميزات",
-    feature: "وصول لكل وكلاء كلميرون (50+)",
+    feature: "وصول لكل مساعدي كلميرون الـ 16",
     values: { free: true, pro: true, founder: true, enterprise: true },
   },
   {
@@ -100,7 +100,7 @@ export function PricingComparison({ plans, currentPlan }: Props) {
         transition={{ duration: 0.5 }}
         className="text-center mb-10"
       >
-        <p className="text-[11px] uppercase tracking-[0.25em] text-brand-gold font-bold mb-2">
+        <p className="text-[11px] uppercase tracking-[0.25em] text-brand-cyan font-bold mb-2">
           مقارنة تفصيلية
         </p>
         <h2 className="font-display text-3xl md:text-4xl font-extrabold text-white">
@@ -120,7 +120,7 @@ export function PricingComparison({ plans, currentPlan }: Props) {
                   key={p.id}
                   className={cn(
                     "p-5 text-center",
-                    p.id === currentPlan && "bg-brand-gold/[0.04]"
+                    p.id === currentPlan && "bg-brand-cyan/[0.04]"
                   )}
                 >
                   <p
@@ -132,7 +132,7 @@ export function PricingComparison({ plans, currentPlan }: Props) {
                     {p.nameAr}
                   </p>
                   {p.id === currentPlan && (
-                    <span className="text-[9px] font-bold text-brand-gold uppercase tracking-widest">
+                    <span className="text-[9px] font-bold text-brand-cyan uppercase tracking-widest">
                       الحالية
                     </span>
                   )}
@@ -146,7 +146,7 @@ export function PricingComparison({ plans, currentPlan }: Props) {
                 <tr>
                   <td
                     colSpan={plans.length + 1}
-                    className="px-5 pt-6 pb-2 text-[10px] uppercase tracking-[0.25em] font-extrabold text-brand-gold"
+                    className="px-5 pt-6 pb-2 text-[10px] uppercase tracking-[0.25em] font-extrabold text-brand-cyan"
                   >
                     {category}
                   </td>
@@ -166,7 +166,7 @@ export function PricingComparison({ plans, currentPlan }: Props) {
                         key={p.id}
                         className={cn(
                           "p-4 text-center text-sm",
-                          p.id === currentPlan && "bg-brand-gold/[0.04]"
+                          p.id === currentPlan && "bg-brand-cyan/[0.04]"
                         )}
                       >
                         <CellValue value={row.values[p.id]} highlight={!!p.highlighted} />
@@ -189,7 +189,7 @@ function CellValue({ value, highlight }: { value: string | boolean; highlight: b
       <div
         className={cn(
           "inline-flex items-center justify-center w-6 h-6 rounded-full",
-          highlight ? "bg-brand-gold/20 text-brand-gold" : "bg-emerald-500/15 text-emerald-300"
+          highlight ? "bg-brand-cyan/20 text-brand-cyan" : "bg-emerald-500/15 text-emerald-300"
         )}
       >
         <Check className="h-3.5 w-3.5" strokeWidth={3} />

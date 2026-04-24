@@ -82,7 +82,7 @@ export function CostByModelWidget() {
                   </div>
                   <div className="h-1.5 rounded-full bg-white/[0.06] overflow-hidden">
                     <div
-                      className="h-full bg-gradient-to-r from-brand-gold to-brand-blue"
+                      className="h-full bg-gradient-to-r from-brand-cyan to-brand-blue"
                       style={{ width: `${pct}%` }}
                     />
                   </div>

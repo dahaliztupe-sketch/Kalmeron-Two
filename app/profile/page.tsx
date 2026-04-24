@@ -61,7 +61,7 @@ export default function ProfilePage() {
             <Card className="glass border-neutral-700/50 shadow-2xl rounded-3xl overflow-hidden relative">
             <CardHeader className="bg-[#16161D]/80 border-b border-neutral-800 p-8">
                 <CardTitle className="text-2xl text-white flex items-center gap-2">
-                    <User className="h-6 w-6 text-[rgb(var(--gold))]" /> 
+                    <User className="h-6 w-6 text-[rgb(var(--brand-cyan))]" /> 
                     المعلومات الأساسية
                 </CardTitle>
             </CardHeader>

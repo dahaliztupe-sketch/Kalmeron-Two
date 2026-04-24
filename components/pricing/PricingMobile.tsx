@@ -125,19 +125,19 @@ export function PricingMobile({
                 isHighlighted
                   ? "border-transparent gradient-border gradient-border-animate"
                   : "border-white/[0.08]",
-                isCurrent && "ring-2 ring-brand-gold/40"
+                isCurrent && "ring-2 ring-brand-cyan/40"
               )}
             >
               {isHighlighted && (
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10">
-                  <div className="rounded-full bg-gradient-to-r from-brand-gold to-amber-400 px-3 py-1 text-[10px] font-extrabold uppercase tracking-[0.18em] text-black shadow-lg shadow-brand-gold/40">
+                  <div className="rounded-full bg-gradient-to-r from-brand-cyan to-amber-400 px-3 py-1 text-[10px] font-extrabold uppercase tracking-[0.18em] text-black shadow-lg shadow-brand-cyan/40">
                     الأكثر شعبية
                   </div>
                 </div>
               )}
               {isCurrent && (
                 <div className="absolute -top-3 right-4 z-10">
-                  <div className="rounded-full border border-brand-gold/40 bg-black px-3 py-1 text-[10px] font-extrabold uppercase tracking-[0.18em] text-brand-gold">
+                  <div className="rounded-full border border-brand-cyan/40 bg-black px-3 py-1 text-[10px] font-extrabold uppercase tracking-[0.18em] text-brand-cyan">
                     الحالية
                   </div>
                 </div>
@@ -148,14 +148,14 @@ export function PricingMobile({
                   className={cn(
                     "inline-flex items-center justify-center w-12 h-12 rounded-2xl mb-3",
                     isHighlighted
-                      ? "bg-gradient-to-br from-brand-gold/30 to-brand-gold/5 border border-brand-gold/30"
+                      ? "bg-gradient-to-br from-brand-cyan/30 to-brand-cyan/5 border border-brand-cyan/30"
                       : "bg-white/[0.03] border border-white/10"
                   )}
                 >
                   <Icon
                     className={cn(
                       "h-5 w-5",
-                      isHighlighted ? "text-brand-gold" : "text-text-secondary"
+                      isHighlighted ? "text-brand-cyan" : "text-text-secondary"
                     )}
                   />
                 </div>
@@ -178,7 +178,7 @@ export function PricingMobile({
                 </div>
               )}
               {plan.id === "enterprise" && (
-                <div className="mb-5 rounded-xl bg-gradient-to-r from-brand-gold/10 to-brand-blue/10 border border-brand-gold/20 p-3 text-center">
+                <div className="mb-5 rounded-xl bg-gradient-to-r from-brand-cyan/10 to-brand-blue/10 border border-brand-cyan/20 p-3 text-center">
                   <span className="font-display text-xl font-extrabold brand-gradient-text">
                     ∞ غير محدود
                   </span>
@@ -191,7 +191,7 @@ export function PricingMobile({
                     <div
                       className={cn(
                         "flex items-center justify-center w-4 h-4 rounded-full shrink-0 mt-0.5",
-                        isHighlighted ? "bg-brand-gold/20 text-brand-gold" : "bg-emerald-500/15 text-emerald-300"
+                        isHighlighted ? "bg-brand-cyan/20 text-brand-cyan" : "bg-emerald-500/15 text-emerald-300"
                       )}
                     >
                       <Check className="h-2.5 w-2.5" strokeWidth={3.5} />
@@ -219,7 +219,7 @@ export function PricingMobile({
             aria-label={`الانتقال إلى الخطة ${i + 1}`}
             className={cn(
               "h-1.5 rounded-full transition-all",
-              i === activeIdx ? "w-6 bg-brand-gold" : "w-1.5 bg-white/15"
+              i === activeIdx ? "w-6 bg-brand-cyan" : "w-1.5 bg-white/15"
             )}
           />
         ))}
@@ -259,7 +259,7 @@ export function PricingMobile({
                 isCurrentActive
                   ? "bg-white/[0.04] text-text-secondary border border-white/10"
                   : activePlan.highlighted
-                    ? "bg-gradient-to-r from-brand-gold to-amber-400 text-black"
+                    ? "bg-gradient-to-r from-brand-cyan to-amber-400 text-black"
                     : "bg-white text-black"
               )}
             >

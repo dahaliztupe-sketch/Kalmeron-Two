@@ -8,7 +8,7 @@ import { motion } from 'motion/react';
 const MOCK_TEMPLATES = [
   {
     id: 1,
-    title: 'وكيل الشؤون القانونية للشركات',
+    title: 'مساعد الشؤون القانونية للشركات',
     author: 'أحمد محمود (محام تجاري)',
     stars: 4.9,
     downloads: '1.2k',
@@ -42,10 +42,10 @@ export default function MarketplacePage() {
         <header className="mb-12">
           <div className="flex items-center gap-3 text-blue-400 mb-4">
             <Store className="w-8 h-8" />
-            <h1 className="text-3xl font-bold text-white">متجر الوكلاء (Marketplace)</h1>
+            <h1 className="text-3xl font-bold text-white">متجر المساعدين (Marketplace)</h1>
           </div>
           <p className="text-neutral-400 max-w-2xl text-lg">
-            اكتشف واستورد وكلاء ذكاء اصطناعي وأدوات تخطيط مُعدة مسبقاً بواسطة مجتمع رواد الأعمال والخبراء لتسريع إنجاز أعمالك.
+            اكتشف واستورد مساعدين ذكاء اصطناعي وأدوات تخطيط مُعدة مسبقاً بواسطة مجتمع رواد الأعمال والخبراء لتسريع إنجاز أعمالك.
           </p>
         </header>
 
@@ -81,7 +81,7 @@ export default function MarketplacePage() {
                       <DownloadCloud className="w-4 h-4" /> {item.downloads} تحميل
                    </div>
                    <button className="bg-white/10 hover:bg-blue-600 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors">
-                     استيراد الوكيل
+                     استيراد المساعد
                    </button>
                 </div>
              </motion.div>

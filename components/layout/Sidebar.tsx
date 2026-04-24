@@ -124,10 +124,10 @@ export function Sidebar() {
             </div>
             <div className="min-w-0 leading-tight">
               <p className="text-[13px] font-bold text-white truncate">
-                {dbUser?.name || user.displayName || "Founder"}
+                {dbUser?.name || user.displayName || "مؤسّس"}
               </p>
               <p className="text-[10px] text-cyan-300/70 uppercase tracking-[0.18em] truncate mt-0.5">
-                {(dbUser as any)?.industry || "Founder"}
+                {(dbUser as any)?.industry || "مؤسّس"}
               </p>
             </div>
           </div>

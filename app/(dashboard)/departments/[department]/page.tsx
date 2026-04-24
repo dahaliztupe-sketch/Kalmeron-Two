@@ -130,7 +130,7 @@ export default async function DepartmentPage({ params }: { params: Promise<{ dep
               </div>
               <p className="text-text-secondary leading-relaxed">{dep.description}</p>
               <div className="mt-4 flex items-center gap-2 text-xs text-text-secondary">
-                <Bot className="w-3.5 h-3.5" /> {dep.agents.length} وكلاء متخصصون
+                <Bot className="w-3.5 h-3.5" /> {dep.agents.length} مساعدين متخصصون
               </div>
             </div>
           </div>
@@ -139,7 +139,7 @@ export default async function DepartmentPage({ params }: { params: Promise<{ dep
         {/* Members */}
         <section>
           <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-            <Users className="w-5 h-5 text-brand-gold" /> الأعضاء
+            <Users className="w-5 h-5 text-brand-cyan" /> الأعضاء
           </h2>
           {/* Bento Grid: البطاقة الأولى مزدوجة الحجم لإبراز قائد القسم */}
           <div className="grid grid-cols-2 md:grid-cols-4 auto-rows-[140px] gap-4">
@@ -172,7 +172,7 @@ export default async function DepartmentPage({ params }: { params: Promise<{ dep
                           {agent.name}
                         </p>
                         {isLead && (
-                          <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-brand-gold/15 text-brand-gold border border-brand-gold/30 shrink-0">
+                          <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-brand-cyan/15 text-brand-cyan border border-brand-cyan/30 shrink-0">
                             قائد القسم
                           </span>
                         )}
@@ -197,12 +197,12 @@ export default async function DepartmentPage({ params }: { params: Promise<{ dep
             <Activity className="w-5 h-5 text-brand-blue" />
             <div>
               <p className="text-white font-bold">ابدأ مهمة لقسم {dep.name}</p>
-              <p className="text-xs text-text-secondary">سيتولى منسق القسم توزيع العمل على الوكلاء.</p>
+              <p className="text-xs text-text-secondary">سيتولى منسق القسم توزيع العمل على المساعدين.</p>
             </div>
           </div>
           <Link
             href="/chat"
-            className="inline-flex items-center gap-2 bg-gradient-to-r from-brand-gold to-brand-blue text-white font-bold px-5 py-2.5 rounded-xl text-sm hover:opacity-90 transition-opacity"
+            className="inline-flex items-center gap-2 bg-gradient-to-r from-brand-cyan to-brand-blue text-white font-bold px-5 py-2.5 rounded-xl text-sm hover:opacity-90 transition-opacity"
           >
             <FileText className="w-4 h-4" /> تكليف القسم بمهمة
           </Link>

@@ -11,7 +11,7 @@ export default function AdminAgentsHub() {
         <header className="mb-10">
           <h1 className="text-3xl font-bold flex items-center gap-3">
             <ShieldCheck className="w-8 h-8 text-neutral-400" />
-            مركز المشرفين وحوكمة الوكلاء (Agent OS Hub)
+            مركز المشرفين وحوكمة المساعدين (Agent OS Hub)
           </h1>
           <p className="text-neutral-400 mt-2">
             لوحة التحكم المركزية لمجموعة مراقبي الذكاء الاصطناعي (Admin Agents Suite). تخضع جميع العمليات لمعايير Agent Governance Toolkit (OPA Policies).

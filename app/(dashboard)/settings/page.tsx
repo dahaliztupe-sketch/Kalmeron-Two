@@ -46,7 +46,7 @@ function Toggle({ checked, onChange, label, description }: ToggleProps) {
         aria-checked={checked}
         onClick={() => onChange(!checked)}
         className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors ${
-          checked ? "bg-brand-gold" : "bg-white/10"
+          checked ? "bg-brand-cyan" : "bg-white/10"
         }`}
       >
         <span
@@ -162,19 +162,19 @@ export default function SettingsPage() {
 
         <Tabs defaultValue="profile" className="w-full gap-6">
           <TabsList className="bg-white/5 border border-white/10 backdrop-blur-md p-1 h-auto flex-wrap gap-1">
-            <TabsTrigger value="profile" className="data-active:bg-brand-gold/15 data-active:text-brand-gold rounded-md px-4 py-2">
+            <TabsTrigger value="profile" className="data-active:bg-brand-cyan/15 data-active:text-brand-cyan rounded-md px-4 py-2">
               <UserIcon className="ml-1 h-4 w-4" /> الملف الشخصي
             </TabsTrigger>
-            <TabsTrigger value="security" className="data-active:bg-brand-gold/15 data-active:text-brand-gold rounded-md px-4 py-2">
+            <TabsTrigger value="security" className="data-active:bg-brand-cyan/15 data-active:text-brand-cyan rounded-md px-4 py-2">
               <ShieldCheck className="ml-1 h-4 w-4" /> الأمان
             </TabsTrigger>
-            <TabsTrigger value="notifications" className="data-active:bg-brand-gold/15 data-active:text-brand-gold rounded-md px-4 py-2">
+            <TabsTrigger value="notifications" className="data-active:bg-brand-cyan/15 data-active:text-brand-cyan rounded-md px-4 py-2">
               <Bell className="ml-1 h-4 w-4" /> الإشعارات
             </TabsTrigger>
-            <TabsTrigger value="billing" className="data-active:bg-brand-gold/15 data-active:text-brand-gold rounded-md px-4 py-2">
+            <TabsTrigger value="billing" className="data-active:bg-brand-cyan/15 data-active:text-brand-cyan rounded-md px-4 py-2">
               <CreditCard className="ml-1 h-4 w-4" /> الفوترة
             </TabsTrigger>
-            <TabsTrigger value="privacy" className="data-active:bg-brand-gold/15 data-active:text-brand-gold rounded-md px-4 py-2">
+            <TabsTrigger value="privacy" className="data-active:bg-brand-cyan/15 data-active:text-brand-cyan rounded-md px-4 py-2">
               <Lock className="ml-1 h-4 w-4" /> الخصوصية
             </TabsTrigger>
           </TabsList>
@@ -252,7 +252,7 @@ export default function SettingsPage() {
                   <Button
                     onClick={saveProfile}
                     disabled={savingProfile}
-                    className="bg-brand-gold text-black hover:bg-brand-gold/90 font-bold"
+                    className="bg-brand-cyan text-black hover:bg-brand-cyan/90 font-bold"
                   >
                     <Check className="ml-2 h-4 w-4" />
                     {savingProfile ? "جارٍ الحفظ..." : "حفظ التغييرات"}
@@ -303,7 +303,7 @@ export default function SettingsPage() {
                     </div>
                   </div>
                   <div className="flex justify-end">
-                    <Button type="submit" className="bg-brand-gold text-black hover:bg-brand-gold/90 font-bold">
+                    <Button type="submit" className="bg-brand-cyan text-black hover:bg-brand-cyan/90 font-bold">
                       تحديث كلمة المرور
                     </Button>
                   </div>
@@ -348,7 +348,7 @@ export default function SettingsPage() {
                     checked={emailProduct}
                     onChange={setEmailProduct}
                     label="تحديثات المنتج"
-                    description="ميزات جديدة، أوكلاء جدد، وتحسينات داخل كلميرون."
+                    description="ميزات جديدة، أمساعدين جدد، وتحسينات داخل كلميرون."
                   />
                 </div>
                 <div className="border-t border-white/10 mt-4 pt-4 space-y-1">
@@ -359,7 +359,7 @@ export default function SettingsPage() {
                     checked={inappMentions}
                     onChange={setInappMentions}
                     label="تنبيهات المحادثة"
-                    description="عند انتهاء وكيل من تحليل أو خطة طويلة."
+                    description="عند انتهاء مساعد من تحليل أو خطة طويلة."
                   />
                   <Toggle
                     checked={inappWeekly}
@@ -371,7 +371,7 @@ export default function SettingsPage() {
                 <div className="flex justify-end mt-6">
                   <Button
                     onClick={() => toast.success("تم حفظ تفضيلات الإشعارات.")}
-                    className="bg-brand-gold text-black hover:bg-brand-gold/90 font-bold"
+                    className="bg-brand-cyan text-black hover:bg-brand-cyan/90 font-bold"
                   >
                     حفظ التفضيلات
                   </Button>

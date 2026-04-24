@@ -56,7 +56,7 @@
           <header className="mb-8 flex items-start justify-between gap-4">
             <div>
               <h1 className="text-4xl font-extrabold mb-2">مركز القيادة</h1>
-              <p className="text-neutral-400">مراقبة الوكلاء والتكاليف والأمان والامتثال في الوقت الفعلي.</p>
+              <p className="text-neutral-400">مراقبة المساعدين والتكاليف والأمان والامتثال في الوقت الفعلي.</p>
             </div>
             <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full border text-xs font-bold ${
               live ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300' : 'bg-neutral-800 border-white/10 text-neutral-400'
@@ -77,7 +77,7 @@
           {data && (
             <div className="grid md:grid-cols-3 gap-6">
               <div className="md:col-span-2 p-6 rounded-2xl bg-neutral-900/60 border border-white/[0.05]">
-                <h2 className="text-xl font-bold mb-4">خريطة الوكلاء النشطين</h2>
+                <h2 className="text-xl font-bold mb-4">خريطة المساعدين النشطين</h2>
                 <div className="space-y-2 max-h-96 overflow-y-auto">
                   {Object.entries(data.agents).map(([id, m]: any) => (
                     <div
@@ -102,7 +102,7 @@
                     </div>
                   ))}
                   {Object.keys(data.agents).length === 0 && (
-                    <p className="text-neutral-600 text-sm">لا توجد بيانات بعد. ابدأ محادثة لتفعيل الوكلاء.</p>
+                    <p className="text-neutral-600 text-sm">لا توجد بيانات بعد. ابدأ محادثة لتفعيل المساعدين.</p>
                   )}
                 </div>
               </div>

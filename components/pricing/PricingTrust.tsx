@@ -23,7 +23,7 @@ export function PricingTrust() {
         transition={{ duration: 0.5 }}
         className="text-center mb-8"
       >
-        <p className="text-[11px] uppercase tracking-[0.25em] text-brand-gold font-bold mb-2">
+        <p className="text-[11px] uppercase tracking-[0.25em] text-brand-cyan font-bold mb-2">
           معايير عالمية
         </p>
         <h2 className="font-display text-2xl md:text-3xl font-extrabold text-white">
@@ -39,10 +39,10 @@ export function PricingTrust() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.4, delay: i * 0.05 }}
-            className="rounded-2xl border border-white/[0.06] bg-dark-surface/40 backdrop-blur p-4 text-center hover:border-brand-gold/30 transition-colors"
+            className="rounded-2xl border border-white/[0.06] bg-dark-surface/40 backdrop-blur p-4 text-center hover:border-brand-cyan/30 transition-colors"
           >
             <div className="inline-flex w-10 h-10 rounded-xl items-center justify-center bg-white/[0.03] border border-white/10 mb-2">
-              <it.icon className="h-4 w-4 text-brand-gold" />
+              <it.icon className="h-4 w-4 text-brand-cyan" />
             </div>
             <p className="text-xs font-bold text-white">{it.label}</p>
             <p className="text-[10px] text-text-secondary mt-0.5 leading-tight">

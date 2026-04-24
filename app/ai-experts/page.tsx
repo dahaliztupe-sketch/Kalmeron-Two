@@ -5,9 +5,9 @@ import { SeoLandingShell } from "@/components/seo/SeoLandingShell";
 import { ArrowLeft } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "الخبراء | 12 وكيلاً ذكياً متخصصاً في كل ما تحتاجه",
+  title: "الخبراء | 12 مساعداً ذكياً متخصصاً في كل ما تحتاجه",
   description:
-    "تعرف على وكلاء كلميرون: CFO افتراضي، حارس قانوني، مدير تسويق، رادار فرص، درع أخطاء، وأكثر. كل وكيل متخصص بعمق في مجاله.",
+    "تعرف على مساعدين كلميرون: CFO افتراضي، حارس قانوني، مدير تسويق، رادار فرص، درع أخطاء، وأكثر. كل مساعد متخصص بعمق في مجاله.",
   alternates: { canonical: "/ai-experts" },
 };
 

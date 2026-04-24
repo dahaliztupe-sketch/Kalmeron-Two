@@ -59,7 +59,7 @@ const QUICK_EXPERIMENTS = [
 
 const HOW_IT_WORKS = [
   { step: "01", title: "صف فكرتك", desc: "أخبر كلميرون عن منتجك والسوق المستهدف", icon: FlaskConical },
-  { step: "02", title: "يُنشئ الشخصيات", desc: "وكيل الشخصيات يبني 5-20 عميل افتراضي واقعي", icon: Users },
+  { step: "02", title: "يُنشئ الشخصيات", desc: "مساعد الشخصيات يبني 5-20 عميل افتراضي واقعي", icon: Users },
   { step: "03", title: "المقابلات تبدأ", desc: "كل شخصية تُجيب كما لو أنها عميل حقيقي", icon: Play },
   { step: "04", title: "تحليل Insights", desc: "محلل الرؤى يستخلص القرارات الاستراتيجية", icon: Brain },
 ];

@@ -43,14 +43,14 @@ const DEPARTMENTS = [
   },
   {
     icon: Bot,
-    title: "+50 مساعداً ذكياً",
+    title: "16 مساعداً ذكياً",
     subtitle: "Your AI Team",
     desc: "فريق متكامل من المسوّقين والمحاسبين والمحامين والمحلّلين يعمل بدوام كامل لصالحك. كل واحد متخصّص في مجاله.",
     color: "indigo",
     gradient: "from-indigo-500 to-violet-500",
     bg: "from-indigo-500/10 to-violet-500/5",
     border: "border-indigo-500/20 hover:border-indigo-400/50",
-    features: ["7 أقسام تشغيلية", "وكلاء متخصصون", "تنسيق تلقائي بينهم"],
+    features: ["7 أقسام تشغيلية", "مساعدين متخصصون", "تنسيق تلقائي بينهم"],
     demo: "\"ابعت طلبك لمحلل الفكرة والـ CFO والمرشد القانوني في نفس الوقت\"",
   },
   {
@@ -68,7 +68,7 @@ const DEPARTMENTS = [
   {
     icon: Briefcase,
     title: "المدير المالي",
-    subtitle: "CFO Agent",
+    subtitle: "المدير المالي الذكي",
     desc: "نماذج مالية احترافية وتوقعات تدفق نقدي وتحليل سيناريوهات في دقائق — جاهز للمستثمرين والبنوك.",
     color: "emerald",
     gradient: "from-emerald-500 to-cyan-500",
@@ -80,7 +80,7 @@ const DEPARTMENTS = [
   {
     icon: Scale,
     title: "الحارس القانوني",
-    subtitle: "Legal Shield",
+    subtitle: "المرشد القانوني",
     desc: "عقود ونماذج متوافقة مع التشريعات المصرية وقانون GDPR. تأسيس، ضرائب، عقود موظفين — كل شيء مغطّى.",
     color: "amber",
     gradient: "from-amber-500 to-orange-500",
@@ -468,7 +468,7 @@ function Hero() {
           className="text-[15px] sm:text-[17px] md:text-xl text-neutral-300/95 max-w-3xl mx-auto mb-5 leading-[1.85]"
         >
           بدل ما تدفع آلاف الجنيهات لمستشار مالي ومحامي ومحلل سوق ومسوق —<br className="hidden md:block" />
-          <span className="text-white font-bold">+٥٠ مساعداً ذكياً</span> متخصّصاً يعمل كفريقك كاملاً في منصّة واحدة، بالعربية الأصيلة.
+          <span className="text-white font-bold">١٦ مساعداً ذكياً</span> متخصّصاً يعمل كفريقك كاملاً في منصّة واحدة، بالعربية الأصيلة.
         </motion.p>
 
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.35 }}
@@ -597,7 +597,7 @@ function DepartmentsSection() {
             فريق متكامل في <span className="brand-gradient-text">منصة واحدة</span>
           </h2>
           <p className="text-neutral-400 max-w-2xl mx-auto text-lg">
-            من تحليل الفكرة وحتى التوسع. لكل قسم وكلاء متخصصون يعملون معاً تلقائياً.
+            من تحليل الفكرة وحتى التوسع. لكل قسم مساعدين متخصصون يعملون معاً تلقائياً.
           </p>
         </motion.div>
 
@@ -715,7 +715,7 @@ function LiveDemoSection() {
           <h2 className="font-display text-3xl md:text-5xl font-extrabold text-white mb-4">
             شوف كيف يعمل <span className="brand-gradient-text">كلميرون</span>
           </h2>
-          <p className="text-neutral-400 max-w-xl mx-auto">تجربة حقيقية مع وكلاء كلميرون — اختار السيناريو اللي يناسبك</p>
+          <p className="text-neutral-400 max-w-xl mx-auto">تجربة حقيقية مع مساعدين كلميرون — اختار السيناريو اللي يناسبك</p>
         </motion.div>
 
         <div className="flex flex-wrap items-center justify-center gap-2 mb-8">
@@ -980,7 +980,7 @@ function TestimonialsSection() {
 
 const STEPS = [
   { n: "01", icon: MessageSquareText, title: "احكي فكرتك", desc: "بالعامية أو الفصحى. كلميرون يفهمك ويطرح الأسئلة الصح.", color: "cyan" },
-  { n: "02", icon: Cpu, title: "الوكلاء يتحركون", desc: "7 أقسام تعمل بالتوازي — تحليل، مالية، قانون، سوق — كلها في نفس الوقت.", color: "indigo" },
+  { n: "02", icon: Cpu, title: "المساعدين يتحركون", desc: "7 أقسام تعمل بالتوازي — تحليل، مالية، قانون، سوق — كلها في نفس الوقت.", color: "indigo" },
   { n: "03", icon: FileText, title: "تحصل على النتائج", desc: "خطة عمل، نمذجة مالية، تحذيرات، فرص — كلها جاهزة في دقائق.", color: "fuchsia" },
 ];
 
@@ -1110,7 +1110,7 @@ function Footer() {
           <div className="col-span-2 md:col-span-1">
             <BrandLogo size={36} glow iconOnly />
             <p className="text-sm text-neutral-500 mt-3 leading-relaxed max-w-xs">
-              مقرّ عمليات شركتك الذكي. +50 مساعداً ذكياً يعملون كفريقك المؤسّس.
+              مقرّ عمليات شركتك الذكي. 16 مساعداً ذكياً يعملون كفريقك المؤسّس.
             </p>
           </div>
           {cols.map((col) => (

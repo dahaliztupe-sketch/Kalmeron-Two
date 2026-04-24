@@ -147,7 +147,7 @@ function LiveEventsFeed() {
   if (err === "forbidden") return null;
   return (
     <Card>
-      <div className="font-semibold mb-3">أحدث تشغيلات الوكلاء (كل 10 ثوانٍ)</div>
+      <div className="font-semibold mb-3">أحدث تشغيلات المساعدين (كل 10 ثوانٍ)</div>
       {events.length === 0 ? (
         <div className="text-xs text-gray-500">لا توجد أحداث بعد</div>
       ) : (

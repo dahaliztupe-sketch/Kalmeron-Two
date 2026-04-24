@@ -11,13 +11,13 @@ export default function AgentBuilderPage() {
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-white/10 bg-black/50">
           <div>
-            <h1 className="text-xl font-bold text-white">منشئ الوكلاء (No-Code Agent Builder)</h1>
-            <p className="text-xs text-neutral-400 mt-1">صمم وكيلك الخاص بأسلوب السحب والإفلات وتصديره إلى LangGraph</p>
+            <h1 className="text-xl font-bold text-white">منشئ المساعدين (No-Code Agent Builder)</h1>
+            <p className="text-xs text-neutral-400 mt-1">صمم مساعدك الخاص بأسلوب السحب والإفلات وتصديره إلى LangGraph</p>
           </div>
           <div className="flex gap-3">
             <button className="flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 text-white rounded-lg transition-colors border border-white/10 text-sm">
               <Play className="w-4 h-4 text-emerald-400" />
-              تجربة الوكيل المدمج
+              تجربة المساعد المدمج
             </button>
             <button className="flex items-center gap-2 px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-lg transition-colors font-medium text-sm">
               <Save className="w-4 h-4" />

@@ -74,7 +74,7 @@ export default function OKRPage() {
           <div className="p-8 rounded-2xl bg-neutral-900/60 border border-white/[0.05] text-center">
             <p className="text-neutral-300 mb-4">لم يتم توليد أهداف لهذا الأسبوع بعد.</p>
             <button onClick={generate} disabled={generating}
-              className="px-5 py-2 rounded-xl bg-brand-gold/20 border border-brand-gold/40 text-brand-gold">
+              className="px-5 py-2 rounded-xl bg-brand-cyan/20 border border-brand-cyan/40 text-brand-cyan">
               ابدأ توليد الأهداف الآن
             </button>
           </div>
@@ -101,7 +101,7 @@ export default function OKRPage() {
                           </div>
                           <div className="h-1.5 rounded-full bg-neutral-800 overflow-hidden">
                             <div
-                              className={`h-full ${pct >= 100 ? 'bg-emerald-500' : 'bg-brand-gold'}`}
+                              className={`h-full ${pct >= 100 ? 'bg-emerald-500' : 'bg-brand-cyan'}`}
                               style={{ width: `${pct}%` }}
                             />
                           </div>

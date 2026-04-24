@@ -101,7 +101,7 @@ export default async function IndustryPage({ params }: PageProps) {
 
       {/* Top agents for this industry */}
       <section className="mb-16">
-        <h2 className="text-3xl font-bold text-white mb-8">الوكلاء المتخصصون</h2>
+        <h2 className="text-3xl font-bold text-white mb-8">المساعدين المتخصصون</h2>
         <div className="grid md:grid-cols-2 gap-3">
           {ind.topAgents.map((agent) => (
             <div key={agent} className="rounded-xl bg-white/[0.03] border border-white/10 p-4 text-zinc-200">

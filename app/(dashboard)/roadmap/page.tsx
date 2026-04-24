@@ -19,7 +19,7 @@ const STATUS_META: Record<TaskItem['status'], { label: string; color: string; Ic
   completed:        { label: 'مكتمل',           color: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/30', Icon: CheckCircle2 },
   in_progress:      { label: 'قيد التنفيذ',     color: 'text-brand-blue bg-brand-blue/10 border-brand-blue/30',     Icon: Clock },
   pending:          { label: 'في الانتظار',     color: 'text-text-secondary bg-white/5 border-white/10',            Icon: Hourglass },
-  awaiting_human:   { label: 'ينتظر موافقتك',  color: 'text-brand-gold bg-brand-gold/10 border-brand-gold/30',     Icon: PauseCircle },
+  awaiting_human:   { label: 'ينتظر موافقتك',  color: 'text-brand-cyan bg-brand-cyan/10 border-brand-cyan/30',     Icon: PauseCircle },
   failed:           { label: 'فشل',             color: 'text-rose-400 bg-rose-500/10 border-rose-500/30',           Icon: AlertCircle },
 };
 
@@ -73,7 +73,7 @@ export default function RoadmapPage() {
         ) : (
           <div className="relative">
             {/* Vertical line */}
-            <div className="absolute right-[18px] top-0 bottom-0 w-px bg-gradient-to-b from-brand-gold/40 via-white/10 to-transparent" />
+            <div className="absolute right-[18px] top-0 bottom-0 w-px bg-gradient-to-b from-brand-cyan/40 via-white/10 to-transparent" />
             <div className="space-y-4">
               {tasks.map((t, i) => {
                 const meta = STATUS_META[t.status] || STATUS_META.pending;

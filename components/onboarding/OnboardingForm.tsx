@@ -50,7 +50,7 @@ const GOALS = [
 const STEPS = [
   { id: "welcome", title: "مرحباً بك في كلميرون!", subtitle: "رحلتك نحو النجاح تبدأ هنا" },
   { id: "name", title: "ما اسمك؟", subtitle: "سنناديك به في كل محادثة" },
-  { id: "stage", title: "في أي مرحلة أنت؟", subtitle: "هذا يساعدنا نخصص لك أفضل وكلاء" },
+  { id: "stage", title: "في أي مرحلة أنت؟", subtitle: "هذا يساعدنا نخصص لك أفضل المساعدين" },
   { id: "industry", title: "ما مجال مشروعك؟", subtitle: "وكلاؤنا خبراء في مجالك" },
   { id: "location", title: "من أي محافظة؟", subtitle: "نحلل لك السوق المحلي بدقة" },
   { id: "goals", title: "ماذا تريد تحقيقه؟", subtitle: "اختر كل ما ينطبق عليك" },

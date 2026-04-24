@@ -18,7 +18,7 @@ export default function TermsPage() {
             <p>يمثل استخدامك لهذه المنصة إقراراً بالموافقة على الضوابط والسياسات التي تضمن بيئة ريادية آمنة وفعالة لجميع المشاركين.</p>
           </section>
 
-          <section className="glass p-8 rounded-3xl border-l-4 border-[rgb(var(--gold))]">
+          <section className="glass p-8 rounded-3xl border-l-4 border-[rgb(var(--brand-cyan))]">
             <h2 className="text-2xl font-bold text-white mb-4">2. طبيعة الخدمة (الذكاء الاصطناعي)</h2>
             <p>المنصة تعتمد على تقنيات الذكاء الاصطناعي التوليدي؛ مما يجعلها أداة استرشادية قوية ولكنها لا تلغي ضرورة الاستعانة بخبراء بشريين في المسائل القانونية والمالية المعقدة.</p>
           </section>

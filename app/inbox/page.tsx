@@ -91,11 +91,11 @@ export default function InboxPage() {
         <header className="mb-8 flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold text-white flex items-center gap-3">
-              <InboxIcon className="w-8 h-8 text-brand-gold" />
-              صندوق موافقات الوكلاء
+              <InboxIcon className="w-8 h-8 text-brand-cyan" />
+              صندوق موافقات المساعدين
             </h1>
             <p className="text-neutral-400 mt-2">
-              طلبات الإجراءات من وكلاء كلميرون — راجِع، عدّل، ووافق قبل أي تأثير خارجي.
+              طلبات الإجراءات من مساعدين كلميرون — راجِع، عدّل، ووافق قبل أي تأثير خارجي.
             </p>
           </div>
         </header>
@@ -145,7 +145,7 @@ export default function InboxPage() {
                     <Clock className="w-3 h-3" />
                     {it.createdAt ? new Date(it.createdAt).toLocaleString("ar-EG") : "—"}
                     <span className="mx-1">·</span>
-                    <span>طلبه: {it.requestedBy === "user" ? "أنت" : "وكيل"}</span>
+                    <span>طلبه: {it.requestedBy === "user" ? "أنت" : "مساعد"}</span>
                   </p>
                 </CardHeader>
                 <CardContent className="space-y-3">

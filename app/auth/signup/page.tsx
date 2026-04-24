@@ -67,7 +67,7 @@ export default function SignUpPage() {
             <div>
               <h1 className="font-display text-3xl font-extrabold text-white mb-2">انضم إلى كلميرون</h1>
               <p className="text-neutral-400 text-sm leading-relaxed">
-                ابدأ رحلتك مع فريق وكلاء ذكي يعمل لصالحك.
+                ابدأ رحلتك مع فريق مساعدين ذكي يعمل لصالحك.
               </p>
             </div>
           </div>

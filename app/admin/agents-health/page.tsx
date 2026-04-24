@@ -30,13 +30,13 @@ export default function AgentsHealthDashboard() {
       <div className="absolute top-0 left-0 w-[40vw] h-[40vw] rounded-full bg-[rgb(var(--tech-blue))] opacity-10 blur-[100px] pointer-events-none" />
 
       <div className="relative z-10">
-        <h1 className="text-4xl font-black text-white">لوحة تحكم صحة الوكلاء <span dir="ltr" className="brand-gradient-text">(Meta-AI)</span></h1>
-        <p className="text-lg text-neutral-400 mt-2">مراقبة الانجراف الذكي وتقييمات الوكلاء</p>
+        <h1 className="text-4xl font-black text-white">لوحة تحكم صحة المساعدين <span dir="ltr" className="brand-gradient-text">(Meta-AI)</span></h1>
+        <p className="text-lg text-neutral-400 mt-2">مراقبة الانجراف الذكي وتقييمات المساعدين</p>
       </div>
       
       <div className="bento-grid">
         <Card className="glass-panel text-white flex flex-col justify-center">
-          <CardHeader><CardTitle className="text-xl text-neutral-400">الوكلاء النشطون</CardTitle></CardHeader>
+          <CardHeader><CardTitle className="text-xl text-neutral-400">المساعدين النشطون</CardTitle></CardHeader>
           <CardContent className="text-5xl font-black text-[#D4AF37]">8</CardContent>
         </Card>
         <Card className="glass-panel text-white flex flex-col justify-center">
@@ -53,7 +53,7 @@ export default function AgentsHealthDashboard() {
         <Card className="glass-panel text-white bento-wide">
           <CardHeader>
             <CardTitle className="text-2xl">الأداء العام (آخر 7 أيام)</CardTitle>
-            <CardDescription className="text-neutral-400 text-lg">متوسط التقييم العام لجميع الوكلاء يومياً</CardDescription>
+            <CardDescription className="text-neutral-400 text-lg">متوسط التقييم العام لجميع المساعدين يومياً</CardDescription>
           </CardHeader>
           <CardContent className="h-[300px]">
             <ResponsiveContainer width="100%" height="100%">
@@ -70,8 +70,8 @@ export default function AgentsHealthDashboard() {
 
         <Card className="glass-panel text-white bento-wide">
           <CardHeader>
-            <CardTitle className="text-2xl">أداء الوكلاء الفردي</CardTitle>
-            <CardDescription className="text-neutral-400 text-lg">تقييم كل وكيل بناءً على آخر 100 مهمة</CardDescription>
+            <CardTitle className="text-2xl">أداء المساعدين الفردي</CardTitle>
+            <CardDescription className="text-neutral-400 text-lg">تقييم كل مساعد بناءً على آخر 100 مهمة</CardDescription>
           </CardHeader>
           <CardContent className="h-[300px]">
             <ResponsiveContainer width="100%" height="100%">

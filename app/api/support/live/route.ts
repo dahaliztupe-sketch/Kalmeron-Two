@@ -19,7 +19,7 @@ export async function GET(req: Request) {
     return NextResponse.json({
       url: gatewayUrl,
       token: ephemeralToken,
-      instructions: 'استخدم هذا الرابط لفتح قناة صوت/فيديو مباشرة مع وكيل الدعم الفني.'
+      instructions: 'استخدم هذا الرابط لفتح قناة صوت/فيديو مباشرة مع مساعد الدعم الفني.'
     });
   } catch (error) {
     return NextResponse.json({ error: 'Failed to establish Live Support Session' }, { status: 500 });

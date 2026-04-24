@@ -29,7 +29,7 @@ export default function VirtualOfficePage() {
   return (
     <div className="p-6 max-w-6xl mx-auto">
       <h1 className="text-2xl font-bold mb-1">المكتب الرقمي</h1>
-      <p className="text-sm text-gray-500 mb-6">أجهزة افتراضية آمنة للوكلاء</p>
+      <p className="text-sm text-gray-500 mb-6">أجهزة افتراضية آمنة للمساعدين</p>
 
       <div className="border rounded-lg p-4 mb-6 bg-white dark:bg-gray-900">
         <div className="font-semibold mb-2">إنشاء جهاز جديد</div>
@@ -37,7 +37,7 @@ export default function VirtualOfficePage() {
           <input
             value={agentId}
             onChange={(e) => setAgentId(e.target.value)}
-            placeholder="معرف الوكيل"
+            placeholder="معرف المساعد"
             className="flex-1 border rounded px-3 py-2"
           />
           <input

@@ -53,7 +53,7 @@ export function DriftWidget({ windowDays = 7 }: { windowDays?: number }) {
           <Activity className="w-4 h-4 text-brand-blue" />
           مراقبة الانجراف ({windowDays} أيام)
         </CardTitle>
-        <span className="text-xs text-text-secondary">{reports.length} وكيل</span>
+        <span className="text-xs text-text-secondary">{reports.length} مساعد</span>
       </CardHeader>
       <CardContent>
         {loading ? (
@@ -66,7 +66,7 @@ export function DriftWidget({ windowDays = 7 }: { windowDays?: number }) {
           </p>
         ) : reports.length === 0 ? (
           <p className="text-sm text-text-secondary">
-            لا توجد بيانات انجراف بعد. سيتم تجميعها مع كل استدعاء وكيل.
+            لا توجد بيانات انجراف بعد. سيتم تجميعها مع كل استدعاء مساعد.
           </p>
         ) : (
           <ul className="space-y-2 max-h-80 overflow-y-auto">

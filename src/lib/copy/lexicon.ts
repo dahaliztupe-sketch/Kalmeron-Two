@@ -39,7 +39,10 @@ export const LEXICON = {
   agentSingular: {
     canonical: "مساعد ذكي",
     english: "AI assistant",
-    aliases: ["وكيل", "وكيل ذكي", "agent", "AI agent", "خبير"],
+    // Note: "خبير" was deliberately removed from this list — it is a
+    // legitimate brand-approved alternative used on the /ai-experts and
+    // /experts surfaces. Re-add only after a copy-team review.
+    aliases: ["وكيل", "وكيل ذكي", "agent", "AI agent"],
     context: "وحدة فردية ذكية",
   },
   agentPlural: {

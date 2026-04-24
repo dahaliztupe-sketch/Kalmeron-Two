@@ -29,7 +29,7 @@ export default function SalesMarketingPage() {
                فريق المبيعات والتسويق الآلي
              </h1>
              <p className="text-neutral-400 mt-2">
-               شغّل وكيل المبيعات (AI SDR) وكُتاب المحتوى لبناء قوائم العملاء وإرسال رسائل مخصصة وتتبع الأداء.
+               شغّل مساعد المبيعات (AI SDR) وكُتاب المحتوى لبناء قوائم العملاء وإرسال رسائل مخصصة وتتبع الأداء.
              </p>
           </div>
           <div className="bg-blue-900/40 border border-blue-500/30 text-blue-300 px-4 py-2 rounded-full text-sm font-bold flex items-center gap-2">
@@ -67,7 +67,7 @@ export default function SalesMarketingPage() {
            <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-6 opacity-60">
              <div className="flex items-center gap-3 mb-4">
                 <Target className="w-6 h-6 text-indigo-400" />
-                <h3 className="font-bold text-lg">وكيل البحث (SDR)</h3>
+                <h3 className="font-bold text-lg">مساعد البحث (SDR)</h3>
              </div>
              <p className="text-sm text-neutral-400">يقوم حالياً بالبحث في شبكات الأعمال لاستخراج أفضل 50 عميل محتمل مطابق لمعاييرك.</p>
            </div>

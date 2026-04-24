@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 const FAQS = [
   {
     q: "ما هو الرصيد وكيف يُحسب؟",
-    a: "كل تفاعل مع وكلاء كلميرون يستهلك عدداً صغيراً من الرصيد (عادةً 5 رصيد لكل رسالة في المساعد). الخطة المجانية تمنحك 200 رصيد يومياً و3,000 شهرياً — أي ما يعادل تقريباً 600 رسالة شهرية تكفي معظم رواد الأعمال للبدء.",
+    a: "كل تفاعل مع مساعدي كلميرون يستهلك عدداً صغيراً من الرصيد (عادةً 5 رصيد لكل رسالة في المساعد). الخطة المجانية تمنحك 200 رصيد يومياً و3,000 شهرياً — أي ما يعادل تقريباً 600 رسالة شهرية تكفي معظم رواد الأعمال للبدء.",
   },
   {
     q: "هل يمكنني الترقية أو التخفيض في أي وقت؟",
@@ -48,7 +48,7 @@ export function PricingFAQ() {
         transition={{ duration: 0.5 }}
         className="text-center mb-10"
       >
-        <p className="text-[11px] uppercase tracking-[0.25em] text-brand-gold font-bold mb-2">
+        <p className="text-[11px] uppercase tracking-[0.25em] text-brand-cyan font-bold mb-2">
           أسئلة شائعة
         </p>
         <h2 className="font-display text-3xl md:text-4xl font-extrabold text-white">
@@ -68,7 +68,7 @@ export function PricingFAQ() {
               transition={{ duration: 0.3, delay: i * 0.04 }}
               className={cn(
                 "rounded-2xl border bg-dark-surface/40 backdrop-blur-md overflow-hidden transition-colors",
-                isOpen ? "border-brand-gold/30" : "border-white/[0.06] hover:border-white/15"
+                isOpen ? "border-brand-cyan/30" : "border-white/[0.06] hover:border-white/15"
               )}
             >
               <button
@@ -80,7 +80,7 @@ export function PricingFAQ() {
                   className={cn(
                     "shrink-0 w-7 h-7 rounded-full border flex items-center justify-center transition-all",
                     isOpen
-                      ? "bg-brand-gold border-brand-gold text-black rotate-45"
+                      ? "bg-brand-cyan border-brand-cyan text-black rotate-45"
                       : "border-white/15 text-text-secondary"
                   )}
                 >
@@ -105,7 +105,7 @@ export function PricingFAQ() {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.5 }}
-        className="mt-12 text-center rounded-3xl border border-brand-gold/20 bg-gradient-to-br from-brand-gold/5 via-transparent to-brand-blue/5 p-8 md:p-12"
+        className="mt-12 text-center rounded-3xl border border-brand-cyan/20 bg-gradient-to-br from-brand-cyan/5 via-transparent to-brand-blue/5 p-8 md:p-12"
       >
         <h3 className="font-display text-2xl md:text-3xl font-extrabold text-white mb-3">
           لسه عندك سؤال؟
@@ -115,7 +115,7 @@ export function PricingFAQ() {
         </p>
         <a
           href="mailto:hello@kalmeron.com"
-          className="inline-flex items-center gap-2 rounded-full border border-brand-gold/40 bg-brand-gold/10 px-6 py-3 text-sm font-bold text-brand-gold hover:bg-brand-gold/20 transition-all"
+          className="inline-flex items-center gap-2 rounded-full border border-brand-cyan/40 bg-brand-cyan/10 px-6 py-3 text-sm font-bold text-brand-cyan hover:bg-brand-cyan/20 transition-all"
         >
           تواصل معنا
         </a>

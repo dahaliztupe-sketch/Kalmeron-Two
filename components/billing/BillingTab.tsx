@@ -62,18 +62,18 @@ export function BillingTab() {
       <CardContent className="space-y-6">
         {loading ? (
           <div className="flex items-center justify-center py-10">
-            <Loader2 className="h-6 w-6 animate-spin text-brand-gold" />
+            <Loader2 className="h-6 w-6 animate-spin text-brand-cyan" />
           </div>
         ) : (
           <>
-            <div className="rounded-2xl border border-brand-gold/30 bg-gradient-to-br from-brand-gold/10 to-brand-blue/10 p-6">
+            <div className="rounded-2xl border border-brand-cyan/30 bg-gradient-to-br from-brand-cyan/10 to-brand-blue/10 p-6">
               <div className="flex items-start justify-between flex-wrap gap-4">
                 <div>
-                  <p className="text-xs text-brand-gold uppercase tracking-widest font-bold">
+                  <p className="text-xs text-brand-cyan uppercase tracking-widest font-bold">
                     الخطة الحالية
                   </p>
                   <h3 className="text-2xl font-extrabold text-white mt-1 flex items-center gap-2">
-                    <Sparkles className="h-5 w-5 text-brand-gold" /> خطة {plan.nameAr}
+                    <Sparkles className="h-5 w-5 text-brand-cyan" /> خطة {plan.nameAr}
                   </h3>
                   <p className="text-sm text-neutral-300 mt-1">
                     {plan.priceMonthlyEgp === 0
@@ -82,7 +82,7 @@ export function BillingTab() {
                   </p>
                 </div>
                 <Link href="/pricing">
-                  <Button className="bg-brand-gold text-black hover:bg-brand-gold/90 font-bold">
+                  <Button className="bg-brand-cyan text-black hover:bg-brand-cyan/90 font-bold">
                     <ArrowUpRight className="ml-1 h-4 w-4" />
                     {plan.id === "founder" || plan.id === "enterprise"
                       ? "إدارة الخطة"
@@ -94,7 +94,7 @@ export function BillingTab() {
 
             {data?.unlimited ? (
               <div className="rounded-xl border border-white/10 bg-black/30 p-6 text-center">
-                <Coins className="h-8 w-8 text-brand-gold mx-auto mb-2" />
+                <Coins className="h-8 w-8 text-brand-cyan mx-auto mb-2" />
                 <p className="text-2xl font-extrabold text-white">استخدام غير محدود</p>
                 <p className="text-sm text-neutral-400 mt-1">
                   أنت على خطة المؤسسات — لا توجد حدود على الرسائل.
@@ -173,7 +173,7 @@ function BalanceCard({
       {!hideRatio && (
         <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-white/5">
           <div
-            className="h-full bg-gradient-to-r from-brand-gold to-amber-500"
+            className="h-full bg-gradient-to-r from-brand-cyan to-amber-500"
             style={{ width: `${pct}%` }}
           />
         </div>

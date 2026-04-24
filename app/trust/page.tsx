@@ -41,7 +41,7 @@ const accessControls: Control[] = [
 const aiControls: Control[] = [
   { title: 'Prompt Injection Defense', desc: 'تنظيف المدخلات، عزل سياق المستخدم عن تعليمات النظام، رفض الأوامر الحرجة من المحتوى.' },
   { title: 'حدود التكلفة لكل عميل', desc: 'سقوف يومية وشهرية مع إنذار مبكر، وإيقاف تلقائي عند تجاوز السقف الصلب.' },
-  { title: 'Red-Team يومي', desc: 'مهمة مجدوَلة تختبر كل وكيل بمحفّزات هجومية معروفة وترفع تذكرة عند أي اختراق.' },
+  { title: 'Red-Team يومي', desc: 'مهمة مجدوَلة تختبر كل مساعد بمحفّزات هجومية معروفة وترفع تذكرة عند أي اختراق.' },
   { title: 'تتبُّع الاستهلاك الشفّاف', desc: 'كل استدعاء نموذج يُسجَّل بالتكلفة والمصدر، ويظهر في لوحة التكاليف للحساب.' },
 ];
 
@@ -88,7 +88,7 @@ export default function TrustCenter() {
 
         <Section title="حماية البيانات" items={dataControls} />
         <Section title="التحكّم في الوصول" items={accessControls} />
-        <Section title="أمان وكلاء الذكاء الاصطناعي" items={aiControls} />
+        <Section title="أمان مساعدي الذكاء الاصطناعي" items={aiControls} />
         <Section title="الامتثال والخصوصية" items={compliance} />
 
         <section className="rounded-2xl border border-white/10 bg-white/5 p-6 mt-8">

@@ -95,7 +95,7 @@ export default async function UseCasePage({ params }: PageProps) {
           </div>
           <div className="rounded-xl bg-white/[0.03] border border-white/10 p-4">
             <Users className="w-5 h-5 text-indigo-400 mb-2" />
-            <div className="text-xs text-zinc-500">الوكلاء</div>
+            <div className="text-xs text-zinc-500">المساعدين</div>
             <div className="text-lg font-semibold text-white">{uc.primaryAgents.length}</div>
           </div>
           <div className="rounded-xl bg-white/[0.03] border border-white/10 p-4">
@@ -142,7 +142,7 @@ export default async function UseCasePage({ params }: PageProps) {
 
         {/* Agents involved */}
         <section className="mb-16">
-          <h2 className="text-3xl font-bold text-white mb-8">الوكلاء المشاركون</h2>
+          <h2 className="text-3xl font-bold text-white mb-8">المساعدين المشاركون</h2>
           <div className="grid md:grid-cols-2 gap-3">
             {uc.primaryAgents.map((agent) => (
               <div key={agent} className="flex items-center gap-3 rounded-xl bg-white/[0.03] border border-white/10 p-4">

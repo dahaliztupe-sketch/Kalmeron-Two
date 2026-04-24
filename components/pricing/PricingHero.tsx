@@ -68,7 +68,7 @@ export function PricingHero({ billing, setBilling }: Props) {
           transition={{ duration: 0.7, delay: 0.4 }}
           className="text-base md:text-xl text-neutral-300 max-w-2xl mx-auto leading-relaxed mb-10"
         >
-          ابدأ مجاناً مع رصيد يكفيك لتختبر كل وكلاء كلميرون الـ 50+. ارتقِ في أي وقت — بدون عقود، بدون مفاجآت.
+          ابدأ مجاناً مع رصيد يكفيك لتختبر كل مساعدي كلميرون الـ 16. ارتقِ في أي وقت — بدون عقود، بدون مفاجآت.
         </motion.p>
 
         {/* Billing toggle */}

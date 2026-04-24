@@ -63,7 +63,7 @@ export default function UsagePage() {
             <span className="text-xs text-gray-500">الباقة الحالية</span>
             <div className="font-bold text-lg uppercase">{data.tier}</div>
           </div>
-          <Bar label="عمليات تشغيل الوكلاء (اليومية)" value={data.usage.dailyRuns} max={data.limits.dailyAgentRuns} pct={data.percent.dailyRuns} />
+          <Bar label="عمليات تشغيل المساعدين (اليومية)" value={data.usage.dailyRuns} max={data.limits.dailyAgentRuns} pct={data.percent.dailyRuns} />
           <Bar label="الرموز (الشهرية)" value={data.usage.monthlyTokens.toLocaleString("ar")} max={data.limits.monthlyTokens.toLocaleString("ar")} pct={data.percent.monthlyTokens} />
           <Bar label="التكلفة (شهريًا، $)" value={data.usage.monthlyCostUSD.toFixed(2)} max={data.limits.monthlyCostUSD} pct={data.percent.monthlyCostUSD} />
         </Card>

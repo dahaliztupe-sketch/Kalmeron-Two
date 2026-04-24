@@ -118,8 +118,8 @@ export default function AdminCommandCenter() {
             value={String(totalInvocations)}
           />
           <StatCard
-            icon={<Bot className="w-5 h-5 text-brand-gold" />}
-            label="وكلاء نشطون"
+            icon={<Bot className="w-5 h-5 text-brand-cyan" />}
+            label="مساعدين نشطون"
             value={String(agentEntries.length)}
           />
           <StatCard
@@ -147,7 +147,7 @@ export default function AdminCommandCenter() {
             <CardContent>
               <div className="h-2 rounded-full bg-white/[0.06] overflow-hidden">
                 <div
-                  className={`h-full transition-all ${costPct > 80 ? 'bg-rose-500' : 'bg-gradient-to-r from-brand-gold to-brand-blue'}`}
+                  className={`h-full transition-all ${costPct > 80 ? 'bg-rose-500' : 'bg-gradient-to-r from-brand-cyan to-brand-blue'}`}
                   style={{ width: `${costPct}%` }}
                 />
               </div>
@@ -168,17 +168,17 @@ export default function AdminCommandCenter() {
         <Card className="bg-dark-surface/60 border-white/10">
           <CardHeader>
             <CardTitle className="text-white text-base flex items-center gap-2">
-              <Bot className="w-4 h-4 text-brand-gold" /> التحكم في الأسطول
+              <Bot className="w-4 h-4 text-brand-cyan" /> التحكم في الأسطول
             </CardTitle>
           </CardHeader>
           <CardContent className="overflow-x-auto">
             {agentEntries.length === 0 ? (
-              <p className="text-text-secondary text-sm">لا توجد بيانات تشغيل بعد. ابدأ محادثة لتفعيل الوكلاء.</p>
+              <p className="text-text-secondary text-sm">لا توجد بيانات تشغيل بعد. ابدأ محادثة لتفعيل المساعدين.</p>
             ) : (
               <Table>
                 <TableHeader>
                   <TableRow className="border-white/[0.06]">
-                    <TableHead className="text-text-secondary">الوكيل</TableHead>
+                    <TableHead className="text-text-secondary">المساعد</TableHead>
                     <TableHead className="text-text-secondary">الاستدعاءات</TableHead>
                     <TableHead className="text-text-secondary">زمن المعالجة</TableHead>
                     <TableHead className="text-text-secondary">نسبة النجاح</TableHead>

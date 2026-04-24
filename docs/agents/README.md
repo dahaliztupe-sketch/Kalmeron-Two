@@ -18,6 +18,11 @@ it touch, what failure modes do we know about?*
 | Real Estate | [`real-estate.md`](./real-estate.md) | Vertical | Limited |
 | General Chat | [`general-chat.md`](./general-chat.md) | Support | Minimal |
 
+> **Status (Wave 5, 2026-04-24):** All 9 cards in this index are now published.
+> The remaining 7 production agents (HR Co-Pilot, Marketing Strategist, Sales
+> Operator, Operations Coach, Product Mentor, Investor Liaison, Customer Voice)
+> ship their cards in Wave 6.
+
 > Risk classes follow EU AI Act terminology (Minimal / Limited / High / Unacceptable).
 > Any "High" agent must additionally publish a Data Protection Impact Assessment
 > (DPIA) — see `docs/dpia/`.

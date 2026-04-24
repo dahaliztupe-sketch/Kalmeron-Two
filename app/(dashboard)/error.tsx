@@ -35,7 +35,7 @@ export default function DashboardError({
         <div className="flex gap-3 justify-center">
           <Button
             onClick={reset}
-            className="flex items-center gap-2 bg-[rgb(var(--gold))] text-black hover:bg-[#d9a31a] font-bold rounded-xl"
+            className="flex items-center gap-2 bg-[rgb(var(--brand-cyan))] text-black hover:bg-[#d9a31a] font-bold rounded-xl"
           >
             <RefreshCcw className="w-4 h-4" />
             إعادة المحاولة

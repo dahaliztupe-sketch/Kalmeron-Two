@@ -20,11 +20,6 @@
   --color-brand-fuchsia:  #C026D3;
   --color-brand-rose:     #E11D48;
 
-  /* Backward-compat alias — DEPRECATED. Old "gold" naming kept so legacy
-     `text-brand-gold` / `bg-brand-gold` Tailwind utilities still resolve
-     while we migrate consumers. New code: use --color-brand-cyan. */
-  --color-brand-gold:     #38BDF8;
-
   /* ── Surface ladder (deep → elevated) ── */
   --color-dark-bg:        #04060B;
   --color-dark-surface:   #0A0F1F;
@@ -84,9 +79,9 @@
     --secondary:             56 189 248;
     --secondary-foreground:  4 6 11;
 
-    /* Backward-compat — DEPRECATED aliases; consumers like rgb(var(--gold))
-       still depend on these. Migrate to --brand-cyan / --brand-indigo. */
-    --gold:      56 189 248;
+    /* Backward-compat — `--tech-blue` still referenced in a couple of legacy
+       gradients. `--gold` was retired in Wave 5 (all consumers migrated to
+       --brand-cyan). */
     --tech-blue: 79 70 229;
 
     --muted:                 17 26 51;

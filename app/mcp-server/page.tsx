@@ -5,7 +5,7 @@ import { Plug, Cpu, Shield, Boxes } from "lucide-react";
 export const metadata: Metadata = {
   title: "Kalmeron MCP Server | كلميرون",
   description:
-    "Model Context Protocol server: استخدم وكلاء كلميرون مباشرة في Claude Desktop، Cursor، VSCode، وأي MCP client.",
+    "Model Context Protocol server: استخدم مساعدين كلميرون مباشرة في Claude Desktop، Cursor، VSCode، وأي MCP client.",
   alternates: { canonical: "/mcp-server" },
 };
 
@@ -28,7 +28,7 @@ export default function McpServerPage() {
           { icon: Plug, title: "Plug-and-Play", desc: "تكامل في 30 ثانية مع أي MCP client. لا حاجة لـ custom integrations." },
           { icon: Cpu, title: "16 Tools", desc: "كل مساعد من كلميرون متاح كـ MCP tool: legal، finance، marketing، إلخ." },
           { icon: Shield, title: "آمن وموثق", desc: "OAuth 2.0، scoped permissions، audit logs لكل tool call." },
-          { icon: Boxes, title: "مفتوح المصدر", desc: "GitHub repo مع Apache 2.0. ساهم وأضف وكلاء خاصة بك." },
+          { icon: Boxes, title: "مفتوح المصدر", desc: "GitHub repo مع Apache 2.0. ساهم وأضف مساعدين خاصة بك." },
         ].map((f) => (
           <div key={f.title} className="rounded-2xl bg-white/[0.03] border border-white/10 p-6">
             <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-500/20 to-indigo-600/20 flex items-center justify-center mb-4">
@@ -57,7 +57,7 @@ export default function McpServerPage() {
       </section>
 
       <section className="mb-16">
-        <h2 className="text-3xl font-bold text-white mb-4">الوكلاء المتاحون كـ Tools</h2>
+        <h2 className="text-3xl font-bold text-white mb-4">المساعدين المتاحون كـ Tools</h2>
         <div className="grid md:grid-cols-3 gap-3">
           {[
             "kalmeron_finance_model",

@@ -23,7 +23,7 @@ export default function HRDashboard() {
             فرقة الموارد البشرية والتوظيف (HR Swarm)
           </h1>
           <p className="text-neutral-400">
-            أتمتة الذكاء الاصطناعي الشاملة (End-to-End Recruitment) عبر 4 وكلاء و Workday MCP.
+            أتمتة الذكاء الاصطناعي الشاملة (End-to-End Recruitment) عبر 4 مساعدين و Workday MCP.
           </p>
         </header>
 

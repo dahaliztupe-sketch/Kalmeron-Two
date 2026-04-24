@@ -10,7 +10,7 @@ export default function PrivacyPage() {
   return (
     <AppShell>
       <div className="max-w-4xl mx-auto py-12 px-4" dir="rtl">
-        <h1 className="text-4xl font-bold mb-2 text-[rgb(var(--gold))]">سياسة الخصوصية وحماية البيانات</h1>
+        <h1 className="text-4xl font-bold mb-2 text-[rgb(var(--brand-cyan))]">سياسة الخصوصية وحماية البيانات</h1>
         <p className="text-neutral-500 text-sm mb-10">آخر تحديث: أبريل 2026</p>
 
         <div className="space-y-10 text-neutral-300 leading-relaxed text-sm md:text-base">
@@ -40,7 +40,7 @@ export default function PrivacyPage() {
           <section className="glass p-8 rounded-3xl space-y-3">
             <h2 className="text-2xl font-semibold text-white">3. كيف نستخدم بياناتك</h2>
             <ul className="list-disc list-inside space-y-2">
-              <li>تخصيص المخرجات الاستراتيجية للوكلاء بناءً على سياق مشروعك.</li>
+              <li>تخصيص المخرجات الاستراتيجية للمساعدين بناءً على سياق مشروعك.</li>
               <li>تحسين أداء المنصة ونماذج الذكاء الاصطناعي الداخلية فقط.</li>
               <li>إرسال إشعارات خدمية (لا تسويقية) تتعلق بالاشتراك والرصيد.</li>
               <li><strong>لا نبيع بياناتك لأي طرف ثالث في أي حال من الأحوال.</strong></li>
@@ -57,7 +57,7 @@ export default function PrivacyPage() {
             </ul>
           </section>
 
-          <section className="glass p-8 rounded-3xl space-y-3 border border-[rgb(var(--gold))]/20">
+          <section className="glass p-8 rounded-3xl space-y-3 border border-[rgb(var(--brand-cyan))]/20">
             <h2 className="text-2xl font-semibold text-white">5. آلية طلب حذف البيانات (حق النسيان)</h2>
             <p>
               يمكنك طلب الحذف الكامل لحسابك وجميع بياناتك المرتبطة به بطريقتين:
@@ -65,14 +65,14 @@ export default function PrivacyPage() {
             <ol className="list-decimal list-inside space-y-2">
               <li>
                 <strong>من لوحة التحكم:</strong>{" "}
-                <Link href="/profile" className="text-[rgb(var(--gold))] hover:underline">
+                <Link href="/profile" className="text-[rgb(var(--brand-cyan))] hover:underline">
                   صفحة الإعدادات والملف الشخصي ← زر &quot;حذف حسابي (الحق في النسيان)&quot;
                 </Link>
                 . يتم تنفيذ الحذف فوراً.
               </li>
               <li>
                 <strong>عبر البريد الإلكتروني:</strong> أرسل طلبك إلى{" "}
-                <a href="mailto:privacy@kalmeron.ai" className="text-[rgb(var(--gold))] hover:underline">
+                <a href="mailto:privacy@kalmeron.ai" className="text-[rgb(var(--brand-cyan))] hover:underline">
                   privacy@kalmeron.ai
                 </a>{" "}
                 مع ذكر عنوان البريد المرتبط بحسابك. سنستجيب خلال <strong>48 ساعة</strong>.
@@ -98,7 +98,7 @@ export default function PrivacyPage() {
             <p>
               لأي استفسارات تتعلق بخصوصيتك وبياناتك، يمكنك التواصل مع مسؤول حماية
               البيانات لدينا عبر:{" "}
-              <a href="mailto:privacy@kalmeron.ai" className="text-[rgb(var(--gold))] hover:underline">
+              <a href="mailto:privacy@kalmeron.ai" className="text-[rgb(var(--brand-cyan))] hover:underline">
                 privacy@kalmeron.ai
               </a>
             </p>

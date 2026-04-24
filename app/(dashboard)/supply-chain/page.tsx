@@ -23,7 +23,7 @@ export default function SupplyChainDashboard() {
                سرب الإمداد واللوجستيات (Supply Chain Swarm)
              </h1>
              <p className="text-neutral-400 mt-2">
-               وكلاء ذكاء اصطناعي يتفاوضون لتحسين المخزون، وتوقع الطلبات عبر (TimeCopilot/Nixtla)، وتتبع الشحنات.
+               مساعدين ذكاء اصطناعي يتفاوضون لتحسين المخزون، وتوقع الطلبات عبر (TimeCopilot/Nixtla)، وتتبع الشحنات.
              </p>
           </div>
           <button onClick={runAnalysis} disabled={analyzing} className="bg-teal-600 hover:bg-teal-700 disabled:opacity-50 text-white font-bold py-3 px-6 rounded-xl transition-all shadow-lg flex items-center gap-2">

@@ -7,7 +7,7 @@ export default function AiLogsDashboard() {
   // Mock data representing logs fetched from BigQuery or Firestore
   const logs = [
     { id: '1', task: 'بناء خطة استراتيجية', model: 'gemini-2.5-pro', tokens: 4250, cost: '$0.008' },
-    { id: '2', task: 'تحليل أفكار (مزاد الوكلاء)', model: 'gemini-2.5-flash', tokens: 1800, cost: '$0.001' },
+    { id: '2', task: 'تحليل أفكار (مزاد المساعدين)', model: 'gemini-2.5-flash', tokens: 1800, cost: '$0.001' },
     { id: '3', task: 'نصائح حماية من الأخطاء', model: 'gemini-2.5-flash', tokens: 900, cost: '$0.0004' },
     { id: '4', task: 'صياغة العرض التقديمي للمستثمرين', model: 'gemini-2.5-pro', tokens: 6100, cost: '$0.012' },
   ];
@@ -17,7 +17,7 @@ export default function AiLogsDashboard() {
     <div className="p-8 space-y-6" dir="rtl">
       <h1 className="text-3xl font-bold text-white">سجلات الذكاء الاصطناعي (AI Costs & Logs)</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card className="bg-neutral-900 border-neutral-800 text-white"><CardHeader><CardTitle>الاستهلاك الكلي (توكنز)</CardTitle></CardHeader><CardContent className="text-2xl font-mono text-[rgb(var(--gold))]">13,050</CardContent></Card>
+        <Card className="bg-neutral-900 border-neutral-800 text-white"><CardHeader><CardTitle>الاستهلاك الكلي (توكنز)</CardTitle></CardHeader><CardContent className="text-2xl font-mono text-[rgb(var(--brand-cyan))]">13,050</CardContent></Card>
         <Card className="bg-neutral-900 border-neutral-800 text-white"><CardHeader><CardTitle>التكلفة التقديرية</CardTitle></CardHeader><CardContent className="text-2xl font-mono text-red-400">$0.0214</CardContent></Card>
       </div>
       <Card className="bg-neutral-900 border-neutral-800">

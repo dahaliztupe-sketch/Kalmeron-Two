@@ -34,7 +34,7 @@ interface Agent {
 }
 
 const DEPARTMENTS: { id: Dept; label: string; icon: any; color: string; desc: string }[] = [
-  { id: "all", label: "جميع الوكلاء", icon: Sparkles, color: "white", desc: "عرض الكل" },
+  { id: "all", label: "جميع المساعدين", icon: Sparkles, color: "white", desc: "عرض الكل" },
   { id: "idea", label: "مُحقّق الأفكار", icon: Lightbulb, color: "cyan", desc: "تحليل وتقييم الفكرة" },
   { id: "cfo", label: "المدير المالي", icon: BarChart3, color: "emerald", desc: "النمذجة المالية" },
   { id: "legal", label: "المرشد القانوني", icon: Scale, color: "amber", desc: "الامتثال القانوني" },
@@ -236,16 +236,16 @@ export default function AgentsPage() {
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <div>
               <h1 className="font-display text-3xl md:text-4xl font-extrabold text-white mb-1.5">
-                عرض الوكلاء الذكيين
+                عرض المساعدين الذكيين
               </h1>
               <p className="text-text-secondary max-w-xl">
-                <span className="brand-gradient-text font-bold">{AGENTS.length}+ وكيل ذكي</span> متخصص في 7 أقسام — جاهزون لمساعدتك في كل جانب من رحلتك الريادية.
+                <span className="brand-gradient-text font-bold">{AGENTS.length}+ مساعد ذكي</span> متخصص في 7 أقسام — جاهزون لمساعدتك في كل جانب من رحلتك الريادية.
               </p>
             </div>
             <Link href="/chat"
               className="btn-primary flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold shrink-0"
             >
-              <MessageSquare className="w-4 h-4" /> تحدث مع وكيل الآن
+              <MessageSquare className="w-4 h-4" /> تحدث مع مساعد الآن
             </Link>
           </div>
         </motion.div>
@@ -253,10 +253,10 @@ export default function AgentsPage() {
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           {[
-            { v: `${AGENTS.length}+`, l: "وكيل ذكي" },
+            { v: `${AGENTS.length}+`, l: "مساعد ذكي" },
             { v: "7", l: "أقسام متخصصة" },
-            { v: AGENTS.filter(a => a.popular).length + "+", l: "وكيل شائع" },
-            { v: AGENTS.filter(a => a.new).length + "+", l: "وكيل جديد" },
+            { v: AGENTS.filter(a => a.popular).length + "+", l: "مساعد شائع" },
+            { v: AGENTS.filter(a => a.new).length + "+", l: "مساعد جديد" },
           ].map((s, i) => (
             <motion.div key={s.l} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.07 }}
               className="glass-panel rounded-2xl p-4 text-center"
@@ -296,7 +296,7 @@ export default function AgentsPage() {
           <div className="relative">
             <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-500" />
             <input value={search} onChange={(e) => setSearch(e.target.value)}
-              placeholder="ابحث عن وكيل بالاسم أو الوظيفة..."
+              placeholder="ابحث عن مساعد بالاسم أو الوظيفة..."
               className="w-full bg-white/[0.04] border border-white/10 rounded-2xl pr-10 pl-4 py-3 text-sm text-white placeholder-neutral-600 outline-none focus:border-white/20 transition-all"
             />
           </div>
@@ -305,7 +305,7 @@ export default function AgentsPage() {
         {/* Agents Grid */}
         <div>
           <div className="flex items-center justify-between mb-4">
-            <p className="text-sm text-text-secondary">عرض <span className="text-white font-bold">{filtered.length}</span> وكيل</p>
+            <p className="text-sm text-text-secondary">عرض <span className="text-white font-bold">{filtered.length}</span> مساعد</p>
             {activeDept !== "all" && (
               <button onClick={() => setActiveDept("all")} className="text-xs text-brand-cyan hover:underline">
                 عرض الكل
@@ -329,7 +329,7 @@ export default function AgentsPage() {
                   <motion.div key={agent.id}
                     initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}
                   >
-                    <Link href={`/chat?q=${encodeURIComponent(`تحدث معي كوكيل ${agent.name}: ${agent.desc}`)}`}
+                    <Link href={`/chat?q=${encodeURIComponent(`تحدث معي كمساعد ${agent.name}: ${agent.desc}`)}`}
                       className={cn("block glass-panel rounded-3xl p-5 h-full border transition-all card-lift group", bgColorMap[agent.color] || "border-white/10 hover:border-white/20")}
                     >
                       {/* Top row */}
@@ -367,7 +367,7 @@ export default function AgentsPage() {
                       <div className="flex items-center justify-between">
                         <span className="text-[10px] text-neutral-600 font-mono">{agent.nameEn}</span>
                         <span className={cn("flex items-center gap-1 text-xs font-medium", textColorMap[agent.color])}>
-                          استخدم الوكيل
+                          استخدم المساعد
                           <ArrowLeft className="w-3 h-3 group-hover:translate-x-[-3px] transition-transform" />
                         </span>
                       </div>
@@ -384,7 +384,7 @@ export default function AgentsPage() {
               <button onClick={() => setShowAll(true)}
                 className="flex items-center gap-2 mx-auto px-6 py-3 rounded-full border border-white/15 bg-white/5 text-sm text-neutral-300 hover:bg-white/10 hover:text-white transition-all"
               >
-                عرض {filtered.length - 12} وكيل إضافي
+                عرض {filtered.length - 12} مساعد إضافي
                 <ChevronDown className="w-4 h-4" />
               </button>
             </div>
@@ -405,7 +405,7 @@ export default function AgentsPage() {
         >
           <div>
             <h3 className="text-xl font-bold text-white mb-1.5">مش عارف من أين تبدأ؟</h3>
-            <p className="text-text-secondary text-sm">اسأل كلميرون مباشرة وهو يختار لك الوكيل الأنسب لمشكلتك.</p>
+            <p className="text-text-secondary text-sm">اسأل كلميرون مباشرة وهو يختار لك المساعد الأنسب لمشكلتك.</p>
           </div>
           <Link href="/chat"
             className="btn-primary flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-bold shrink-0"

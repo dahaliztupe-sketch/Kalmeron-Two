@@ -37,7 +37,7 @@ export default function MeetingsPage() {
   return (
     <div className="p-6 max-w-5xl mx-auto">
       <h1 className="text-2xl font-bold mb-1">الاجتماعات الافتراضية</h1>
-      <p className="text-sm text-gray-500 mb-6">تنسيق جماعي بين وكلاء الأقسام</p>
+      <p className="text-sm text-gray-500 mb-6">تنسيق جماعي بين مساعدين الأقسام</p>
 
       <div className="border rounded-lg p-4 mb-6 bg-white dark:bg-gray-900">
         <div className="font-semibold mb-2">عقد اجتماع جديد</div>

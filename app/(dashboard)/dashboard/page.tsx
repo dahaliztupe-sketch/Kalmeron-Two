@@ -181,7 +181,7 @@ export default function DashboardPage() {
                   <div className="rounded-2xl bg-white/[0.04] border border-white/[0.06] p-4 text-center">
                     <Bot className="w-4 h-4 text-brand-cyan mx-auto mb-1.5" />
                     <div className="text-2xl font-extrabold text-white">{data.metrics.agentCount}</div>
-                    <div className="text-[11px] text-text-secondary mt-0.5">وكيل نشط</div>
+                    <div className="text-[11px] text-text-secondary mt-0.5">مساعد نشط</div>
                   </div>
                 </div>
               </div>

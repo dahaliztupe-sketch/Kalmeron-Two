@@ -27,7 +27,7 @@ export default function UseCasesIndexPage() {
     <SeoLandingShell
       eyebrow="حالات استخدام"
       title="دليلك العملي لكل مرحلة من رحلتك الريادية"
-      description={`اختر من ${USE_CASES.length}+ حالة استخدام تفصيلية. كل حالة تشمل خطوات عملية، الوكلاء المناسبين، والنتائج المتوقعة.`}
+      description={`اختر من ${USE_CASES.length}+ حالة استخدام تفصيلية. كل حالة تشمل خطوات عملية، المساعدين المناسبين، والنتائج المتوقعة.`}
       breadcrumbs={[{ label: "حالات الاستخدام" }]}
     >
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -55,7 +55,7 @@ export default function UseCasesIndexPage() {
             <div className="flex items-center justify-between text-xs">
               <span className="text-zinc-500 inline-flex items-center gap-1">
                 <Zap className="w-3 h-3" />
-                {uc.primaryAgents.length} وكلاء
+                {uc.primaryAgents.length} مساعدين
               </span>
               <span className="text-cyan-400 inline-flex items-center gap-1 group-hover:translate-x-[-4px] transition-transform">
                 اقرأ التفاصيل

@@ -40,7 +40,7 @@ export function CookieBanner() {
           </div>
           <div className="flex gap-2 shrink-0">
             <Button variant="ghost" onClick={() => setShow(false)}>أرفض</Button>
-            <Button variant="default" onClick={accept} className="bg-[rgb(var(--gold))] text-black hover:bg-yellow-600">أوافق</Button>
+            <Button variant="default" onClick={accept} className="bg-[rgb(var(--brand-cyan))] text-black hover:bg-yellow-600">أوافق</Button>
           </div>
         </motion.div>
       )}

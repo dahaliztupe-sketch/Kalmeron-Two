@@ -42,7 +42,7 @@ export default function SkillsPage() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold">المهارات المكتسبة</h1>
-          <p className="text-sm text-gray-500">شجرة تطور الوكلاء عبر دورة التعلم الذاتي</p>
+          <p className="text-sm text-gray-500">شجرة تطور المساعدين عبر دورة التعلم الذاتي</p>
         </div>
         <button
           onClick={consolidate}

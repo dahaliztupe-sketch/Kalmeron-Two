@@ -15,7 +15,7 @@ export default function IndustriesIndexPage() {
     <SeoLandingShell
       eyebrow="حلول قطاعية"
       title="حلول مخصصة لكل صناعة"
-      description="كل صناعة لها قواعدها. كلميرون يفهم خصوصيات سوقك ويوفر وكلاء متخصصين لها."
+      description="كل صناعة لها قواعدها. كلميرون يفهم خصوصيات سوقك ويوفر مساعدين متخصصين لها."
       breadcrumbs={[{ label: "الصناعات" }]}
     >
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">

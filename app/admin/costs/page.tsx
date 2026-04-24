@@ -119,7 +119,7 @@ export default async function CostsDashboardPage() {
           <BentoCard span={2} className="p-6 bg-black/40 border border-white/10">
             <div className="flex items-center gap-2 mb-3">
               <AlertTriangle className="w-4 h-4 text-amber-400" />
-              <h3 className="text-sm text-neutral-400">أعلى الوكلاء استهلاكًا (الشهر)</h3>
+              <h3 className="text-sm text-neutral-400">أعلى المساعدين استهلاكًا (الشهر)</h3>
             </div>
             <ul className="space-y-2 text-sm">
               {topAgents.length === 0 && <li className="text-neutral-500">لا توجد بيانات</li>}

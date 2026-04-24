@@ -194,6 +194,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             >
               <div className={cn("hidden lg:block leading-tight", dir === "rtl" ? "text-right" : "text-left")}>
                 <p className="text-[13px] font-bold text-white">{dbUser?.name || user.displayName}</p>
+                {/* lexicon-allow: bilingual fallback — "Founder" is the legitimate English term */}
                 <p className="text-[9.5px] text-cyan-300/70 uppercase tracking-[0.20em] mt-0.5">
                   {(dbUser as any)?.industry || (language === "ar" ? "مؤسس" : "Founder")}
                 </p>

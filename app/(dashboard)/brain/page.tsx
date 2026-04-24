@@ -89,7 +89,7 @@ export default function BrainPage() {
             </div>
             <div>
               <h1 className="text-2xl font-bold text-white">الدماغ المشترك</h1>
-              <p className="text-sm text-text-secondary">كل ما يعرفه فريقك من الوكلاء عن مشروعك</p>
+              <p className="text-sm text-text-secondary">كل ما يعرفه فريقك من المساعدين عن مشروعك</p>
             </div>
           </div>
           <button
@@ -146,7 +146,7 @@ export default function BrainPage() {
             <button
               onClick={addFinding}
               disabled={adding || !content.trim() || !state?.enabled}
-              className="px-4 py-2 rounded-xl bg-brand-gold/90 hover:bg-brand-gold text-black font-bold text-sm disabled:opacity-40 disabled:cursor-not-allowed transition"
+              className="px-4 py-2 rounded-xl bg-brand-cyan/90 hover:bg-brand-cyan text-black font-bold text-sm disabled:opacity-40 disabled:cursor-not-allowed transition"
             >
               {adding ? "..." : "حفظ"}
             </button>
@@ -180,7 +180,7 @@ export default function BrainPage() {
             <div className="text-center py-8 text-text-secondary text-sm">جاري التحميل...</div>
           ) : !state?.nodes.length ? (
             <div className="text-center py-8 text-text-secondary text-sm">
-              لا توجد معرفة محفوظة بعد. أضف أول ملاحظة من الأعلى، أو دع الوكلاء يعملون وسيُغذّون الدماغ تلقائياً.
+              لا توجد معرفة محفوظة بعد. أضف أول ملاحظة من الأعلى، أو دع المساعدين يعملون وسيُغذّون الدماغ تلقائياً.
             </div>
           ) : (
             <ul className="space-y-2 max-h-[600px] overflow-y-auto">

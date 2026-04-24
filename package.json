@@ -15,7 +15,9 @@
     "test:rules": "vitest run test/firestore-rules.test.ts",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
-    "eval": "tsx test/eval/run-eval.ts"
+    "eval": "tsx test/eval/run-eval.ts",
+    "lint:lexicon": "tsx scripts/lexicon-lint.ts",
+    "verify:backup": "tsx scripts/verify-backup.ts"
   },
   "dependencies": {
     "@ag-ui/client": "^0.0.52",

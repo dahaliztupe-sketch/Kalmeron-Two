@@ -132,7 +132,7 @@ export default async function TemplatePage({ params }: PageProps) {
         <div className="rounded-2xl bg-gradient-to-br from-cyan-500/10 to-indigo-600/10 border border-cyan-500/20 p-8 text-center mb-12">
           <h3 className="text-2xl font-bold text-white mb-2">احصل على القالب الآن</h3>
           <p className="text-zinc-400 mb-6">
-            ابدأ مع كلميرون مجاناً واستخدم وكيل {t.agentSlug} لبناء نسخة مخصصة لشركتك.
+            ابدأ مع كلميرون مجاناً واستخدم مساعد {t.agentSlug} لبناء نسخة مخصصة لشركتك.
           </p>
           <Link
             href={`/auth/signup?template=${slug}`}

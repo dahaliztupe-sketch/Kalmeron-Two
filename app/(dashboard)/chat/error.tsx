@@ -29,7 +29,7 @@ export default function ChatError({
         </div>
         <Button
           onClick={reset}
-          className="flex items-center gap-2 bg-[rgb(var(--gold))] text-black hover:bg-[#d9a31a] font-bold rounded-xl mx-auto"
+          className="flex items-center gap-2 bg-[rgb(var(--brand-cyan))] text-black hover:bg-[#d9a31a] font-bold rounded-xl mx-auto"
         >
           <RefreshCcw className="w-4 h-4" />
           إعادة المحاولة
