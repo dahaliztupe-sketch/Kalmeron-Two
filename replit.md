@@ -4,6 +4,10 @@ Arabic-language AI Operating System for Egyptian entrepreneurs. World-class plat
 
 The brand tagline is **"مقرّ عمليات شركتك الذكي"** (canonical in `src/lib/copy/lexicon.ts → LEXICON.tagline`). Voice/tone, lexicon, and microcopy live under `src/lib/copy/{voice,lexicon,microcopy}.ts` and must be the source for all user-facing strings.
 
+## Recent Major Updates (Session 2026-04-24 — Virtual Boardroom 201 Audit)
+- **Evidence-based platform audit delivered:** `docs/VIRTUAL_BOARDROOM_201_REPORT.md` activates 78 of 201 experts dynamically across 6 strategic sections (Tech/Engineering 52 → 24 active, Security 38 → 17, SOC/Monitoring 17 → 10, Design/UX 52 → 11, Business 29 → 13, Future 9 → 7) plus the 4-member Supreme Advisory Board. Every claim cites a real file path. Headline production-readiness scored at 86% with `Stripe webhook gap` flagged as the only commercial-blocking issue (P0-1).
+- **Action plan extracted:** `.local/tasks/VIRTUAL_BOARDROOM_ACTION_PLAN.md` enumerates 18 work items across P0/P1/P2/P3 with effort/impact/risk per item, plus 8 quick wins (<1h each). Final verdict: 8.4/10, Go conditional on closing P0-1 (Stripe), P0-2 (Context Quarantine for RAG/IPI), and P0-3 (real `markTtfvStage` calls in chat/auth) — estimated 6-8 working days.
+
 ## Recent Major Updates (Session 2026-04-24 — Wave 6 Closeout: Roadmap → Reality)
 - **`<AgentBlock>` wired into the chat surface** — `components/chat/AssistantContent.tsx` detects JSON `{"blocks":[…]}` or fenced ` ```json ` payloads in assistant messages and renders them through `<AgentBlockStream>`. Markdown path is the unchanged fallback. Any agent that opts in gets charts, forms, checklists, and timelines without further plumbing.
 - **Workflow runner v1** — `src/lib/workflows/runner.ts` + `library.ts`: tiny JSON-spec engine (2-10 sequential steps, `{{input.x}}` / `{{steps.id.text}}` interpolation, deterministic stub when no API key). Five seed workflows: `idea-to-mvp`, `fundraise-readiness`, `weekly-investor-update`, `compliance-egypt`, `saas-pricing`. `POST /api/workflows/run` (PII-redacted inputs, per-step timing), `GET /api/workflows/list`. Interactive UI at `/workflows-runner`.
