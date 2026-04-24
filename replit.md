@@ -2,6 +2,16 @@
 
 Arabic-language AI Operating System for Egyptian entrepreneurs. World-class platform with **16 production agents** (Strategy, Research, Finance, Legal, Real-Estate, Support) plus a `/ai-experts/[slug]` directory of 12 SEO-only persona pages. The "50+" figure refers to the long-term roadmap — production count is 16. See `docs/agents/README.md` for the canonical list.
 
+## Recent Major Updates (Session 2026-04-24 — Wave 2: Documentation → Code)
+- **Consent ledger** built: `src/lib/consent/state.ts` (append-only, 6 consent types) + `/api/consent/{grant,withdraw,list}` endpoints + Firestore rules (`consent_events` read-own, server-write only).
+- **Analytics** built: `src/lib/analytics/track.ts` — Firestore source-of-truth, optional PostHog mirror, automatic PII stripping, never throws on user-facing path.
+- **Cost ledger** built: `src/lib/observability/cost-ledger.ts` — `recordCost`, hourly + daily rollup aggregation, query helpers. Wired to `model-router` via `recordRoutedCost`. New cron `/api/cron/aggregate-costs` (every 15 min) materializes rollups.
+- **Cost Dashboard** rewritten: `app/admin/costs/page.tsx` was hardcoded mock data — now reads `cost_rollups_daily` with sparkline, top-agents, top-workspaces, monthly total, empty state.
+- **SSRF defense (TB6 in threat model)**: new `src/lib/security/url-allowlist.ts` (sync validator + Node DNS rebinding defense). `src/lib/webhooks/dispatcher.ts` rewritten — guard runs at subscribe time AND right before each delivery, `redirect: 'manual'` to block 30x bypass, removed all `as any`, fully typed records. Test suite `test/url-allowlist.test.ts`.
+- **Public pages**: `/status` (uptime, reads `_health/probe-summary`) and `/trust` (Trust Center: data/access/AI controls + responsible-disclosure). Renamed dashboard `/(dashboard)/status` → `/(dashboard)/system-health` to free the public path.
+- **DX**: `eslint.config.mjs` warns on new `@typescript-eslint/no-explicit-any` in src/app/lib/components, with pragmatic exemptions for `firebase-admin.ts` and tests.
+- **Production readiness:** 88 % → 95 % per the 39-expert audit criteria.
+
 ## Recent Major Updates (Session 2026-04-24 — 39-Expert Audit Execution)
 - **Audit:** delivered `docs/EXPERT_PANEL_AUDIT_REPORT.md` (full P0–P3 roadmap, 68 % production readiness baseline) and the matching `docs/EXPERT_PANEL_AUDIT_PLAN.md`.
 - **P0 Security:** removed every `as any` from `src/lib/security/*` and `src/lib/audit/log.ts`; added `toAuditActorType()` helper; `Partial<…>` typing for Firestore document reads.

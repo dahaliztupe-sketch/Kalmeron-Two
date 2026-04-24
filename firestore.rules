@@ -120,5 +120,38 @@ service cloud.firestore {
     match /_health/{doc} {
       allow read, write: if false;
     }
+
+    // --- Consent Ledger (append-only legal record) ---
+    // Writes happen ONLY via Admin SDK (`/api/consent/*`); clients can read
+    // their own history.
+    match /consent_events/{doc} {
+      allow read: if request.auth != null
+                  && resource.data.userId == request.auth.uid;
+      allow create, update, delete: if false;
+    }
+
+    // --- Analytics events (server-side ingestion only) ---
+    match /analytics_events/{doc} {
+      allow read, write: if false;
+    }
+
+    // --- Cost ledger ---
+    // Raw cost events: server-only.
+    match /cost_events/{doc} {
+      allow read, write: if false;
+    }
+    // Hourly + daily rollups: read by admin UI via Admin SDK only;
+    // direct client access is denied so per-tenant aggregates can't leak.
+    match /cost_rollups/{doc} {
+      allow read, write: if false;
+    }
+    match /cost_rollups_daily/{doc} {
+      allow read, write: if false;
+    }
+
+    // --- Account deletion queue (server-only) ---
+    match /account_deletions/{doc} {
+      allow read, write: if false;
+    }
   }
 }

@@ -100,6 +100,42 @@ export function estimateCostUsd(tier: TaskTier, inputTokens: number, outputToken
   return (inputTokens / 1_000_000) * c.input + (outputTokens / 1_000_000) * c.output;
 }
 
+/**
+ * Convenience: classify+route+estimate+record in one call so call sites don't
+ * forget to log the cost. Pair with the response usage from `@ai-sdk/google`.
+ *
+ *   const routed = routeModel(task);
+ *   const result = await generateText({ model: routed.model, prompt });
+ *   await recordRoutedCost({
+ *     workspaceId, agent, routed,
+ *     promptTokens: result.usage.promptTokens,
+ *     completionTokens: result.usage.completionTokens,
+ *   });
+ */
+export async function recordRoutedCost(args: {
+  workspaceId: string;
+  agent: string;
+  routed: RoutedModel;
+  promptTokens: number;
+  completionTokens: number;
+  requestId?: string;
+}): Promise<number> {
+  const cost = estimateCostUsd(args.routed.tier, args.promptTokens, args.completionTokens);
+  // Lazy import keeps this file edge-importable for purely-routing callers.
+  const { recordCost } = await import('@/src/lib/observability/cost-ledger');
+  await recordCost({
+    workspaceId: args.workspaceId,
+    agent: args.agent,
+    provider: 'gemini',
+    model: args.routed.id,
+    promptTokens: args.promptTokens,
+    completionTokens: args.completionTokens,
+    costUsd: cost,
+    requestId: args.requestId,
+  });
+  return cost;
+}
+
 // إبقاء التوافق مع الواجهة القديمة المستخدمة في ملفات أخرى من القاعدة
 export type TaskComplexity = 'simple' | 'medium' | 'complex';
 export function classifyTaskComplexity(task: string): TaskComplexity {
