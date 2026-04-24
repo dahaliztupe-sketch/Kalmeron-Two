@@ -180,6 +180,15 @@ ChatGPT/Claude/Manus/Lovable in the MENA market.
   4 nav items max (Hick's Law).
 - **Cleaned hero copy** in `app/page.tsx` and `AppShell.tsx` — removed
   legacy "+50 وكيل" / "نظام التشغيل" phrasing from all public surfaces.
+- **Lexicon pass on landing data tables** (`app/page.tsx`):
+  scrubbed all remaining code-switching from `DEPARTMENTS`,
+  `LIVE_DEMO_CONVERSATIONS`, `TESTIMONIALS`, `COMPARISON_DATA`, and
+  `STATS` (`focus group` → "جلسة استماع"; `insights` → "استنتاجات";
+  `break-even` → "نقطة التعادل المالي"; `B2B/B2C` → "بين الشركات / للأفراد";
+  `grant` → "منحة تمويلية"; `manual/partial` → "يدوي / جزئي";
+  Anglicized roles "CEO/CTO/Co-founder" → "الرئيس التنفيذي / المدير
+  التقني / شريكة مؤسِّسة"; وكيل → "مساعد ذكي" in stats). Render logic
+  for the comparison table updated to match the Arabic key strings.
 
 ### Session 3 additions (Apr 23 2026 — Strategic Overhaul)
 - **Massive content expansion**: `use-cases.ts` (40+), `industries.ts` (25+),

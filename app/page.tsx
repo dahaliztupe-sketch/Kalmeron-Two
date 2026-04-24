@@ -57,13 +57,13 @@ const DEPARTMENTS = [
     icon: FlaskConical,
     title: "مختبر السوق",
     subtitle: "Market Lab",
-    desc: "اختبر فكرتك مع مستهلكين تركيبيين من سوقك المستهدف قبل أن تنفق جنيهاً واحداً. كأنك عملت focus group حقيقي.",
+    desc: "اختبر فكرتك مع عملاء افتراضيين من سوقك المستهدف قبل أن تنفق جنيهاً واحداً، كأنك عقدت جلسة استماع حقيقية.",
     color: "fuchsia",
     gradient: "from-fuchsia-500 to-pink-500",
     bg: "from-fuchsia-500/10 to-pink-500/5",
     border: "border-fuchsia-500/20 hover:border-fuchsia-400/50",
-    features: ["شخصيات افتراضية واقعية", "مقابلات محاكاة", "تقرير insights فوري"],
-    demo: "\"شوفلي رأي 10 عملاء من الجيزة على فكرة app التوصيل\"",
+    features: ["شخصيات افتراضية واقعية", "مقابلات محاكاة", "تقرير استنتاجات فوري"],
+    demo: "\"شوفلي رأي 10 عملاء من الجيزة على فكرة تطبيق التوصيل\"",
   },
   {
     icon: Briefcase,
@@ -75,7 +75,7 @@ const DEPARTMENTS = [
     bg: "from-emerald-500/10 to-cyan-500/5",
     border: "border-emerald-500/20 hover:border-emerald-400/50",
     features: ["نمذجة مالية تفصيلية", "اختبار السيناريوهات", "مخطط تدفق نقدي"],
-    demo: "\"احسبلي الـ break-even point لو بدأنا بـ 500 ألف جنيه\"",
+    demo: "\"احسبلي نقطة التعادل المالي لو بدأنا بـ 500 ألف جنيه\"",
   },
   {
     icon: Scale,
@@ -99,7 +99,7 @@ const DEPARTMENTS = [
     bg: "from-rose-500/10 to-red-500/5",
     border: "border-rose-500/20 hover:border-rose-400/50",
     features: ["تمويل مناسب لمرحلتك", "فعاليات ريادة الأعمال", "حاضنات ومسرّعات"],
-    demo: "\"ابحثلي عن grants مناسبة للشركات التقنية في مراحلها الأولى\"",
+    demo: "\"ابحثلي عن منح وفرص تمويل مناسبة للشركات التقنية في مراحلها الأولى\"",
   },
   {
     icon: Shield,
@@ -119,14 +119,14 @@ const LIVE_DEMO_CONVERSATIONS = [
   {
     user: "عندي فكرة تطبيق للتوصيل للعيادات والمستشفيات في مصر",
     agent: "مُحلّل الأفكار",
-    response: "فكرة ممتازة! السوق الطبي في مصر ينمو بـ 15% سنوياً. الفرصة حقيقية لكن في 3 تحديات رئيسية:\n\n**1. التنافسية:** Vezeeta وClinic Finder موجودة لكن تركّزت على الحجز — التوصيل فرصة مختلفة تماماً\n\n**2. الامتثال التنظيمي:** هتحتاج ترخيص من هيئة الرعاية الصحية الأولية\n\n**3. فرصة الـ B2B:** استهداف المستشفيات الخاصة أسرع وأربح من B2C في البداية\n\nتبي أبدأ بتحليل SWOT تفصيلي والجدوى المالية؟",
+    response: "فكرة ممتازة! السوق الطبي في مصر ينمو بـ 15% سنوياً. الفرصة حقيقية لكن في 3 تحديات رئيسية:\n\n**1. التنافسية:** Vezeeta وClinic Finder موجودة لكن تركّزت على الحجز — التوصيل فرصة مختلفة تماماً\n\n**2. الامتثال التنظيمي:** هتحتاج ترخيص من هيئة الرعاية الصحية الأولية\n\n**3. فرصة بين الشركات:** استهداف المستشفيات الخاصة أسرع وأربح من البيع للأفراد مباشرة في البداية\n\nتبي أبدأ بتحليل نقاط القوة والضعف وتقييم الجدوى المالية؟",
     color: "cyan",
     icon: Brain,
   },
   {
-    user: "احسبلي تكاليف التأسيس ومتى هوصل لـ break-even",
+    user: "احسبلي تكاليف التأسيس ومتى هوصل لنقطة التعادل المالي",
     agent: "المدير المالي",
-    response: "بناءً على سوق التوصيل الطبي في مصر:\n\n**تكاليف التأسيس التقديرية:**\n• التطوير التقني: 250,000 - 400,000 ج.م\n• الترخيص والتأسيس القانوني: 15,000 ج.م\n• التسويق الأولي: 80,000 ج.م\n• **الإجمالي: ~550,000 ج.م**\n\n**Break-even تقديري:** شهر 14-18 بافتراض:\n- 200 طلب/يوم في نهاية الشهر الأول\n- عمولة 12% لكل طلب\n- متوسط فاتورة 180 ج.م\n\nتبي أشوفلك سيناريوهات متعددة مع خطة التمويل؟",
+    response: "بناءً على سوق التوصيل الطبي في مصر:\n\n**تكاليف التأسيس التقديرية:**\n• التطوير التقني: 250,000 - 400,000 ج.م\n• الترخيص والتأسيس القانوني: 15,000 ج.م\n• التسويق الأولي: 80,000 ج.م\n• **الإجمالي: ~550,000 ج.م**\n\n**نقطة التعادل المالي تقديرياً:** شهر 14-18 بافتراض:\n- 200 طلب/يوم في نهاية الشهر الأول\n- عمولة 12% لكل طلب\n- متوسط فاتورة 180 ج.م\n\nتبي أشوفلك سيناريوهات متعددة مع خطة التمويل؟",
     color: "emerald",
     icon: Briefcase,
   },
@@ -140,16 +140,16 @@ const LIVE_DEMO_CONVERSATIONS = [
 ];
 
 const COMPARISON_DATA = [
-  { feature: "تحليل السوق", kalmeron: true, consultant: "بآلاف الجنيهات", tools: "manual" },
-  { feature: "خطة عمل كاملة", kalmeron: true, consultant: "أسابيع", tools: "manual" },
-  { feature: "نمذجة مالية", kalmeron: true, consultant: "5,000-20,000 ج.م", tools: "partial" },
+  { feature: "تحليل السوق", kalmeron: true, consultant: "بآلاف الجنيهات", tools: "يدوي" },
+  { feature: "خطة عمل كاملة", kalmeron: true, consultant: "أسابيع", tools: "يدوي" },
+  { feature: "نمذجة مالية", kalmeron: true, consultant: "5,000-20,000 ج.م", tools: "جزئي" },
   { feature: "عقود قانونية", kalmeron: true, consultant: "3,000-10,000 ج.م", tools: false },
   { feature: "فحص أخطاء المشروع", kalmeron: true, consultant: false, tools: false },
   { feature: "رادار الفرص والتمويل", kalmeron: true, consultant: false, tools: false },
   { feature: "مختبر السوق الافتراضي", kalmeron: true, consultant: false, tools: false },
-  { feature: "متاح 24/7 بدون انتظار", kalmeron: true, consultant: false, tools: "partial" },
-  { feature: "عربي بالكامل (مصري)", kalmeron: true, consultant: "partial", tools: false },
-  { feature: "يتعلم من سياق شركتك", kalmeron: true, consultant: "partial", tools: false },
+  { feature: "متاح 24/7 بدون انتظار", kalmeron: true, consultant: false, tools: "جزئي" },
+  { feature: "عربي بالكامل (مصري)", kalmeron: true, consultant: "جزئي", tools: false },
+  { feature: "يتعلم من سياق شركتك", kalmeron: true, consultant: "جزئي", tools: false },
 ];
 
 const TESTIMONIALS = [
@@ -164,44 +164,44 @@ const TESTIMONIALS = [
   },
   {
     name: "نورا فؤاد",
-    role: "Co-founder, MaktabaApp",
+    role: "شريكة مؤسِّسة، تطبيق مكتبة",
     avatar: "ن",
     color: "from-fuchsia-500 to-pink-500",
-    text: "مختبر السوق كان مذهلاً. اتكلمنا مع 20 \"عميل افتراضي\" قبل الإطلاق وغيّرنا نموذج الأعمال بالكامل بناءً على الـ insights. وفّرنا ميزانية تسويق ضخمة كنا هنصرفها على الفكرة الغلط.",
+    text: "مختبر السوق كان مذهلاً. اتكلمنا مع 20 \"عميل افتراضي\" قبل الإطلاق وغيّرنا نموذج الأعمال بالكامل بناءً على الاستنتاجات. وفّرنا ميزانية تسويق ضخمة كنا هنصرفها على الفكرة الغلط.",
     metric: "غيّرنا المسار قبل الإطلاق",
     stars: 5,
   },
   {
     name: "كريم السيد",
-    role: "CEO, GreenLogix",
+    role: "الرئيس التنفيذي، GreenLogix",
     avatar: "ك",
     color: "from-emerald-500 to-cyan-500",
-    text: "فريق وكلاء بدوام كامل بسعر اشتراك واحد. كنت بادفع 15,000 ج.م شهرياً لمستشار مالي ومحامي ومحلل سوق. دلوقتي كلمرون بيعمل نفس الشغل وأكثر بجزء من التكلفة.",
+    text: "فريق مساعدين أذكياء بدوام كامل بسعر اشتراك واحد. كنت بادفع 15,000 ج.م شهرياً لمستشار مالي ومحامي ومحلل سوق. دلوقتي كلميرون بيعمل نفس الشغل وأكثر بجزء من التكلفة.",
     metric: "وفّر أكثر من 15K شهرياً",
     stars: 5,
   },
   {
     name: "سارة إبراهيم",
-    role: "Founder, HealthTech Egypt",
+    role: "مؤسِّسة، HealthTech Egypt",
     avatar: "س",
     color: "from-violet-500 to-purple-500",
-    text: "رادار الفرص وجدلي grant من ITIDA ما كنتش عارفاها. قدّمنا وكسبنا 500,000 ج.م. كلميرون بيتابع الفرص الجديدة باستمرار وبينبّهني تلقائياً.",
+    text: "رادار الفرص وجدلي منحة تمويلية من ITIDA ما كنتش عارفاها. قدّمنا وكسبنا 500,000 ج.م. كلميرون بيتابع الفرص الجديدة باستمرار وبينبّهني تلقائياً.",
     metric: "500,000 ج.م تمويل من ITIDA",
     stars: 5,
   },
   {
     name: "محمد العمري",
-    role: "CTO, Fintech Startup",
+    role: "المدير التقني، شركة ناشئة في القطاع المالي",
     avatar: "م",
     color: "from-amber-500 to-orange-500",
-    text: "ما توقعتش إن AI هيفهم السوق المصري بالشكل ده. مش بس بيترجم، بيفهم العقلية والبيروقراطية والقوانين المحلية. وكيل رائع.",
+    text: "ما توقعتش إن مساعد ذكي هيفهم السوق المصري بالشكل ده. مش بس بيترجم، بيفهم العقلية والبيروقراطية والقوانين المحلية. شريك حقيقي.",
     metric: "خبرة محلية عميقة",
     stars: 5,
   },
 ];
 
 const STATS = [
-  { value: 50, suffix: "+", label: "وكيل ذكي متخصص", icon: Bot },
+  { value: 50, suffix: "+", label: "مساعد ذكي متخصص", icon: Bot },
   { value: 7, suffix: "", label: "أقسام تشغيلية", icon: Layers },
   { value: 1000, suffix: "+", label: "رائد أعمال يثق بنا", icon: Users },
   { value: 3, suffix: "x", label: "أسرع في التأسيس", icon: Zap },
@@ -847,13 +847,13 @@ function ComparisonSection() {
               <div className="p-3 md:p-4 flex items-center justify-center">
                 {row.consultant === true ? <CheckCircle2 className="w-4 h-4 text-emerald-400" /> :
                   row.consultant === false ? <XCircle className="w-4 h-4 text-red-400/60" /> :
-                    row.consultant === "partial" ? <Minus className="w-4 h-4 text-amber-400" /> :
+                    row.consultant === "جزئي" ? <Minus className="w-4 h-4 text-amber-400" /> :
                       <span className="text-[10px] text-center text-red-300 font-medium leading-tight">{row.consultant}</span>}
               </div>
               <div className="p-3 md:p-4 flex items-center justify-center">
                 {row.tools === true ? <CheckCircle2 className="w-4 h-4 text-emerald-400" /> :
                   row.tools === false ? <XCircle className="w-4 h-4 text-red-400/60" /> :
-                    row.tools === "partial" ? <Minus className="w-4 h-4 text-amber-400" /> :
+                    row.tools === "جزئي" ? <Minus className="w-4 h-4 text-amber-400" /> :
                       <span className="text-[10px] text-center text-amber-300">{row.tools}</span>}
               </div>
             </motion.div>
