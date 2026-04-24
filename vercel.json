@@ -3,9 +3,9 @@
   "crons": [
     { "path": "/api/cron/red-team", "schedule": "0 2 * * *" },
     { "path": "/api/cron/consolidate-skills", "schedule": "0 3 * * *" },
-    { "path": "/api/cron/health-probe", "schedule": "*/5 * * * *" },
+    { "path": "/api/cron/health-probe", "schedule": "0 1 * * *" },
     { "path": "/api/cron/firestore-backup", "schedule": "0 4 * * *" },
-    { "path": "/api/cron/aggregate-costs", "schedule": "*/15 * * * *" }
+    { "path": "/api/cron/aggregate-costs", "schedule": "0 5 * * *" }
   ],
   "headers": [
     {

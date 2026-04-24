@@ -35,11 +35,18 @@ self.addEventListener("fetch", (event) => {
   if (req.method !== "GET") return;
   const url = new URL(req.url);
   // Skip Next.js HMR + APIs + Firebase + cross-origin streams.
+  // Use suffix matching instead of substring includes() to avoid bypasses
+  // such as `evilfirebaseio.com.attacker.example`.
+  const host = url.hostname;
+  const isFirebaseHost =
+    host === "firebaseio.com" || host.endsWith(".firebaseio.com");
+  const isGoogleApisHost =
+    host === "googleapis.com" || host.endsWith(".googleapis.com");
   if (
     url.pathname.startsWith("/_next/webpack-hmr") ||
     url.pathname.startsWith("/api/") ||
-    url.hostname.includes("firebaseio.com") ||
-    url.hostname.includes("googleapis.com")
+    isFirebaseHost ||
+    isGoogleApisHost
   ) {
     return;
   }

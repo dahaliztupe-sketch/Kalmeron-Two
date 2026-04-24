@@ -24,10 +24,23 @@ function emailKey(email: string): string {
   return createHash('sha256').update(email.trim().toLowerCase()).digest('hex').slice(0, 24);
 }
 
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
+// Bounded, single-pass email validator — avoids polynomial backtracking by
+// short-circuiting on length first and using atomic-style character classes.
 export function isValidEmail(email: string): boolean {
-  return EMAIL_RE.test(email) && email.length <= 254;
+  if (typeof email !== 'string' || email.length === 0 || email.length > 254) {
+    return false;
+  }
+  const at = email.indexOf('@');
+  if (at <= 0 || at !== email.lastIndexOf('@') || at === email.length - 1) {
+    return false;
+  }
+  const local = email.slice(0, at);
+  const domain = email.slice(at + 1);
+  if (local.length > 64 || domain.length > 253) return false;
+  if (/[\s@]/.test(local) || /[\s@]/.test(domain)) return false;
+  const dot = domain.lastIndexOf('.');
+  if (dot <= 0 || dot === domain.length - 1) return false;
+  return true;
 }
 
 export async function subscribe(opts: {
