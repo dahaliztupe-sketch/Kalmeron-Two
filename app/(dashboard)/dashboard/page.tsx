@@ -8,8 +8,10 @@ import {
   Activity, Bot, AlertTriangle, DollarSign, Target,
   Hourglass, Loader2, ArrowLeft, CheckCircle2, MapPin,
   LineChart, Zap, MessageSquare, Brain, Scale, Briefcase,
-  FlaskConical, Shield, Radar, Sparkles,
+  FlaskConical, Shield, Radar, Sparkles, LayoutTemplate,
+  Flame, Mic,
 } from "lucide-react";
+import { NotificationPermissionBanner } from "@/components/ui/NotificationPermissionBanner";
 import { KalmeronAreaChart } from "@/src/components/charts";
 import Link from "next/link";
 import { cn } from "@/src/lib/utils";
@@ -127,6 +129,9 @@ export default function DashboardPage() {
             <MessageSquare className="w-4 h-4" /> محادثة جديدة
           </Link>
         </div>
+
+        {/* Notification Banner */}
+        <NotificationPermissionBanner userId={user?.uid} className="mb-5" />
 
         {loading ? (
           <div className="flex flex-col items-center justify-center py-24 gap-3">
@@ -370,6 +375,45 @@ export default function DashboardPage() {
                 </div>
               </motion.div>
             </div>
+
+            {/* Discover Row */}
+            <motion.div variants={reduce ? itemVReduced : itemV}>
+              <h2 className="text-sm font-semibold text-neutral-400 mb-3 flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-fuchsia-400" /> اكتشف المزيد
+              </h2>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <Link href="/templates" className="group glass-panel rounded-2xl p-5 hover:border-amber-500/30 transition-all flex items-center gap-4">
+                  <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/25 flex items-center justify-center flex-shrink-0">
+                    <LayoutTemplate className="w-5 h-5 text-amber-400" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-sm font-bold text-white">مكتبة القوالب</div>
+                    <div className="text-xs text-neutral-500 mt-0.5">25+ قالب جاهز للاستخدام الفوري</div>
+                  </div>
+                  <ArrowLeft className="w-4 h-4 text-neutral-600 group-hover:text-white transition-colors flex-shrink-0" />
+                </Link>
+                <Link href="/trending-tools" className="group glass-panel rounded-2xl p-5 hover:border-rose-500/30 transition-all flex items-center gap-4">
+                  <div className="w-10 h-10 rounded-xl bg-rose-500/10 border border-rose-500/25 flex items-center justify-center flex-shrink-0">
+                    <Flame className="w-5 h-5 text-rose-400" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-sm font-bold text-white">أدوات AI الرائجة</div>
+                    <div className="text-xs text-neutral-500 mt-0.5">أفضل 16 أداة للمؤسسين في 2025</div>
+                  </div>
+                  <ArrowLeft className="w-4 h-4 text-neutral-600 group-hover:text-white transition-colors flex-shrink-0" />
+                </Link>
+                <Link href="/brand-voice" className="group glass-panel rounded-2xl p-5 hover:border-pink-500/30 transition-all flex items-center gap-4">
+                  <div className="w-10 h-10 rounded-xl bg-pink-500/10 border border-pink-500/25 flex items-center justify-center flex-shrink-0">
+                    <Mic className="w-5 h-5 text-pink-400" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-sm font-bold text-white">صوت العلامة التجارية</div>
+                    <div className="text-xs text-neutral-500 mt-0.5">عرّف هويتك مرة وطبّقها في كل مكان</div>
+                  </div>
+                  <ArrowLeft className="w-4 h-4 text-neutral-600 group-hover:text-white transition-colors flex-shrink-0" />
+                </Link>
+              </div>
+            </motion.div>
 
           </motion.div>
         )}

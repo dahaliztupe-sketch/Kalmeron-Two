@@ -1,5 +1,45 @@
 # Kalmeron AI (ai-studio-applet)
 
+## Session 2026-04-25 — FCM Push Notifications + Brand Voice + Trending Tools + Dashboard Improvements
+
+### ما بُني في هذه الجلسة:
+
+1. **نظام إشعارات FCM كامل:**
+   - `app/firebase-messaging-sw.js/route.ts` — Service Worker ديناميكي يحقن Firebase config
+   - `src/lib/fcm.ts` — مكتبة client-side: registerSW, requestPermission, getToken, onForegroundMessage
+   - `hooks/usePushNotifications.ts` — React hook يدير حالة الإذن، الإشعارات، وحفظ token في Firestore
+   - `app/api/notifications/subscribe/route.ts` — API لحفظ FCM tokens (server-side backup)
+   - `app/api/notifications/send/route.ts` — API لإرسال الإشعارات عبر Firebase Admin SDK
+   - `components/ui/NotificationPermissionBanner.tsx` — بانر طلب الإذن + زر toggle
+
+2. **صفحة صوت العلامة التجارية (Brand Voice):**
+   - `app/(dashboard)/brand-voice/page.tsx` — صفحة إعدادات شاملة: اسم العلامة، tagline، 8 أنماط نبرة، الجمهور، القيم، الأشياء التي يتجنبها، وتوليد مثال بالـ AI
+   - يُخزَّن في Firestore تحت `users/{uid}/settings/brand_voice`
+   - مضاف للـ navigation كـ "صوت العلامة التجارية"
+
+3. **صفحة أدوات AI الرائجة:**
+   - `app/(dashboard)/trending-tools/page.tsx` — 16 أداة AI مع تصنيفات وتقييمات وروابط
+   - فلاتر بالفئة (عام، بحث، تصميم، برمجة، إنتاجية...) وفلتر مجاني/مدفوع
+   - نصائح الدمج مع كلميرون + CTA للمحادثة
+   - مضاف للـ navigation
+
+4. **تحسينات الداشبورد:**
+   - بانر إشعارات `NotificationPermissionBanner` مدمج في أعلى الداشبورد
+   - قسم "اكتشف المزيد" في نهاية الداشبورد: روابط سريعة لمكتبة القوالب، أدوات AI الرائجة، صوت العلامة
+
+5. **إصلاح تعارض مسار `/templates`:**
+   - حُذف `app/(dashboard)/templates/page.tsx` المكرر؛ المسار محجوز بـ `app/templates/page.tsx` الأصلي
+
+### ملفات رئيسية:
+- `components/ui/NotificationPermissionBanner.tsx` — بانر طلب إذن الإشعارات
+- `hooks/usePushNotifications.ts` — hook الإشعارات
+- `src/lib/fcm.ts` — مكتبة FCM
+- `app/(dashboard)/brand-voice/page.tsx` — إعدادات صوت العلامة التجارية
+- `app/(dashboard)/trending-tools/page.tsx` — أدوات AI الرائجة
+- `src/lib/navigation.ts` — تم تحديثه بـ brand-voice وtrending-tools
+
+---
+
 ## Session 2026-04-25 — Bug Fixes: Hydration Error + Duplicate React Keys
 
 ### إصلاحات حرجة:
