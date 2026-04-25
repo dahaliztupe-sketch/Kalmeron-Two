@@ -1,5 +1,10 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
+  "build": {
+    "env": {
+      "NODE_OPTIONS": "--max-old-space-size=8192"
+    }
+  },
   "crons": [
     { "path": "/api/cron/red-team", "schedule": "0 2 * * *" },
     { "path": "/api/cron/consolidate-skills", "schedule": "0 3 * * *" },

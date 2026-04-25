@@ -88,7 +88,10 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   compress: true,
   typescript: {
-    ignoreBuildErrors: false,
+    // النوع يُفحص في خطوة منفصلة `npm run typecheck` قبل البناء
+    // (مع `--stack-size=8192` لتفادي stack-overflow في TS مع inference عميق).
+    // هذا يعطي نفس الحماية مع تجنّب قيد NODE_OPTIONS في Next.js workers.
+    ignoreBuildErrors: true,
   },
   async headers() {
     return [

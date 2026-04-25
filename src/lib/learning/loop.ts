@@ -266,7 +266,7 @@ export async function updateSkillFeedback(
           if (!outcome.success && outcome.failureReason) {
             update.lastFailureReason = outcome.failureReason.slice(0, 500);
           }
-          tx.update(ref, update);
+          tx.update(ref, update as FirebaseFirestore.UpdateData<LearnedSkill>);
         });
       } catch (e) {
         logErr('feedback', e);

@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
-    "target": "ES2025",
+    "target": "ES2024",
     "lib": [
-      "ES2025",
+      "ES2024",
       "DOM",
       "DOM.Iterable"
     ],
@@ -13,7 +13,6 @@
     "exactOptionalPropertyTypes": false,
     "noUncheckedIndexedAccess": false,
     "verbatimModuleSyntax": false,
-    "erasableSyntaxOnly": false,
     "allowJs": true,
     "skipLibCheck": true,
     "strictNullChecks": true,
@@ -31,7 +30,7 @@
     "isolatedModules": true,
     "jsx": "react-jsx",
     "incremental": true,
-    "ignoreDeprecations": "6.0",
+    "ignoreDeprecations": "5.0",
     "plugins": [
       {
         "name": "next"
@@ -52,6 +51,7 @@
     ".next/dev/types/**/*.ts"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    ".next/dev"
   ]
 }
