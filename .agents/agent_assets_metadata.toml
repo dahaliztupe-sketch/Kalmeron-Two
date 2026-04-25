@@ -1,0 +1,8 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "1fhzDrWmuwamvdzEYGmnT"
+uri = "file://docs/PROJECT_ASSESSMENT_AND_HUMAN_TASKS.md"
+type = "text"
+title = "تقييم Kalmeron الشامل + التسعير المصري + المهام البشريّة"
