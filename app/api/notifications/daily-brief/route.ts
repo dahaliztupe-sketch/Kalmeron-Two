@@ -70,20 +70,20 @@ async function listOptedInUsers(limit = 1_000): Promise<BriefDoc[]> {
       .where("dailyBriefOptIn", "==", true)
       .limit(limit)
       .get();
-    return snap.docs
-      .map((d) => {
-        const data = d.data() as Record<string, unknown>;
-        const email = typeof data.email === "string" ? data.email : null;
-        if (!email) return null;
-        return {
-          uid: d.id,
-          email,
-          nameAr: (data.name as string) ?? null,
-          industryAr: (data.industry as string) ?? null,
-          stageAr: (data.startup_stage as string) ?? null,
-        } satisfies BriefDoc;
-      })
-      .filter((x): x is BriefDoc => x !== null);
+    const docs: (BriefDoc | null)[] = snap.docs.map((d) => {
+      const data = d.data() as Record<string, unknown>;
+      const email = typeof data.email === "string" ? data.email : null;
+      if (!email) return null;
+      const doc: BriefDoc = {
+        uid: d.id,
+        email,
+        nameAr: typeof data.name === "string" ? data.name : null,
+        industryAr: typeof data.industry === "string" ? data.industry : null,
+        stageAr: typeof data.startup_stage === "string" ? data.startup_stage : null,
+      };
+      return doc;
+    });
+    return docs.filter((x): x is BriefDoc => x !== null);
   } catch (e) {
     console.error("[daily-brief] listOptedInUsers failed", e);
     return [];

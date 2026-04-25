@@ -12,6 +12,7 @@
 import { NextRequest } from 'next/server';
 import { adminDb } from '@/src/lib/firebase-admin';
 import { buildCallbackSignature, getFawryConfig } from '@/src/lib/billing/fawry/client';
+import { rewardReferrerOnUpgrade } from '@/src/lib/referrals/manager';
 
 export const runtime = 'nodejs';
 
@@ -124,6 +125,11 @@ export async function POST(req: NextRequest) {
     callbackPayload: payload as unknown as Record<string, unknown>,
   });
   await batch.commit();
+
+  // Reward the referrer if this user was attributed to one (idempotent)
+  if (planId !== 'free') {
+    await rewardReferrerOnUpgrade(userId).catch(() => {});
+  }
 
   return Response.json({ ok: true, granted: true, planId });
 }

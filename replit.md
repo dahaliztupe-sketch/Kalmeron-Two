@@ -1,5 +1,29 @@
 # Kalmeron AI (ai-studio-applet)
 
+## Recent Major Updates (Session 2026-04-25 — Sidecars Restart + Referral Tracking + Typecheck Repair)
+**Why:** المستخدم طلب: «نفّذ كل المهام التي تقدر عليها من القائمة دون توقّف». من الـ 30 مهمّة، 28 تحتاج تدخّلاً يدوياً (أسرار، Stripe Dashboard، قرارات تجاريّة، توظيف). نفّذتُ ما يخصّ الـ agent + أصلحتُ regressions طارئة.
+
+- **`.pythonlibs/` كانت ممسوحة مجدّداً** (الـ 4 sidecars stopped). أعدت تثبيت كل deps الـ Python عبر `installLanguagePackages` (fastapi, uvicorn[standard], pydantic, pypdf, python-multipart, regex, google-generativeai, hypothesis, pytest, fastembed, numpy). الأربعة الآن `RUNNING` على المنافذ 8000/8008/8080/8099 + الـ Next.js على 5000، كلّهم 200 على `/health`.
+
+- **Task 29 من قائمة المهام البشريّة (Referral tracking) — نفّذتُ الجزء البرمجي:**
+  - `src/lib/referrals/manager.ts` كان عنده `rewardReferrerOnUpgrade(uid)` معرَّف لكن **غير مُستدعى من أيّ مكان**. أضفتُ الاستدعاء في موضعَي conversion:
+    - `app/api/webhooks/stripe/route.ts` — في `checkout.session.completed` (للـ one-time) و `customer.subscription.created/updated` (للـ recurring) عند `planId !== 'free'` و `isActive`. الـ catch صامت لأنّ المنح (entitlement) لا يجب أن يفشل لأجل referral side-effect.
+    - `app/api/billing/fawry/webhook/route.ts` — بعد `batch.commit()` للـ entitlement، عند `planId !== 'free'`. نفس النمط.
+  - الـ frontend سلفاً مكتمل: `components/auth/ReferralCapture.tsx` (يلتقط `?ref=` ويخزّنه 30 يوم في localStorage) + `app/auth/signup/page.tsx` (يستدعي `attributeReferralIfAny(idToken)` عند نجاح signup).
+  - النتيجة: الحلقة كاملة الآن — referee يتسجّل بـ `?ref=CODE` → يحصل فوراً على 500 رصيد bonus → عند ترقيته لخطّة مدفوعة (Stripe أو Fawry) → الـ referrer يحصل تلقائيّاً على 5,000 رصيد bonus (idempotent عبر `rewardedReferrer` flag).
+
+- **3 أخطاء typecheck طارئة — أصلحتُها:**
+  - `app/api/notifications/daily-brief/route.ts` — `BriefDoc` كان فيه `nameAr?: string | null` لكن الـ map cast بـ `(data.name as string) ?? null` كان يخلق predicate `(x): x is BriefDoc` مع types متضاربة. استبدلتُ بـ explicit annotation `(BriefDoc | null)[]` + `typeof === 'string' ? data.x : null`.
+  - `vitest.config.ts` — `environmentMatchGlobs` تمّ حذفه في vitest 4. ولا يوجد ملفّات `*.dom.test.*` في الـ codebase (تحقّقتُ). حذفتُ الحقل بالكامل، الـ `environment: 'node'` الافتراضي يكفي.
+
+- **التحقّق النهائي:**
+  - `npx tsc --noEmit` → 0 errors ✅
+  - `npm run test` → 12/12 ملفّ، 54/54 تجربة، 6.64s ✅
+  - `npm run lint` → 0 errors، 455 warnings (نفس العدد، كلّها `@typescript-eslint/no-explicit-any`) ✅
+  - الـ 4 sidecars + Next.js كلّها 200 ✅
+
+- **ما لم يُنفَّذ (في `docs/PROJECT_ASSESSMENT_AND_HUMAN_TASKS.md`):** كل المهام الـ 29 المتبقّية تحتاج تدخّلاً يدوياً خارج بيئة الـ agent (Firebase Console، Stripe Dashboard، Fawry merchant onboarding، Resend account، Sentry GitHub secrets، نشر sidecars على Cloud Run، قرار التسعير المصري، Beta launch، App Store، حاضنات، co-founder، PR، community، إلخ). كلّها موثَّقة بأولويّاتها (P0/P1/P2/P3) في الـ markdown + `docs/REMAINING_HUMAN_TASKS.pdf`.
+
 ## Recent Major Updates (Session 2026-04-25 — Tooling Repair: typecheck + lint unblocked)
 **Why:** المستخدم طلب جلسة تطوير شاملة بنمط Audit→Implementation→Reflection. التدقيق كشف أنّ `npm run typecheck` و `npm run lint` كلاهما كان مكسوراً تماماً (طوال جلسات سابقة)، وبدونهما لا يمكن تشغيل أيّ ضمانة جودة في CI. أصلحتُ ذلك أوّلاً.
 

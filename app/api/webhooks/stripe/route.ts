@@ -14,6 +14,7 @@ import Stripe from 'stripe';
 import { adminDb } from '@/src/lib/firebase-admin';
 import { Timestamp } from 'firebase-admin/firestore';
 import { getPlan, planFromStripePriceId, type PlanId } from '@/src/lib/billing/plans';
+import { rewardReferrerOnUpgrade } from '@/src/lib/referrals/manager';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -93,7 +94,12 @@ export async function POST(req: NextRequest) {
         const s = event.data.object as Stripe.Checkout.Session;
         const uid = s.metadata?.firebaseUid as string | undefined;
         const planId = (s.metadata?.planId as PlanId) || 'pro';
-        if (uid) await applyPlanToUser(uid, planId);
+        if (uid) {
+          await applyPlanToUser(uid, planId);
+          if (planId !== 'free') {
+            await rewardReferrerOnUpgrade(uid).catch(() => {});
+          }
+        }
         break;
       }
       case 'customer.subscription.created':
@@ -109,6 +115,9 @@ export async function POST(req: NextRequest) {
           ?? ((sub.metadata?.planId as PlanId) || 'pro');
         const isActive = sub.status === 'active' || sub.status === 'trialing';
         await applyPlanToUser(uid, isActive ? planId : 'free');
+        if (isActive && planId !== 'free') {
+          await rewardReferrerOnUpgrade(uid).catch(() => {});
+        }
         break;
       }
       case 'customer.subscription.deleted': {
