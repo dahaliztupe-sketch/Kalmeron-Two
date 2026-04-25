@@ -158,11 +158,16 @@
     -webkit-tap-highlight-color: transparent;
     text-size-adjust: 100%;
     -webkit-text-size-adjust: 100%;
+    /* Prevent any decorative/absolute element from causing horizontal scroll on mobile */
+    overflow-x: hidden;
+    max-width: 100vw;
   }
 
   body {
     background-color: rgb(var(--background));
     color: rgb(var(--foreground));
+    overflow-x: hidden;
+    max-width: 100vw;
     font-family: 'IBM Plex Sans Arabic', 'Tajawal', 'Plus Jakarta Sans', system-ui, sans-serif;
     font-feature-settings: "kern" 1, "calt" 1, "liga" 1, "ss01" 1;
     font-optical-sizing: auto;

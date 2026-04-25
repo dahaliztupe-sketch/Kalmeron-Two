@@ -457,8 +457,8 @@ function Hero() {
         </motion.div>
 
         <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-          className="font-display font-extrabold tracking-tight leading-[1.08] mb-6"
-          style={{ fontSize: "clamp(2.5rem, 1.8rem + 4.2vw, 5.5rem)" }}
+          className="font-display font-extrabold tracking-tight leading-[1.08] mb-6 break-words [text-wrap:balance]"
+          style={{ fontSize: "clamp(1.85rem, 1.1rem + 4.2vw, 5.5rem)" }}
         >
           <span className="block text-white drop-shadow-[0_2px_20px_rgba(255,255,255,0.08)]">فريقك المؤسس</span>
           <span className="block brand-gradient-text pb-2">يعمل ٢٤/٧ لصالحك</span>
@@ -472,15 +472,15 @@ function Hero() {
         </motion.p>
 
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.35 }}
-          className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-[12px] font-medium text-neutral-400 mb-10"
+          className="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 sm:gap-x-5 text-[12px] font-medium text-neutral-400 mb-10 px-2"
         >
-          <span className="flex items-center gap-1.5 transition-colors hover:text-emerald-300"><ShieldCheck className="w-3.5 h-3.5 text-emerald-400" /> متوافق مع قانون ١٥١</span>
-          <span className="w-1 h-1 rounded-full bg-white/15" />
-          <span className="flex items-center gap-1.5 transition-colors hover:text-cyan-300"><Globe2 className="w-3.5 h-3.5 text-cyan-400" /> عربي مصري أصيل</span>
-          <span className="w-1 h-1 rounded-full bg-white/15" />
-          <span className="flex items-center gap-1.5 transition-colors hover:text-fuchsia-300"><TrendingUp className="w-3.5 h-3.5 text-fuchsia-400" /> +١٠٠٠ رائد أعمال</span>
-          <span className="w-1 h-1 rounded-full bg-white/15" />
-          <span className="flex items-center gap-1.5 transition-colors hover:text-amber-300"><Zap className="w-3.5 h-3.5 text-amber-400" /> مجاناً للبداية</span>
+          <span className="flex items-center gap-1.5 transition-colors hover:text-emerald-300 whitespace-nowrap"><ShieldCheck className="w-3.5 h-3.5 text-emerald-400 shrink-0" /> متوافق مع قانون ١٥١</span>
+          <span className="hidden sm:inline-block w-1 h-1 rounded-full bg-white/15" />
+          <span className="flex items-center gap-1.5 transition-colors hover:text-cyan-300 whitespace-nowrap"><Globe2 className="w-3.5 h-3.5 text-cyan-400 shrink-0" /> عربي مصري أصيل</span>
+          <span className="hidden sm:inline-block w-1 h-1 rounded-full bg-white/15" />
+          <span className="flex items-center gap-1.5 transition-colors hover:text-fuchsia-300 whitespace-nowrap"><TrendingUp className="w-3.5 h-3.5 text-fuchsia-400 shrink-0" /> +١٠٠٠ رائد أعمال</span>
+          <span className="hidden sm:inline-block w-1 h-1 rounded-full bg-white/15" />
+          <span className="flex items-center gap-1.5 transition-colors hover:text-amber-300 whitespace-nowrap"><Zap className="w-3.5 h-3.5 text-amber-400 shrink-0" /> مجاناً للبداية</span>
         </motion.div>
 
         <motion.form initial={{ opacity: 0, y: 24, scale: 0.96 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={{ delay: 0.45, ease: "easeOut" }}

@@ -1,5 +1,12 @@
 # Kalmeron AI (ai-studio-applet)
 
+## Recent Major Updates (Session 2026-04-25 — Mobile Overflow Polish)
+**Why:** المستخدم أبلغ عن نصوص تخرج من الشاشة في الموبايل (~360-414px) — الـ hero h1 «فريقك المؤسس / يعمل ٢٤/٧ لصالحك» كان مقطوعاً من اليمين.
+
+- **`app/globals.css` → html + body**: أُضيف `overflow-x: hidden` و `max-width: 100vw` لمنع أيّ عنصر مُطلَق (particles / radial gradients) من إنشاء تمرير أفقي على الموبايل.
+- **`app/page.tsx` → Hero h1**: نقصت أصغر قيمة في `clamp` من `2.5rem` (40px) إلى `1.85rem` (~30px) بحيث تتسع الكلمة الكاملة للشاشات 320-360px. أُضيف `break-words` و `[text-wrap:balance]` للأمان.
+- **`app/page.tsx` → Trust pills**: نقصت `gap-x-5` إلى `gap-x-3` على الموبايل، أُضيف `whitespace-nowrap` و `shrink-0` على كل عنصر، وأُخفيت النقاط الفاصلة على الموبايل (`hidden sm:inline-block`).
+
 ## Recent Major Updates (Session 2026-04-25 — Vercel Deploy Fix + Strategy Closeout)
 **Why:** نشر Vercel كان يفشل بـ `Maximum call stack size exceeded` أثناء فحص TypeScript، مع ~50 سطر تحذيرات peer-dep. هذه الجلسة أصلحت كلّ ذلك وأكملت 3 بنود مؤجَّلة من خطة `docs/AUDIT_SWEEP_FINAL_REPORT.md`.
 
