@@ -40,7 +40,19 @@ export interface CouncilInput {
   softCostBudgetUsd?: number;
   /** إن مُرّر مسوّد جاهز من الوكيل، يُمرر للمجلس كأرضية للنقد والتحسين. */
   draft?: string;
+  /**
+   * نمط الاستجابة:
+   *   - `'deep'`  (افتراضي) — يشغّل الـ Router + المجلس الكامل (تداول 4-5 خبراء).
+   *   - `'fast'` — يتخطّى الـ Router ويستدعي PRO استدعاءً واحداً بدون تشكيل
+   *     كامل للروستر، بزمن استجابة أقصر بكثير وتكلفة أقل، مناسب للأسئلة
+   *     السريعة أو المتابعات. يستخدم نفس المخرج الموحّد (5 أقسام) لضمان توافق
+   *     واجهات العرض.
+   */
+  mode?: 'fast' | 'deep';
 }
+
+const FAST_MODE_ROSTER =
+  '- مهندس السياق\n- المحلل الناقد\n- مدقق الجودة\n- المراجع الأخلاقي';
 
 const COUNCIL_SYSTEM_INTRO = (
   agentRole: string,
@@ -83,18 +95,37 @@ ${roster}
  */
 export async function runCouncil(input: CouncilInput): Promise<CouncilResult> {
   const t0 = Date.now();
+  const mode = input.mode ?? 'deep';
 
-  const route = await routePanel(input.agentName, input.userMessage, input.uiContext);
-  const roster = buildPanelRoster(route.experts);
+  // Fast mode: skip the router (saves ~ 600-1200ms + 1 LITE call) and run the
+  // PRO model directly with the four permanent experts only. Same JSON
+  // schema → renderer-compatible.
+  let routeDomain: string;
+  let routeRationale: string;
+  let routeExperts: string[];
+  let roster: string;
+  if (mode === 'fast') {
+    routeDomain = 'mixed';
+    routeRationale = 'النمط السريع — تخطّي التوجيه الداخلي.';
+    routeExperts = ['context-engineer', 'critical-analyst', 'quality-auditor', 'ethics-reviewer'];
+    roster = FAST_MODE_ROSTER;
+  } else {
+    const route = await routePanel(input.agentName, input.userMessage, input.uiContext);
+    routeDomain = route.domain;
+    routeRationale = route.rationale;
+    routeExperts = route.experts;
+    roster = buildPanelRoster(route.experts);
+  }
   const system = COUNCIL_SYSTEM_INTRO(input.agentRoleAr, roster, input.draft);
 
   const prompt = `سياق الواجهة: ${JSON.stringify(input.uiContext || {})}
 رسالة المستخدم: ${input.userMessage}
 
 تصنيف المجلس الداخلي:
-- المجال: ${route.domain}
-- مبرر التصنيف: ${route.rationale}
-- الخبراء المتخصصون المُفعّلون: ${route.experts.join('، ')}
+- المجال: ${routeDomain}
+- مبرر التصنيف: ${routeRationale}
+- الخبراء المتخصصون المُفعّلون: ${routeExperts.join('، ')}
+- النمط: ${mode === 'fast' ? 'سريع (4 دائمين فقط، استدعاء مختصر)' : 'عميق (مجلس كامل)'}
 
 ابدأ التداول وأخرج JSON مطابقاً للـ Schema المطلوب فقط.`;
 
@@ -106,17 +137,18 @@ export async function runCouncil(input: CouncilInput): Promise<CouncilResult> {
       schema: CouncilOutputSchema,
     },
     {
-      agent: `${input.agentName}:council`,
+      agent: `${input.agentName}:council:${mode}`,
       userId: input.userId,
-      softCostBudgetUsd: input.softCostBudgetUsd ?? 0.05,
+      softCostBudgetUsd:
+        input.softCostBudgetUsd ?? (mode === 'fast' ? 0.02 : 0.05),
     },
   );
 
   const output = result.object as CouncilOutput;
   const meta: CouncilMeta = {
-    domain: route.domain as PanelDomain,
-    experts: route.experts,
-    routeRationale: route.rationale,
+    domain: routeDomain as PanelDomain,
+    experts: routeExperts,
+    routeRationale: routeRationale,
     durationMs: Date.now() - t0,
   };
 

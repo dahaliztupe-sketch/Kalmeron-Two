@@ -1,0 +1,85 @@
+name: Sentry Release & Source Maps
+
+# Uploads source maps to Sentry on every push to `main` so production stack
+# traces are de-minified. Requires the following repository secrets:
+#
+#   SENTRY_AUTH_TOKEN  — internal integration token, scopes: project:releases, org:read
+#   SENTRY_ORG         — Sentry org slug
+#   SENTRY_PROJECT     — Sentry project slug
+#
+# This workflow is intentionally independent of the Vercel deploy: it runs in
+# parallel and finalises the release once the build artefacts are uploaded.
+# Failures here MUST NOT block the deploy — Sentry will simply fall back to
+# raw stack traces until the next successful run.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: sentry-release-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  upload-sourcemaps:
+    name: Build & upload source maps
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    if: ${{ github.event_name == 'workflow_dispatch' || vars.SENTRY_ENABLED == 'true' }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Sentry needs full git history to associate commits.
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Build (with source maps)
+        env:
+          NODE_OPTIONS: '--max-old-space-size=4096 --stack-size=8192'
+          NEXT_PUBLIC_SENTRY_RELEASE: ${{ github.sha }}
+          SENTRY_RELEASE: ${{ github.sha }}
+          GENERATE_SOURCEMAP: 'true'
+        run: npm run build
+
+      - name: Verify Sentry secrets
+        id: check
+        run: |
+          if [ -z "${{ secrets.SENTRY_AUTH_TOKEN }}" ] || \
+             [ -z "${{ secrets.SENTRY_ORG }}" ] || \
+             [ -z "${{ secrets.SENTRY_PROJECT }}" ]; then
+            echo "Sentry secrets missing — skipping upload (build succeeded)."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Create Sentry release
+        if: steps.check.outputs.skip == 'false'
+        uses: getsentry/action-release@v1
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
+          SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
+        with:
+          environment: production
+          version: ${{ github.sha }}
+          sourcemaps: |
+            ./.next/static
+            ./.next/server
+          url_prefix: '~/_next'
+          ignore_missing: true
+          ignore_empty: true
+          set_commits: auto

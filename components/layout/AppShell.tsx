@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useAppLocale } from "@/src/lib/i18n/use-app-locale";
 import { Button } from "@/components/ui/button";
 import { Globe, X, LogOut, Search, Sparkles } from "lucide-react";
 import { NotificationBell } from "@/components/ui/notification-bell";
@@ -22,7 +22,7 @@ import { CommandPalette, useCommandPaletteShortcut } from "@/components/ui/Comma
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const { user, dbUser, loading, signOut: logout } = useAuth();
-  const { language, setLanguage } = useLanguage();
+  const { locale: language, setLocale: setLanguage } = useAppLocale();
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [paletteOpen, setPaletteOpen] = useState(false);

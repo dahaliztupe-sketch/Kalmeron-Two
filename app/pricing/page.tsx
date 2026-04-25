@@ -139,6 +139,7 @@ export default function PricingPage() {
             loadingPlan={loadingPlan}
             billing={billing}
             onSelect={handleSelect}
+            billingAvailable={billingAvailable}
           />
         </div>
 
@@ -150,6 +151,7 @@ export default function PricingPage() {
             loadingPlan={loadingPlan}
             billing={billing}
             onSelect={handleSelect}
+            billingAvailable={billingAvailable}
           />
         </div>
 

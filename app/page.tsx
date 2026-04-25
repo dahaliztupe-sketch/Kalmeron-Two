@@ -15,6 +15,7 @@ import {
 import Link from "next/link";
 import { BrandLogo } from "@/components/brand/BrandLogo";
 import { AnimatedBrandMark } from "@/components/brand/AnimatedBrandMark";
+import { SocialProofLine } from "@/components/landing/SocialProofLine";
 import { useAuth } from "@/contexts/AuthContext";
 
 // ─────────────────────────────────────────────
@@ -1127,7 +1128,8 @@ function FinalCTA() {
           </h2>
 
           <p className="text-neutral-300 text-base sm:text-lg mb-10 leading-relaxed">
-            +1000 رائد أعمال بدأوا بنفس السؤال اللي في دماغك الآن.<br className="hidden sm:block" />
+            <SocialProofLine />
+            <br className="hidden sm:block" />
             كلميرون جاهز يساعدك تحوّله لشركة حقيقية.
           </p>
 

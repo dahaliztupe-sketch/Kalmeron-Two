@@ -1,7 +1,7 @@
 "use client";
 
 import { AppShell } from "@/components/layout/AppShell";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useAppLocale } from "@/src/lib/i18n/use-app-locale";
 import { Card, CardContent } from "@/components/ui/card";
 import { FileText, ArrowLeft, Target, Wallet, BarChart3 } from "lucide-react";
 import { motion } from "motion/react";
@@ -9,7 +9,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
 export default function PlanPage() {
-  const { language, t } = useLanguage();
+  const { locale: language } = useAppLocale();
   const dir = language === "ar" ? "rtl" : "ltr";
 
   const modules = [

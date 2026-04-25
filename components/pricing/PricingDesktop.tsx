@@ -15,6 +15,9 @@ interface Props {
   loadingPlan: PlanId | null;
   billing: BillingCycle;
   onSelect: (id: PlanId) => void;
+  /** When false, paid plan CTAs swap to a "تواصل مع المبيعات" affordance
+   * instead of triggering the Stripe checkout flow. */
+  billingAvailable?: boolean;
 }
 
 const PLAN_ICONS: Record<PlanId, React.ComponentType<{ className?: string }>> = {
@@ -39,6 +42,7 @@ export function PricingDesktop({
   loadingPlan,
   billing,
   onSelect,
+  billingAvailable = true,
 }: Props) {
   const cols = GRID_BY_COUNT[plans.length] ?? "grid-cols-3";
   return (
@@ -180,6 +184,8 @@ export function PricingDesktop({
                 "تواصل مع المبيعات"
               ) : plan.priceMonthlyEgp === 0 ? (
                 "ابدأ مجاناً"
+              ) : !billingAvailable ? (
+                "تواصل مع المبيعات"
               ) : (
                 "اختر هذه الخطة"
               )}

@@ -16,6 +16,8 @@ const bodySchema = z.object({
   message: z.string().min(2).max(4000),
   uiContext: z.record(z.string(), z.unknown()).optional(),
   draft: z.string().max(8000).optional(),
+  /** UX-driven mode: 'fast' skips the router for sub-3s replies. */
+  mode: z.enum(['fast', 'deep']).optional(),
 });
 
 /**
@@ -50,6 +52,7 @@ export async function POST(req: NextRequest) {
     userMessage: body.message,
     uiContext: body.uiContext,
     draft: body.draft,
+    mode: body.mode,
   });
 
   if (error && !result) {

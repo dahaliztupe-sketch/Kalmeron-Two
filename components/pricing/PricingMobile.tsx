@@ -15,6 +15,8 @@ interface Props {
   loadingPlan: PlanId | null;
   billing: BillingCycle;
   onSelect: (id: PlanId) => void;
+  /** When false, paid CTAs are swapped for a soft "تواصل" affordance. */
+  billingAvailable?: boolean;
 }
 
 const PLAN_ICONS: Record<PlanId, React.ComponentType<{ className?: string }>> = {
@@ -30,6 +32,7 @@ export function PricingMobile({
   loadingPlan,
   billing,
   onSelect,
+  billingAvailable = true,
 }: Props) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [activeIdx, setActiveIdx] = useState<number>(() =>
@@ -271,6 +274,8 @@ export function PricingMobile({
                 "تواصل"
               ) : activePlan.priceMonthlyEgp === 0 ? (
                 "ابدأ مجاناً"
+              ) : !billingAvailable ? (
+                "تواصل"
               ) : (
                 "اختر الخطة"
               )}

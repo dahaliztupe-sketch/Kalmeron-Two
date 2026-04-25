@@ -12,7 +12,6 @@ import { ServiceWorkerRegistrar } from "@/components/pwa/ServiceWorkerRegistrar"
 import { WebVitals } from "@/components/analytics/WebVitals";
 import { NextIntlClientProvider } from 'next-intl';
 import { getLocale, getMessages } from 'next-intl/server';
-import { LanguageProvider } from "@/contexts/LanguageContext";
 import { safeJsonLd } from "@/src/lib/security/safe-json-ld";
 
 // ═══ Premium Arabic typography stack ═══
@@ -155,18 +154,16 @@ export default async function RootLayout({
       <body className="antialiased bg-[#04060B] text-[#F8FAFC] selection:bg-indigo-500/40">
         <NextIntlClientProvider messages={messages}>
             <ThemeProvider attribute="class" defaultTheme="dark" forcedTheme="dark" enableSystem={false}>
-              <LanguageProvider>
-                <AuthProvider>
-                  <QueryProvider>
-                    <IntroPreloader />
-                    {children}
-                    <CookieBanner />
-                    <Toaster position="top-right" richColors />
-                    <ServiceWorkerRegistrar />
-                    <WebVitals />
-                  </QueryProvider>
-                </AuthProvider>
-              </LanguageProvider>
+              <AuthProvider>
+                <QueryProvider>
+                  <IntroPreloader />
+                  {children}
+                  <CookieBanner />
+                  <Toaster position="top-right" richColors />
+                  <ServiceWorkerRegistrar />
+                  <WebVitals />
+                </QueryProvider>
+              </AuthProvider>
             </ThemeProvider>
         </NextIntlClientProvider>
       </body>

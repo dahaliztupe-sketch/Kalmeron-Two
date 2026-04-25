@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { AppShell } from "@/components/layout/AppShell";
 import { useAuth } from "@/contexts/AuthContext";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useAppLocale } from "@/src/lib/i18n/use-app-locale";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -17,7 +17,7 @@ import { motion } from "motion/react";
 
 export default function IdeaValidationPage() {
   const { user, dbUser } = useAuth();
-  const { language, t } = useLanguage();
+  const { locale: language } = useAppLocale();
   const dir = language === "ar" ? "rtl" : "ltr";
   
   const [ideaDesc, setIdeaDesc] = useState("");
