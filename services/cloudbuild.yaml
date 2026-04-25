@@ -1,0 +1,111 @@
+# Google Cloud Build pipeline — builds & deploys all 4 sidecars to Cloud Run.
+# Usage:
+#   gcloud builds submit --config services/cloudbuild.yaml \
+#     --substitutions=_REGION=europe-west1,_PROJECT=YOUR_GCP_PROJECT
+#
+# Prereqs: enable Cloud Build + Cloud Run + Artifact Registry on the project.
+# Recommended region for MENA latency: europe-west1 (Belgium) or europe-west4 (Netherlands).
+
+steps:
+  # ── PDF Worker ──
+  - name: gcr.io/cloud-builders/docker
+    dir: services/pdf-worker
+    args: ['build', '-t', '${_REGION}-docker.pkg.dev/${_PROJECT}/sidecars/pdf-worker:${SHORT_SHA}', '.']
+  - name: gcr.io/cloud-builders/docker
+    args: ['push', '${_REGION}-docker.pkg.dev/${_PROJECT}/sidecars/pdf-worker:${SHORT_SHA}']
+  - name: gcr.io/google.com/cloudsdktool/cloud-sdk
+    entrypoint: gcloud
+    args:
+      - run
+      - deploy
+      - kalmeron-pdf-worker
+      - --image=${_REGION}-docker.pkg.dev/${_PROJECT}/sidecars/pdf-worker:${SHORT_SHA}
+      - --region=${_REGION}
+      - --platform=managed
+      - --allow-unauthenticated
+      - --memory=512Mi
+      - --cpu=1
+      - --concurrency=20
+      - --min-instances=0
+      - --max-instances=10
+      - --port=8000
+
+  # ── Egypt Calc ──
+  - name: gcr.io/cloud-builders/docker
+    dir: services/egypt-calc
+    args: ['build', '-t', '${_REGION}-docker.pkg.dev/${_PROJECT}/sidecars/egypt-calc:${SHORT_SHA}', '.']
+  - name: gcr.io/cloud-builders/docker
+    args: ['push', '${_REGION}-docker.pkg.dev/${_PROJECT}/sidecars/egypt-calc:${SHORT_SHA}']
+  - name: gcr.io/google.com/cloudsdktool/cloud-sdk
+    entrypoint: gcloud
+    args:
+      - run
+      - deploy
+      - kalmeron-egypt-calc
+      - --image=${_REGION}-docker.pkg.dev/${_PROJECT}/sidecars/egypt-calc:${SHORT_SHA}
+      - --region=${_REGION}
+      - --platform=managed
+      - --allow-unauthenticated
+      - --memory=256Mi
+      - --cpu=1
+      - --concurrency=80
+      - --min-instances=0
+      - --max-instances=5
+      - --port=8008
+
+  # ── LLM Judge ──
+  - name: gcr.io/cloud-builders/docker
+    dir: services/llm-judge
+    args: ['build', '-t', '${_REGION}-docker.pkg.dev/${_PROJECT}/sidecars/llm-judge:${SHORT_SHA}', '.']
+  - name: gcr.io/cloud-builders/docker
+    args: ['push', '${_REGION}-docker.pkg.dev/${_PROJECT}/sidecars/llm-judge:${SHORT_SHA}']
+  - name: gcr.io/google.com/cloudsdktool/cloud-sdk
+    entrypoint: gcloud
+    args:
+      - run
+      - deploy
+      - kalmeron-llm-judge
+      - --image=${_REGION}-docker.pkg.dev/${_PROJECT}/sidecars/llm-judge:${SHORT_SHA}
+      - --region=${_REGION}
+      - --platform=managed
+      - --allow-unauthenticated
+      - --memory=512Mi
+      - --cpu=1
+      - --concurrency=20
+      - --min-instances=0
+      - --max-instances=5
+      - --set-secrets=GEMINI_API_KEY=gemini-api-key:latest
+      - --port=8080
+
+  # ── Embeddings Worker (heavier — 1Gi RAM for 220MB model) ──
+  - name: gcr.io/cloud-builders/docker
+    dir: services/embeddings-worker
+    args: ['build', '-t', '${_REGION}-docker.pkg.dev/${_PROJECT}/sidecars/embeddings-worker:${SHORT_SHA}', '.']
+  - name: gcr.io/cloud-builders/docker
+    args: ['push', '${_REGION}-docker.pkg.dev/${_PROJECT}/sidecars/embeddings-worker:${SHORT_SHA}']
+  - name: gcr.io/google.com/cloudsdktool/cloud-sdk
+    entrypoint: gcloud
+    args:
+      - run
+      - deploy
+      - kalmeron-embeddings-worker
+      - --image=${_REGION}-docker.pkg.dev/${_PROJECT}/sidecars/embeddings-worker:${SHORT_SHA}
+      - --region=${_REGION}
+      - --platform=managed
+      - --allow-unauthenticated
+      - --memory=1Gi
+      - --cpu=1
+      - --concurrency=10
+      - --min-instances=1   # keep 1 warm to avoid model cold-start (~5s)
+      - --max-instances=3
+      - --port=8099
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+  machineType: E2_HIGHCPU_8
+
+substitutions:
+  _REGION: europe-west1
+  _PROJECT: ${PROJECT_ID}
+
+timeout: 1800s

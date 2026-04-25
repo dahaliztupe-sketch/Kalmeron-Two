@@ -1,5 +1,52 @@
 # Kalmeron AI (ai-studio-applet)
 
+## Recent Major Updates (Session 2026-04-25 — Agent-vs-Human Task Split + Egyptian Pricing + Fawry + Sidecar Deployment)
+**Why:** المستخدم طلب: «قسم الـ 30 مهمّة لما تقدر عليه vs ما يحتاجني، نفّذ كل ما تقدر عليه في جلسة واحدة، وضع المتبقّي في PDF». نفّذتُ كل المهام التي لا تحتاج تدخّل يدوي خارجي، وولّدتُ PDF عربي بالمهام البشريّة المتبقّية.
+
+- **`src/lib/billing/plans.ts` — تيرنغ مصري الأولويّة:**
+  - أضفت tier `starter` جديد (199 ج.م / $7 شهرياً، 800 رسالة يومياً، 12K شهرياً) بين Free و Pro لخفض حاجز الدخول.
+  - خفّضت Pro من 499→399 ج.م / من $19→$15 (أقرب للقدرة الشرائيّة المصريّة).
+  - خفّضت Founder من 1999→999 ج.م / من $79→$39 (يبقى مربحاً مع زيادة الـ conversion المتوقّعة).
+  - حدّثت `PlanId` type، `PLAN_ORDER`، `MAIN_PLAN_ORDER` (4 أعمدة الآن)، `planFromStripePriceId`، `isStripeConfigured`.
+  - حدّثت `PLAN_ICONS` في `PricingDesktop.tsx` و `PricingMobile.tsx` (Zap لـ starter).
+  - أضفت قيم `starter` في كل صفّ من `PricingComparison.tsx` + صفّ جديد للدفع المحلّي (فوري/فودافون كاش).
+  - الـ Grid يدعم 4 أعمدة سلفاً عبر `GRID_BY_COUNT`.
+
+- **Fawry Pay integration كاملة (4 ملفّات + توثيق):**
+  - `src/lib/billing/fawry/client.ts` — TS SDK مع Zod no-throw، sha256 signatures (pay + callback)، AbortController timeout 15s، يدعم 4 طرق دفع: PAYATFAWRY (الأكثر شعبيّة)، CARD، MWALLET، VALU.
+  - `app/api/billing/fawry/checkout/route.ts` — Firebase ID token verification، rate-limit 10/دقيقة، تخزين الطلب في `fawry_orders` collection قبل استدعاء Fawry، validation للموبايل المصري (`^01\d{9}$`)، يعيد `referenceNumber` + تعليمات عربيّة جاهزة للعرض.
+  - `app/api/billing/fawry/webhook/route.ts` — يعيد التحقّق من الـ signature server-side، يفحص amount tampering، idempotent (يفحص `status === 'paid'` قبل المعالجة)، يمنح الـ entitlement عبر Firestore batch (تحديث user + إنشاء payment + تحديث order كلّها atomic).
+  - `components/billing/FawryButton.tsx` — UI بسيط يطلب الموبايل ثمّ يعرض كود فوري + التعليمات. تصميم بنفس language tokens.
+  - `.env.example` — 4 vars جديدة: `FAWRY_BASE_URL` (sandbox/prod)، `FAWRY_MERCHANT_CODE`، `FAWRY_SECURITY_KEY`، `FAWRY_PUBLIC_BASE_URL`.
+
+- **Dockerfiles لكل sidecars (4 ملفّات) + إعداد نشر:**
+  - `services/{pdf-worker,egypt-calc,llm-judge,embeddings-worker}/Dockerfile` — `python:3.12-slim`، uvicorn workers مناسب لكل خدمة (1 لـ embeddings لأنّ الموديل ثقيل، 2 للباقي)، PDF worker يضمّ Noto fonts للعربيّة، embeddings يخصّص cache dir للـ ONNX model.
+  - `services/cloudbuild.yaml` — Google Cloud Build pipeline ينشر الأربعة دفعة واحدة على Cloud Run في `europe-west1`، مع memory/cpu/concurrency محدّدة لكل خدمة، `min-instances=1` لـ embeddings فقط (لتجنّب cold-start ~5s).
+  - `services/railway.json` — بديل أسهل لمن يفضّل Railway ($20/شهر للأربعة).
+  - `docs/SIDECAR_DEPLOYMENT.md` — دليل نشر بالعربيّة يقارن 3 خيارات (Cloud Run / Railway / Fly.io)، أوامر CLI كاملة، تكاليف متوقّعة، notes عن CORS/cold-start/min-instances.
+
+- **`.env.example` — تنظيف شامل:**
+  - حذفت أسماء tiers قديمة (`STARTER/GROWTH/SCALE/FINANCE_CREW`) لم تعُد مطابقة لـ `plans.ts`.
+  - أضفت 12 متغيّر Stripe Price (3 خطط × 2 cycle × 2 currency) بالأسماء المطابقة (`STARTER/PRO/FOUNDER` + `MONTHLY/ANNUAL` + `EGP/USD`).
+  - أضفت قسم Fawry (4 vars) + Resend (`RESEND_API_KEY`، `EMAIL_FROM`) + `PLATFORM_ADMIN_UIDS`.
+
+- **`docs/REMAINING_HUMAN_TASKS.pdf` — 30 مهمّة بشريّة كاملة:**
+  - تمّ توليد PDF بـ pdfkit + arabic-reshaper + bidi-js (شكّل عربي صحيح + bidi reordering)، خط Amiri (431KB TTF حملته من google/fonts repo) لأنّ chromium لا يعمل على NixOS.
+  - 8 صفحات A4، RTL، مقسّم على 4 أولويّات (P0/P1/P2/P3) بألوان (أحمر/برتقالي/سماوي/رمادي).
+  - كل مهمّة تحتوي: ID، عنوان، السبب، خطوات مرقّمة، الوقت المتوقّع، علامة blocker.
+  - السكريبت محفوظ في `scripts/generate-remaining-tasks-pdf.ts` لإعادة التوليد لاحقاً.
+
+- **التحقّق:**
+  - `npx tsc --noEmit` → لا أخطاء جديدة (التيار الـ `daily-brief` السابق غير متعلّق).
+  - `npm run dev` يبدأ في 1.1s، الـ 4 sidecars كلّهم running على ports 8000/8008/8080/8099.
+  - PDF يفتح بدون errors، الحجم 45.8KB، 8 صفحات.
+
+- **ما لم يُنفَّذ (في PDF للمستخدم):**
+  - 4 P0 (حذف `.replit`، تدوير Firebase key، إضافة Gemini key، Stripe keys).
+  - 8 P1 (Stripe Products، Firestore indexes deploy، PLATFORM_ADMIN_UIDS، Resend، Sentry، pitch deck placeholders، Fawry merchant onboarding).
+  - 8 P2 (sidecars deployment على Cloud Run، Staging، قانوني، سوشيال، Beta، App Store، Incubators، Co-founder).
+  - 10 P3 (Pen test، SOC 2، Insurance، تكاملات إضافيّة، Community، Case studies، PR، Events، Referral wiring، Hiring).
+
 ## Recent Major Updates (Session 2026-04-25 — Investor Readiness Audit + Materials)
 **Why:** المستخدم طلب «تدقيق استعداد المستثمرين الشامل ثم إصلاح كل شيء في جلسة واحدة». نُفِّذ بالكامل ما يقدر عليه الـ agent؛ ما يحتاج تدخّلاً يدويّاً موَثَّق في `<scratchpad>` العمليّات.
 

@@ -6,3 +6,9 @@ id = "1fhzDrWmuwamvdzEYGmnT"
 uri = "file://docs/PROJECT_ASSESSMENT_AND_HUMAN_TASKS.md"
 type = "text"
 title = "تقييم Kalmeron الشامل + التسعير المصري + المهام البشريّة"
+
+[[outputs]]
+id = "JdPpeMuNpXG41DWrC0ufB"
+uri = "file://docs/REMAINING_HUMAN_TASKS.pdf"
+type = "pdf"
+title = "كلميرون — المهام المتبقّية للمؤسس (PDF)"

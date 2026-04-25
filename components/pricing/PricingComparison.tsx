@@ -16,67 +16,72 @@ const ROWS: Row[] = [
   {
     category: "الأرصدة",
     feature: "رسائل يومية",
-    values: { free: "200", pro: "2,000", founder: "10,000", enterprise: "غير محدود" },
+    values: { free: "200", starter: "800", pro: "2,000", founder: "10,000", enterprise: "غير محدود" },
   },
   {
     category: "الأرصدة",
     feature: "رسائل شهرية",
-    values: { free: "3,000", pro: "30,000", founder: "200,000", enterprise: "غير محدود" },
+    values: { free: "3,000", starter: "12,000", pro: "30,000", founder: "200,000", enterprise: "غير محدود" },
   },
   {
     category: "الأرصدة",
     feature: "ترحيل الرصيد غير المستخدم",
-    values: { free: false, pro: true, founder: true, enterprise: true },
+    values: { free: false, starter: false, pro: true, founder: true, enterprise: true },
   },
   {
     category: "الميزات",
     feature: "وصول لكل مساعدي كلميرون الـ 16",
-    values: { free: true, pro: true, founder: true, enterprise: true },
+    values: { free: true, starter: true, pro: true, founder: true, enterprise: true },
   },
   {
     category: "الميزات",
     feature: "تحليل أفكار غير محدود",
-    values: { free: false, pro: true, founder: true, enterprise: true },
+    values: { free: false, starter: true, pro: true, founder: true, enterprise: true },
   },
   {
     category: "الميزات",
     feature: "تصدير PDF احترافي",
-    values: { free: false, pro: true, founder: true, enterprise: true },
+    values: { free: false, starter: true, pro: true, founder: true, enterprise: true },
   },
   {
     category: "الميزات",
     feature: "نماذج ذكية بأولوية أعلى",
-    values: { free: false, pro: true, founder: true, enterprise: true },
+    values: { free: false, starter: false, pro: true, founder: true, enterprise: true },
   },
   {
     category: "الفريق",
     feature: "حساب الفريق",
-    values: { free: false, pro: false, founder: "5 أعضاء", enterprise: "غير محدود" },
+    values: { free: false, starter: false, pro: false, founder: "5 أعضاء", enterprise: "غير محدود" },
   },
   {
     category: "الفريق",
     feature: "تسجيل دخول موحّد (SSO)",
-    values: { free: false, pro: false, founder: false, enterprise: true },
+    values: { free: false, starter: false, pro: false, founder: false, enterprise: true },
   },
   {
     category: "الدعم",
     feature: "دعم بالبريد الإلكتروني",
-    values: { free: true, pro: true, founder: true, enterprise: true },
+    values: { free: true, starter: true, pro: true, founder: true, enterprise: true },
   },
   {
     category: "الدعم",
     feature: "دعم فوري بالشات",
-    values: { free: false, pro: true, founder: true, enterprise: true },
+    values: { free: false, starter: false, pro: true, founder: true, enterprise: true },
   },
   {
     category: "الدعم",
     feature: "مدير حساب مخصص",
-    values: { free: false, pro: false, founder: true, enterprise: true },
+    values: { free: false, starter: false, pro: false, founder: true, enterprise: true },
   },
   {
     category: "الدعم",
     feature: "SLA 99.9% + دعم 24/7",
-    values: { free: false, pro: false, founder: false, enterprise: true },
+    values: { free: false, starter: false, pro: false, founder: false, enterprise: true },
+  },
+  {
+    category: "الدفع",
+    feature: "الدفع المحلّي (فوري / فودافون كاش)",
+    values: { free: false, starter: true, pro: true, founder: true, enterprise: true },
   },
 ];
 

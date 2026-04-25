@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { Check, Crown, Loader2, Rocket, Sparkles, Building2, ChevronLeft, ChevronRight } from "lucide-react";
+import { Check, Crown, Loader2, Rocket, Sparkles, Building2, ChevronLeft, ChevronRight, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/src/lib/utils";
 import type { Plan, PlanId } from "@/src/lib/billing/plans";
@@ -21,6 +21,7 @@ interface Props {
 
 const PLAN_ICONS: Record<PlanId, React.ComponentType<{ className?: string }>> = {
   free: Sparkles,
+  starter: Zap,
   pro: Rocket,
   founder: Crown,
   enterprise: Building2,

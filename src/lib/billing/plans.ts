@@ -1,4 +1,4 @@
-export type PlanId = 'free' | 'pro' | 'founder' | 'enterprise';
+export type PlanId = 'free' | 'starter' | 'pro' | 'founder' | 'enterprise';
 export type BillingCycle = 'monthly' | 'annual';
 
 export interface StripePriceIds {
@@ -48,7 +48,7 @@ export function getStripePriceIds(planId: PlanId): StripePriceIds {
 
 /** Map a Stripe Price ID back to a (planId, cycle) pair, for webhook handling. */
 export function planFromStripePriceId(priceId: string): { planId: PlanId; cycle: BillingCycle } | null {
-  const order: PlanId[] = ['pro', 'founder', 'free', 'enterprise'];
+  const order: PlanId[] = ['starter', 'pro', 'founder', 'free', 'enterprise'];
   for (const planId of order) {
     const ids = getStripePriceIds(planId);
     if (ids.monthlyUsd === priceId || ids.monthlyEgp === priceId) return { planId, cycle: 'monthly' };
@@ -86,15 +86,36 @@ export const PLANS: Record<PlanId, Plan> = {
       'دعم عبر البريد الإلكتروني',
     ],
   },
+  starter: {
+    id: 'starter',
+    nameAr: 'المبتدئ',
+    nameEn: 'Starter',
+    taglineAr: 'لكل رائد أعمال مصري يبدأ رحلته بميزانية واقعية',
+    priceMonthlyEgp: 199,
+    priceMonthlyUsd: 7,
+    priceAnnualMonthlyEgp: applyAnnual(199),
+    priceAnnualMonthlyUsd: applyAnnual(7),
+    dailyCredits: 800,
+    monthlyCredits: 12000,
+    unlimited: false,
+    featuresAr: [
+      '800 رسالة يومياً (4× المجاني)',
+      '12,000 رسالة شهرياً',
+      'وصول كامل لكل الوكلاء',
+      'تصدير PDF لخطط العمل',
+      'دعم بالعربية عبر البريد',
+      'الدفع بـ Fawry / فودافون كاش / بطاقة',
+    ],
+  },
   pro: {
     id: 'pro',
     nameAr: 'المحترف',
     nameEn: 'Pro',
     taglineAr: 'لرواد الأعمال الجادين الذين يبنون شركتهم القادمة',
-    priceMonthlyEgp: 499,
-    priceMonthlyUsd: 19,
-    priceAnnualMonthlyEgp: applyAnnual(499),
-    priceAnnualMonthlyUsd: applyAnnual(19),
+    priceMonthlyEgp: 399,
+    priceMonthlyUsd: 15,
+    priceAnnualMonthlyEgp: applyAnnual(399),
+    priceAnnualMonthlyUsd: applyAnnual(15),
     dailyCredits: 2000,
     monthlyCredits: 30000,
     unlimited: false,
@@ -113,10 +134,10 @@ export const PLANS: Record<PlanId, Plan> = {
     nameAr: 'المؤسس',
     nameEn: 'Founder',
     taglineAr: 'لفريق التأسيس الذي يحتاج كل وكلاء كلميرون',
-    priceMonthlyEgp: 1999,
-    priceMonthlyUsd: 79,
-    priceAnnualMonthlyEgp: applyAnnual(1999),
-    priceAnnualMonthlyUsd: applyAnnual(79),
+    priceMonthlyEgp: 999,
+    priceMonthlyUsd: 39,
+    priceAnnualMonthlyEgp: applyAnnual(999),
+    priceAnnualMonthlyUsd: applyAnnual(39),
     dailyCredits: 10000,
     monthlyCredits: 200000,
     unlimited: false,
@@ -152,14 +173,14 @@ export const PLANS: Record<PlanId, Plan> = {
   },
 };
 
-export const PLAN_ORDER: PlanId[] = ['free', 'pro', 'founder', 'enterprise'];
+export const PLAN_ORDER: PlanId[] = ['free', 'starter', 'pro', 'founder', 'enterprise'];
 
 /**
- * Plans that render in the main 3-column pricing grid.
+ * Plans that render in the main 4-column pricing grid (Egyptian-friendly tiering).
  * Enterprise is intentionally excluded — it appears as a separate banner
  * (it is sales-led with custom pricing, not self-serve).
  */
-export const MAIN_PLAN_ORDER: PlanId[] = ['free', 'pro', 'founder'];
+export const MAIN_PLAN_ORDER: PlanId[] = ['free', 'starter', 'pro', 'founder'];
 
 /**
  * Returns true when at least one Stripe Price ID is configured for the
@@ -167,7 +188,7 @@ export const MAIN_PLAN_ORDER: PlanId[] = ['free', 'pro', 'founder'];
  * when self-serve billing is disabled.
  */
 export function isStripeConfigured(): boolean {
-  for (const id of ['pro', 'founder'] as PlanId[]) {
+  for (const id of ['starter', 'pro', 'founder'] as PlanId[]) {
     const ids = getStripePriceIds(id);
     if (ids.monthlyUsd || ids.annualUsd || ids.monthlyEgp || ids.annualEgp) return true;
   }
