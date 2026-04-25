@@ -1345,3 +1345,44 @@ into a deliberating multi-perspective panel.
 - **`tsc --noEmit` كامل**: يفشل بـ stack overflow (مشكلة معروفة في
   TypeScript مع type inference عميق، ليست خطأً في كودنا). فحص
   مستهدف للملفات المُعدَّلة نجح. يُنصح بترقية TS إلى 5.7+ في PR منفصل.
+
+---
+
+## Recent Major Updates (Session 2026-04-25 — Harness Engineering Hardening)
+
+**Why:** المستخدم طلب 3 مهام كبرى في جلسة واحدة بناءً على أبحاث 2026 في مجتمع تطوير AI Agents: (1) بناء Harness Engineering (بيئة تقييد منظمة)، (2) تطبيق أنماط البرمجة الوكيلية الثمانية، (3) معالجة التحديات الهندسية الستة. تحقّق من الكود الفعلي قبل أيّ بناء، تحرّك باستقلالية، اختبر كل تغيير.
+
+**النتيجة الأساسيّة:** أغلب الأبنية موجودة بالفعل بشكل ناضج (eval gate في CI، Langfuse + Sentry tracing، context-quarantine، self-RAG/CRAG، agent-governance، rate-limit، cost-ledger، advanced-routing، advanced-memory + knowledge-graph، compliance/dpia). فجوات حقيقيّة قليلة سُدّت بشكل additive.
+
+**ما أُنشئ/تغيّر (additive، صفر breaking changes):**
+
+- **Harness Map**: `docs/HARNESS.md` — صفحة واحدة تربط كل نمط/تحدٍّ بالملفّات الحقيقيّة في الكود (verification loops + provenance trail + 6 challenges + 8 patterns + CISO 7-point).
+- **Conventional Commits (بدون deps جديدة)**:
+  - `CONTRIBUTING.md` — دليل المساهمة الموحَّد (commits + tests + specs + DoD + logging + errors).
+  - `scripts/check-commit-message.mjs` — مدقِّق محلّي/CI بـ regex مماثل لـ `@commitlint/config-conventional`.
+  - `docs/decisions/0004-conventional-commits.md` — ADR لتوضيح القرار.
+- **Task Path Collapse**: `src/lib/security/max-step-guard.ts` — `createStepBudget({ max, label })` يرمي `StepBudgetExceededError` عند تجاوز السقف؛ مع وضع `throwOnOverflow: false` للتدهور الناعم. يُسجَّل كل overflow في pino. اختبارات كاملة في `test/max-step-guard.test.ts`.
+- **Cost Runaway**: `src/lib/billing/budget-guard.ts` — `enforceBudget(workspaceId)` يقرأ `cost_rollups_daily` ويقارن بسقف من `workspaces/{id}.budgetUsdMonthly` أو `KALMERON_DEFAULT_BUDGET_USD`. لا يرمي أبداً (telemetry must not break the request). دالّة `evaluateBudget` نقيّة قابلة للاختبار. اختبارات في `test/budget-guard.test.ts`.
+- **API Error Handling موحَّد (RFC 9457 Problem+JSON)**: `src/lib/security/api-error.ts` — `HTTPError` + 8 فروع (BadRequestError…ServiceUnavailableError) بـ `toResponse()` يحافظ على `X-Request-ID` ويُرجع `application/problem+json`. `src/lib/security/route-guard.ts` يحوّل أي `HTTPError` مرميّ تلقائياً للاستجابة القانونيّة. اختبارات كاملة في `test/api-error.test.ts`.
+- **Error Boundary للمكوّنات**: `components/ui/ErrorBoundary.tsx` — boundary RTL/عربي يلفّ widget واحد مع fallback قابل للتخصيص و`onError` يمكن ربطه بـ Sentry.
+- **Memory Compression (Memory Crisis)**: `src/lib/memory/compress-context.ts` — `compactHistory(messages, opts)` نقيّة تحافظ على آخر K رسائل verbatim وتلخّص ما قبلها (LLM-backed أو heuristic fallback). اختبارات تحقّق التراجع الآمن وضغط طول السجل.
+- **Feature Scaffolder**: `scripts/scaffold-feature.mjs` — يُنشئ `src/features/<name>/{types.ts,server.ts,client.tsx,README.md}` + `test/<name>.test.ts` بـ Zod schema و"server-only" stub جاهزَين. يرفض الكتابة فوق ملفّات موجودة. تحقّقتُ نهايةً-إلى-نهاية بإنشاء feature تجريبيّة وحذفها.
+- **Coverage Thresholds**: `vitest.config.ts` يحوي الآن `coverage` block مع V8 provider وعتبات 80/70/80/80 على `src/lib/security/**`, `src/lib/billing/**`, `src/lib/memory/compress-context.ts` (يحتاج `@vitest/coverage-v8` لتنفيذ `npx vitest run --coverage`؛ لم أُضِفه افتراضيّاً لتفادي إثقال cold-start).
+- **Structured Logging**: استبدال آخر بقايا `console.*` في الـ infra الحرجة:
+  - `src/lib/observability/tracer.ts` — أُعيد بناؤه فوق pino بـ span IDs و `agent_trace_{start,finish,error}` events.
+  - `src/lib/security/agent-os.ts` — كل event من `AgentSRE` (recordError, tripCircuitBreaker, killSwitch) يمرّ الآن بـ `logger.child({ component: agent-sre })`.
+  - `src/lib/agents/hooks.ts` — أخطاء `recordUsage` / `notify` / `dispatchEvent` تُسجَّل بـ pino مع structured fields.
+  - `src/lib/observability/cost-ledger.ts` — `recordCost` يكتب بـ pino مع `event: cost_event_write_failed`.
+
+**Validation:**
+- `npm run typecheck` → 0 errors.
+- `npm run lint` → 0 errors (450 warnings كلّها pre-existing `@typescript-eslint/no-explicit-any`، صفر إنذارات جديدة من الكود المُضاف).
+- `npm test` → 16 ملف اختبار، **77 اختبار يمرّ** (4 ملفّات و 23 اختباراً جديداً).
+- Smoke: `node scripts/check-commit-message.mjs --stdin` يقبل/يرفض الصيغ الصحيحة بدقّة.
+- Smoke: `node scripts/scaffold-feature.mjs daily-brief-test` يُنشئ كل الملفّات والـ test يمرّ من أوّل تشغيل.
+
+**ما لم يُلمَس** (هي بالفعل ناضجة، أو في قائمة الملفّات الحسّاسة):
+- `firestore.rules`, `firestore.indexes.json`, `next.config.ts`, `.replit`, `app/api/webhooks/**`, `app/api/billing/**`, `sentry.*.config.ts`, `.github/workflows/**`.
+- `src/lib/security/plan-guard.ts`, `agent-governance.ts`, `context-quarantine.ts`, `rate-limit.ts` — مكتملة بالفعل ولا تحتاج تعديلاً لتحقيق المتطلّبات.
+- `src/lib/observability/langfuse.ts` + `services/llm-judge/` + `.github/workflows/eval.yml` — كانت بالفعل تحقّق "Multi-Verified Agents" + CI eval gate (≥ 0.80 pass-rate).
+

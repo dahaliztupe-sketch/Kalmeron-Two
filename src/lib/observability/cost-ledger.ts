@@ -11,6 +11,9 @@
  */
 import { adminDb } from '@/src/lib/firebase-admin';
 import { FieldValue, type Timestamp } from 'firebase-admin/firestore';
+import { logger } from '@/src/lib/logger';
+
+const ledgerLogger = logger.child({ component: 'cost-ledger' });
 
 export type Provider = 'gemini' | 'openai' | 'anthropic' | 'web-llm' | 'other';
 
@@ -58,7 +61,10 @@ export async function recordCost(e: Omit<CostEvent, 'occurredAt'>): Promise<void
       occurredAt: FieldValue.serverTimestamp(),
     });
   } catch (err) {
-    console.error('[cost-ledger] write failed', err instanceof Error ? err.message : err);
+    ledgerLogger.error(
+      { event: 'cost_event_write_failed', err: err instanceof Error ? err.message : String(err) },
+      'cost_event_write_failed',
+    );
   }
 }
 

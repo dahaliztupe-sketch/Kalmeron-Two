@@ -11,6 +11,7 @@ import { verifyApiKey } from '@/src/lib/security/api-keys';
 import { requirePermission, isPlatformAdmin, type Permission } from '@/src/lib/security/rbac';
 import { writeAudit, extractClientInfo, type AuditAction } from '@/src/lib/audit/log';
 import { checkQuota } from '@/src/lib/billing/metering';
+import { isHTTPError } from '@/src/lib/security/api-error';
 
 export type ActorType = 'user' | 'api_key' | 'admin';
 
@@ -230,6 +231,9 @@ export function guardedRoute<T extends ZodType>(
           errorMessage: errMessage,
           ...client,
         }).catch(() => {});
+      }
+      if (isHTTPError(err)) {
+        return err.toResponse(requestId, req.nextUrl.pathname);
       }
       return NextResponse.json(
         { error: 'internal_error', message: errMessage || 'خطأ غير متوقع' },

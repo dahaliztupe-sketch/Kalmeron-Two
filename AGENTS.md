@@ -144,6 +144,20 @@ npm run embeddings-worker:dev   # 8099
 
 راجع `SKILL.md` (في الجذر) — يحوي خطوات تفصيليّة من الفكرة إلى الإنتاج.
 
+## 11. خريطة Harness Engineering (مرجع سريع)
+
+كل آليّة سلامة لها مكان واحد في الكود — راجع `docs/HARNESS.md` للجدول الكامل. أهم النقاط:
+
+- **حلقات تحقّق**: `test/eval/`, `services/llm-judge/`, `.github/workflows/eval.yml` (بوّابة ≥ 0.80 pass-rate)، `vitest.config.ts` (عتبات تغطية).
+- **Tracing**: `src/lib/logger.ts` (pino + redact) + `X-Request-ID` يمرّ من `route-guard` إلى Sentry/Langfuse/audit.
+- **Task Path Collapse**: استخدم `createStepBudget({ max, label })` من `src/lib/security/max-step-guard.ts` في أي LangGraph/Mastra loop.
+- **Cost Runaway**: استدعِ `enforceBudget(workspaceId)` من `src/lib/billing/budget-guard.ts` قبل أي stream طويل.
+- **API Errors**: ارمِ `HTTPError` (أو فروعها) من `src/lib/security/api-error.ts` بدل JSON يدوي. `guardedRoute` يحوّلها لـ Problem+JSON تلقائياً.
+- **UI Errors**: لفّ widgets الحسّاسة بـ `<ErrorBoundary>` من `components/ui/ErrorBoundary.tsx`.
+- **Memory Crisis**: مرّر سجلّ الحوار عبر `compactHistory` من `src/lib/memory/compress-context.ts` قبل تمريره للنموذج.
+- **Conventional Commits**: راجع `CONTRIBUTING.md` + `scripts/check-commit-message.mjs`.
+- **Feature Scaffolding**: `node scripts/scaffold-feature.mjs <name>`.
+
 ---
 
-**آخر مراجعة:** 2026-04-25 · **المسؤول:** Principal Platform Architect · **الإصدار:** 1.0
+**آخر مراجعة:** 2026-04-25 · **المسؤول:** Principal Platform Architect · **الإصدار:** 1.1

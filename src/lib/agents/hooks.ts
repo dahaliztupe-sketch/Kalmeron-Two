@@ -6,6 +6,9 @@ import { recordUsage } from '@/src/lib/billing/metering';
 import { notify } from '@/src/lib/notifications/center';
 import { dispatchEvent, type WebhookEvent } from '@/src/lib/webhooks/dispatcher';
 import { writeAudit } from '@/src/lib/audit/log';
+import { logger } from '@/src/lib/logger';
+
+const hookLogger = logger.child({ component: 'agent-hooks' });
 
 export async function afterAgentRun(args: {
   workspaceId: string;
@@ -29,7 +32,10 @@ export async function afterAgentRun(args: {
       costUSD: cost,
     });
   } catch (e) {
-    console.error('[hooks] recordUsage failed', e);
+    hookLogger.error(
+      { event: 'record_usage_failed', err: e instanceof Error ? e.message : String(e), agent, workspaceId },
+      'record_usage_failed',
+    );
   }
   if (args.userId && args.notification) {
     try {
@@ -42,14 +48,26 @@ export async function afterAgentRun(args: {
         href: args.notification.href,
       });
     } catch (e) {
-      console.error('[hooks] notify failed', e);
+      hookLogger.error(
+        { event: 'notify_failed', err: e instanceof Error ? e.message : String(e), agent, workspaceId },
+        'notify_failed',
+      );
     }
   }
   if (args.event && args.payload) {
     try {
       await dispatchEvent(workspaceId, args.event, args.payload);
     } catch (e) {
-      console.error('[hooks] dispatchEvent failed', e);
+      hookLogger.error(
+        {
+          event: 'dispatch_event_failed',
+          err: e instanceof Error ? e.message : String(e),
+          agent,
+          workspaceId,
+          webhookEvent: args.event,
+        },
+        'dispatch_event_failed',
+      );
     }
   }
   try {
