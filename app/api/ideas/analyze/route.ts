@@ -1,11 +1,39 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { ai } from '@/src/lib/gemini';
 import { rateLimit, rateLimitResponse } from '@/src/lib/security/rate-limit';
+import { adminAuth } from '@/src/lib/firebase-admin';
+import { logger } from '@/src/lib/logger';
 import xss from 'xss';
 
+/**
+ * Soft auth: same pattern as /api/council. Guests get a stricter rate
+ * limit (3/min) so anonymous traffic cannot drain LLM credits unbounded.
+ */
+async function softAuth(req: NextRequest): Promise<{ userId: string; isGuest: boolean }> {
+  const auth = req.headers.get('Authorization');
+  if (auth?.startsWith('Bearer ')) {
+    try {
+      const dec = await adminAuth.verifyIdToken(auth.slice(7).trim());
+      return { userId: dec.uid, isGuest: false };
+    } catch {
+      /* fall through */
+    }
+  }
+  return { userId: 'guest', isGuest: true };
+}
+
 export async function POST(request: NextRequest) {
-  const rl = rateLimit(request, { limit: 10, windowMs: 60_000 });
+  const { userId, isGuest } = await softAuth(request);
+  const rl = rateLimit(request, {
+    limit: isGuest ? 3 : 10,
+    windowMs: 60_000,
+    userId: isGuest ? undefined : userId,
+    scope: isGuest ? 'guest' : 'user',
+  });
   if (!rl.success) return rateLimitResponse();
+  if (isGuest) {
+    logger.warn({ event: 'ideas_analyze_guest_call', path: '/api/ideas/analyze' }, 'ideas_analyze_guest_call');
+  }
 
   try {
     const body = await request.json();

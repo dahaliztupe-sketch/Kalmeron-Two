@@ -2,8 +2,29 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { runCouncilSafe } from '@/src/ai/panel';
 import { rateLimit, rateLimitResponse } from '@/src/lib/security/rate-limit';
+import { adminAuth } from '@/src/lib/firebase-admin';
+import { logger } from '@/src/lib/logger';
 
 export const runtime = 'nodejs';
+
+/**
+ * Soft auth: derive userId from Bearer token if present so abuse is
+ * traceable; fall back to "guest" with a stricter per-IP rate limit.
+ * This endpoint runs the full multi-agent council, which is expensive,
+ * so anonymous traffic is rate-limited more aggressively than authed.
+ */
+async function softAuth(req: NextRequest): Promise<{ userId: string; isGuest: boolean }> {
+  const auth = req.headers.get('Authorization');
+  if (auth?.startsWith('Bearer ')) {
+    try {
+      const dec = await adminAuth.verifyIdToken(auth.slice(7).trim());
+      return { userId: dec.uid, isGuest: false };
+    } catch {
+      /* fall through */
+    }
+  }
+  return { userId: 'guest', isGuest: true };
+}
 
 const bodySchema = z.object({
   agentName: z.string().min(1).max(64).default('general-chat'),
@@ -26,8 +47,17 @@ const bodySchema = z.object({
  * تُرجع المخرج المنظّم + Markdown + معلومات التداول الداخلي.
  */
 export async function POST(req: NextRequest) {
-  const rl = rateLimit(req, { limit: 10, windowMs: 60_000 });
+  const { userId, isGuest } = await softAuth(req);
+  const rl = rateLimit(req, {
+    limit: isGuest ? 3 : 10,
+    windowMs: 60_000,
+    userId: isGuest ? undefined : userId,
+    scope: isGuest ? 'guest' : 'user',
+  });
   if (!rl.success) return rateLimitResponse();
+  if (isGuest) {
+    logger.warn({ event: 'council_guest_call', path: '/api/council' }, 'council_guest_call');
+  }
 
   let payload: unknown;
   try {

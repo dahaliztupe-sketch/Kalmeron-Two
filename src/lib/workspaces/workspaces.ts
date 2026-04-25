@@ -80,9 +80,21 @@ export async function getMemberRole(workspaceId: string, uid: string): Promise<W
   return (m.data() as any)?.role || 'viewer';
 }
 
+/**
+ * Hard cap to prevent unbounded reads if a workspace ever grows beyond
+ * intended limits. The Pro tier cap is 25 members; Enterprise is bespoke
+ * but never exceeds 500 in current contracts.
+ */
+const LIST_MEMBERS_HARD_CAP = 500;
+
 export async function listMembers(workspaceId: string): Promise<WorkspaceMember[]> {
   if (!adminDb?.collection) return [];
-  const snap = await adminDb.collection('workspaces').doc(workspaceId).collection('members').get();
+  const snap = await adminDb
+    .collection('workspaces')
+    .doc(workspaceId)
+    .collection('members')
+    .limit(LIST_MEMBERS_HARD_CAP)
+    .get();
   const out: WorkspaceMember[] = [];
   snap.forEach((d: any) => out.push({ uid: d.id, ...(d.data() as any) }));
   return out;
