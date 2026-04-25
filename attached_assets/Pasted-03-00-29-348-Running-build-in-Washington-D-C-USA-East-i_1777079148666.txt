@@ -1,0 +1,128 @@
+03:00:29.348 Running build in Washington, D.C., USA (East) – iad1
+03:00:29.349 Build machine configuration: 2 cores, 8 GB
+03:00:29.468 Cloning github.com/dahaliztupe-sketch/Kalmeron-Two (Branch: main, Commit: 1c51499)
+03:00:31.031 Cloning completed: 1.563s
+03:00:33.519 Restored build cache from previous deployment (3jmUozUYti15XGC4d4cEeztuXSwK)
+03:00:33.858 Running "vercel build"
+03:00:34.519 Vercel CLI 51.6.1
+03:00:34.623 Detected OpenTelemetry dependency: @opentelemetry/api@1.9.1, which meets the minimum version requirement of 1.7.0
+03:00:34.893 Installing dependencies...
+03:00:37.585 npm warn ERESOLVE overriding peer dependency
+03:00:37.586 npm warn While resolving: @ai-sdk/ui-utils@1.2.11
+03:00:37.587 npm warn Found: zod@4.3.6
+03:00:37.587 npm warn node_modules/zod
+03:00:37.587 npm warn   zod@"^4.3.6" from the root project
+03:00:37.587 npm warn   18 more (@ai-sdk/gateway, @ai-sdk/google, ...)
+03:00:37.587 npm warn
+03:00:37.588 npm warn Could not resolve dependency:
+03:00:37.589 npm warn peer zod@"^3.23.8" from @ai-sdk/ui-utils-v5@1.2.11
+03:00:37.590 npm warn node_modules/@mastra/core/node_modules/@ai-sdk/ui-utils-v5
+03:00:37.590 npm warn   @ai-sdk/ui-utils-v5@"npm:@ai-sdk/ui-utils@1.2.11" from @mastra/core@1.28.0
+03:00:37.590 npm warn   node_modules/@mastra/core
+03:00:37.590 npm warn
+03:00:37.590 npm warn Conflicting peer dependency: zod@3.25.76
+03:00:37.591 npm warn node_modules/zod
+03:00:37.591 npm warn   peer zod@"^3.23.8" from @ai-sdk/ui-utils-v5@1.2.11
+03:00:37.591 npm warn   node_modules/@mastra/core/node_modules/@ai-sdk/ui-utils-v5
+03:00:37.592 npm warn     @ai-sdk/ui-utils-v5@"npm:@ai-sdk/ui-utils@1.2.11" from @mastra/core@1.28.0
+03:00:37.593 npm warn     node_modules/@mastra/core
+03:00:37.775 npm warn ERESOLVE overriding peer dependency
+03:00:37.776 npm warn While resolving: eslint-plugin-import@2.32.0
+03:00:37.776 npm warn Found: eslint@10.2.1
+03:00:37.777 npm warn node_modules/eslint
+03:00:37.777 npm warn   dev eslint@"^10.2.1" from the root project
+03:00:37.777 npm warn   10 more (@eslint-community/eslint-utils, ...)
+03:00:37.777 npm warn
+03:00:37.777 npm warn Could not resolve dependency:
+03:00:37.777 npm warn peer eslint@"^2 || ^3 || ^4 || ^5 || ^6 || ^7.2.0 || ^8 || ^9" from eslint-plugin-import@2.32.0
+03:00:37.778 npm warn node_modules/eslint-config-next/node_modules/eslint-plugin-import
+03:00:37.778 npm warn   eslint-plugin-import@"^2.32.0" from eslint-config-next@16.2.4
+03:00:37.778 npm warn   node_modules/eslint-config-next
+03:00:37.778 npm warn   1 more (eslint-import-resolver-typescript)
+03:00:37.779 npm warn
+03:00:37.779 npm warn Conflicting peer dependency: eslint@9.39.4
+03:00:37.779 npm warn node_modules/eslint
+03:00:37.779 npm warn   peer eslint@"^2 || ^3 || ^4 || ^5 || ^6 || ^7.2.0 || ^8 || ^9" from eslint-plugin-import@2.32.0
+03:00:37.779 npm warn   node_modules/eslint-config-next/node_modules/eslint-plugin-import
+03:00:37.780 npm warn     eslint-plugin-import@"^2.32.0" from eslint-config-next@16.2.4
+03:00:37.780 npm warn     node_modules/eslint-config-next
+03:00:37.780 npm warn     1 more (eslint-import-resolver-typescript)
+03:00:37.873 npm warn ERESOLVE overriding peer dependency
+03:00:37.875 npm warn While resolving: eslint-plugin-jsx-a11y@6.10.2
+03:00:37.875 npm warn Found: eslint@10.2.1
+03:00:37.875 npm warn node_modules/eslint
+03:00:37.876 npm warn   dev eslint@"^10.2.1" from the root project
+03:00:37.876 npm warn   10 more (@eslint-community/eslint-utils, ...)
+03:00:37.876 npm warn
+03:00:37.876 npm warn Could not resolve dependency:
+03:00:37.877 npm warn peer eslint@"^3 || ^4 || ^5 || ^6 || ^7 || ^8 || ^9" from eslint-plugin-jsx-a11y@6.10.2
+03:00:37.877 npm warn node_modules/eslint-config-next/node_modules/eslint-plugin-jsx-a11y
+03:00:37.877 npm warn   eslint-plugin-jsx-a11y@"^6.10.0" from eslint-config-next@16.2.4
+03:00:37.878 npm warn   node_modules/eslint-config-next
+03:00:37.878 npm warn
+03:00:37.878 npm warn Conflicting peer dependency: eslint@9.39.4
+03:00:37.879 npm warn node_modules/eslint
+03:00:37.879 npm warn   peer eslint@"^3 || ^4 || ^5 || ^6 || ^7 || ^8 || ^9" from eslint-plugin-jsx-a11y@6.10.2
+03:00:37.879 npm warn   node_modules/eslint-config-next/node_modules/eslint-plugin-jsx-a11y
+03:00:37.879 npm warn     eslint-plugin-jsx-a11y@"^6.10.0" from eslint-config-next@16.2.4
+03:00:37.880 npm warn     node_modules/eslint-config-next
+03:00:37.913 npm warn ERESOLVE overriding peer dependency
+03:00:37.914 npm warn While resolving: eslint-plugin-react@7.37.5
+03:00:37.914 npm warn Found: eslint@10.2.1
+03:00:37.915 npm warn node_modules/eslint
+03:00:37.915 npm warn   dev eslint@"^10.2.1" from the root project
+03:00:37.916 npm warn   10 more (@eslint-community/eslint-utils, ...)
+03:00:37.917 npm warn
+03:00:37.917 npm warn Could not resolve dependency:
+03:00:37.917 npm warn peer eslint@"^3 || ^4 || ^5 || ^6 || ^7 || ^8 || ^9.7" from eslint-plugin-react@7.37.5
+03:00:37.918 npm warn node_modules/eslint-config-next/node_modules/eslint-plugin-react
+03:00:37.918 npm warn   eslint-plugin-react@"^7.37.0" from eslint-config-next@16.2.4
+03:00:37.924 npm warn   node_modules/eslint-config-next
+03:00:37.924 npm warn
+03:00:37.925 npm warn Conflicting peer dependency: eslint@9.39.4
+03:00:37.925 npm warn node_modules/eslint
+03:00:37.925 npm warn   peer eslint@"^3 || ^4 || ^5 || ^6 || ^7 || ^8 || ^9.7" from eslint-plugin-react@7.37.5
+03:00:37.926 npm warn   node_modules/eslint-config-next/node_modules/eslint-plugin-react
+03:00:37.926 npm warn     eslint-plugin-react@"^7.37.0" from eslint-config-next@16.2.4
+03:00:37.926 npm warn     node_modules/eslint-config-next
+03:00:37.926 npm warn ERESOLVE overriding peer dependency
+03:00:37.927 npm warn While resolving: @ai-sdk/provider-utils@2.2.8
+03:00:37.927 npm warn Found: zod@4.3.6
+03:00:37.928 npm warn node_modules/zod
+03:00:37.928 npm warn   zod@"^4.3.6" from the root project
+03:00:37.928 npm warn   18 more (@ai-sdk/gateway, @ai-sdk/google, ...)
+03:00:37.928 npm warn
+03:00:37.928 npm warn Could not resolve dependency:
+03:00:37.928 npm warn peer zod@"^3.23.8" from @ai-sdk/provider-utils@2.2.8
+03:00:37.928 npm warn node_modules/@mastra/core/node_modules/@ai-sdk/ui-utils-v5/node_modules/@ai-sdk/provider-utils
+03:00:37.929 npm warn   @ai-sdk/provider-utils@"2.2.8" from @ai-sdk/ui-utils-v5@1.2.11
+03:00:37.929 npm warn   node_modules/@mastra/core/node_modules/@ai-sdk/ui-utils-v5
+03:00:37.929 npm warn
+03:00:37.929 npm warn Conflicting peer dependency: zod@3.25.76
+03:00:37.929 npm warn node_modules/zod
+03:00:37.929 npm warn   peer zod@"^3.23.8" from @ai-sdk/provider-utils@2.2.8
+03:00:37.929 npm warn   node_modules/@mastra/core/node_modules/@ai-sdk/ui-utils-v5/node_modules/@ai-sdk/provider-utils
+03:00:37.929 npm warn     @ai-sdk/provider-utils@"2.2.8" from @ai-sdk/ui-utils-v5@1.2.11
+03:00:37.929 npm warn     node_modules/@mastra/core/node_modules/@ai-sdk/ui-utils-v5
+03:00:48.444 
+03:00:48.445 added 30 packages, removed 47 packages, and changed 44 packages in 13s
+03:00:48.445 
+03:00:48.446 433 packages are looking for funding
+03:00:48.446   run `npm fund` for details
+03:00:48.489 Detected Next.js version: 16.2.4
+03:00:48.509 Running "npm run build"
+03:00:48.618 
+03:00:48.618 > ai-studio-applet@0.1.0 build
+03:00:48.619 > next build
+03:00:48.619 
+03:00:49.640   Applying modifyConfig from Vercel
+03:00:49.663 ▲ Next.js 16.2.4 (Turbopack)
+03:00:49.664 - Experiments (use with caution):
+03:00:49.664   · optimizePackageImports
+03:00:49.665 
+03:00:49.734   Creating an optimized production build ...
+03:01:47.233 ✓ Compiled successfully in 57s
+03:01:47.241   Running TypeScript ...
+03:02:01.626 Maximum call stack size exceeded
+03:02:01.714 Next.js build worker exited with code: 1 and signal: null
+03:02:01.812 Error: Command "npm run build" exited with 1
