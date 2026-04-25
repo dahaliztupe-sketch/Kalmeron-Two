@@ -15,6 +15,14 @@ export default defineConfig({
       ['**/*.dom.test.{ts,tsx}', 'jsdom'],
     ],
     globals: true,
-    exclude: ['node_modules', 'dist', '.next', 'e2e/**', 'test/e2e/**', '**/*.spec.ts'],
+    exclude: [
+      'node_modules',
+      'dist',
+      '.next',
+      '.cache/**',
+      'e2e/**',
+      'test/e2e/**',
+      '**/*.spec.ts',
+    ],
   } as any,
 });

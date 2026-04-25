@@ -5,7 +5,7 @@ stack = "GAMESTACK_JS"
 
 [nix]
 channel = "stable-25_05"
-packages = ["glibcLocales", "openssl"]
+packages = ["glibcLocales", "libxcrypt", "openssl"]
 
 [workflows]
 runButton = "Project"
@@ -130,6 +130,10 @@ externalPort = 3001
 [[ports]]
 localPort = 8000
 externalPort = 8000
+
+[[ports]]
+localPort = 8008
+externalPort = 8008
 
 [[ports]]
 localPort = 8080

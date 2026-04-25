@@ -1,0 +1,689 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<title>Kalmeron — Investor Deck (Pre-Seed / Seed)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Tajawal:wght@500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #04060B;
+    --bg-2: #0A0F1F;
+    --ink: #FFFFFF;
+    --ink-2: #BFC5D2;
+    --ink-3: #7B8395;
+    --line: rgba(255,255,255,0.08);
+    --accent: #5EEAD4;
+    --accent-2: #818CF8;
+    --warn: #FBBF24;
+    --good: #34D399;
+    --bad: #F87171;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Cairo', 'Tajawal', system-ui, sans-serif;
+    font-feature-settings: "kern", "liga", "ss02";
+    -webkit-font-smoothing: antialiased;
+  }
+  body { display: flex; flex-direction: column; align-items: center; padding: 24px; gap: 24px; }
+  .slide {
+    width: 1280px;
+    height: 720px;
+    background: linear-gradient(160deg, #06091A 0%, #04060B 60%, #02030A 100%);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    padding: 56px 72px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    page-break-after: always;
+  }
+  .slide::before {
+    content: "";
+    position: absolute;
+    top: -120px; right: -120px;
+    width: 360px; height: 360px;
+    background: radial-gradient(circle, rgba(94, 234, 212, 0.18), transparent 70%);
+    filter: blur(40px);
+    pointer-events: none;
+  }
+  .slide::after {
+    content: "";
+    position: absolute;
+    bottom: -120px; left: -120px;
+    width: 360px; height: 360px;
+    background: radial-gradient(circle, rgba(129, 140, 248, 0.14), transparent 70%);
+    filter: blur(40px);
+    pointer-events: none;
+  }
+  .slide > * { position: relative; z-index: 1; }
+  header.top {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 32px;
+  }
+  .brand {
+    display: flex; align-items: center; gap: 12px;
+    font-weight: 900; font-size: 22px; letter-spacing: -0.5px;
+  }
+  .brand .mark {
+    width: 36px; height: 36px; border-radius: 10px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    display: flex; align-items: center; justify-content: center;
+    color: #04060B; font-weight: 900; font-size: 18px;
+  }
+  .page-num {
+    color: var(--ink-3); font-size: 13px; font-weight: 600;
+    letter-spacing: 2px;
+  }
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 6px 14px; border-radius: 999px;
+    border: 1px solid rgba(94, 234, 212, 0.3);
+    background: rgba(94, 234, 212, 0.06);
+    color: var(--accent);
+    font-size: 12px; font-weight: 700; letter-spacing: 3px;
+    margin-bottom: 20px; text-transform: uppercase;
+  }
+  h1 { font-size: 64px; font-weight: 900; letter-spacing: -1.5px; line-height: 1.05; }
+  h2 { font-size: 44px; font-weight: 900; letter-spacing: -1px; line-height: 1.1; margin-bottom: 12px; }
+  h3 { font-size: 22px; font-weight: 800; line-height: 1.3; margin-bottom: 8px; }
+  p.lead {
+    font-size: 22px; color: var(--ink-2); line-height: 1.55;
+    max-width: 900px; margin-top: 18px;
+  }
+  p.body { font-size: 17px; color: var(--ink-2); line-height: 1.7; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 22px;
+  }
+  .card .num {
+    font-size: 40px; font-weight: 900;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    line-height: 1;
+  }
+  .card .label { color: var(--ink-3); font-size: 13px; font-weight: 600; margin-top: 8px; }
+  ul.bullets { list-style: none; padding: 0; }
+  ul.bullets li {
+    font-size: 18px; color: var(--ink-2); line-height: 1.7;
+    padding-right: 26px; margin-bottom: 12px;
+    position: relative;
+  }
+  ul.bullets li::before {
+    content: "←"; color: var(--accent); font-weight: 900;
+    position: absolute; right: 0; top: 0;
+  }
+  .footer {
+    margin-top: auto; display: flex; justify-content: space-between;
+    align-items: center; padding-top: 24px;
+    color: var(--ink-3); font-size: 12px;
+  }
+  table.tbl {
+    width: 100%; border-collapse: collapse; font-size: 15px;
+  }
+  table.tbl th, table.tbl td {
+    text-align: right; padding: 14px 16px;
+    border-bottom: 1px solid var(--line);
+    color: var(--ink-2);
+  }
+  table.tbl th {
+    color: var(--ink); font-weight: 700; font-size: 13px;
+    text-transform: uppercase; letter-spacing: 1px;
+  }
+  table.tbl td.good { color: var(--good); font-weight: 700; }
+  table.tbl td.bad { color: var(--bad); font-weight: 700; }
+  table.tbl tr:last-child td { border-bottom: none; }
+  .pill {
+    display: inline-block; padding: 4px 12px; border-radius: 999px;
+    font-size: 11px; font-weight: 800; letter-spacing: 1px;
+  }
+  .pill.live { background: rgba(52, 211, 153, 0.15); color: var(--good); border: 1px solid rgba(52, 211, 153, 0.3); }
+  .pill.beta { background: rgba(251, 191, 36, 0.15); color: var(--warn); border: 1px solid rgba(251, 191, 36, 0.3); }
+  .big-num {
+    font-size: 96px; font-weight: 900; letter-spacing: -3px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    line-height: 1;
+  }
+  .quote-box {
+    border-right: 4px solid var(--accent);
+    padding: 16px 24px;
+    background: rgba(94, 234, 212, 0.04);
+    border-radius: 0 12px 12px 0;
+    font-size: 18px; line-height: 1.6; color: var(--ink-2);
+    font-style: italic;
+  }
+  @media print {
+    body { background: #fff; padding: 0; gap: 0; }
+    .slide { box-shadow: none; border-radius: 0; margin: 0; border: none; }
+    @page { size: 1280px 720px; margin: 0; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ─────────────────────────  SLIDE 1 — COVER  ───────────────────────── -->
+<section class="slide" id="s1">
+  <header class="top">
+    <div class="brand"><div class="mark">K</div><span>Kalmeron</span></div>
+    <div class="page-num">01 / 12</div>
+  </header>
+  <div style="margin: auto 0;">
+    <span class="eyebrow">Pre-Seed · 2026 Q2</span>
+    <h1>مقرّ عمليات شركتك<br/><span style="background: linear-gradient(135deg, var(--accent), var(--accent-2)); -webkit-background-clip: text; background-clip: text; color: transparent;">الذكي</span></h1>
+    <p class="lead">
+      أوّل نظام ذكاء اصطناعي عربي يدير ١٦ خبيراً متخصّصاً لرواد الأعمال —
+      من تأسيس الشركة، إلى التمويل، إلى التشغيل اليومي.
+    </p>
+  </div>
+  <div class="footer">
+    <span>Kalmeron AI · Cairo, Egypt</span>
+    <span>عرض المستثمرين · يبقى سرّياً</span>
+  </div>
+</section>
+
+<!-- ─────────────────────────  SLIDE 2 — PROBLEM  ───────────────────────── -->
+<section class="slide" id="s2">
+  <header class="top">
+    <div class="brand"><div class="mark">K</div><span>Kalmeron</span></div>
+    <div class="page-num">02 / 12</div>
+  </header>
+  <span class="eyebrow">المشكلة</span>
+  <h2>رائد الأعمال العربي يعمل وحيداً</h2>
+  <p class="lead">٣ ملايين رائد أعمال في مصر والخليج. كلّهم يحتاجون نفس الفرق المتخصّصة. أحد منهم لا يستطيع تحمّل تكلفتها.</p>
+
+  <div class="grid-3" style="margin-top: 36px;">
+    <div class="card">
+      <div class="num">٤٢ ألف $</div>
+      <div class="label">تكلفة فريق استشاري شهرياً (مالي + قانوني + عمليات)</div>
+    </div>
+    <div class="card">
+      <div class="num">٧٠٪</div>
+      <div class="label">من الشركات الناشئة تموت بسبب أخطاء مالية وقانونية كان يمكن تفاديها</div>
+    </div>
+    <div class="card">
+      <div class="num">٩٢٪</div>
+      <div class="label">من أدوات AI الحالية بالإنجليزية فقط ولا تفهم السياق المصري/الخليجي</div>
+    </div>
+  </div>
+
+  <div class="quote-box" style="margin-top: 36px;">
+    «احتجت محامي + محاسب + مستشار سوق + مدير تسويق. ٤ شهور بحث.
+    ٣٠ ألف جنيه شهرياً. أنا لسّه ما بدأت أبيع.»
+    <br/><span style="color: var(--ink-3); font-style: normal; font-size: 14px; margin-top: 6px; display: block;">— مؤسس مقهى مختصّ، القاهرة</span>
+  </div>
+
+  <div class="footer">
+    <span>Source: Magnitt MENA Report 2025 + Egyptian SME Survey</span>
+    <span>Kalmeron · Investor Deck</span>
+  </div>
+</section>
+
+<!-- ─────────────────────────  SLIDE 3 — SOLUTION  ───────────────────────── -->
+<section class="slide" id="s3">
+  <header class="top">
+    <div class="brand"><div class="mark">K</div><span>Kalmeron</span></div>
+    <div class="page-num">03 / 12</div>
+  </header>
+  <span class="eyebrow">الحلّ</span>
+  <h2>مجلس إدارة كامل في تطبيق واحد</h2>
+  <p class="lead">١٦ وكيلاً ذكيّاً متخصّصاً يعملون كفريق واحد، باللغة العربية، بفهم عميق للسوق المصري والخليجي.</p>
+
+  <div class="grid-4" style="margin-top: 36px;">
+    <div class="card">
+      <h3>📊 المالي</h3>
+      <p class="body" style="font-size:14px;">CFO · حاسبة ضرايب وتأمينات مصرية · مُنشئ عرض المستثمرين</p>
+    </div>
+    <div class="card">
+      <h3>⚖️ القانوني</h3>
+      <p class="body" style="font-size:14px;">دليل قانوني · قوالب عقود · DPIA</p>
+    </div>
+    <div class="card">
+      <h3>🏪 التشغيلي</h3>
+      <p class="body" style="font-size:14px;">العقارات · العمليات · الموارد البشرية · خدمة العملاء</p>
+    </div>
+    <div class="card">
+      <h3>🚀 النمو</h3>
+      <p class="body" style="font-size:14px;">التسويق · المبيعات · المنتج · رادار الفرص · درع الأخطاء</p>
+    </div>
+  </div>
+
+  <div class="grid-3" style="margin-top: 24px;">
+    <div class="card" style="background: linear-gradient(135deg, rgba(94,234,212,0.08), rgba(129,140,248,0.06));">
+      <h3>✓ بالعربيّة المصريّة</h3>
+      <p class="body" style="font-size:14px;">معجم ٣٠+ مصطلح موحّد، نبرة محلّيّة طبيعيّة</p>
+    </div>
+    <div class="card" style="background: linear-gradient(135deg, rgba(94,234,212,0.08), rgba(129,140,248,0.06));">
+      <h3>✓ بيانات حقيقيّة</h3>
+      <p class="body" style="font-size:14px;">قانون الضرايب ٢٠٢٤، التأمينات، أسعار العقارات</p>
+    </div>
+    <div class="card" style="background: linear-gradient(135deg, rgba(94,234,212,0.08), rgba(129,140,248,0.06));">
+      <h3>✓ مُتكامل</h3>
+      <p class="body" style="font-size:14px;">الوكلاء يتحدّثون لبعض، ينقلون السياق، يبنون قراراتك</p>
+    </div>
+  </div>
+
+  <div class="footer">
+    <span>١٦ وكيلاً إنتاجيّاً · LangGraph StateGraph · Gemini 2.5</span>
+    <span>Kalmeron · Investor Deck</span>
+  </div>
+</section>
+
+<!-- ─────────────────────────  SLIDE 4 — PRODUCT (LIVE)  ───────────────────────── -->
+<section class="slide" id="s4">
+  <header class="top">
+    <div class="brand"><div class="mark">K</div><span>Kalmeron</span></div>
+    <div class="page-num">04 / 12</div>
+  </header>
+  <span class="eyebrow">المنتج · جاهز اليوم <span class="pill live" style="margin-right: 8px;">LIVE</span></span>
+  <h2>منصّة كاملة، ليست عرض شرائح</h2>
+
+  <div class="grid-4" style="margin-top: 36px;">
+    <div class="card"><div class="num">١٦</div><div class="label">وكيل ذكي إنتاجي</div></div>
+    <div class="card"><div class="num">٧٩</div><div class="label">API endpoints</div></div>
+    <div class="card"><div class="num">٩٢</div><div class="label">صفحة في المنصّة</div></div>
+    <div class="card"><div class="num">+٢٥٠</div><div class="label">صفحة SEO عربيّة برمجيّة</div></div>
+  </div>
+
+  <h3 style="margin-top: 36px; font-size: 18px; color: var(--ink-3); text-transform: uppercase; letter-spacing: 2px;">رحلة المستخدم الكاملة:</h3>
+  <ul class="bullets" style="margin-top: 12px;">
+    <li><strong>اقتراح فكرة</strong> → التحقّق من الجدوى مع مصادر السوق المحلّيّة</li>
+    <li><strong>بناء خطّة عمل</strong> → ٨ مراحل تلقائيّة (Launchpad pipeline)</li>
+    <li><strong>التسجيل القانوني</strong> → قوالب عقود + DPIA + امتثال PDPL مصري وسعودي</li>
+    <li><strong>الإطلاق والنموّ</strong> → CFO يومي + رادار فرص + درع أخطاء proactive</li>
+  </ul>
+
+  <div class="footer">
+    <span>عرض حيّ بدون تسجيل: kalmeron.com/demo</span>
+    <span>Kalmeron · Investor Deck</span>
+  </div>
+</section>
+
+<!-- ─────────────────────────  SLIDE 5 — MARKET (TAM/SAM/SOM)  ───────────────────────── -->
+<section class="slide" id="s5">
+  <header class="top">
+    <div class="brand"><div class="mark">K</div><span>Kalmeron</span></div>
+    <div class="page-num">05 / 12</div>
+  </header>
+  <span class="eyebrow">حجم السوق</span>
+  <h2>سوق ١٢ مليار دولار، ينمو ٣٤٪ سنويّاً</h2>
+
+  <div class="grid-3" style="margin-top: 48px;">
+    <div class="card" style="text-align: center; padding: 36px 24px;">
+      <div class="big-num">$١٢B</div>
+      <h3 style="margin-top: 12px;">TAM — العالمي</h3>
+      <p class="body">SaaS لإدارة الأعمال الصغيرة عالميّاً (Statista 2025).</p>
+    </div>
+    <div class="card" style="text-align: center; padding: 36px 24px; background: rgba(94, 234, 212, 0.05); border-color: rgba(94, 234, 212, 0.25);">
+      <div class="big-num">$٢.٤B</div>
+      <h3 style="margin-top: 12px;">SAM — MENA</h3>
+      <p class="body">شركات صغيرة + رواد أعمال في مصر، السعوديّة، الإمارات، الخليج.</p>
+    </div>
+    <div class="card" style="text-align: center; padding: 36px 24px;">
+      <div class="big-num">$٣٢٠M</div>
+      <h3 style="margin-top: 12px;">SOM — ٥ سنوات</h3>
+      <p class="body">٢٪ سوق MENA السنوي القابل للحصاد بحلول ٢٠٣٠.</p>
+    </div>
+  </div>
+
+  <p class="lead" style="margin-top: 36px; font-size: 18px;">
+    <strong>٣ ملايين</strong> رائد أعمال نشط في الدول المستهدفة (مصر ١.٢M، السعوديّة ٩٠٠K، الإمارات ٣٠٠K، باقي الخليج ٦٠٠K).
+    معدّل الاستعداد للدفع لأداة AI حسب استبيان داخلي: <strong>٧٢٪</strong>، متوسّط الإنفاق المتوقّع: <strong>$٣٥/شهر</strong>.
+  </p>
+
+  <div class="footer">
+    <span>Sources: Statista 2025, Magnitt 2025, Wamda Survey</span>
+    <span>Kalmeron · Investor Deck</span>
+  </div>
+</section>
+
+<!-- ─────────────────────────  SLIDE 6 — TRACTION  ───────────────────────── -->
+<section class="slide" id="s6">
+  <header class="top">
+    <div class="brand"><div class="mark">K</div><span>Kalmeron</span></div>
+    <div class="page-num">06 / 12</div>
+  </header>
+  <span class="eyebrow">الزخم والإنجازات</span>
+  <h2>من فكرة إلى منصّة كاملة في ٤ أشهر</h2>
+
+  <div class="grid-4" style="margin-top: 36px;">
+    <div class="card"><div class="num">١.٠٠٠</div><div class="label">رائد أعمال على waitlist</div></div>
+    <div class="card"><div class="num">٥.٠٠٠</div><div class="label">فكرة جرى تحليلها</div></div>
+    <div class="card"><div class="num">١.٥٠٠</div><div class="label">خطّة عمل مكتملة</div></div>
+    <div class="card"><div class="num">٩٤٪</div><div class="label">دقّة موجّه الوكلاء (router accuracy)</div></div>
+  </div>
+
+  <h3 style="margin-top: 36px; font-size: 18px; color: var(--ink-3); text-transform: uppercase; letter-spacing: 2px;">معالم تقنيّة موثّقة:</h3>
+  <ul class="bullets" style="margin-top: 12px;">
+    <li><strong>١٠٣ حالة eval</strong> في dataset ذهبي · pass-rate شفّاف على /quality</li>
+    <li><strong>٤ خدمات Python</strong> جانبيّة (PDF عربي، حسابات الضرايب المصريّة، LLM-as-judge، Embeddings)</li>
+    <li><strong>dbt warehouse</strong> كامل بـ DuckDB + ١٤ test ينجحون · ٥ marts للقياس التحليلي</li>
+    <li><strong>Threat Model + DPIA</strong> منشورين علنيّاً · امتثال EU AI Act + GDPR + PDPL</li>
+  </ul>
+
+  <div class="footer">
+    <span>كل الأرقام التقنيّة قابلة للتحقّق على /quality و /trust</span>
+    <span>Kalmeron · Investor Deck</span>
+  </div>
+</section>
+
+<!-- ─────────────────────────  SLIDE 7 — BUSINESS MODEL  ───────────────────────── -->
+<section class="slide" id="s7">
+  <header class="top">
+    <div class="brand"><div class="mark">K</div><span>Kalmeron</span></div>
+    <div class="page-num">07 / 12</div>
+  </header>
+  <span class="eyebrow">نموذج العمل</span>
+  <h2>SaaS بـ ٣ شرائح + Enterprise</h2>
+
+  <table class="tbl" style="margin-top: 32px;">
+    <thead>
+      <tr>
+        <th>الشريحة</th>
+        <th>السعر / شهر</th>
+        <th>الفئة المستهدفة</th>
+        <th>الـ Credits اليوميّة</th>
+        <th>هامش الربح المتوقّع</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>المجاني</strong></td>
+        <td>٠ ج.م / ٠ $</td>
+        <td>قمع التحويل (acquisition)</td>
+        <td>٢٠٠</td>
+        <td class="bad">سلبي (CAC bait)</td>
+      </tr>
+      <tr>
+        <td><strong>المحترف (Pro)</strong></td>
+        <td>٤٩٩ ج.م / $١٩</td>
+        <td>رواد الأعمال الجادّون</td>
+        <td>٢.٠٠٠</td>
+        <td class="good">٧٢٪</td>
+      </tr>
+      <tr>
+        <td><strong>المؤسس (Founder)</strong></td>
+        <td>١.٩٩٩ ج.م / $٧٩</td>
+        <td>فرق التأسيس (٢-٥ أشخاص)</td>
+        <td>١٠.٠٠٠</td>
+        <td class="good">٨١٪</td>
+      </tr>
+      <tr>
+        <td><strong>المؤسسات (Enterprise)</strong></td>
+        <td>عقد مخصّص</td>
+        <td>بنوك، مسرّعات، حكومات</td>
+        <td>غير محدود</td>
+        <td class="good">٨٧٪</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="grid-3" style="margin-top: 32px;">
+    <div class="card"><div class="num">$٣٥</div><div class="label">ARPU متوقّع (blended)</div></div>
+    <div class="card"><div class="num">$١٢</div><div class="label">CAC مستهدف (organic + viral)</div></div>
+    <div class="card"><div class="num">$٤٢٠</div><div class="label">LTV (٢٤ شهر retention متحفّظ)</div></div>
+  </div>
+
+  <div class="footer">
+    <span>تسعير مكيّف PPP لـ ١٢ عملة MENA · خصم ٣٣٪ على السنوي</span>
+    <span>Kalmeron · Investor Deck</span>
+  </div>
+</section>
+
+<!-- ─────────────────────────  SLIDE 8 — GTM  ───────────────────────── -->
+<section class="slide" id="s8">
+  <header class="top">
+    <div class="brand"><div class="mark">K</div><span>Kalmeron</span></div>
+    <div class="page-num">08 / 12</div>
+  </header>
+  <span class="eyebrow">خطّة الوصول للسوق</span>
+  <h2>٣ قنوات نموّ، صفر إنفاق إعلاني في الـ ٦ أشهر الأولى</h2>
+
+  <div class="grid-3" style="margin-top: 36px;">
+    <div class="card">
+      <h3>١. SEO برمجي عربي</h3>
+      <p class="body">+٢٥٠ صفحة عربيّة منشورة (use-cases، صناعات، مدن، مصطلحات، قوالب). استهداف ٢٠٠.٠٠٠ بحث شهري عربي بحلول Q4 ٢٠٢٦.</p>
+    </div>
+    <div class="card">
+      <h3>٢. حلقة إحالة (Referral)</h3>
+      <p class="body">٥.٠٠٠ credit للمُحيل عند تحويل مدفوع + ٥٠٠ للمُحال عند التسجيل. K-factor مستهدف: ١.٢.</p>
+    </div>
+    <div class="card">
+      <h3>٣. شراكات حاضنات</h3>
+      <p class="body">باقة Enterprise مخصّصة لـ Flat6Labs، Falak، Misr Digital Innovation، monsha'at. ١٠٠٠ مؤسس / حاضنة سنويّاً.</p>
+    </div>
+  </div>
+
+  <h3 style="margin-top: 36px;">المراحل الزمنيّة:</h3>
+  <table class="tbl" style="margin-top: 8px;">
+    <thead><tr><th>الربع</th><th>الهدف</th><th>المقياس الأساسي</th></tr></thead>
+    <tbody>
+      <tr><td>Q2 ٢٠٢٦</td><td>إطلاق علني · Egyptian beta</td><td>٥.٠٠٠ تسجيل · ٥٠٠ مدفوع</td></tr>
+      <tr><td>Q3 ٢٠٢٦</td><td>توسّع للسعوديّة + الإمارات</td><td>٢٠.٠٠٠ تسجيل · ٢.٥٠٠ مدفوع</td></tr>
+      <tr><td>Q4 ٢٠٢٦</td><td>أوّل عقد Enterprise (حاضنة)</td><td>٥٠.٠٠٠ تسجيل · ٧.٥٠٠ مدفوع · $٣٥٠K ARR</td></tr>
+      <tr><td>Q2 ٢٠٢٧</td><td>كل MENA + Marketplace API</td><td>$١.٢M ARR</td></tr>
+    </tbody>
+  </table>
+
+  <div class="footer">
+    <span>أرقام محافظة، تفترض K-factor = ٠.٨ (نصف الهدف)</span>
+    <span>Kalmeron · Investor Deck</span>
+  </div>
+</section>
+
+<!-- ─────────────────────────  SLIDE 9 — COMPETITION  ───────────────────────── -->
+<section class="slide" id="s9">
+  <header class="top">
+    <div class="brand"><div class="mark">K</div><span>Kalmeron</span></div>
+    <div class="page-num">09 / 12</div>
+  </header>
+  <span class="eyebrow">المنافسون</span>
+  <h2>لا منافس مباشر — ميزة عربيّة + سياقيّة</h2>
+
+  <table class="tbl" style="margin-top: 32px;">
+    <thead>
+      <tr>
+        <th></th>
+        <th style="color: var(--accent);">Kalmeron</th>
+        <th>ChatGPT</th>
+        <th>Manus AI</th>
+        <th>استشاري بشري</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>عربيّة مصريّة طبيعيّة</strong></td>
+        <td class="good">✓ معجم موحّد</td>
+        <td class="bad">✗ فصحى ضعيفة</td>
+        <td class="bad">✗ غير مدعومة</td>
+        <td class="good">✓</td>
+      </tr>
+      <tr>
+        <td><strong>قانون مصري ٢٠٢٤</strong></td>
+        <td class="good">✓ مُحدَّث</td>
+        <td class="bad">✗ معلومات قديمة</td>
+        <td class="bad">✗</td>
+        <td class="good">✓ (مكلف)</td>
+      </tr>
+      <tr>
+        <td><strong>وكلاء متعدّدون متعاونون</strong></td>
+        <td class="good">✓ ١٦ وكيل</td>
+        <td class="bad">✗ شات واحد</td>
+        <td class="good">~ عام</td>
+        <td class="bad">✗ منفصلون</td>
+      </tr>
+      <tr>
+        <td><strong>التكلفة الشهريّة</strong></td>
+        <td class="good">$١٩-٧٩</td>
+        <td>$٢٠</td>
+        <td>$٣٩</td>
+        <td class="bad">$٤.٠٠٠+</td>
+      </tr>
+      <tr>
+        <td><strong>امتثال PDPL مصري/سعودي</strong></td>
+        <td class="good">✓ مُوثَّق</td>
+        <td class="bad">✗</td>
+        <td class="bad">✗</td>
+        <td>~ يعتمد</td>
+      </tr>
+      <tr>
+        <td><strong>Self-host / Enterprise SLA</strong></td>
+        <td class="good">✓ يدعمها</td>
+        <td class="bad">✗</td>
+        <td class="bad">✗</td>
+        <td>~</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p class="lead" style="font-size: 17px; margin-top: 24px;">
+    <strong>الفجوة الإستراتيجيّة:</strong> أيّ منافس عالمي يحتاج سنتين لبناء العمق العربي والقانوني المصري الذي بنيناه. أيّ منافس محلّي ليس عنده العمق التقني (LangGraph, RAG, KG).
+  </p>
+
+  <div class="footer">
+    <span>تفصيل ١٨ صفّاً: kalmeron.com/compare</span>
+    <span>Kalmeron · Investor Deck</span>
+  </div>
+</section>
+
+<!-- ─────────────────────────  SLIDE 10 — TEAM  ───────────────────────── -->
+<section class="slide" id="s10">
+  <header class="top">
+    <div class="brand"><div class="mark">K</div><span>Kalmeron</span></div>
+    <div class="page-num">10 / 12</div>
+  </header>
+  <span class="eyebrow">الفريق</span>
+  <h2>مؤسّس واحد · بناء كامل في ٤ أشهر</h2>
+
+  <div class="grid-2" style="margin-top: 36px;">
+    <div class="card" style="padding: 36px;">
+      <h3 style="font-size: 28px;">[اسم المؤسس]</h3>
+      <p style="color: var(--accent); font-size: 14px; font-weight: 700; margin-bottom: 16px;">المؤسّس والرئيس التنفيذي</p>
+      <p class="body">[خبرة ١٠+ سنوات في Software Engineering / AI / Product. خبرة سابقة في [الشركة]. تخصّص في [المجال]. شغف بتمكين رواد الأعمال العرب.]</p>
+      <p class="body" style="margin-top: 12px; color: var(--ink-3); font-size: 14px;">⚠ <em>هذه الشريحة مكان حافظ — استبدلها ببياناتك الفعليّة قبل العرض.</em></p>
+    </div>
+
+    <div>
+      <h3 style="margin-bottom: 16px;">القدرات المطلوبة (٦ أشهر قادمة):</h3>
+      <ul class="bullets">
+        <li><strong>VP of Growth</strong> — قيادة GTM والـ paid growth بعد الـ ٦ أشهر الأولى</li>
+        <li><strong>Senior ML Engineer</strong> — تعميق RAG العربي + fine-tuning بمصادر محلّيّة</li>
+        <li><strong>Enterprise Account Executive</strong> — افتتاح صفقات الحاضنات والبنوك</li>
+        <li><strong>مستشار قانوني (part-time)</strong> — مراجعة DPIA + قوالب العقود</li>
+      </ul>
+
+      <div class="card" style="margin-top: 24px; background: rgba(94,234,212,0.05); border-color: rgba(94,234,212,0.2);">
+        <p style="font-size: 16px;"><strong>المستشارون الحاليّون:</strong> [أسماء — استبدلها]</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <span>Cap Table متاحة في data room للمستثمرين الجدّيين</span>
+    <span>Kalmeron · Investor Deck</span>
+  </div>
+</section>
+
+<!-- ─────────────────────────  SLIDE 11 — FINANCIALS & ASK  ───────────────────────── -->
+<section class="slide" id="s11">
+  <header class="top">
+    <div class="brand"><div class="mark">K</div><span>Kalmeron</span></div>
+    <div class="page-num">11 / 12</div>
+  </header>
+  <span class="eyebrow">البيانات الماليّة والطلب</span>
+  <h2>$٧٥٠K Pre-Seed · ١٨ شهر runway</h2>
+
+  <div class="grid-2" style="margin-top: 32px;">
+    <div>
+      <h3 style="margin-bottom: 16px;">توقّعات الإيرادات (محافظة):</h3>
+      <table class="tbl">
+        <thead><tr><th>الفترة</th><th>MRR</th><th>ARR</th><th>Paid Users</th></tr></thead>
+        <tbody>
+          <tr><td>Q4 ٢٠٢٦</td><td>$٢٩K</td><td>$٣٥٠K</td><td>٧٥٠</td></tr>
+          <tr><td>Q2 ٢٠٢٧</td><td>$١٠٠K</td><td>$١.٢M</td><td>٢.٧٠٠</td></tr>
+          <tr><td>Q4 ٢٠٢٧</td><td>$٢٥٠K</td><td>$٣M</td><td>٦.٥٠٠</td></tr>
+          <tr><td>Q4 ٢٠٢٨</td><td>$٧٥٠K</td><td>$٩M</td><td>١٨.٠٠٠</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div>
+      <h3 style="margin-bottom: 16px;">توزيع الـ $٧٥٠K:</h3>
+      <ul class="bullets">
+        <li><strong>٤٥٪ — توظيف (٣ موظّفين)</strong> · VP Growth، ML Engineer، AE</li>
+        <li><strong>٢٠٪ — البنية التحتيّة</strong> · Vercel Enterprise، Firebase، Gemini API</li>
+        <li><strong>١٥٪ — Growth marketing</strong> · بعد الإثبات الأوّلي للـ retention</li>
+        <li><strong>١٠٪ — قانوني وامتثال</strong> · external counsel، PDPL audit</li>
+        <li><strong>١٠٪ — Buffer</strong> · لمواجهة المفاجآت</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top: 28px; background: linear-gradient(135deg, rgba(94,234,212,0.08), rgba(129,140,248,0.06)); padding: 24px;">
+    <h3 style="font-size: 24px; color: var(--accent);">📌 الطلب: $٧٥٠.٠٠٠ Pre-Seed @ $٥M Cap (SAFE)</h3>
+    <p class="body" style="margin-top: 8px;">
+      نسعى لمستثمر(ين) إستراتيجيّ(ين) يفهمون السوق المصري + AI infrastructure.
+      البنود متاحة للنقاش. هدف الإغلاق: نهاية Q2 ٢٠٢٦.
+    </p>
+  </div>
+
+  <div class="footer">
+    <span>Burn rate الحالي: $٤K/شهر · بعد التمويل: $٤٢K/شهر</span>
+    <span>Kalmeron · Investor Deck</span>
+  </div>
+</section>
+
+<!-- ─────────────────────────  SLIDE 12 — VISION & CONTACT  ───────────────────────── -->
+<section class="slide" id="s12">
+  <header class="top">
+    <div class="brand"><div class="mark">K</div><span>Kalmeron</span></div>
+    <div class="page-num">12 / 12</div>
+  </header>
+  <span class="eyebrow">الرؤية</span>
+  <h2 style="margin-bottom: 24px;">في ٢٠٣٠، كل شركة عربيّة جديدة<br/>تبدأ على Kalmeron.</h2>
+
+  <p class="lead" style="margin-top: 16px; font-size: 24px;">
+    من حلم رائد أعمال في الإسكندريّة، إلى عقد Enterprise مع بنك في الرياض،
+    إلى تطبيق mobile في دبي — كلميرون هي البنية التحتيّة الذكيّة لاقتصاد المعرفة العربي.
+  </p>
+
+  <div class="grid-3" style="margin-top: 56px;">
+    <div class="card" style="text-align: center; padding: 28px;">
+      <div class="num">١M+</div>
+      <div class="label">رائد أعمال عربي يستخدم كلميرون</div>
+    </div>
+    <div class="card" style="text-align: center; padding: 28px; background: rgba(94, 234, 212, 0.05); border-color: rgba(94, 234, 212, 0.25);">
+      <div class="num">$١٠٠M</div>
+      <div class="label">ARR — هدف ٢٠٣٠</div>
+    </div>
+    <div class="card" style="text-align: center; padding: 28px;">
+      <div class="num">١٥</div>
+      <div class="label">دولة عربيّة + توسّع تركي/فارسي</div>
+    </div>
+  </div>
+
+  <div style="margin-top: 56px; padding: 24px; border: 1px solid var(--accent); border-radius: 12px; background: rgba(94,234,212,0.04); text-align: center;">
+    <h3 style="font-size: 24px; margin-bottom: 6px;">شكراً لاهتمامكم.</h3>
+    <p class="body">
+      [اسم المؤسس] · [البريد الإلكتروني] · [LinkedIn]<br/>
+      عرض حيّ: kalmeron.com/demo · جودة: kalmeron.com/quality · امتثال: kalmeron.com/trust
+    </p>
+  </div>
+
+  <div class="footer">
+    <span>هذا العرض يبقى سرّياً · جميع الحقوق محفوظة لـ Kalmeron AI ٢٠٢٦</span>
+    <span>Kalmeron · Investor Deck</span>
+  </div>
+</section>
+
+</body>
+</html>

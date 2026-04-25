@@ -1,5 +1,22 @@
 # Kalmeron AI (ai-studio-applet)
 
+## Recent Major Updates (Session 2026-04-25 — Investor Readiness Audit + Materials)
+**Why:** المستخدم طلب «تدقيق استعداد المستثمرين الشامل ثم إصلاح كل شيء في جلسة واحدة». نُفِّذ بالكامل ما يقدر عليه الـ agent؛ ما يحتاج تدخّلاً يدويّاً موَثَّق في `<scratchpad>` العمليّات.
+
+- **`docs/INVESTOR_READINESS_AUDIT_2026_04_25.md`** — تقرير تدقيق كامل، score ‎7.6/10، حدّد 4 مشاكل حرجة (مفتاح Firebase مسرَّب في `.replit`، غياب أسرار Stripe/Resend/Sentry، تثبيت Python deps، تجارب vitest فاشلة بشكل زائف).
+- **`vitest.config.ts` — استبعاد `.cache/**`** — كانت 4 ملفّات تجارب «فاشلة» وهميّة من بنى cache قديمة. بعد الإصلاح: 12/12 ملفّ، 54/54 تجربة كلّها تنجح في 7.85 ثانية.
+- **تثبيت Python deps:** `fastapi`, `uvicorn`, `pydantic`, `pypdf`, `python-multipart`, `regex`, `google-generativeai`, `hypothesis`, `pytest`, `pandas`, `plotly`, `jinja2`, `fastembed`, `numpy` — كلّها عبر `installLanguagePackages` بحيث `.pythonlibs/bin/uvicorn` موَحَّد.
+- **الـ 4 sidecars كلّها شغّالة مع HTTP 200 على `/health`:** PDF Worker (8000)، Egypt Calc (8008)، LLM Judge (8080)، Embeddings (8099). Embeddings يحمّل الموديل lazy عند أوّل استدعاء.
+- **Pitch deck للمستثمرين** — `docs/INVESTOR_PITCH_DECK.html` 12 شريحة 16:9، RTL، خطّ Cairo من Google Fonts، تصميم glass + gradient، 4 ألوان نظام تصميم. تحويل لـ PDF: افتح في Chrome → Cmd+P → Save as PDF (1280×720). الشرائح: غلاف، مشكلة، حلّ، منتج، سوق (TAM/SAM/SOM)، زخم، نموذج عمل، GTM، منافسون، فريق، ماليّات + طلب، رؤية + اتّصال. **ملاحظة:** placeholders للاسم/البريد/LinkedIn في شرائح 10 و 12 يجب استبدالها يدويّاً.
+- **`docs/INVESTOR_ONE_PAGER.md`** — ملخّص صفحة واحدة بالعربيّة لإرسال سريع.
+- **محاولة PDF تلقائي بـ Playwright + Chromium:** ثبَّتنا chromium-headless-shell (112 MB) وكلّ system deps (glib, nss, atk, cairo, pango, x11 libs، إلخ) لكن NixOS dynamic linker لا يربط لـ chromium binary بشكل موثوق — تركنا الـ HTML deck كصيغة طباعيّة بدلاً منه (موثوق 100% في أيّ متصفّح).
+- **تحقّق نهائي:** Next.js على :5000 → 200، `/api/social-proof` → 200 (1000/5000/1500 floors لأنّ `isLive: false`)، الـ 4 sidecars كلّها 200.
+- **ما يحتاج تدخّلاً يدويّاً من المستخدم (موثَّق):**
+  1. حذف الـ `[userenv]` + `[userenv.shared]` من `.replit` يدويّاً (الـ agent ممنوع من التعديل) — يحتوي مفتاح Firebase مسرَّب.
+  2. إضافة الأسرار: `GOOGLE_GENERATIVE_AI_API_KEY` (يُعطّل كل AI بدونه)، `STRIPE_SECRET_KEY` + 14× `STRIPE_PRICE_*`, `PLATFORM_ADMIN_UIDS`, `RESEND_API_KEY` + `EMAIL_FROM` + `CRON_SECRET`, `SENTRY_AUTH_TOKEN/ORG/PROJECT`.
+  3. نشر `firestore.indexes.json` المحدَّث: `firebase deploy --only firestore:indexes`.
+  4. ملء placeholders في `INVESTOR_PITCH_DECK.html` (شريحتَي 10 و 12) باسمك وبيانات الاتّصال قبل العرض.
+
 ## Recent Major Updates (Session 2026-04-25 — 3 Python sidecars + dbt/DuckDB warehouse)
 **Why:** الـ codebase كان فيه 100% TypeScript + sidecar واحد للـ PDF. أضفنا 3 خدمات Python جديدة + مستودع تحليلي كامل، كلّها معزولة تحت `services/` ومصمَّمة بحيث الـ Next.js app يعمل بشكل طبيعي حتى لو كانت أيّ خدمة منهم offline (graceful fallback).
 
