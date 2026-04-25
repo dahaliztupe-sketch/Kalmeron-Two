@@ -150,7 +150,7 @@ export default function InboxPage() {
                 </CardHeader>
                 <CardContent className="space-y-3">
                   {it.rationale && (
-                    <p className="text-sm text-neutral-300 italic">"{it.rationale}"</p>
+                    <p className="text-sm text-neutral-300 italic">«{it.rationale}»</p>
                   )}
                   <pre className="bg-black/40 border border-white/5 rounded-lg p-3 text-xs text-neutral-300 overflow-x-auto whitespace-pre-wrap">
                     {JSON.stringify(it.input, null, 2)}

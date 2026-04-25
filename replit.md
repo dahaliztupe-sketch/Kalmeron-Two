@@ -1,5 +1,29 @@
 # Kalmeron AI (ai-studio-applet)
 
+## Recent Major Updates (Session 2026-04-25 — Tooling Repair: typecheck + lint unblocked)
+**Why:** المستخدم طلب جلسة تطوير شاملة بنمط Audit→Implementation→Reflection. التدقيق كشف أنّ `npm run typecheck` و `npm run lint` كلاهما كان مكسوراً تماماً (طوال جلسات سابقة)، وبدونهما لا يمكن تشغيل أيّ ضمانة جودة في CI. أصلحتُ ذلك أوّلاً.
+
+- **`tsconfig.json`** — حذفت `baseUrl` المهجور (TS 7.0 سيُلغيه؛ TS 5.7 لا يقبل قيمة `ignoreDeprecations: "6.0"` لتأجيله). الـ `paths` يستخدم `./*` فيعمل بدون `baseUrl`. النتيجة: `npm run typecheck` نظيف 100%.
+- **`eslint.config.mjs` — إعادة تشغيل لِنت معطّل بالكامل:**
+  - أضفت `ignores` لـ `.local/**`, `.cache/**`, `.next/**`, `node_modules/**`, `services/data-warehouse/**`, `services/**/.venv/**`, `services/**/__pycache__/**`, `public/sw.js`, `**/*.generated.{ts,tsx,js,jsx}`, `.pythonlibs/**`, `attached_assets/**`. كان ESLint يدخل `.local/skills/artifacts/.../src/global.d.ts` ويحطّم الـ run بأكمله.
+  - ثبّتُ `react.version: "19.2.5"` في الـ settings — `eslint-plugin-react` v7 يستدعي `context.getFilename()` (واجهة محذوفة في ESLint 10) أثناء auto-detect، فيسقط الـ run.
+  - خفّضتُ `react-hooks/set-state-in-effect` من error → warn — هذه نمط React Compiler hint (مثل `useEffect(() => fetchData(), [])`)، حقيقي لكنّه يحتاج هجرة منهجيّة لـ TanStack Query / `use()`؛ لا نحجب الـ CI لأجلها (36 موقعاً عبر 17 ملفّاً).
+- **`package.json` — `eslint` 10.2.1 → 9.39.4** عبر `npm install eslint@^9.39.4 --save-dev`. الـ `overrides` field كان موجوداً سلفاً لكن ما تطبّق (لم يُعَد التثبيت). ESLint 10 له API breaking changes (`context.getFilename()`, `scopeManager.addGlobals`) لم يلحقها بعد `eslint-plugin-react` ولا `eslint-plugin-react-hooks` المضمَّنين في `eslint-config-next@16`.
+- **`vitest.config.ts`** — أزلت `as any` على object الـ `test`؛ types `vitest/config` تقبله مباشرةً.
+- **`i18n/request.ts`** — استبدلت `locales.includes(locale as any)` بـ type guard (`isLocale`) يُرجع narrowing سليم (`Locale = 'ar' | 'en'`)، فاختفى الـ cast.
+- **6 أخطاء `react/no-unescaped-entities` صغيرة** — استبدلت `"..."` المباشرة في 3 ملفّات بـ guillemets عربيّة (`«...»`):
+  - `app/affiliate/page.tsx:164` — اسم برنامج «أوّل 100 شركة».
+  - `app/first-100/page.tsx:203` — اسم قائمة «أوّل 500».
+  - `app/inbox/page.tsx:153` — اقتباس rationale من inbox item.
+- **`app/(dashboard)/chat/page.tsx` — TDZ bug حقيقي اكتشفه React Compiler:** `useEffect` على السطر 319 كان يستخدم `sendMessage` (المُعرَّف بـ `const` على السطر 362)، فيُغلق على binding غير مُهيَّأ. قسمتُ الـ effect: الـ `loadConversations()` بقي في مكانه؛ والـ `?q=` auto-send انتقل لـ effect منفصل بعد تعريف `sendMessage`، مع `useRef` (`autoSentRef`) يضمن إرسال مرّة واحدة + cleanup يمسح الـ timeout.
+- **التحقّق النهائي:**
+  - `npm run typecheck` → 0 errors ✅
+  - `npm run lint` → 0 errors، 473 warnings (كلّها `@typescript-eslint/no-explicit-any` تحذيريّة سلفاً، استثناءات صريحة في الـ config على ملفّات Firebase Admin/tests/e2e) ✅
+  - `npm run test` → 12/12 ملفّ، 54/54 تجربة، 7s ✅
+  - الـ smoke-test على `/`, `/chat`, `/affiliate`, `/inbox`, `/first-100` → كلّها 200 ✅
+- **ما لم يُغيَّر عمداً:** أيّ كود منطق business، RTL، Firestore rules، CSP/security headers، API routes، Stripe/Fawry billing، sidecars. الـ codebase كان في حالة ممتازة سلفاً (تتبيث الـ rules محكم، الـ tests كلّها كانت تنجح، الـ docs شاملة) — هذه الجلسة قصرت على إعادة تفعيل أدوات الجودة فقط.
+- **متبقّي للجلسة القادمة (موثَّق هنا للأجيال):** 36 تحذير `set-state-in-effect` في 17 ملفّاً (`app/(dashboard)/...`, `components/...`) تحتاج هجرة تدريجيّة لـ TanStack Query أو `use()` hook لإلغاء النمط `useEffect(fetch+setState, [])` الكلاسيكي. ليست أخطاء، لكن React Compiler يبلغ عنها كانتقال لتجنّب cascading renders.
+
 ## Recent Major Updates (Session 2026-04-25 — Agent-vs-Human Task Split + Egyptian Pricing + Fawry + Sidecar Deployment)
 **Why:** المستخدم طلب: «قسم الـ 30 مهمّة لما تقدر عليه vs ما يحتاجني، نفّذ كل ما تقدر عليه في جلسة واحدة، وضع المتبقّي في PDF». نفّذتُ كل المهام التي لا تحتاج تدخّل يدوي خارجي، وولّدتُ PDF عربي بالمهام البشريّة المتبقّية.
 

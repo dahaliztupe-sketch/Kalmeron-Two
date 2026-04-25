@@ -24,5 +24,5 @@ export default defineConfig({
       'test/e2e/**',
       '**/*.spec.ts',
     ],
-  } as any,
+  },
 });

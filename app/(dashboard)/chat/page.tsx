@@ -318,11 +318,7 @@ function ChatPageContent() {
 
   useEffect(() => {
     loadConversations();
-    const initialQ = searchParams.get("q");
-    if (initialQ) {
-      setTimeout(() => sendMessage(initialQ), 300);
-    }
-  }, [user]);
+  }, [user, loadConversations]);
 
   useEffect(() => {
     if (activeConvId) loadChat(activeConvId);
@@ -502,6 +498,19 @@ function ChatPageContent() {
       onFormSubmit(e as any);
     }
   };
+
+  // Auto-send the `?q=` query once when the user is loaded.
+  // Lives after `sendMessage` is declared so the React Compiler doesn't
+  // flag a TDZ access from the effect closure.
+  const autoSentRef = useRef(false);
+  useEffect(() => {
+    if (!user || autoSentRef.current) return;
+    const initialQ = searchParams.get("q");
+    if (!initialQ) return;
+    autoSentRef.current = true;
+    const t = setTimeout(() => { void sendMessage(initialQ); }, 300);
+    return () => clearTimeout(t);
+  }, [user, searchParams]);
 
   return (
     <AppShell>

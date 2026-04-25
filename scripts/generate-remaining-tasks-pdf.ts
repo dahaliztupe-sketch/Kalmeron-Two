@@ -8,13 +8,13 @@
  *
  * Run:  npx tsx scripts/generate-remaining-tasks-pdf.ts
  */
-// eslint-disable-next-line @typescript-eslint/no-require-imports
+ 
 const PDFDocument = require('pdfkit');
 import { createWriteStream, mkdirSync } from 'node:fs';
 import { join } from 'node:path';
-// eslint-disable-next-line @typescript-eslint/no-require-imports
+ 
 const reshaper = require('arabic-reshaper');
-// eslint-disable-next-line @typescript-eslint/no-require-imports
+ 
 const bidiFactory = require('bidi-js');
 const bidi = bidiFactory();
 

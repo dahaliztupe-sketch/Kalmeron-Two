@@ -200,7 +200,7 @@ export default function First100Page() {
         <div className="flex flex-col sm:flex-row gap-4 items-center justify-center mb-16">
           {closed ? (
             <div className="rounded-full border border-amber-500/30 bg-amber-500/10 px-8 py-4 text-amber-300 font-semibold">
-              نفدت المقاعد المئة — انضم لقائمة "أوّل 500" قريباً
+              نفدت المقاعد المئة — انضم لقائمة «أوّل 500» قريباً
             </div>
           ) : (
             <Link

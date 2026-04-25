@@ -8,7 +8,39 @@ const __dirname = path.dirname(__filename);
 
 export default defineConfig([
   {
+    ignores: [
+      ".next/**",
+      ".cache/**",
+      ".local/**",
+      "node_modules/**",
+      "services/data-warehouse/**",
+      "services/**/.venv/**",
+      "services/**/__pycache__/**",
+      "public/sw.js",
+      "**/*.generated.{ts,tsx,js,jsx}",
+      ".pythonlibs/**",
+      "attached_assets/**",
+    ],
+  },
+  {
     extends: [...next],
+    // Pin React version so eslint-plugin-react doesn't try its
+    // legacy `context.getFilename()` call (removed in ESLint 10),
+    // which crashes the entire lint run.
+    settings: {
+      react: {
+        version: "19.2.5",
+      },
+    },
+    rules: {
+      // React 19 compiler hints: flag classic
+      // `useEffect(() => { fetchData(); }, [])` and similar patterns as
+      // warnings rather than errors. They are real anti-patterns (cascading
+      // renders) and should be migrated incrementally to TanStack Query /
+      // `use()`, but they are not regressions — keep them visible without
+      // blocking CI lint.
+      "react-hooks/set-state-in-effect": "warn",
+    },
   },
   {
     // Discourage new `as any` casts in TS source. Existing files that

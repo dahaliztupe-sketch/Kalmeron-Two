@@ -161,7 +161,7 @@ export default function AffiliatePage() {
           <div className="mt-6 flex items-start gap-3 rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
             <Check className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
             <p className="text-neutral-300 text-sm">
-              برنامج الشركاء مكمّل لـ <Link href="/first-100" className="underline text-cyan-300">برنامج "أوّل 100 شركة"</Link> — يمكنك الترويج لكليهما في حملة واحدة.
+              برنامج الشركاء مكمّل لـ <Link href="/first-100" className="underline text-cyan-300">برنامج «أوّل 100 شركة»</Link> — يمكنك الترويج لكليهما في حملة واحدة.
             </p>
           </div>
         </section>
