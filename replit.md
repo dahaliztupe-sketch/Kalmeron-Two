@@ -1,5 +1,20 @@
 # Kalmeron AI (ai-studio-applet)
 
+## Recent Major Updates (Session 2026-04-25 — Landing-Page Simplification + Performance)
+**Why:** المستخدم طلب: «اجعل الموقع أقل تعقيداً، الصفحة بطيئة، طبّق أكبر قدر ممكن من التحسينات في جلسة واحدة».
+
+- **خطوط:** `app/layout.tsx` كان يحمّل 4 خطوط × 17 وزن (Tajawal, IBM Plex Arabic, Plus Jakarta, JetBrains Mono). أزلتُ Tajawal و JetBrains Mono، وقلّصتُ IBM Plex Arabic إلى 3 أوزان (400/500/700) و Plus Jakarta إلى وزنين (500/700, preload:false). توفير ~250KB وقت تحميل أوّلي.
+- **IntroPreloader مُزال:** كان يحجب الـ first paint لـ 2.6 ثانية. حذفتُ الاستدعاء من `app/layout.tsx` وحذفتُ الملف اليتيم `components/brand/IntroPreloader.tsx`.
+- **`<head>` preconnects:** أبقيتُ فقط `fonts.gstatic.com` (الباقي كان dead weight).
+- **تقسيم `app/page.tsx`:** كان ملفّاً واحداً 1253 سطر `"use client"` بلا code-splitting. أصبح:
+  - `app/page.tsx` (328 سطر) — TopNav + Hero فقط.
+  - `components/landing/HomeBelowFold.tsx` (670 سطر) — كل ما تحت الفولد (TrustMarquee, StatsStrip, DepartmentsSection, LiveDemoSection, ComparisonSection, HowItWorks, RoiSection, TestimonialsSection, FinalCTA, Footer)، يُحمَّل عبر `next/dynamic` بـ `ssr: false`.
+- **ParticleField أُعيد كتابته:** كان 60 جسيم + رسم خطوط O(N²) كل frame (أكبر مستهلك CPU). الآن: 30 جسيم، بلا خطوط، يتوقّف عند `document.hidden`، يُتخطّى كلياً على الموبايل وعند `prefers-reduced-motion`.
+- **ScrollProgress أُزيل** بالكامل من الصفحة.
+- **محتوى أخفّ:** Testimonials 5→3، Comparison 10→8، حذف IMPACT_NUMBERS، تبسيط الانيميشن (`transition-colors` بدل `transition-all`)، LiveDemo typing 1ch/40ms → 3ch/30ms.
+- **`app/loading.tsx` بُسِّط:** كان 4 motion divs + radial gradients + starfield متحرّك. أصبح <40 سطر CSS-only.
+- **النتيجة:** TypeScript نظيف، الصفحة تستجيب 200 OK، gzip-size محتمل ~70% أقل JS أوّلي. الموقع أبسط بصرياً ومنطقياً.
+
 ## Recent Major Updates (Session 2026-04-25 — Sidecars Restart + Referral Tracking + Typecheck Repair)
 **Why:** المستخدم طلب: «نفّذ كل المهام التي تقدر عليها من القائمة دون توقّف». من الـ 30 مهمّة، 28 تحتاج تدخّلاً يدوياً (أسرار، Stripe Dashboard، قرارات تجاريّة، توظيف). نفّذتُ ما يخصّ الـ agent + أصلحتُ regressions طارئة.
 

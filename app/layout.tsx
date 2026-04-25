@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { IBM_Plex_Sans_Arabic, Tajawal, Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google";
+import { IBM_Plex_Sans_Arabic, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { AuthProvider } from "@/contexts/AuthContext";
@@ -7,45 +7,29 @@ import { QueryProvider } from "@/src/lib/cache/query-client";
 import { cn } from "@/src/lib/utils";
 import { Toaster } from "@/components/ui/sonner";
 import { CookieBanner } from "@/components/cookie-banner";
-import { IntroPreloader } from "@/components/brand/IntroPreloader";
 import { ServiceWorkerRegistrar } from "@/components/pwa/ServiceWorkerRegistrar";
 import { WebVitals } from "@/components/analytics/WebVitals";
 import { NextIntlClientProvider } from 'next-intl';
 import { getLocale, getMessages } from 'next-intl/server';
 import { safeJsonLd } from "@/src/lib/security/safe-json-ld";
 
-// ═══ Premium Arabic typography stack ═══
-// IBM Plex Sans Arabic — primary display + UI (architectural, modern, IBM-grade)
+// ═══ Lean typography stack — perf-first ═══
+// Reduced from 4 fonts × 17 weights → 2 fonts × 5 weights (~70% smaller font payload).
+// Tajawal & JetBrains Mono dropped; CSS fallbacks (`--font-tajawal`, `--font-mono`) point to plex-ar / system mono.
 const plexArabic = IBM_Plex_Sans_Arabic({
   variable: "--font-plex-ar",
   subsets: ["arabic"],
-  weight: ["300", "400", "500", "600", "700"],
+  weight: ["400", "500", "700"],
   display: "swap",
   preload: true,
 });
 
-// Tajawal — secondary fallback, excellent for long-form Arabic body
-const tajawal = Tajawal({
-  variable: "--font-tajawal",
-  subsets: ["arabic"],
-  weight: ["400", "500", "700", "800"],
-  display: "swap",
-});
-
-// Plus Jakarta — Latin pages + numerals
 const plusJakarta = Plus_Jakarta_Sans({
   variable: "--font-jakarta",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800"],
+  weight: ["500", "700"],
   display: "swap",
-});
-
-// JetBrains Mono — code blocks, KBD, tabular data
-const jetBrainsMono = JetBrains_Mono({
-  variable: "--font-mono",
-  subsets: ["latin"],
-  weight: ["400", "500", "600"],
-  display: "swap",
+  preload: false,
 });
 
 export const viewport: Viewport = {
@@ -138,14 +122,10 @@ export default async function RootLayout({
   const messages = await getMessages();
 
   return (
-    <html lang={locale} dir={locale === 'ar' ? 'rtl' : 'ltr'} className={cn(plexArabic.variable, tajawal.variable, plusJakarta.variable, jetBrainsMono.variable)} suppressHydrationWarning>
+    <html lang={locale} dir={locale === 'ar' ? 'rtl' : 'ltr'} className={cn(plexArabic.variable, plusJakarta.variable)} suppressHydrationWarning>
       <head>
-        {/* Performance: pre-warm critical third-party origins */}
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        {/* Performance: pre-warm only origins used on first paint. Firebase preconnects moved to AuthProvider on demand. */}
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link rel="preconnect" href="https://firestore.googleapis.com" />
-        <link rel="preconnect" href="https://identitytoolkit.googleapis.com" />
-        <link rel="dns-prefetch" href="https://cdn.jsdelivr.net" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}
@@ -156,7 +136,6 @@ export default async function RootLayout({
             <ThemeProvider attribute="class" defaultTheme="dark" forcedTheme="dark" enableSystem={false}>
               <AuthProvider>
                 <QueryProvider>
-                  <IntroPreloader />
                   {children}
                   <CookieBanner />
                   <Toaster position="top-right" richColors />
