@@ -1386,3 +1386,51 @@ into a deliberating multi-perspective panel.
 - `src/lib/security/plan-guard.ts`, `agent-governance.ts`, `context-quarantine.ts`, `rate-limit.ts` — مكتملة بالفعل ولا تحتاج تعديلاً لتحقيق المتطلّبات.
 - `src/lib/observability/langfuse.ts` + `services/llm-judge/` + `.github/workflows/eval.yml` — كانت بالفعل تحقّق "Multi-Verified Agents" + CI eval gate (≥ 0.80 pass-rate).
 
+
+---
+
+## Recent Major Updates (Session 2026-04-25 — Hidden Bug Sweep / Security Hardening)
+
+**Why:** المستخدم طلب البحث عن جميع الأخطاء الخفيّة وإصلاحها بشكل مستقلّ. فحصت الكود بكامله (٨١ مسار API + middleware + workflows + clients) وعثرت على ثغرات أمان حقيقيّة، أغلبها fail-open patterns تظهر فقط حين لا تكون الـ env vars مضبوطة.
+
+**ثغرات حرجة مُصلحَة (CRITICAL):**
+
+- **Authorization bypass على حذف بيانات المستخدم** — `app/api/user/delete/route.ts` و `app/api/user/delete-request/route.ts`: كانت بدون مصادقة، أيّ شخص يعرف `userId` كان قادراً على حذف كل بيانات أيّ مستخدم (ideas/memories/threads/messages/businessPlans/profile). الآن يجب تمرير Firebase ID token في `Authorization: Bearer …` ويُحذف فقط الـ UID المُصادَق عليه. واجهات `app/profile/page.tsx` و `app/(dashboard)/settings/page.tsx` حُدِّثت لإرسال الـ token.
+
+- **Admin auth bypass** — `app/api/admin/users/route.ts`, `drift/route.ts`, `governance/route.ts`: كانت تحوي `if (ADMIN_EMAILS.length && …)` فتسمح بالمرور حين تكون قائمة الـ admins فارغة. هُجِّرت الثلاث إلى `requirePlatformAdmin` (PLATFORM_ADMIN_UIDS، fail-closed).
+
+- **Webhook signature bypass على WhatsApp** — `app/api/webhooks/whatsapp/route.ts`: كانت تستقبل أيّ POST بلا تحقّق توقيع، فيمكن لأيّ جهة حقن رسائل وهميّة. الآن تُتحقَّق من `X-Hub-Signature-256` HMAC-SHA256 ضدّ `WHATSAPP_APP_SECRET` بمقارنة timing-safe، fail-closed في production.
+
+- **Webhook auth fail-open على Telegram** — `app/api/webhooks/telegram/route.ts`: `if (expected && …)` يفتح الـ webhook حين لا يكون السرّ مضبوطاً. الآن fail-closed في production (503 إذا لم يُضبط السرّ).
+
+- **Cron auth fail-open** — `app/api/cron/weekly-okr|weekly-planning|weekly-review/route.ts`: نفس النمط `if (secret && …)`، فيمكن أيّ شخص تشغيل عمليّات batch ثقيلة على كل المستخدمين. أُصلح الجميع بنمط مماثل لـ `consolidate-skills` (يقبل `Authorization: Bearer` أو `x-cron-secret`، 503 إذا لم يُضبط `CRON_SECRET`).
+
+**ثغرات متوسّطة مُصلحَة:**
+
+- **DoS / abuse على endpoints مكلِفة بدون مصادقة:**
+  - `app/api/workflows/run/route.ts`: كانت تُستهلك model tokens بدون حدّ. أُضيفت Firebase auth + per-IP (30/min) + per-user (10/min) rate limits.
+  - `app/api/extract-pdf/route.ts`: نفس المشكلة + لا حدّ لحجم الملف. أُضيفت Firebase auth + 10MB cap + per-IP (10/min) + per-user (5/min) rate limits.
+  - الواجهات `chat/page.tsx` و `workflows-runner/page.tsx` حُدِّثت لإرسال الـ Bearer token.
+
+- **NPE / Unhandled rejections في `app/api/chat/route.ts`:**
+  - أُضيف `Array.isArray(messages)` validation قبل التكرار (كانت ترمي إذا أُرسل non-array).
+  - ربط `.catch()` على نداءَي `void markTtfvStage(...)` لمنع UnhandledPromiseRejection.
+
+**ثغرات تجميليّة مُصلحَة:**
+
+- `app/api/admin/funnel/route.ts`: استبدال "وكيل" بـ "مساعد ذكي" لتمرير lexicon-lint.
+- `app/layout.tsx`: إضافة `data-scroll-behavior="smooth"` على `<html>` لإزالة تحذير Next 16.
+
+**Validation:**
+- `npm run typecheck` → 0 errors.
+- `npm run lint` → 0 errors / 454 warnings (كلّها pre-existing `no-explicit-any`).
+- `npm test` → **77/77 vitest pass**, 6/6 firestore-rules pass, 11/11 egypt-calc pytest pass.
+- `npm run cypher:lint` → pass.
+- جميع الـ workflows تعمل (Next.js على 5000، 4 sidecars Python).
+- `curl /api/health` → degraded متوقّع (لا توجد credentials Firebase Admin/Neo4j/WhatsApp في dev).
+
+**ما لم يُلمَس عمداً:**
+- `app/api/admin/llm-audit/route.ts` و `app/api/admin/ttfv-summary/route.ts`: تستخدمان `ADMIN_EMAILS` لكن بنمط fail-closed صحيح (`if (ADMIN_EMAILS.length === 0) return false`).
+- `app/api/cron/{aggregate-costs,consolidate-skills,firestore-backup,health-probe,restore-drill}/route.ts`: كانت بالفعل fail-closed بشكل صحيح.
+- `app/api/webhooks/stripe/route.ts`: signature verification كانت موجودة وصحيحة (constructEvent مع STRIPE_WEBHOOK_SECRET).
+- `npm audit`: 31 vulnerabilities متبقّية في firebase-admin/next/xlsx، تحتاج breaking upgrades — تُركت للمستخدم.

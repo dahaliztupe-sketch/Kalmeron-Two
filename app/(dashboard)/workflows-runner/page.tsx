@@ -16,8 +16,10 @@ import { Loader2, Play, ChevronDown, CheckCircle2, AlertTriangle, Workflow as Wo
 import { cn } from "@/src/lib/utils";
 import { WORKFLOW_LIBRARY, findWorkflow } from "@/src/lib/workflows/library";
 import type { WorkflowRunResult } from "@/src/lib/workflows/runner";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function WorkflowsRunnerPage() {
+  const { user } = useAuth();
   const [selectedId, setSelectedId] = React.useState<string>(WORKFLOW_LIBRARY[0]?.id ?? "");
   const [inputs, setInputs] = React.useState<Record<string, string>>({});
   const [running, setRunning] = React.useState(false);
@@ -34,13 +36,18 @@ export default function WorkflowsRunnerPage() {
 
   async function run() {
     if (!wf) return;
+    if (!user) { setError("الجلسة غير صالحة. الرجاء تسجيل الدخول."); return; }
     setRunning(true);
     setResult(null);
     setError(null);
     try {
+      const idToken = await user.getIdToken();
       const res = await fetch("/api/workflows/run", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${idToken}`,
+        },
         body: JSON.stringify({ workflowId: wf.id, inputs }),
       });
       const data = await res.json();

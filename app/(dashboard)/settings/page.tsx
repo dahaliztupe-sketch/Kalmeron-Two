@@ -123,10 +123,19 @@ export default function SettingsPage() {
     if (!ok) return;
     setIsDeleting(true);
     try {
+      const idToken = user ? await user.getIdToken() : null;
+      if (!idToken) {
+        toast.error("الجلسة غير صالحة. الرجاء تسجيل الدخول من جديد.");
+        setIsDeleting(false);
+        return;
+      }
       const res = await fetch("/api/user/delete", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId: user?.uid }),
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${idToken}`,
+        },
+        body: JSON.stringify({}),
       });
       if (res.ok) {
         toast.success("تم حذف حسابك بنجاح.");

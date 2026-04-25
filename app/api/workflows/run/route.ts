@@ -14,11 +14,34 @@ import { NextRequest, NextResponse } from "next/server";
 import { runWorkflow } from "@/src/lib/workflows/runner";
 import { findWorkflow } from "@/src/lib/workflows/library";
 import { redactPii } from "@/src/lib/security/pii-redactor";
+import { adminAuth } from "@/src/lib/firebase-admin";
+import { rateLimit, rateLimitAgent, rateLimitResponse } from "@/src/lib/security/rate-limit";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest) {
+  // Per-IP rate limit (prevents anonymous abuse of unauthenticated retries).
+  const rl = rateLimit(req, { limit: 30, windowMs: 60_000 });
+  if (!rl.success) return rateLimitResponse();
+
+  // Authenticate caller — workflow execution consumes model tokens.
+  const authHeader = req.headers.get("Authorization");
+  if (!authHeader?.startsWith("Bearer ")) {
+    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+  }
+  let userId: string;
+  try {
+    const decoded = await adminAuth.verifyIdToken(authHeader.slice("Bearer ".length).trim());
+    userId = decoded.uid;
+  } catch {
+    return NextResponse.json({ error: "invalid_token" }, { status: 401 });
+  }
+
+  // Per-user rate limit on workflow runs.
+  const userRl = rateLimitAgent(userId, "workflow_run", { limit: 10, windowMs: 60_000 });
+  if (!userRl.allowed) return rateLimitResponse();
+
   let body: any;
   try {
     body = await req.json();

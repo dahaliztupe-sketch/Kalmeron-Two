@@ -1,31 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { adminAuth, adminDb } from '@/src/lib/firebase-admin';
+import { requirePlatformAdmin } from '@/src/lib/security/require-admin';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-const ADMIN_EMAILS = (process.env.ADMIN_EMAILS || '').split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
-
-async function requireAdmin(req: NextRequest): Promise<{ uid: string; email: string } | NextResponse> {
-  const auth = req.headers.get('Authorization');
-  if (!auth?.startsWith('Bearer ')) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
-  try {
-    const dec = await adminAuth.verifyIdToken(auth.split(' ')[1]!);
-    const email = (dec.email || '').toLowerCase();
-    if (ADMIN_EMAILS.length && !ADMIN_EMAILS.includes(email)) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
-    }
-    return { uid: dec.uid, email };
-  } catch {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
-}
-
 export async function GET(req: NextRequest) {
-  const guard = await requireAdmin(req);
-  if (guard instanceof NextResponse) return guard;
+  const guard = await requirePlatformAdmin(req);
+  if (guard instanceof Response) return guard;
 
   if (!adminDb?.collection) {
     return NextResponse.json({ users: [], note: 'Firebase Admin not configured.' });
@@ -50,8 +32,8 @@ export async function GET(req: NextRequest) {
 }
 
 export async function DELETE(req: NextRequest) {
-  const guard = await requireAdmin(req);
-  if (guard instanceof NextResponse) return guard;
+  const guard = await requirePlatformAdmin(req);
+  if (guard instanceof Response) return guard;
 
   const { uid } = await req.json().catch(() => ({ uid: null }));
   if (!uid || typeof uid !== 'string') {

@@ -45,8 +45,8 @@ const STAGE_LABELS_AR: Record<Stage, string> = {
   landing_visited: 'زائر الصفحة الرئيسية',
   signup_started: 'بدأ التسجيل',
   signup_completed: 'أكمل التسجيل',
-  first_chat_message_sent: 'أوّل رسالة مع وكيل',
-  agent_re_used: 'استخدم الوكيل مجدّداً',
+  first_chat_message_sent: 'أوّل رسالة مع مساعد ذكي',
+  agent_re_used: 'استخدم المساعد الذكي مجدّداً',
   trial_started: 'بدأ التجربة',
   subscription_activated: 'اشترك في خطة مدفوعة',
 };

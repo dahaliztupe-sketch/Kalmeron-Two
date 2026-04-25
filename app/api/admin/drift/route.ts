@@ -1,32 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { adminAuth } from '@/src/lib/firebase-admin';
 import { buildFleetDriftReport, recordDriftSample } from '@/src/lib/observability/drift-detector';
+import { requirePlatformAdmin } from '@/src/lib/security/require-admin';
 
-const ADMIN_EMAILS = (process.env.ADMIN_EMAILS || '')
-  .split(',')
-  .map((e) => e.trim().toLowerCase())
-  .filter(Boolean);
-
-async function requireAdmin(req: NextRequest): Promise<{ ok: true } | { ok: false; res: NextResponse }> {
-  const auth = req.headers.get('Authorization');
-  if (!auth?.startsWith('Bearer ')) {
-    return { ok: false, res: NextResponse.json({ error: 'auth_required' }, { status: 401 }) };
-  }
-  try {
-    const decoded = await adminAuth.verifyIdToken(auth.split(' ')[1]!);
-    const email = (decoded.email || '').toLowerCase();
-    if (!ADMIN_EMAILS.includes(email)) {
-      return { ok: false, res: NextResponse.json({ error: 'forbidden' }, { status: 403 }) };
-    }
-    return { ok: true };
-  } catch {
-    return { ok: false, res: NextResponse.json({ error: 'invalid_token' }, { status: 401 }) };
-  }
-}
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
 
 export async function GET(req: NextRequest) {
-  const guard = await requireAdmin(req);
-  if (!guard.ok) return guard.res;
+  const guard = await requirePlatformAdmin(req);
+  if (guard instanceof Response) return guard;
 
   const url = new URL(req.url);
   const windowDays = Math.max(1, Math.min(30, Number(url.searchParams.get('days') || 7)));
@@ -51,8 +32,8 @@ export async function GET(req: NextRequest) {
  * فحص الإدارة لأنها تكتب بيانات قياسية حسّاسة.
  */
 export async function POST(req: NextRequest) {
-  const guard = await requireAdmin(req);
-  if (!guard.ok) return guard.res;
+  const guard = await requirePlatformAdmin(req);
+  if (guard instanceof Response) return guard;
 
   let body: any;
   try {

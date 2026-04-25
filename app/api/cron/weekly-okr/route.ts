@@ -11,9 +11,18 @@ export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 export const maxDuration = 300;
 
+function authorized(req: NextRequest, secret: string): boolean {
+  if (req.headers.get('Authorization') === `Bearer ${secret}`) return true;
+  if (req.headers.get('x-cron-secret') === secret) return true;
+  return false;
+}
+
 export async function POST(req: NextRequest) {
   const secret = process.env.CRON_SECRET;
-  if (secret && req.headers.get('x-cron-secret') !== secret) {
+  if (!secret) {
+    return NextResponse.json({ error: 'cron_disabled_no_secret' }, { status: 503 });
+  }
+  if (!authorized(req, secret)) {
     return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
   }
 

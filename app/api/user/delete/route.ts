@@ -1,19 +1,34 @@
 import { db } from "@/src/lib/firebase";
+import { adminAuth } from "@/src/lib/firebase-admin";
 import { doc, collection, getDocs, writeBatch } from "firebase/firestore";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+
+export const runtime = "nodejs";
 
 /**
  * Regulatory Compliance: User Right to Erasure (GDPR/Egyptian Data Protection Law)
  * This endpoint deletes all user data across all collections.
+ *
+ * SECURITY: Requires a valid Firebase ID token via the `Authorization: Bearer <token>`
+ * header. The authenticated UID is the only UID that can be deleted — clients cannot
+ * delete arbitrary users by passing a foreign userId.
  */
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
+  // Authenticate caller
+  const authHeader = req.headers.get("Authorization");
+  if (!authHeader?.startsWith("Bearer ")) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  let userId: string;
   try {
-    const { userId } = await req.json();
+    const decoded = await adminAuth.verifyIdToken(authHeader.slice("Bearer ".length).trim());
+    userId = decoded.uid;
+  } catch {
+    return NextResponse.json({ error: "Invalid token" }, { status: 401 });
+  }
 
-    if (!userId) {
-      return NextResponse.json({ error: "User ID required" }, { status: 400 });
-    }
-
+  try {
     const batch = writeBatch(db);
 
     // 1. Delete Ideas
@@ -45,7 +60,7 @@ export async function POST(req: Request) {
 
   } catch (error: any) {
     const { logger } = await import('@/src/lib/logger');
-    logger.error({ err: error }, 'User Deletion Error');
+    logger.error({ err: error, userId }, 'User Deletion Error');
     return NextResponse.json({ error: "حدث خطأ أثناء حذف البيانات" }, { status: 500 });
   }
 }

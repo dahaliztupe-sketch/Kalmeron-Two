@@ -444,11 +444,17 @@ function ChatPageContent() {
     const file = e.target.files?.[0];
     if (!file) return;
     if (file.type !== "application/pdf") { toast.error("يرجى تحميل ملف PDF فقط."); return; }
+    if (!user) { toast.error("الجلسة غير صالحة. الرجاء تسجيل الدخول."); return; }
     setIsUploading(true);
     const formData = new FormData();
     formData.append("file", file);
     try {
-      const res = await fetch("/api/extract-pdf", { method: "POST", body: formData });
+      const idToken = await user.getIdToken();
+      const res = await fetch("/api/extract-pdf", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${idToken}` },
+        body: formData,
+      });
       const data = await res.json();
       if (data.text) { setPdfContext(data.text); toast.success("تم استخراج البيانات من الملف."); }
       else throw new Error(data.error);

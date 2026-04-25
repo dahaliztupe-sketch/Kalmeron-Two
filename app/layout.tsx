@@ -122,7 +122,7 @@ export default async function RootLayout({
   const messages = await getMessages();
 
   return (
-    <html lang={locale} dir={locale === 'ar' ? 'rtl' : 'ltr'} className={cn(plexArabic.variable, plusJakarta.variable)} suppressHydrationWarning>
+    <html lang={locale} dir={locale === 'ar' ? 'rtl' : 'ltr'} className={cn(plexArabic.variable, plusJakarta.variable)} suppressHydrationWarning data-scroll-behavior="smooth">
       <head>
         {/* Performance: pre-warm only origins used on first paint. Firebase preconnects moved to AuthProvider on demand. */}
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />

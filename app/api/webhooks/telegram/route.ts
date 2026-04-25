@@ -10,7 +10,12 @@ export const dynamic = 'force-dynamic';
  */
 export async function POST(req: NextRequest) {
   const expected = process.env.TELEGRAM_WEBHOOK_SECRET;
-  if (expected && req.headers.get('x-telegram-bot-api-secret-token') !== expected) {
+  if (!expected) {
+    // In production a secret must be configured; otherwise anyone can spam the bot.
+    if (process.env.NODE_ENV === 'production') {
+      return NextResponse.json({ ok: false, error: 'webhook_not_configured' }, { status: 503 });
+    }
+  } else if (req.headers.get('x-telegram-bot-api-secret-token') !== expected) {
     return NextResponse.json({ ok: false, error: 'unauthorized' }, { status: 401 });
   }
   try {

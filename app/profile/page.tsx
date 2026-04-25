@@ -23,10 +23,17 @@ export default function ProfilePage() {
 
       setIsDeleting(true);
       try {
+          const idToken = user ? await user.getIdToken() : null;
+          if (!idToken) {
+              throw new Error("لم يتم العثور على جلسة تسجيل دخول صالحة.");
+          }
           const res = await fetch('/api/user/delete', {
               method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ userId: user?.uid })
+              headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${idToken}`,
+              },
+              body: JSON.stringify({})
           });
 
           if (res.ok) {

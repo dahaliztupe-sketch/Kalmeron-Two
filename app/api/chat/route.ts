@@ -49,6 +49,13 @@ export async function POST(req: NextRequest) {
   }
   const { messages, isGuest, threadId, uiContext } = payload;
 
+  if (!Array.isArray(messages) || messages.length === 0) {
+    return new Response(
+      JSON.stringify({ error: 'messages must be a non-empty array' }),
+      { status: 400, headers: { 'Content-Type': 'application/json' } },
+    );
+  }
+
   const authHeader = req.headers.get('Authorization');
   let userId = 'guest-system';
   if (authHeader?.startsWith('Bearer ')) {
@@ -126,7 +133,9 @@ export async function POST(req: NextRequest) {
 
   // P0-3: قَيِّد لحظة "أوّل رسالة" لِقياس TTFV-cold (signup → first_message).
   if (userId !== 'guest-system') {
-    void markTtfvStage({ userId, stage: 'first_message' });
+    void markTtfvStage({ userId, stage: 'first_message' }).catch((e) => {
+      log.warn({ msg: 'ttfv_first_message_failed', err: (e as any)?.message });
+    });
   }
 
   const encoder = new TextEncoder();
@@ -187,7 +196,9 @@ export async function POST(req: NextRequest) {
               send('delta', { text: piece });
               // P0-3: أول chunk فعلي للمستخدم = "first_value" (TTFV-warm).
               if (wasFirst && userId !== 'guest-system') {
-                void markTtfvStage({ userId, stage: 'first_value' });
+                void markTtfvStage({ userId, stage: 'first_value' }).catch((e) => {
+                  log.warn({ msg: 'ttfv_first_value_failed', err: (e as any)?.message });
+                });
               }
             }
           }
