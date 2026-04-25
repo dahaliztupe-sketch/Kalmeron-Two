@@ -1,5 +1,27 @@
 # Kalmeron AI (ai-studio-applet)
 
+## Session 2026-04-25 — Bug Fixes: Hydration Error + Duplicate React Keys
+
+### إصلاحات حرجة:
+
+1. **`app/compare/page.tsx` — nested `<a>` hydration error:**
+   - كان الـ header يضع `<BrandLogo>` (الذي يحتوي على `<Link>` داخله) داخل `<Link href="/">` آخر، مما يُنشئ `<a>` داخل `<a>` وهو خطأ HTML مُميت يُسبّب hydration failure.
+   - الحل: أضفنا `href={null}` لـ BrandLogo داخل الـ header حتى يُرنِّده بدون Link wrapper.
+
+2. **`src/lib/seo/industries.ts` — مفاتيح React مكررة (edtech + healthtech):**
+   - كانت قاعدة بيانات الصناعات تحتوي على slug `edtech` مرتين (سطر 101 و175) وslug `healthtech` مرتين (سطر 120 و194).
+   - هذا يُسبّب تحذير React "Encountered two children with the same key" ويُعطّل التنقل في صفحة الصناعات.
+   - الحل: حذفنا الإدخالات الأولى الأقل اكتمالاً وأبقينا الثانية الأكثر تفصيلاً.
+
+3. **`components/landing/HomeBelowFold.tsx` (الجلسة السابقة):**
+   - أضفنا `TrendingToolsSection` مع 8 بطاقات قابلة للتمرير (أدوات AI رائجة)
+   - أضفنا `MobileFloatingCTA` (زر عائم على الموبايل بعد 600px تمرير)
+   - قسم الأقسام بنسختين: بطاقات تمرير على الموبايل، وتبويبات تفاعلية على سطح المكتب
+   - التشهيدات والخطوات بتمرير أفقي على الموبايل
+   - تسريع animation الـ typing (22ms/4 chars)
+
+---
+
 ## Recent Major Updates (Session 2026-04-25 — Instructional Fabric + ADRs + Agent Governance)
 **Why:** المستخدم طلب 3 مهام في جلسة واحدة: (1) بناء «النسيج التوجيهي» الذي تقرأه أدوات الـ AI تلقائيّاً، (2) سدّ فجوات الهندسة (ADRs، أمن، موثوقيّة، حوكمة وكلاء)، (3) تحسين جودة البرومبتات. الهدف: تقليل وقت التشغيل واستهلاك الرموز عبر إعطاء كل وكيل دستوراً ملزِماً قبل أيّ تعديل.
 
