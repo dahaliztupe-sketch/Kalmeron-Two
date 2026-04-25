@@ -157,7 +157,16 @@ export async function getReferralStats(uid: string, baseUrl?: string): Promise<R
   let totalConversions = 0;
 
   try {
-    const snap = await adminDb.collection(COLLECTION).where('referrerUid', '==', uid).get();
+    // Bounded read: cap at 1000 referrals per user. The MAU per individual
+    // referrer is realistically < 100; the cap protects the read budget if a
+    // viral influencer signs up. Showing "1000+" in the UI when capped is
+    // acceptable for the stats panel; precise counts come from the
+    // server-side `cost_rollups_daily` aggregate (admin only).
+    const snap = await adminDb
+      .collection(COLLECTION)
+      .where('referrerUid', '==', uid)
+      .limit(1000)
+      .get();
     totalSignups = snap.size;
     totalConversions = snap.docs.filter((d) => (d.data() as ReferralRecord).refereeUpgradedToPaid).length;
   } catch (e) {

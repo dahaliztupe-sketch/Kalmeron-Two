@@ -1,5 +1,61 @@
 # Kalmeron AI (ai-studio-applet)
 
+## Recent Major Updates (Session 2026-04-25 — Instructional Fabric + ADRs + Agent Governance)
+**Why:** المستخدم طلب 3 مهام في جلسة واحدة: (1) بناء «النسيج التوجيهي» الذي تقرأه أدوات الـ AI تلقائيّاً، (2) سدّ فجوات الهندسة (ADRs، أمن، موثوقيّة، حوكمة وكلاء)، (3) تحسين جودة البرومبتات. الهدف: تقليل وقت التشغيل واستهلاك الرموز عبر إعطاء كل وكيل دستوراً ملزِماً قبل أيّ تعديل.
+
+**ما أُنشئ:**
+
+- **`AGENTS.md` في الجذر** — الدستور الأساسي. يغطّي: التقنيات المُعتمدة (Next 16/Firestore/TS strict)، أوامر البناء والاختبار، قواعد TS (strict + no `as any`)، قواعد Next (App Router/RSC/`serverExternalPackages`)، قواعد الأمان (Firestore rules deny-all، CSP، webhooks موقَّعة، rate limiting، prompt injection defense)، قواعد Firestore (`.limit()` إلزامي)، الملفّات الحسّاسة (لا تُلمَس)، حوكمة الوكلاء، توجيهات لكل وكيل AI (اقرأ replit.md، RTL، لا emoji، لا `Math.random()` في render)، وتوجيه للقراءة من `node_modules/next/dist/docs/`.
+
+- **`.cursor/rules/` (6 ملفّات)** — سياق كامل لـ Cursor Agent:
+  - `global-rules.md` — قواعد عامّة ملزِمة (ابدأ هنا، لغة العمل، أسلوب التغييرات، الممنوعات، أوامر التحقّق).
+  - `product.md` — السياق المنتجي: الجمهور المصري/السعودي/الإماراتي، الـ 16 وكيلاً، التسعير، عرض القيمة.
+  - `tech.md` — مرجع الحزمة الكامل: Next 16، React 19، Firestore، TanStack Query، Tailwind v4، AI SDKs، sidecars Python، أنماط شائعة في الكود.
+  - `security.md` — تطبيق OWASP Top 10 + OWASP LLM Top 10 على المستودع، checklist قبل كل commit، حالات لازم الإبلاغ الفوري.
+  - `design.md` — Tailwind v4 + RTL-first، خطوط، ألوان، mobile-first، accessibility، dark mode.
+  - `structure.md` — هيكل المستودع وأين توضع الملفّات الجديدة (table مفصّل).
+
+- **`.windsurfrules` في الجذر** — ذاكرة دائمة لـ Windsurf (concise: ابدأ هنا، تعريف، حزمة، أوامر، ممنوعات، ملفّات حسّاسة، RTL، أمان، تحديث ذاكرة، عند الشكّ).
+
+- **`SKILL.md` في الجذر** — مهارة تفصيليّة "كيف تضيف وكيلاً جديداً" بـ 7 مراحل (تخطيط → سكافولد → System Card → تكامل → evals → أمان → تحقّق نهائي) مع code templates لـ prompt/agent/tools.
+
+**فجوات الهندسة المُعالَجة:**
+
+- **ADRs (Architectural Decision Records):** أنشأتُ `docs/decisions/` مع:
+  - `README.md` يشرح النموذج (Michael Nygard) + كيفيّة الإضافة + الفهرس + متى تكتب ADR.
+  - `0001-use-firestore-over-mongodb.md` — يشرح لماذا اخترنا Firestore (multi-tenant، RLS مدمج، realtime مجّاناً، اندماج Firebase Auth) بدل MongoDB Atlas/Supabase/PlanetScale، مع النتائج Positive/Negative، والقواعد الذهبيّة المُشتقّة (`.limit()` إلزامي، Admin SDK للحسّاس، `request.auth.uid` في كل قاعدة).
+  - `0002-keep-typescript-strict-no-explicit-any.md` — يوثّق سياسة TS الصارمة + استراتيجيّة `no-explicit-any: warn` (بدلاً من `error`) لتجنّب حجب CI لأجل ~470 موضع legacy.
+  - `0003-csp-strict-with-unsafe-inline-styles-only.md` — يوثّق قرار `unsafe-inline` للـ styles فقط (ضروري لـ Tailwind v4 + Framer Motion) + سبب تأجيل CSP nonces.
+
+- **حوكمة الوكلاء:** `docs/AGENT_GOVERNANCE.md` — تطبيق Microsoft Agent Governance Toolkit (أبريل 2026) + OWASP Top 10 for LLM Agents 2026:
+  - Mapping كامل لـ 10 مخاطر OWASP إلى تخفيفات فعليّة في الكود (`plan-guard.ts`, `sanitize-context.ts`, `agent-governance.ts`, `actions` collection، Langfuse).
+  - 6 أعمدة Microsoft (Identity, Inventory, Risk Management, Policy, Monitoring, Lifecycle).
+  - Risk classification (EU AI Act): Minimal/Limited/High للوكلاء الـ 16 (Legal Guide = High، الباقي Limited عدا General Chat + Success Museum = Minimal).
+  - HITL متى وكيف، Disclosure standards، Audit trail، مرجع code للمطوّرين.
+
+- **جودة البرومبتات:** `docs/PROMPT_QUALITY.md`:
+  - هيكل **SCOPE** الكامل (Situation, Constraints, Outcome, Patterns, Exceptions) مع مثال CFO.
+  - 7 دروس من مستودع `system-prompts-and-models-of-ai-tools` (Identity-first, Negative Constraints, Few-shot, Output format صريح, Tool descriptions، Citation injection، Disclosures).
+  - Anti-patterns (prompt يحوي user input بدون sanitization، prompts > 4000 token، mixed languages، generic constraints).
+  - **نمط التنفيذ الذاتي** (Autonomous Agent Pattern) مع code template لـ goal injection → planning → execution → critique → replan → summary.
+  - معايير التقييم (Recall@3 ≥ 0.75، LLM-judge ≥ 0.80، p95 < 4s، cost per response).
+
+- **إصلاح قنبلة موقوتة في الإنتاج (Firestore unbounded query):** `src/lib/referrals/manager.ts:160` كان يستدعي `.where('referrerUid', '==', uid).get()` بدون `limit()` — لو influencer جلب 50K referees، الـ query تنفجر في read budget + cold latency. أضفتُ `.limit(1000)` مع تعليق يشرح السبب وأنّ الإحصاء الدقيق يأتي من `cost_rollups_daily` (admin only).
+
+**ملفّات لم أُنشئها أو ألمسها عمداً:**
+- `firestore.rules` — سلفاً مُهيَّأ بـ deny-all fallback + per-collection rules صارمة. لا توجد قواعد `if true`. ✅
+- `next.config.ts` — CSP/HSTS/COOP/Permissions-Policy سلفاً مُهيَّأة. ✅
+- `app/api/health/route.ts` — موجود سلفاً مع 14 check (Firestore + KG + VM providers + omnichannel + cron + secrets + launch runs). ✅
+- باقي الـ unbounded-ish queries (`virtual-meeting.ts:158` فيه `.limit()` سلفاً، `actions/registry.ts:279` فيه `.limit(200)`، `compliance/right-to-be-forgotten.ts:35` يُستخدم في GDPR scan ويجب يكون شامل بالطبيعة).
+
+**التحقّق النهائي:**
+- `npm run typecheck` → 0 errors ✅
+- `npm run lint` → 0 errors، 453 warnings (نقصت من 455 — تنظيف فرعي) ✅
+- `npm run test` → 12/12 ملفّ، 54/54 تجربة ✅
+- `npm run test:rules` → 6/6 ✅
+
+**ملفّات أُنشئت في هذه الجلسة:** `AGENTS.md`, `SKILL.md`, `.windsurfrules`, `.cursor/rules/{global-rules,product,tech,security,design,structure}.md`, `docs/decisions/{README,0001-use-firestore-over-mongodb,0002-keep-typescript-strict-no-explicit-any,0003-csp-strict-with-unsafe-inline-styles-only}.md`, `docs/AGENT_GOVERNANCE.md`, `docs/PROMPT_QUALITY.md` = **13 ملفّاً** + تعديل واحد في `src/lib/referrals/manager.ts`.
+
 ## Recent Major Updates (Session 2026-04-25 — Auth Reliability + Mobile Polish)
 **Why:** المستخدم بلّغ بثلاث مشاكل: «الـ responsive في الموبايل مش مظبوط»، «عند الضغط على ابدأ مجاناً/إنشاء حساب يأخذ وقت طويل في التحميل»، «لا يحتفظ بجلسة تسجيل الدخول».
 

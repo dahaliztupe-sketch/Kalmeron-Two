@@ -1,0 +1,76 @@
+# .windsurfrules — Persistent Memory for Windsurf Agent
+# Project: Kalmeron AI (ai-studio-applet)
+# Last reviewed: 2026-04-25
+
+## 0. ابدأ هنا (كل جلسة)
+1. اقرأ `AGENTS.md` في الجذر — الدستور.
+2. اقرأ آخر قسم في `replit.md` (Recent Major Updates).
+3. لو الطلب يلمس وكيلاً: اقرأ `docs/agents/<agent>.md`.
+4. لو الطلب يلمس قواعد بيانات/أمن: اقرأ `firestore.rules` + `docs/THREAT_MODEL.md`.
+5. لو الطلب معماري: اقرأ `docs/decisions/`.
+
+## 1. تعريف المشروع
+- منصّة Next.js 16 + Firebase + Stripe + 16 وكيلاً للـ AI لخدمة الشركات الناشئة العربية.
+- اللغة الأمّ: عربي مصري؛ الـ UI: عربي فصحى مبسّط + RTL.
+- Production: 54/54 اختبار يمرّ، typecheck + lint نظيفان.
+
+## 2. الحزمة التقنيّة الثابتة
+- Next 16 (App Router, RSC) + React 19 + TS 5.7 strict
+- Firestore + Firebase Auth + Admin SDK
+- TanStack Query 5 + React Context (لا Redux)
+- Tailwind v4 (CSS-first، بدون config) + shadcn/ui + Base UI
+- Stripe + Fawry للدفع
+- Sentry + Langfuse + pino للـ observability
+- 4 sidecars Python FastAPI (8000/8008/8080/8099)
+- AI: `@ai-sdk/google` (Gemini 2.5)، LangGraph، Mastra
+
+## 3. الأوامر
+- المدير = `npm` (ليس pnpm/yarn).
+- التحقّق قبل أيّ تسليم: `npm run typecheck && npm run lint && npm run test`.
+- Dev: `npm run dev` (المنفذ 5000).
+
+## 4. ممنوعات صارمة (لا تُكسَر)
+- ❌ `as any` جديدة.
+- ❌ Firestore queries بدون `.limit()`.
+- ❌ `if true` في `firestore.rules`.
+- ❌ secrets في الكود (استخدم `process.env`).
+- ❌ `Math.random()` في render.
+- ❌ تغيير `firestore.rules` بدون `npm run test:rules`.
+- ❌ تحويل API route إلى Edge بدون التحقّق من dependencies.
+- ❌ إنشاء ملفّات `.md` ملخّصة تلقائيّاً.
+
+## 5. ملفّات حسّاسة (إذن صريح فقط)
+- `firestore.rules` + `firestore.indexes.json`
+- `next.config.ts` + `vercel.json` + `.replit`
+- `app/api/webhooks/**` + `app/api/billing/**`
+- `src/lib/firebase-admin.ts`
+- `sentry.*.config.ts` + `instrumentation.ts`
+- `.github/workflows/**`
+
+## 6. هيكل الإجابة
+- اقرأ، فكّر، نفّذ، اختبر، حدّث `replit.md`.
+- لا تقترح "أعد كتابة الملفّ" — أصلح بـ edit نقطي.
+- لو غير متأكّد: اسأل سؤالاً واحداً مركّزاً.
+
+## 7. RTL + الترجمة
+- كل UI جديد لازم RTL-first.
+- استخدم `start/end` بدل `left/right` في Tailwind.
+- النصوص في `messages/ar.json` + `messages/en.json`.
+- علامات اقتباس: «...» (لا "..." لتجنّب كسر JSX).
+
+## 8. الأمان الأساسي
+- كل API: `auth() → rate-limit → zod.parse() → handler`.
+- كل Firestore query: `.where('userId', '==', uid).limit(N)`.
+- كل tool وكيل: له `risk: 'low'|'medium'|'high'|'critical'`.
+- Tools `high|critical` تستدعي `requireHumanApproval()`.
+- كل RAG context يمرّ بـ `sanitizeContext()` قبل system prompt.
+
+## 9. ما يجب تحديثه بعد كل جلسة
+- `replit.md` → قسم Recent Major Updates (ماذا، لماذا، الملفّات، التحقّق).
+- `CHANGELOG.md` لو تغيّر سلوك مرئي للمستخدم.
+- `docs/agents/<agent>.md` لو غيّرت سلوك وكيل.
+- `docs/decisions/` لو غيّرت قراراً معماريّاً.
+
+## 10. عند الشكّ
+> القاعدة الذهبيّة: «أصلح الموجود، لا تعيد بناءه.»
+> لو الكود يعمل، لا تلمسه ما لم يطلب المستخدم تحسيناً صريحاً.
