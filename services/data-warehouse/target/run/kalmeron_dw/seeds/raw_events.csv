@@ -1,0 +1,13 @@
+
+    
+    
+    
+    create table "dev"."raw"."raw_events" (event_id text,user_id text,event_type text,agent_id text,occurred_at timestamp without time zone,session_id text)
+  ;
+    -- dbt seed --
+    
+          COPY "dev"."raw"."raw_events" FROM '/home/runner/workspace/services/data-warehouse/seeds/raw_events.csv' (FORMAT CSV, HEADER TRUE, DELIMITER ',')
+        
+
+;
+  

@@ -1,0 +1,11 @@
+user_id,signup_at,plan,country,referral_source
+u001,2026-04-20T08:12:00Z,starter,EG,organic
+u002,2026-04-20T09:01:00Z,starter,EG,referral
+u003,2026-04-21T10:00:00Z,starter,EG,paid_meta
+u004,2026-04-21T13:00:00Z,pro,EG,organic
+u005,2026-04-22T07:30:00Z,pro,SA,paid_google
+u006,2026-04-22T14:10:00Z,starter,EG,referral
+u007,2026-04-23T08:00:00Z,pro,EG,organic
+u008,2026-04-23T11:20:00Z,starter,EG,paid_meta
+u009,2026-04-24T09:15:00Z,pro,AE,referral
+u010,2026-04-24T16:00:00Z,starter,EG,organic

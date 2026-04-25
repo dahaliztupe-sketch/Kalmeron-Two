@@ -1,0 +1,13 @@
+
+    
+    
+    
+    create table "dev"."raw"."raw_router_decisions" (decision_id text,occurred_at timestamp without time zone,user_id text,question_excerpt text,expected_agent text,routed_agent text,confidence float8,latency_ms integer)
+  ;
+    -- dbt seed --
+    
+          COPY "dev"."raw"."raw_router_decisions" FROM '/home/runner/workspace/services/data-warehouse/seeds/raw_router_decisions.csv' (FORMAT CSV, HEADER TRUE, DELIMITER ',')
+        
+
+;
+  

@@ -1,0 +1,13 @@
+
+    
+    
+    
+    create table "dev"."raw"."raw_costs" (cost_id text,occurred_at timestamp without time zone,agent_id text,user_id text,model text,input_tokens integer,output_tokens integer,cost_usd float8)
+  ;
+    -- dbt seed --
+    
+          COPY "dev"."raw"."raw_costs" FROM '/home/runner/workspace/services/data-warehouse/seeds/raw_costs.csv' (FORMAT CSV, HEADER TRUE, DELIMITER ',')
+        
+
+;
+  

@@ -5,7 +5,7 @@ stack = "GAMESTACK_JS"
 
 [nix]
 channel = "stable-25_05"
-packages = ["glibcLocales"]
+packages = ["glibcLocales", "openssl"]
 
 [workflows]
 runButton = "Project"
@@ -22,6 +22,18 @@ args = "Start application"
 [[workflows.workflow.tasks]]
 task = "workflow.run"
 args = "PDF Worker"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Embeddings Worker"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Egypt Calc"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "LLM Judge"
 
 [[workflows.workflow]]
 name = "Start application"
@@ -44,8 +56,44 @@ outputType = "console"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "cd services/pdf-worker && ./.venv/bin/uvicorn main:app --host 0.0.0.0 --port 8000 --log-level info"
+args = "cd services/pdf-worker && uvicorn main:app --host 0.0.0.0 --port 8000 --log-level info"
 waitForPort = 8000
+
+[[workflows.workflow]]
+name = "Embeddings Worker"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "cd services/embeddings-worker && uvicorn main:app --host 0.0.0.0 --port 8099 --log-level info"
+waitForPort = 8099
+
+[workflows.workflow.metadata]
+outputType = "console"
+
+[[workflows.workflow]]
+name = "Egypt Calc"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "cd services/egypt-calc && uvicorn main:app --host 0.0.0.0 --port 8008 --log-level info"
+waitForPort = 8008
+
+[workflows.workflow.metadata]
+outputType = "console"
+
+[[workflows.workflow]]
+name = "LLM Judge"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "cd services/llm-judge && uvicorn main:app --host 0.0.0.0 --port 8080 --log-level info"
+waitForPort = 8080
+
+[workflows.workflow.metadata]
+outputType = "console"
 
 [[ports]]
 localPort = 5000
@@ -82,6 +130,14 @@ externalPort = 3001
 [[ports]]
 localPort = 8000
 externalPort = 8000
+
+[[ports]]
+localPort = 8080
+externalPort = 8080
+
+[[ports]]
+localPort = 8099
+externalPort = 8099
 
 [userenv]
 

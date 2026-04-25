@@ -1,5 +1,40 @@
 # Kalmeron AI (ai-studio-applet)
 
+## Recent Major Updates (Session 2026-04-25 — 3 Python sidecars + dbt/DuckDB warehouse)
+**Why:** الـ codebase كان فيه 100% TypeScript + sidecar واحد للـ PDF. أضفنا 3 خدمات Python جديدة + مستودع تحليلي كامل، كلّها معزولة تحت `services/` ومصمَّمة بحيث الـ Next.js app يعمل بشكل طبيعي حتى لو كانت أيّ خدمة منهم offline (graceful fallback).
+
+- **`services/egypt-calc/` — حسابات الضرايب والتأمينات المصريّة (FastAPI · port 8008).**
+  - `taxes.py`: شرايح ضريبة الدخل حسب قانون 91/2005 + تعديل 2024 (4 شرايح: 0% حتى 40K، 10%، 15%، 20% حتى 200K)، حدّ إعفاء سنوي 20K، تأمينات اجتماعيّة (11% موظّف + 18.75% صاحب عمل) بسقف أجر تأميني 14,500 جنيه شهرياً.
+  - `main.py` endpoints: `/health`, `/income-tax` (annual_gross), `/social-insurance` (monthly_wage), `/total-cost` (monthly_gross + months 12/13/14).
+  - `tests/test_taxes.py`: 11 hypothesis property-based tests (monotonicity، bracket boundaries، effective rate ≤ marginal، إلخ) — كلّها تنجح.
+  - `src/lib/egypt-calc/client.ts`: عميل TS بـ Zod validation، AbortController timeout، لا يرمي استثناءات أبداً — يعيد `{ ok, data } | { ok: false, reason }` للـ fallback في الواجهة. يقرأ `EGYPT_CALC_URL` (افتراضي `http://localhost:8008`).
+  - **التحقّق:** 15K شهرياً → 1812.5 ج.م ضريبة شهرية، تكلفة الشركة الإجماليّة 17,718.75 شهرياً.
+
+- **`services/llm-judge/` — تقييم الإجابات بـ LLM-as-judge (FastAPI · port 8080).**
+  - `judges.py`: 4 rubrics — `factual_accuracy`, `egyptian_voice` (مصري vs فصحى vs خليجي vs مغربي)، `safety` (rejection of unsafe content)، `completeness`.
+  - `main.py` `/judge` endpoint: يأخذ `{question, answer, rubric, context?}` ويعيد `{score 0-1, criteria_scores, reasoning, mode}`.
+  - يستخدم Gemini Flash-Lite عبر `google-generativeai` لو متوفّر `GEMINI_API_KEY`، أو يقع back على scorer حتميّ مبسَّط (يعتمد على length + hedge words penalties) عند غياب المفتاح — بحيث الـ CI eval pipeline يشتغل دايماً.
+  - `src/lib/eval/llm-judge-client.ts`: نفس النمط (Zod + timeout + no-throw).
+
+- **`services/embeddings-worker/` — embeddings محلّيّة متعدّدة اللغات (FastAPI · port 8099).**
+  - `main.py` endpoints: `/health`, `/embed` (single text)، `/embed-batch` (≤64 texts)، `/similarity` (cosine بين نصّين).
+  - يستخدم `fastembed` (ONNX runtime — لا torch، لا GPU) مع موديل `sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2` (~220 MB، 384 dim، يدعم العربية + 50 لغة). الموديل يُحمَّل lazy عند أوّل استدعاء (يتفادى startup بطيء)، مع LRU cache بـ 1000 entry.
+  - **مهم:** أوّل اختيار كان `intfloat/multilingual-e5-small` لكنّه غير مدعوم في `fastembed`. تحوّلنا لـ paraphrase-multilingual-MiniLM-L12-v2 وهو مدعوم رسميّاً ومناسب للعربية.
+  - `src/lib/embeddings/local-embeddings-client.ts`: عميل TS مع fallback صريح لمسار Gemini الحالي عند فشل الاتّصال.
+  - **التحقّق:** أوّل استدعاء حمّل الموديل في 4.4 ثانية، الاستدعاءات اللاحقة من الـ cache تُرجع في ~0 ms. cosine بين «ضريبة الدخل» و «حساب الضرايب على المرتب» = 0.336.
+
+- **`services/data-warehouse/` — مستودع بيانات dbt + DuckDB.**
+  - بنية dbt كاملة: `dbt_project.yml`, `profiles.yml` (DuckDB local، يمكن تبديله لـ BigQuery في الإنتاج)، `models/staging/` (5 staging views)، `models/marts/` (4 marts: `dim_agents`, `fct_cost_daily`, `fct_router_accuracy`, `fct_ttfv_funnel`).
+  - 5 ملفّات seed CSV مستخرَجة من schemas مجموعات Firestore الحقيقيّة (events، costs، ttfv، agents، routing).
+  - `macros/generate_schema_name.sql`: macro مخصَّص لتعطيل البادئة الافتراضيّة `dev_` على أسماء الـ schemas (DuckDB لا يحتاجها).
+  - `services/data-warehouse/sync_from_firestore.py` (اختياري): script لتفريغ مجموعات Firestore إلى ملفّات seed عند الحاجة.
+  - **التحقّق:** `dbt build` نفّذ 28 خطوة (5 seeds + 5 staging + 4 marts + 14 tests) في 1.97 ثانية، أنتج `dev.duckdb` مع كلّ الـ marts معبَّأة بالبيانات الصحيحة.
+
+- **Wiring:** أُضيفت 3 workflows جديدة (`Egypt Calc`, `LLM Judge`, `Embeddings Worker`)، 7 npm scripts (`egypt-calc:dev/test`, `llm-judge:dev`, `embeddings-worker:dev`, `dw:build/test/query`)، و `.env.example` امتدّ بـ 6 متغيّرات جديدة (URLs + GEMINI_API_KEY hint + EMBEDDINGS_MODEL مع شرح للبدائل).
+- **PDF Worker fix جانبي:** أمر workflow القديم كان `cd services/pdf-worker && ./.venv/bin/uvicorn ...` لكن الـ `.venv` لم يعُد موجوداً (تمّت إزالته في جلسة سابقة)، وعند تثبيت الـ deps الجديدة في `.pythonlibs/` تكسّر تشغيله. صحّحت الأمر إلى `uvicorn main:app ...` (يستخدم الـ uvicorn الموحَّد في `.pythonlibs/bin/`) وعمل من تاني.
+- **Deployment story:** هذه الـ sidecars **لا تشتغل على Vercel** (Vercel JS-only). خيارات الإنتاج: Cloud Run / Railway / Fly.io / VPS. الـ Next.js app على Vercel يصلهم عبر متغيّرات الـ URL. لو أيّ منهم offline، الـ TS clients يقعوا back graceful (مثل: `egypt-calc` غير متاح → الواجهة تُظهر «حاسبة غير متوفّرة مؤقتاً» بدلاً من crash). dbt لا يحتاج worker — يُنفَّذ كـ batch job (CLI أو CI cron) ويكتب ناتج الـ DuckDB في storage مشترك للقراءة.
+- **ما لم نفعله عمداً:** لم نمسّ أيّ كود TypeScript في الـ Next.js app (لا `app/`، لا `src/components/`، لا API routes)، لم نضِف Python داخل عمليّة Next.js، لم نغيّر pipeline البناء على Vercel. الـ Repo يبقى Next.js app + 4 sidecars اختياريّة منفصلة.
+
 ## Recent Major Updates (Session 2026-04-25 — Investor-Readiness Sprint P0→P2)
 **Why:** تنفيذ كل المهام الآليّة من تدقيق الاستعداد للمستثمرين في جلسة واحدة (T01-T09). تخطّينا فقط ما يتطلّب تدخّل يدوي من المستخدم (Firebase keys rotation، Stripe Price IDs، تنظيف `.replit`، نشر PDF worker، ضبط `PLATFORM_ADMIN_UIDS`).
 

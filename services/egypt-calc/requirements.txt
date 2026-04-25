@@ -1,0 +1,5 @@
+fastapi>=0.110,<1
+uvicorn[standard]>=0.27,<1
+pydantic>=2.5,<3
+hypothesis>=6.99,<7
+pytest>=8.0,<10

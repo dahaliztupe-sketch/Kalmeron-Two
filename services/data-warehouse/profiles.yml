@@ -1,0 +1,18 @@
+kalmeron_dw:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: "./dev.duckdb"
+      threads: 4
+    prod:
+      # When you graduate to BigQuery, swap this block for:
+      # type: bigquery
+      # method: service-account
+      # project: kalmeron-prod
+      # dataset: kalmeron_dw
+      # keyfile: /path/to/sa.json
+      # threads: 8
+      type: duckdb
+      path: "./prod.duckdb"
+      threads: 8

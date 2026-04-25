@@ -1,0 +1,32 @@
+name: 'kalmeron_dw'
+version: '1.0.0'
+config-version: 2
+
+profile: 'kalmeron_dw'
+
+model-paths: ["models"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+analysis-paths: ["analyses"]
+test-paths: ["tests"]
+
+target-path: "target"
+clean-targets:
+  - "target"
+  - "dbt_packages"
+  - "logs"
+
+models:
+  kalmeron_dw:
+    staging:
+      +materialized: view
+      +schema: staging
+    marts:
+      +materialized: table
+      +schema: marts
+
+seeds:
+  kalmeron_dw:
+    +schema: raw
+    +quote_columns: false

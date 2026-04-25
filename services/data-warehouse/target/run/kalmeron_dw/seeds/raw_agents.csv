@@ -1,0 +1,13 @@
+
+    
+    
+    
+    create table "dev"."raw"."raw_agents" (agent_id text,agent_name text,department text,launched_on date)
+  ;
+    -- dbt seed --
+    
+          COPY "dev"."raw"."raw_agents" FROM '/home/runner/workspace/services/data-warehouse/seeds/raw_agents.csv' (FORMAT CSV, HEADER TRUE, DELIMITER ',')
+        
+
+;
+  

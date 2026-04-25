@@ -1,0 +1,17 @@
+agent_id,agent_name,department,launched_on
+cfo-agent,CFO Agent,finance,2026-01-15
+billing,Billing Agent,finance,2026-01-15
+forecaster,Forecaster,finance,2026-02-01
+legal-guide,Legal Guide,legal,2026-01-15
+compliance,Compliance Agent,legal,2026-02-01
+real-estate,Real Estate Advisor,vertical,2026-02-15
+customer-support,Customer Support,operations,2026-01-15
+admin,Admin Agent,operations,2026-01-15
+okr,OKR Coach,strategy,2026-02-01
+insights-analyzer,Insights Analyzer,strategy,2026-02-15
+persona-generator,Persona Generator,marketing,2026-02-15
+interview-simulator,Interview Simulator,hr,2026-03-01
+digital-twin,Digital Twin,strategy,2026-03-01
+code-interpreter,Code Interpreter,engineering,2026-03-15
+idea-validator,Idea Validator,strategy,2026-01-15
+plan-builder,Plan Builder,strategy,2026-01-15

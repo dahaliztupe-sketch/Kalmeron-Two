@@ -1,0 +1,40 @@
+version: 2
+
+sources:
+  - name: raw
+    description: "Raw seeds (or Firestore exports in production). One row per source-system event."
+    schema: raw
+    tables:
+      - name: raw_agents
+        description: "Catalog of all 16 agents."
+        columns:
+          - name: agent_id
+            tests: [unique, not_null]
+          - name: department
+            tests: [not_null]
+      - name: raw_events
+        description: "Lifecycle events (signup, first_question, first_value_delivered, churned)."
+        columns:
+          - name: event_id
+            tests: [unique, not_null]
+          - name: user_id
+            tests: [not_null]
+          - name: event_type
+            tests: [not_null]
+      - name: raw_costs
+        description: "Per-call LLM costs (one row per generate-content call)."
+        columns:
+          - name: cost_id
+            tests: [unique, not_null]
+          - name: cost_usd
+            tests: [not_null]
+      - name: raw_router_decisions
+        description: "Each routing decision with expected vs actual agent and confidence."
+        columns:
+          - name: decision_id
+            tests: [unique, not_null]
+      - name: raw_users
+        description: "Account-level data."
+        columns:
+          - name: user_id
+            tests: [unique, not_null]

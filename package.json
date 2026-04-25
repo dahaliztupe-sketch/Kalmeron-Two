@@ -20,7 +20,14 @@
     "eval:report": "tsx test/eval/run-eval.ts --json && python3 services/eval-analyzer/analyze.py",
     "lint:lexicon": "tsx scripts/lexicon-lint.ts",
     "verify:backup": "tsx scripts/verify-backup.ts",
-    "pdf-worker:dev": "cd services/pdf-worker && uvicorn main:app --host 0.0.0.0 --port 8000 --reload"
+    "pdf-worker:dev": "cd services/pdf-worker && uvicorn main:app --host 0.0.0.0 --port 8000 --reload",
+    "egypt-calc:dev": "cd services/egypt-calc && uvicorn main:app --host 0.0.0.0 --port 8008 --reload",
+    "egypt-calc:test": "cd services/egypt-calc && python -m pytest tests/ -q",
+    "llm-judge:dev": "cd services/llm-judge && uvicorn main:app --host 0.0.0.0 --port 8080 --reload",
+    "embeddings-worker:dev": "cd services/embeddings-worker && uvicorn main:app --host 0.0.0.0 --port 8099 --reload",
+    "dw:build": "cd services/data-warehouse && dbt build --profiles-dir .",
+    "dw:test": "cd services/data-warehouse && dbt test --profiles-dir .",
+    "dw:query": "cd services/data-warehouse && python -c \"import duckdb,sys; print(duckdb.connect('dev.duckdb',read_only=True).execute(sys.argv[1]).fetchdf().to_string())\""
   },
   "dependencies": {
     "@ag-ui/client": "^0.0.52",

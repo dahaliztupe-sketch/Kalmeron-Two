@@ -1,0 +1,19 @@
+decision_id,occurred_at,user_id,question_excerpt,expected_agent,routed_agent,confidence,latency_ms
+r001,2026-04-20T08:14:30Z,u001,حساب ضريبة الدخل لراتب 18 ألف,cfo-agent,cfo-agent,0.94,820
+r002,2026-04-20T09:03:00Z,u002,عقد إيجار محل تجاري,legal-guide,legal-guide,0.91,910
+r003,2026-04-21T10:05:00Z,u003,سعر متر التجمع الخامس,real-estate,real-estate,0.88,1100
+r004,2026-04-21T13:02:00Z,u004,عاوز اعمل فاتورة ضريبية,cfo-agent,billing,0.62,750
+r005,2026-04-22T07:35:00Z,u005,توقع مبيعات الربع القادم,forecaster,forecaster,0.93,1200
+r006,2026-04-22T14:12:00Z,u006,محاكاة مقابلة عمل,interview-simulator,interview-simulator,0.96,890
+r007,2026-04-23T08:03:00Z,u007,خطة عمل لمشروع كافيه,plan-builder,plan-builder,0.95,1300
+r008,2026-04-23T11:25:00Z,u008,تقييم فكرة تطبيق توصيل,idea-validator,idea-validator,0.92,800
+r009,2026-04-24T09:18:00Z,u009,موازنة شهرية لشركة ناشئة,cfo-agent,cfo-agent,0.94,870
+r010,2026-04-24T16:02:00Z,u010,شقة في مدينة نصر,real-estate,real-estate,0.89,1050
+r011,2026-04-24T11:00:00Z,u001,تغيير كلمة السر,admin,admin,0.97,420
+r012,2026-04-24T12:00:00Z,u002,مشكلة في الفاتورة,customer-support,billing,0.55,690
+r013,2026-04-24T13:00:00Z,u004,أهداف ربع سنوية,okr,okr,0.91,930
+r014,2026-04-24T14:00:00Z,u005,اشتراطات GDPR للسوق الأوروبي,compliance,compliance,0.88,1400
+r015,2026-04-24T15:00:00Z,u003,قانون الإيجار الجديد,legal-guide,real-estate,0.51,820
+r016,2026-04-24T15:30:00Z,u008,رؤية الشركة بعد 5 سنين,digital-twin,digital-twin,0.86,1500
+r017,2026-04-24T16:30:00Z,u007,دالة بايثون للترتيب,code-interpreter,code-interpreter,0.98,640
+r018,2026-04-24T17:00:00Z,u009,شخصية العميل المثالي,persona-generator,persona-generator,0.90,950
