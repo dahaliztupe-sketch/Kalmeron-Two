@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 interface Skill {
   id: string;
@@ -15,27 +15,30 @@ interface Skill {
   enabled: boolean;
 }
 
+const WORKSPACE_ID = "default";
+
 export default function SkillsPage() {
-  const [skills, setSkills] = useState<Skill[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [consolidating, setConsolidating] = useState(false);
-  const workspaceId = "default";
+  const queryClient = useQueryClient();
+  const skillsKey = ["skills", WORKSPACE_ID] as const;
 
-  async function load() {
-    setLoading(true);
-    const r = await fetch(`/api/skills?workspaceId=${workspaceId}`);
-    const j = await r.json();
-    setSkills(j.skills || []);
-    setLoading(false);
-  }
-  useEffect(() => { load(); }, []);
+  const { data: skills = [], isLoading: loading } = useQuery<Skill[]>({
+    queryKey: skillsKey,
+    queryFn: async () => {
+      const r = await fetch(`/api/skills?workspaceId=${WORKSPACE_ID}`);
+      const j = await r.json();
+      return j.skills || [];
+    },
+  });
 
-  async function consolidate() {
-    setConsolidating(true);
-    await fetch(`/api/skills`, { method: "POST", body: JSON.stringify({ workspaceId }) });
-    await load();
-    setConsolidating(false);
-  }
+  const consolidateMutation = useMutation({
+    mutationFn: async () => {
+      await fetch(`/api/skills`, {
+        method: "POST",
+        body: JSON.stringify({ workspaceId: WORKSPACE_ID }),
+      });
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: skillsKey }),
+  });
 
   return (
     <div className="p-6 max-w-6xl mx-auto">
@@ -45,11 +48,11 @@ export default function SkillsPage() {
           <p className="text-sm text-gray-500">شجرة تطور المساعدين عبر دورة التعلم الذاتي</p>
         </div>
         <button
-          onClick={consolidate}
-          disabled={consolidating}
+          onClick={() => consolidateMutation.mutate()}
+          disabled={consolidateMutation.isPending}
           className="px-4 py-2 rounded-lg bg-black text-white disabled:opacity-50"
         >
-          {consolidating ? "جارٍ الدمج..." : "دمج المهارات المتشابهة"}
+          {consolidateMutation.isPending ? "جارٍ الدمج..." : "دمج المهارات المتشابهة"}
         </button>
       </div>
 

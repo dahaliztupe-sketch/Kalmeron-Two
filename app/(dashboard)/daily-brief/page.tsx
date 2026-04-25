@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { motion } from "motion/react";
 import {
@@ -30,27 +31,24 @@ interface DailyBrief {
  * iteration will plug it into the LangGraph orchestrator.
  */
 export default function DailyBriefPage() {
-  const [brief, setBrief] = useState<DailyBrief | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
 
-  async function fetchBrief() {
-    setLoading(true);
-    setError(null);
-    try {
+  const {
+    data: brief,
+    isLoading: loading,
+    error,
+    refetch,
+    isRefetching,
+  } = useQuery<DailyBrief, Error>({
+    queryKey: ["daily-brief"],
+    queryFn: async () => {
       const res = await fetch("/api/daily-brief", { cache: "no-store" });
       if (!res.ok) throw new Error(`status ${res.status}`);
-      const json = (await res.json()) as DailyBrief;
-      setBrief(json);
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "تعذّر تحميل الإيجاز اليومي");
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  useEffect(() => { void fetchBrief(); }, []);
+      return (await res.json()) as DailyBrief;
+    },
+  });
+  const fetchBrief = () => refetch();
+  const isBusy = loading || isRefetching;
 
   function copy(idx: number, text: string) {
     void navigator.clipboard.writeText(text);
@@ -66,10 +64,10 @@ export default function DailyBriefPage() {
         </Link>
         <button
           onClick={() => void fetchBrief()}
-          disabled={loading}
+          disabled={isBusy}
           className="rounded-full border border-white/[0.08] px-4 py-2 text-xs text-neutral-300 hover:bg-white/[0.04] transition inline-flex items-center gap-2 disabled:opacity-50"
         >
-          <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`} />
+          <RefreshCw className={`w-3.5 h-3.5 ${isBusy ? "animate-spin" : ""}`} />
           تحديث
         </button>
       </div>
@@ -96,7 +94,7 @@ export default function DailyBriefPage() {
 
       {error && (
         <div className="rounded-2xl border border-red-500/20 bg-red-500/5 p-4 mb-6 text-red-200 text-sm">
-          تعذّر تحميل الإيجاز: {error}
+          تعذّر تحميل الإيجاز: {error.message}
         </div>
       )}
 

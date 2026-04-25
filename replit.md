@@ -24,6 +24,17 @@
 - **ما لم يُغيَّر عمداً:** أيّ كود منطق business، RTL، Firestore rules، CSP/security headers، API routes، Stripe/Fawry billing، sidecars. الـ codebase كان في حالة ممتازة سلفاً (تتبيث الـ rules محكم، الـ tests كلّها كانت تنجح، الـ docs شاملة) — هذه الجلسة قصرت على إعادة تفعيل أدوات الجودة فقط.
 - **متبقّي للجلسة القادمة (موثَّق هنا للأجيال):** 36 تحذير `set-state-in-effect` في 17 ملفّاً (`app/(dashboard)/...`, `components/...`) تحتاج هجرة تدريجيّة لـ TanStack Query أو `use()` hook لإلغاء النمط `useEffect(fetch+setState, [])` الكلاسيكي. ليست أخطاء، لكن React Compiler يبلغ عنها كانتقال لتجنّب cascading renders.
 
+### إضافة (نفس الجلسة) — هجرة 5 صفحات لـ TanStack Query + استعادة الـ sidecars
+- **`.pythonlibs/` كانت ممسوحة** بعد جلسات سابقة (`uvicorn: command not found`). أعدتُ تثبيت كل deps الـ Python للـ 4 sidecars عبر `installLanguagePackages` (fastapi, uvicorn[standard], pydantic, pypdf, python-multipart, regex, google-generativeai, hypothesis, pytest, fastembed, numpy). الأربعة الآن `RUNNING` على المنافذ 8000/8008/8080/8099.
+- **هجرة 5 صفحات من `useEffect+fetch+setState` إلى `useQuery`/`useMutation`:**
+  - `app/(dashboard)/settings/api-keys/page.tsx` — list/create/revoke عبر mutations + `invalidateQueries`.
+  - `app/(dashboard)/settings/webhooks/page.tsx` — نفس النمط للـ subscriptions.
+  - `app/(dashboard)/settings/usage/page.tsx` — `useQuery` للـ summary مع `enabled: !!workspaceId`.
+  - `app/(dashboard)/daily-brief/page.tsx` — استبدلتُ `fetchBrief()` يدوي بـ `useQuery` + `refetch()` لزر التحديث.
+  - `app/(dashboard)/skills/page.tsx` — `useQuery` للـ list + `useMutation` للـ consolidate.
+- **نمط workspaceId:** بدل `setState` داخل `useEffect` للـ fallback من localStorage إلى `user.uid`، استخدمتُ `useState(() => localStorage)` كـ lazy init + قيمة مشتقّة عند render: `const workspaceId = storedWorkspace || user?.uid || ""`. صفر cascading renders.
+- **التحقّق:** typecheck 0 errors ✅، lint 0 errors و 455 warnings (كان 473 — انخفض بـ 18 تحذيراً) ✅، tests 54/54 ✅، Next dev يعيد التشغيل في 619ms.
+
 ## Recent Major Updates (Session 2026-04-25 — Agent-vs-Human Task Split + Egyptian Pricing + Fawry + Sidecar Deployment)
 **Why:** المستخدم طلب: «قسم الـ 30 مهمّة لما تقدر عليه vs ما يحتاجني، نفّذ كل ما تقدر عليه في جلسة واحدة، وضع المتبقّي في PDF». نفّذتُ كل المهام التي لا تحتاج تدخّل يدوي خارجي، وولّدتُ PDF عربي بالمهام البشريّة المتبقّية.
 

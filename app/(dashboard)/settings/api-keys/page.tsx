@@ -1,5 +1,6 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { PageShell, Card, Skeleton, EmptyState, ErrorBlock } from "@/components/ui/page-shell";
 import { apiJson } from "@/src/lib/api-client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -26,67 +27,76 @@ interface Key {
 
 export default function ApiKeysPage() {
   const { user } = useAuth();
-  const [workspaceId, setWorkspaceId] = useState("");
-  const [keys, setKeys] = useState<Key[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-  const [creating, setCreating] = useState(false);
+  const queryClient = useQueryClient();
+
+  // Resolve workspaceId from localStorage on the client (lazy init), then
+  // fall back to user.uid via a derived value — no effect, no cascading render.
+  const [storedWorkspace] = useState<string>(() => {
+    if (typeof window === "undefined") return "";
+    return localStorage.getItem("active_workspace") || "";
+  });
+  const workspaceId = storedWorkspace || user?.uid || "";
+
   const [name, setName] = useState("");
   const [selectedScopes, setSelectedScopes] = useState<string[]>(["agent:run"]);
   const [newKey, setNewKey] = useState<string | null>(null);
 
-  useEffect(() => {
-    const wid = localStorage.getItem("active_workspace") || user?.uid || "";
-    setWorkspaceId(wid);
-  }, [user]);
+  const keysQueryKey = ["api-keys", workspaceId] as const;
+  const {
+    data: keys = [],
+    isLoading,
+    error,
+    refetch,
+  } = useQuery<Key[], Error>({
+    queryKey: keysQueryKey,
+    enabled: !!workspaceId,
+    queryFn: async () => {
+      const res = await apiJson<{ keys: Key[] }>(
+        `/api/account/api-keys?workspaceId=${encodeURIComponent(workspaceId)}`
+      );
+      return res.keys || [];
+    },
+  });
 
-  async function load() {
-    if (!workspaceId) return;
-    setLoading(true);
-    setError("");
-    try {
-      const res = await apiJson<{ keys: Key[] }>(`/api/account/api-keys?workspaceId=${encodeURIComponent(workspaceId)}`);
-      setKeys(res.keys || []);
-    } catch (e: any) {
-      setError(e.message);
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  useEffect(() => {
-    if (workspaceId) load();
-  }, [workspaceId]);
-
-  async function create() {
-    if (!name.trim() || selectedScopes.length === 0) return;
-    setCreating(true);
-    try {
-      const res = await apiJson<{ key: { raw: string; prefix: string } }>("/api/account/api-keys", {
-        method: "POST",
-        body: JSON.stringify({ workspaceId, name, scopes: selectedScopes }),
-      });
+  const createMutation = useMutation({
+    mutationFn: async () => {
+      return apiJson<{ key: { raw: string; prefix: string } }>(
+        "/api/account/api-keys",
+        {
+          method: "POST",
+          body: JSON.stringify({ workspaceId, name, scopes: selectedScopes }),
+        }
+      );
+    },
+    onSuccess: (res) => {
       setNewKey(res.key.raw);
       setName("");
-      load();
       toast.success("تم إنشاء المفتاح");
-    } catch (e: any) {
-      toast.error(e.message);
-    } finally {
-      setCreating(false);
-    }
-  }
+      queryClient.invalidateQueries({ queryKey: keysQueryKey });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
 
-  async function revoke(id: string) {
-    if (!confirm("هل أنت متأكد من إبطال هذا المفتاح؟")) return;
-    try {
-      await apiJson(`/api/account/api-keys/${id}`, { method: "DELETE" });
+  const revokeMutation = useMutation({
+    mutationFn: async (id: string) => {
+      return apiJson(`/api/account/api-keys/${id}`, { method: "DELETE" });
+    },
+    onSuccess: () => {
       toast.success("تم الإبطال");
-      load();
-    } catch (e: any) {
-      toast.error(e.message);
-    }
-  }
+      queryClient.invalidateQueries({ queryKey: keysQueryKey });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const onRevoke = (id: string) => {
+    if (!confirm("هل أنت متأكد من إبطال هذا المفتاح؟")) return;
+    revokeMutation.mutate(id);
+  };
+
+  const onCreate = () => {
+    if (!name.trim() || selectedScopes.length === 0) return;
+    createMutation.mutate();
+  };
 
   return (
     <PageShell title="مفاتيح API" subtitle="إنشاء وإدارة مفاتيح الوصول البرمجية">
@@ -129,20 +139,20 @@ export default function ApiKeysPage() {
             </div>
           </div>
           <button
-            onClick={create}
-            disabled={creating || !name.trim()}
+            onClick={onCreate}
+            disabled={createMutation.isPending || !name.trim()}
             className="px-4 py-2 bg-black text-white rounded disabled:opacity-50 self-start"
           >
-            {creating ? "جارٍ الإنشاء..." : "إنشاء مفتاح"}
+            {createMutation.isPending ? "جارٍ الإنشاء..." : "إنشاء مفتاح"}
           </button>
         </div>
       </Card>
       <Card>
         <h2 className="font-semibold mb-3">المفاتيح الحالية</h2>
-        {loading ? (
+        {isLoading ? (
           <Skeleton className="h-24" />
         ) : error ? (
-          <ErrorBlock error={error} retry={load} />
+          <ErrorBlock error={error.message} retry={() => refetch()} />
         ) : keys.length === 0 ? (
           <EmptyState title="لا توجد مفاتيح بعد" icon="🔑" />
         ) : (
@@ -157,7 +167,11 @@ export default function ApiKeysPage() {
                   </div>
                 </div>
                 {!k.revoked && (
-                  <button onClick={() => revoke(k.id)} className="text-xs text-red-600 hover:underline">
+                  <button
+                    onClick={() => onRevoke(k.id)}
+                    disabled={revokeMutation.isPending}
+                    className="text-xs text-red-600 hover:underline disabled:opacity-50"
+                  >
                     إبطال
                   </button>
                 )}

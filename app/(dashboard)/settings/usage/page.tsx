@@ -1,5 +1,6 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { PageShell, Card, Skeleton, ErrorBlock } from "@/components/ui/page-shell";
 import { apiJson } from "@/src/lib/api-client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -28,36 +29,35 @@ function Bar({ label, value, max, pct }: { label: string; value: number | string
 
 export default function UsagePage() {
   const { user } = useAuth();
-  const [workspaceId, setWorkspaceId] = useState("");
-  const [data, setData] = useState<Summary | null>(null);
-  const [err, setErr] = useState("");
-  const [loading, setLoading] = useState(true);
+  const [storedWorkspace] = useState<string>(() => {
+    if (typeof window === "undefined") return "";
+    return localStorage.getItem("active_workspace") || "";
+  });
+  const workspaceId = storedWorkspace || user?.uid || "";
 
-  useEffect(() => {
-    setWorkspaceId(localStorage.getItem("active_workspace") || user?.uid || "");
-  }, [user]);
-
-  async function load() {
-    if (!workspaceId) return;
-    setLoading(true);
-    try {
-      const r = await apiJson<{ summary: Summary }>(`/api/account/usage?workspaceId=${encodeURIComponent(workspaceId)}`);
-      setData(r.summary);
-      setErr("");
-    } catch (e: any) {
-      setErr(e.message);
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  useEffect(() => { if (workspaceId) load(); }, [workspaceId]);
+  const {
+    data,
+    isLoading,
+    error,
+    refetch,
+  } = useQuery<Summary, Error>({
+    queryKey: ["usage", workspaceId],
+    enabled: !!workspaceId,
+    queryFn: async () => {
+      const r = await apiJson<{ summary: Summary }>(
+        `/api/account/usage?workspaceId=${encodeURIComponent(workspaceId)}`
+      );
+      return r.summary;
+    },
+  });
 
   return (
     <PageShell title="الاستخدام والحصص" subtitle="استهلاكك الحالي مقارنةً بحدود الباقة">
-      {loading ? <Skeleton className="h-64" />
-        : err ? <ErrorBlock error={err} retry={load} />
-        : data && (
+      {isLoading ? (
+        <Skeleton className="h-64" />
+      ) : error ? (
+        <ErrorBlock error={error.message} retry={() => refetch()} />
+      ) : data && (
         <Card>
           <div className="mb-4">
             <span className="text-xs text-gray-500">الباقة الحالية</span>

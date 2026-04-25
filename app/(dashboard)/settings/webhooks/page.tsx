@@ -1,5 +1,6 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { PageShell, Card, Skeleton, EmptyState, ErrorBlock } from "@/components/ui/page-shell";
 import { apiJson } from "@/src/lib/api-client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -17,62 +18,74 @@ interface Sub {
 
 export default function WebhooksPage() {
   const { user } = useAuth();
-  const [workspaceId, setWorkspaceId] = useState("");
-  const [subs, setSubs] = useState<Sub[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const queryClient = useQueryClient();
+
+  const [storedWorkspace] = useState<string>(() => {
+    if (typeof window === "undefined") return "";
+    return localStorage.getItem("active_workspace") || "";
+  });
+  const workspaceId = storedWorkspace || user?.uid || "";
+
   const [url, setUrl] = useState("");
   const [selected, setSelected] = useState<string[]>([]);
   const [newSecret, setNewSecret] = useState<string | null>(null);
 
-  useEffect(() => {
-    setWorkspaceId(localStorage.getItem("active_workspace") || user?.uid || "");
-  }, [user]);
+  const subsQueryKey = ["webhooks", workspaceId] as const;
+  const {
+    data: subs = [],
+    isLoading,
+    error,
+    refetch,
+  } = useQuery<Sub[], Error>({
+    queryKey: subsQueryKey,
+    enabled: !!workspaceId,
+    queryFn: async () => {
+      const res = await apiJson<{ subscriptions: Sub[] }>(
+        `/api/account/webhooks?workspaceId=${encodeURIComponent(workspaceId)}`
+      );
+      return res.subscriptions || [];
+    },
+  });
 
-  async function load() {
-    if (!workspaceId) return;
-    setLoading(true);
-    try {
-      const res = await apiJson<{ subscriptions: Sub[] }>(`/api/account/webhooks?workspaceId=${encodeURIComponent(workspaceId)}`);
-      setSubs(res.subscriptions || []);
-      setError("");
-    } catch (e: any) {
-      setError(e.message);
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  useEffect(() => {
-    if (workspaceId) load();
-  }, [workspaceId]);
-
-  async function create() {
-    if (!url.trim() || selected.length === 0) return;
-    try {
-      const res = await apiJson<{ subscription: { secret: string } }>("/api/account/webhooks", {
-        method: "POST",
-        body: JSON.stringify({ workspaceId, url, events: selected }),
-      });
+  const createMutation = useMutation({
+    mutationFn: async () => {
+      return apiJson<{ subscription: { secret: string } }>(
+        "/api/account/webhooks",
+        {
+          method: "POST",
+          body: JSON.stringify({ workspaceId, url, events: selected }),
+        }
+      );
+    },
+    onSuccess: (res) => {
       setNewSecret(res.subscription.secret);
       setUrl("");
       setSelected([]);
-      load();
       toast.success("تم الاشتراك");
-    } catch (e: any) {
-      toast.error(e.message);
-    }
-  }
+      queryClient.invalidateQueries({ queryKey: subsQueryKey });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
 
-  async function revoke(id: string) {
+  const revokeMutation = useMutation({
+    mutationFn: async (id: string) => {
+      return apiJson(`/api/account/webhooks/${id}`, { method: "DELETE" });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: subsQueryKey });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const onCreate = () => {
+    if (!url.trim() || selected.length === 0) return;
+    createMutation.mutate();
+  };
+
+  const onRevoke = (id: string) => {
     if (!confirm("إيقاف هذا الاشتراك؟")) return;
-    try {
-      await apiJson(`/api/account/webhooks/${id}`, { method: "DELETE" });
-      load();
-    } catch (e: any) {
-      toast.error(e.message);
-    }
-  }
+    revokeMutation.mutate(id);
+  };
 
   return (
     <PageShell title="الـ Webhooks" subtitle="تلقى أحداث النظام مباشرة على خادمك">
@@ -111,20 +124,20 @@ export default function WebhooksPage() {
             ))}
           </div>
           <button
-            onClick={create}
-            disabled={!url.trim() || selected.length === 0}
+            onClick={onCreate}
+            disabled={createMutation.isPending || !url.trim() || selected.length === 0}
             className="px-4 py-2 bg-black text-white rounded disabled:opacity-50 self-start"
           >
-            إنشاء اشتراك
+            {createMutation.isPending ? "جارٍ الإنشاء..." : "إنشاء اشتراك"}
           </button>
         </div>
       </Card>
       <Card>
         <h2 className="font-semibold mb-3">الاشتراكات الحالية</h2>
-        {loading ? (
+        {isLoading ? (
           <Skeleton className="h-24" />
         ) : error ? (
-          <ErrorBlock error={error} retry={load} />
+          <ErrorBlock error={error.message} retry={() => refetch()} />
         ) : subs.length === 0 ? (
           <EmptyState title="لا توجد اشتراكات" icon="📡" />
         ) : (
@@ -137,7 +150,11 @@ export default function WebhooksPage() {
                   <div className="text-xs text-gray-400">{s.active ? "نشط" : "موقوف"}</div>
                 </div>
                 {s.active && (
-                  <button onClick={() => revoke(s.id)} className="text-xs text-red-600 hover:underline">
+                  <button
+                    onClick={() => onRevoke(s.id)}
+                    disabled={revokeMutation.isPending}
+                    className="text-xs text-red-600 hover:underline disabled:opacity-50"
+                  >
                     إيقاف
                   </button>
                 )}
