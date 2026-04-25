@@ -1,6 +1,17 @@
 // @ts-nocheck
 import { initializeApp, getApps, getApp, FirebaseApp } from 'firebase/app';
-import { getAuth, GoogleAuthProvider, Auth, User } from 'firebase/auth';
+import {
+  initializeAuth,
+  getAuth,
+  GoogleAuthProvider,
+  Auth,
+  User,
+  indexedDBLocalPersistence,
+  browserLocalPersistence,
+  browserSessionPersistence,
+  inMemoryPersistence,
+  browserPopupRedirectResolver,
+} from 'firebase/auth';
 import { getFirestore, Firestore } from 'firebase/firestore';
 import { quickFirebase } from '@tthbfo2/firebase-cost-trimmer';
 
@@ -32,7 +43,34 @@ function getFirebaseApp() {
 app = getFirebaseApp();
 const optimizer = quickFirebase(app);
 db = firestoreDatabaseId ? getFirestore(app, firestoreDatabaseId) : getFirestore(app);
-auth = getAuth(app);
+
+// ─── Auth with explicit persistence chain ───────────────────────────────
+// Default `getAuth()` relies on indexedDBLocalPersistence only, which can fail in
+// private mode, in-app browsers (Telegram/WhatsApp/Facebook), or when storage is
+// blocked — causing users to be logged out on every page load. We explicitly try
+// indexedDB → localStorage → sessionStorage → memory so auth always persists
+// when *any* storage is available, and never crashes when none is.
+if (typeof window !== 'undefined') {
+  try {
+    auth = initializeAuth(app, {
+      persistence: [
+        indexedDBLocalPersistence,
+        browserLocalPersistence,
+        browserSessionPersistence,
+        inMemoryPersistence,
+      ],
+      // Required so signInWithPopup / signInWithRedirect / getRedirectResult
+      // work without throwing auth/argument-error.
+      popupRedirectResolver: browserPopupRedirectResolver,
+    });
+  } catch {
+    // initializeAuth throws if already initialized (HMR, double-import) — fall back.
+    auth = getAuth(app);
+  }
+} else {
+  // SSR: no browser storage, just use memory.
+  auth = getAuth(app);
+}
 
 export function registerUserForCaching(user: User) {
   optimizer.registerUser({

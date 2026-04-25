@@ -147,7 +147,7 @@ function TopNav() {
               <Link href="/auth/login" className="text-sm text-neutral-300 hover:text-white px-4 py-2 rounded-full transition-colors flex items-center gap-2">
                 <LogIn className="w-4 h-4" /> دخول
               </Link>
-              <Link href="/auth/signup" className="text-sm font-bold text-white btn-primary px-5 py-2.5 rounded-full flex items-center gap-2">
+              <Link href="/auth/signup" prefetch className="text-sm font-bold text-white btn-primary px-5 py-2.5 rounded-full flex items-center gap-2">
                 ابدأ مجاناً <ArrowLeft className="w-4 h-4" />
               </Link>
             </>
@@ -180,8 +180,8 @@ function TopNav() {
                 ))}
               </nav>
               <div className="flex flex-col gap-2 pt-4 border-t border-white/10">
-                <Link href="/auth/login" className="text-center text-base text-white px-5 py-3 rounded-xl border border-white/10 hover:bg-white/5">تسجيل الدخول</Link>
-                <Link href="/auth/signup" className="btn-primary text-center text-base font-bold px-5 py-3 rounded-xl">ابدأ مجاناً</Link>
+                <Link href="/auth/login" prefetch className="text-center text-base text-white px-5 py-3 rounded-xl border border-white/10 hover:bg-white/5">تسجيل الدخول</Link>
+                <Link href="/auth/signup" prefetch className="btn-primary text-center text-base font-bold px-5 py-3 rounded-xl">ابدأ مجاناً</Link>
               </div>
             </motion.div>
           </motion.div>
@@ -217,9 +217,9 @@ function Hero() {
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_40%_at_80%_60%,rgba(56,189,248,0.10),transparent)]" />
       </div>
 
-      <div className="relative max-w-6xl mx-auto px-4 pt-12 pb-20 text-center">
+      <div className="relative max-w-6xl mx-auto px-4 sm:px-6 pt-8 sm:pt-12 pb-16 sm:pb-20 text-center">
         <motion.div initial={{ opacity: 0, scale: 0.85 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.7, ease: "circOut" }}
-          className="relative w-24 h-24 md:w-32 md:h-32 mx-auto mb-8"
+          className="relative w-20 h-20 sm:w-24 sm:h-24 md:w-32 md:h-32 mx-auto mb-6 sm:mb-8"
         >
           <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-cyan-500/40 via-indigo-500/40 to-fuchsia-500/40 blur-2xl" />
           <div className="relative w-full h-full rounded-3xl border border-white/10 shadow-2xl bg-[#070A18]/80 backdrop-blur-md flex items-center justify-center overflow-hidden">
@@ -228,29 +228,29 @@ function Hero() {
         </motion.div>
 
         <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
-          className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-cyan-400/25 bg-cyan-500/10 text-[11px] md:text-xs font-semibold uppercase tracking-[0.18em] text-cyan-200 mb-6"
+          className="inline-flex max-w-full items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 rounded-full border border-cyan-400/25 bg-cyan-500/10 text-[10px] sm:text-[11px] md:text-xs font-semibold uppercase tracking-[0.12em] sm:tracking-[0.18em] text-cyan-200 mb-5 sm:mb-6"
         >
-          <Sparkles className="w-3 h-3 text-cyan-300" />
-          <span>كلميرون · مقرّ عمليات شركتك الذكي</span>
+          <Sparkles className="w-3 h-3 text-cyan-300 shrink-0" />
+          <span className="truncate">كلميرون · مقرّ عمليات شركتك الذكي</span>
         </motion.div>
 
         <motion.h1 initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}
-          className="font-display font-extrabold tracking-tight leading-[1.1] mb-5 break-words [text-wrap:balance]"
-          style={{ fontSize: "clamp(1.85rem, 1.1rem + 4.2vw, 5rem)" }}
+          className="font-display font-extrabold tracking-tight leading-[1.1] mb-4 sm:mb-5 break-words [text-wrap:balance]"
+          style={{ fontSize: "clamp(1.6rem, 1rem + 4.2vw, 5rem)" }}
         >
           <span className="block text-white">فريقك المؤسس</span>
           <span className="block brand-gradient-text pb-2">يعمل ٢٤/٧ لصالحك</span>
         </motion.h1>
 
         <motion.p initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}
-          className="text-[15px] sm:text-[17px] md:text-lg text-neutral-300 max-w-2xl mx-auto mb-6 leading-[1.85]"
+          className="text-sm sm:text-[17px] md:text-lg text-neutral-300 max-w-2xl mx-auto mb-6 leading-[1.8] sm:leading-[1.85] px-1"
         >
           بدل ما تدفع آلاف الجنيهات لمستشار مالي ومحامي ومحلل سوق —{" "}
           <span className="text-white font-bold">١٦ مساعداً ذكياً</span> يعملون كفريقك كاملاً، بالعربية الأصيلة.
         </motion.p>
 
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}
-          className="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 sm:gap-x-5 text-[12px] font-medium text-neutral-400 mb-8 px-2"
+          className="flex flex-wrap items-center justify-center gap-x-2.5 gap-y-2 sm:gap-x-5 text-[11px] sm:text-[12px] font-medium text-neutral-400 mb-7 sm:mb-8 px-2"
         >
           <span className="flex items-center gap-1.5 whitespace-nowrap"><ShieldCheck className="w-3.5 h-3.5 text-emerald-400 shrink-0" /> متوافق مع قانون ١٥١</span>
           <span className="hidden sm:inline-block w-1 h-1 rounded-full bg-white/15" />
@@ -294,12 +294,12 @@ function Hero() {
         </motion.div>
 
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.55 }}
-          className="flex flex-col sm:flex-row items-center justify-center gap-3 mt-8"
+          className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 mt-8 max-w-md sm:max-w-none mx-auto"
         >
-          <Link href="/auth/signup" className="btn-primary flex items-center gap-2 text-base font-bold px-8 py-4 rounded-full">
+          <Link href="/auth/signup" prefetch className="btn-primary flex items-center justify-center gap-2 text-base font-bold px-6 sm:px-8 py-3.5 sm:py-4 rounded-full">
             ابدأ مجاناً الآن <ArrowLeft className="w-5 h-5" />
           </Link>
-          <a href="#demo" className="btn-ghost flex items-center gap-2 text-base px-8 py-4 rounded-full">
+          <a href="#demo" className="btn-ghost flex items-center justify-center gap-2 text-base px-6 sm:px-8 py-3.5 sm:py-4 rounded-full">
             <Play className="w-4 h-4 text-cyan-400" /> شوف تجربة حية
           </a>
         </motion.div>

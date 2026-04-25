@@ -1,5 +1,35 @@
 # Kalmeron AI (ai-studio-applet)
 
+## Recent Major Updates (Session 2026-04-25 — Auth Reliability + Mobile Polish)
+**Why:** المستخدم بلّغ بثلاث مشاكل: «الـ responsive في الموبايل مش مظبوط»، «عند الضغط على ابدأ مجاناً/إنشاء حساب يأخذ وقت طويل في التحميل»، «لا يحتفظ بجلسة تسجيل الدخول».
+
+- **`src/lib/firebase.ts` — Persistence chain صريحة:** كان `getAuth(app)` يعتمد على `indexedDBLocalPersistence` فقط، تفشل في الـ private mode، الـ in-app browsers (Telegram/WhatsApp/Facebook)، أو حين تكون الـ storage محجوبة → كل زيارة المستخدم يطلع منها logged out. استبدلتُ بـ `initializeAuth(app, { persistence: [indexedDBLocalPersistence, browserLocalPersistence, browserSessionPersistence, inMemoryPersistence], popupRedirectResolver: browserPopupRedirectResolver })`. هذا يضمن أنّ الجلسة تستمرّ في **أيّ** نوع تخزين متاح، ويمنع `auth/argument-error` من `getRedirectResult`.
+
+- **`contexts/AuthContext.tsx` — تدفق mobile-friendly:**
+  - أضفت `getRedirectResult(auth)` على mount لاستلام نتيجة الـ redirect-flow.
+  - `signInWithGoogle` الآن يكتشف الموبايل/الـ in-app-browsers (`Android|iPhone|FBAN|FBAV|Instagram|...`) ويستخدم `signInWithRedirect` بدل `signInWithPopup` — لأنّ الـ popups بتفشل صامتة على الموبايل.
+  - عند `auth/popup-blocked` يقع fallback تلقائي إلى redirect بدل ما نطلب من المستخدم تفعيل الـ popups.
+  - **الإصلاح الأهم لمشكلة «التحميل الطويل»:** كان `setLoading(false)` ينتظر `getDoc + setDoc` في Firestore (3-8 ثواني على الموبايل بعد signup ناجح). فصلتُ خلق وثيقة المستخدم عن الـ loading flag — الآن `setUser + setLoading(false)` فوراً عند `onAuthStateChanged`، وخلق الوثيقة fire-and-forget في الخلفية.
+  - أضفت رسالة عربية لـ `auth/network-request-failed`.
+
+- **`app/auth/login/page.tsx` و `app/auth/signup/page.tsx` — UX رد فعل فوري:**
+  - حذفت الـ full-screen loader اللي كان يحجب الصفحة كاملة لمدّة 1-3 ثواني خلال bootstrap الـ Firebase Auth. الصفحات الآن ترسم النموذج مباشرة.
+  - الزرّ يعرض حالة `signingIn` (Loader spinner + «جارِ تسجيل الدخول/الحساب...») فقط حين يضغط المستخدم.
+  - لمّا الـ context يكتشف user مسجَّل، الزرّ يعرض «جارِ التحويل...» قبل الـ `router.replace`.
+  - تحسين responsive: padding/rounded/gap أصغر على الموبايل (`px-4 sm:px-6`, `rounded-3xl sm:rounded-[2.5rem]`, `p-6 sm:p-8 md:p-10`).
+
+- **`app/page.tsx` — Hero mobile-tight:**
+  - الـ pill «كلميرون · مقرّ عمليات شركتك الذكي» كان يطفح على الشاشات الضيّقة. الآن `max-w-full + truncate + tracking-[0.12em] sm:tracking-[0.18em]` لاحتواء النص.
+  - clamp الـ heading نزل من `1.85rem` → `1.6rem` كحدّ أدنى ليتنفّس على الموبايل.
+  - الـ trust badges: gap أضيق + text أصغر على الموبايل (`gap-x-2.5 sm:gap-x-5`, `text-[11px] sm:text-[12px]`).
+  - الـ CTA زرّين: `items-stretch sm:items-center + max-w-md sm:max-w-none mx-auto` ليبقوا منظَّمين عمودياً على الموبايل.
+  - أضفت `prefetch` لكلّ روابط `/auth/signup` و `/auth/login` (Nav desktop + Mobile menu + Hero CTA) → Next.js يحمّل الـ chunk سلفاً، الزرّ بيتفاعل فوراً.
+
+- **التحقّق:** `npx tsc --noEmit` → 0 errors ✅ | `npm run test` → 54/54 ✅ | الصفحات /auth/signup و /auth/login تستجيب 200 وترسم النموذج بدون انتظار loader.
+
+- **مهام Firebase Console اليدوية المطلوبة من المستخدم:** انظر `docs/FIREBASE_MANUAL_TASKS.md` (تمّ إنشاؤه).
+
+
 ## Recent Major Updates (Session 2026-04-25 — Landing-Page Simplification + Performance)
 **Why:** المستخدم طلب: «اجعل الموقع أقل تعقيداً، الصفحة بطيئة، طبّق أكبر قدر ممكن من التحسينات في جلسة واحدة».
 

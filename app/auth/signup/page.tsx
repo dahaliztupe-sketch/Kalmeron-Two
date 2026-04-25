@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { motion, useReducedMotion } from "motion/react";
@@ -20,10 +20,11 @@ export default function SignUpPage() {
   const { user, dbUser, loading, signInWithGoogle } = useAuth();
   const router = useRouter();
   const reduce = useReducedMotion();
+  const [signingIn, setSigningIn] = useState(false);
 
   useEffect(() => {
     if (!loading && user) {
-      // attempt to attribute any captured referral code
+      // attempt to attribute any captured referral code (non-blocking)
       user.getIdToken().then((t) => attributeReferralIfAny(t)).catch(() => {});
       if (!dbUser?.profile_completed) router.replace("/onboarding");
       else router.replace("/dashboard");
@@ -31,23 +32,28 @@ export default function SignUpPage() {
   }, [user, dbUser, loading, router]);
 
   const handleGoogleSignUp = async () => {
-    try { await signInWithGoogle(); } catch { /* toast */ }
+    if (signingIn) return;
+    setSigningIn(true);
+    try {
+      await signInWithGoogle();
+    } catch {
+      /* toast already shown in context */
+    } finally {
+      setSigningIn(false);
+    }
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen mesh-gradient flex items-center justify-center">
-        <Loader2 className="w-8 h-8 text-cyan-400 animate-spin" />
-      </div>
-    );
-  }
+  // Render the form immediately. Show a small redirecting state only when we
+  // detect an authenticated user and are about to navigate. This avoids the
+  // long full-screen spinner during Firebase bootstrap.
+  const isRedirecting = !loading && !!user;
 
   return (
-    <div className="min-h-screen mesh-gradient aurora-bg starfield flex items-center justify-center relative overflow-hidden" dir="rtl">
+    <div className="min-h-screen mesh-gradient aurora-bg starfield flex items-center justify-center relative overflow-hidden px-4 sm:px-6" dir="rtl">
       <Suspense fallback={null}>
         <ReferralCapture />
       </Suspense>
-      <Link href="/" className="absolute top-6 right-6 z-20 inline-flex items-center gap-2 text-sm text-neutral-400 hover:text-white transition-colors">
+      <Link href="/" className="absolute top-4 right-4 sm:top-6 sm:right-6 z-20 inline-flex items-center gap-2 text-sm text-neutral-400 hover:text-white transition-colors">
         <ArrowLeft className="w-4 h-4 icon-flip" /> العودة للرئيسية
       </Link>
 
@@ -55,18 +61,18 @@ export default function SignUpPage() {
         initial={reduce ? { opacity: 0 } : { opacity: 0, y: 20 }}
         animate={reduce ? { opacity: 1 } : { opacity: 1, y: 0 }}
         transition={{ duration: reduce ? 0.2 : 0.5 }}
-        className="w-full max-w-md z-10 p-6"
+        className="w-full max-w-md z-10 py-6"
       >
-        <div className="glass-panel rounded-[2.5rem] p-8 md:p-10 shadow-2xl text-center space-y-7">
-          <div className="flex flex-col items-center gap-5">
-            <div className="relative w-20 h-20">
+        <div className="glass-panel rounded-3xl sm:rounded-[2.5rem] p-6 sm:p-8 md:p-10 shadow-2xl text-center space-y-6 sm:space-y-7">
+          <div className="flex flex-col items-center gap-4 sm:gap-5">
+            <div className="relative w-16 h-16 sm:w-20 sm:h-20">
               <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-cyan-500/40 via-indigo-500/40 to-fuchsia-500/40 blur-2xl logo-halo" />
               <div className="relative w-full h-full rounded-2xl border border-white/10 bg-[#070A18]/70 flex items-center justify-center">
                 <Image src="/brand/kalmeron-mark.svg" alt="Kalmeron AI" width={120} height={120} className="w-[78%] h-[78%] object-contain" priority />
               </div>
             </div>
             <div>
-              <h1 className="font-display text-3xl font-extrabold text-white mb-2">انضم إلى كلميرون</h1>
+              <h1 className="font-display text-2xl sm:text-3xl font-extrabold text-white mb-2">انضم إلى كلميرون</h1>
               <p className="text-neutral-400 text-sm leading-relaxed">
                 ابدأ رحلتك مع فريق مساعدين ذكي يعمل لصالحك.
               </p>
@@ -86,10 +92,20 @@ export default function SignUpPage() {
 
           <button
             onClick={handleGoogleSignUp}
-            className="w-full flex items-center justify-center gap-3 h-14 rounded-2xl bg-white text-black font-bold text-base hover:bg-neutral-100 transition-all hover:scale-[1.02] active:scale-[0.99] shadow-lg"
+            disabled={signingIn || loading || isRedirecting}
+            className="w-full flex items-center justify-center gap-3 h-14 rounded-2xl bg-white text-black font-bold text-base hover:bg-neutral-100 transition-all hover:scale-[1.02] active:scale-[0.99] shadow-lg disabled:opacity-70 disabled:cursor-wait disabled:hover:scale-100"
           >
-            <Globe className="w-5 h-5" />
-            التسجيل باستخدام Google
+            {signingIn || isRedirecting ? (
+              <>
+                <Loader2 className="w-5 h-5 animate-spin" />
+                {isRedirecting ? "جارِ التحويل..." : "جارِ إنشاء الحساب..."}
+              </>
+            ) : (
+              <>
+                <Globe className="w-5 h-5" />
+                التسجيل باستخدام Google
+              </>
+            )}
           </button>
 
           <p className="text-neutral-400 text-sm">
