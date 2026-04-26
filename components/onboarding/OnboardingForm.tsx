@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { doc, updateDoc } from "firebase/firestore";
@@ -57,8 +57,14 @@ const STEPS = [
 ];
 
 export function OnboardingForm() {
-  const { user, refreshDBUser } = useAuth();
+  const { user, mergeDBUser } = useAuth();
   const router = useRouter();
+
+  // Prefetch the dashboard route as soon as the form mounts so the post-submit
+  // navigation feels instant instead of waiting on the dashboard bundle.
+  useEffect(() => {
+    try { router.prefetch("/dashboard"); } catch {}
+  }, [router]);
 
   const [step, setStep] = useState(0);
   const [name, setName] = useState(user?.displayName?.split(" ")[0] || "");
@@ -117,11 +123,19 @@ export function OnboardingForm() {
         profile_completed: true,
         onboarded_at: new Date(),
       });
-      await refreshDBUser();
+      // Optimistically merge the new profile into the auth context so the
+      // AuthGuard on /dashboard passes immediately — no extra Firestore
+      // round-trip and no perceived hang on slow mobile connections.
+      mergeDBUser({
+        name,
+        startup_stage: stage,
+        industry,
+        governorate: location,
+        profile_completed: true,
+      });
       router.replace("/dashboard");
     } catch (err) {
       console.error(err);
-    } finally {
       setLoading(false);
     }
   };

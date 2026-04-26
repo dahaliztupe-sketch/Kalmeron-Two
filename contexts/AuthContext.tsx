@@ -31,6 +31,7 @@ interface AuthContextType {
   signInWithGoogle: () => Promise<void>;
   signOut: () => Promise<void>;
   refreshDBUser: () => Promise<void>;
+  mergeDBUser: (patch: Partial<DBUser>) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -168,8 +169,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  // Optimistic local merge — used by flows like onboarding submit so the UI can
+  // proceed without waiting for an extra Firestore round-trip.
+  const mergeDBUser = (patch: Partial<DBUser>) => {
+    setDbUser((prev) => (prev ? { ...prev, ...patch } : prev));
+  };
+
   return (
-    <AuthContext.Provider value={{ user, dbUser, loading, signInWithGoogle, signOut, refreshDBUser }}>
+    <AuthContext.Provider value={{ user, dbUser, loading, signInWithGoogle, signOut, refreshDBUser, mergeDBUser }}>
       {children}
     </AuthContext.Provider>
   );
