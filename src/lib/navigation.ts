@@ -6,6 +6,7 @@ import {
   Building2, ScrollText, Lightbulb, Store, User as UserIcon,
   Target, Brain, CreditCard, Inbox as InboxIcon, Sparkles, Cpu,
   BarChart3, Calculator, LayoutTemplate, Layers, Mic, Eye, ShieldCheck, BookOpen,
+  AlertTriangle, HandHeart, Compass,
 } from "lucide-react";
 
 export type NavItem = {
@@ -60,6 +61,17 @@ export const NAV_SECTIONS: NavSection[] = [
       { href: "/investor/health", label: "فحص جاهزية العرض", icon: ShieldCheck },
       { href: "/investor/demo-mode", label: "وضع العرض", icon: Eye },
       { href: "/investor/guide", label: "دليل المتحدّث", icon: BookOpen },
+    ],
+  },
+  {
+    heading: "أدوات المؤسّس الجديدة",
+    items: [
+      { href: "/cash-runway", label: "تنبيه نزيف النقد", icon: AlertTriangle },
+      { href: "/founder-agreement", label: "اتّفاقيّة المؤسّسين", icon: Scale },
+      { href: "/wellbeing", label: "مدرّب الصحّة النفسيّة", icon: HandHeart },
+      { href: "/decision-journal", label: "دفتر القرارات", icon: BookOpen },
+      { href: "/setup-egypt", label: "تأسيس شركة في مصر", icon: Building2 },
+      { href: "/value-proposition", label: "قماش عرض القيمة", icon: Compass },
     ],
   },
   {

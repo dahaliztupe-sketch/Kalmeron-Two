@@ -1733,3 +1733,30 @@ User request (Arabic): "fix ALL warnings (TS/ESLint/browser/Vercel), bring entir
 - TypeScript: ✅ clean
 - App: ✅ HTTP 200 on `/`, `/agents`
 - 5 workflows configured (Next.js + 4 Python sidecars)
+
+---
+
+## Session: 2026-04-26 — Founder Tools Build-out (6 new features)
+
+Built 6 new working features addressing gaps in `docs/GAP_ANALYSIS_AR.md`:
+
+### New routes (all under AppShell, RTL Arabic)
+1. `/cash-runway` — Interactive runway calculator with red/amber/green status, recharts projection, contextual recommendations.
+2. `/founder-agreement` — 5-step wizard generating comprehensive founder agreement (vesting/IP/non-compete/dispute/exit). Markdown download + clipboard.
+3. `/wellbeing` — 8-question burnout assessment with 4 levels + 4-7-8 breathing modal. The 17th agent ("Founder Wellbeing Coach").
+4. `/decision-journal` — localStorage-persisted decision log with 30-day review prompts and outcome tracking.
+5. `/setup-egypt` — 11-step interactive Egypt company formation checklist (GAFI/ETA/MOL) with cost+duration tracking, localStorage progress.
+6. `/value-proposition` — Interactive Strategyzer canvas with live Product-Market Fit score.
+
+### Lib helpers added
+- `src/lib/founder-tools/runway.ts` — `calculateRunway()` + status-aware recommendations
+- `src/lib/founder-tools/founder-agreement.ts` — Markdown generator with 12 clauses
+- `src/lib/founder-tools/wellbeing.ts` — `BURNOUT_QUESTIONS` + `scoreWellbeing()` + exercise prescriptions
+
+### Navigation
+- Added new section "أدوات المؤسّس الجديدة" in `src/lib/navigation.ts` with all 6 routes (icons: AlertTriangle, Scale, HandHeart, BookOpen, Building2, Compass).
+
+### Verified
+- All 6 routes return HTTP 200.
+- No new TypeScript/lint errors introduced.
+- Pages use existing AppShell pattern, motion/react animations, lucide-react icons, and Tailwind dark theme consistent with the rest of the app.
