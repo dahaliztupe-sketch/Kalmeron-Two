@@ -191,7 +191,7 @@ export default function CFODashboard() {
                   <XAxis dataKey="month" stroke="#555" tick={{ fill: "#666", fontSize: 10 }} />
                   <YAxis stroke="#555" tick={{ fill: "#666", fontSize: 10 }} tickFormatter={(v) => `${(v/1000).toFixed(0)}K`} />
                   <Tooltip contentStyle={{ backgroundColor: "#0B1020", borderColor: "#ffffff15", borderRadius: 12, color: "#fff", fontSize: 12 }}
-                    formatter={(v: number) => [formatEGP(v)]} />
+                    formatter={(v) => [formatEGP(Number(v))]} />
                   <Area type="monotone" dataKey="revenue" name="الإيراد" stroke="#10B981" strokeWidth={2} fill="url(#revGrad)" />
                   <Area type="monotone" dataKey="profit" name="الربح" stroke="#38BDF8" strokeWidth={2} fill="url(#profGrad)" />
                 </AreaChart>
@@ -213,7 +213,7 @@ export default function CFODashboard() {
                   <XAxis dataKey="month" stroke="#555" tick={{ fill: "#666", fontSize: 10 }} />
                   <YAxis stroke="#555" tick={{ fill: "#666", fontSize: 10 }} tickFormatter={(v) => `${(v/1000).toFixed(0)}K`} />
                   <Tooltip contentStyle={{ backgroundColor: "#0B1020", borderColor: "#ffffff15", borderRadius: 12, color: "#fff", fontSize: 12 }}
-                    formatter={(v: number) => [formatEGP(v)]} />
+                    formatter={(v) => [formatEGP(Number(v))]} />
                   <Bar dataKey="revenue" name="الإيراد" fill="#10B981" radius={[4, 4, 0, 0]} maxBarSize={30} />
                   <Line type="monotone" dataKey="expenses" name="المصروفات" stroke="#F87171" strokeWidth={2} dot={false} />
                 </ComposedChart>

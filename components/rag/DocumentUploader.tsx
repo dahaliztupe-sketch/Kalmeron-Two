@@ -54,7 +54,7 @@ export function DocumentUploader({ title = "مكتبة المستندات" }: { 
       toast.success(`تم رفع "${file.name}" (${j.chunks} مقطع).`);
       await refresh();
     } catch (e: unknown) {
-      toast.error(e.message || "فشل الرفع");
+      toast.error(e instanceof Error ? e.message : "فشل الرفع");
     } finally {
       setUploading(false);
       if (inputRef.current) inputRef.current.value = "";
@@ -74,7 +74,7 @@ export function DocumentUploader({ title = "مكتبة المستندات" }: { 
       setDocs(d => d.filter(x => x.documentId !== documentId));
       toast.success("تم الحذف.");
     } catch (e: unknown) {
-      toast.error(e.message || "فشل الحذف");
+      toast.error(e instanceof Error ? e.message : "فشل الحذف");
     }
   };
 

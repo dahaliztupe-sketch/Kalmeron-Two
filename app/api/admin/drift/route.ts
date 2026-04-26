@@ -35,9 +35,21 @@ export async function POST(req: NextRequest) {
   const guard = await requirePlatformAdmin(req);
   if (guard instanceof Response) return guard;
 
-  let body: { policyId?: string; observed?: unknown; expected?: unknown; severity?: string };
+  interface DriftSampleBody {
+    agent?: string;
+    toolsUsed?: unknown[];
+    responseLength?: number;
+    latencyMs?: number;
+    success?: boolean;
+    errorCode?: string;
+    policyId?: string;
+    observed?: unknown;
+    expected?: unknown;
+    severity?: string;
+  }
+  let body: DriftSampleBody;
   try {
-    body = await req.json();
+    body = (await req.json()) as DriftSampleBody;
   } catch {
     return NextResponse.json({ error: 'invalid_json' }, { status: 400 });
   }

@@ -45,7 +45,7 @@ export default function AdminCommandCenter() {
         if (!r.ok) throw new Error(`HTTP ${r.status}`);
         const j = await r.json();
         if (alive) { setSnap(j); setSnapErr(null); }
-      } catch (e: unknown) { if (alive) setSnapErr(e.message); }
+      } catch (e: unknown) { if (alive) setSnapErr(e instanceof Error ? e.message : String(e)); }
     };
     load();
     const id = setInterval(load, 5000);
@@ -64,7 +64,7 @@ export default function AdminCommandCenter() {
         if (!r.ok) throw new Error(j.error || 'Failed');
         if (!cancel) { setUsers(j.users || []); setUsersErr(null); }
       } catch (e: unknown) {
-        if (!cancel) setUsersErr(e.message);
+        if (!cancel) setUsersErr(e instanceof Error ? e.message : String(e));
       } finally {
         if (!cancel) setLoadingUsers(false);
       }
@@ -89,7 +89,7 @@ export default function AdminCommandCenter() {
       setUsers(u => u.filter(x => x.id !== uid));
       toast.success('تم حذف المستخدم.');
     } catch (e: unknown) {
-      toast.error(e.message || 'فشل الحذف');
+      toast.error(e instanceof Error ? e.message : 'فشل الحذف');
     }
   };
 

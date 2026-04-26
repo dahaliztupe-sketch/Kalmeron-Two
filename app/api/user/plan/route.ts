@@ -2,6 +2,7 @@ import { NextRequest } from 'next/server';
 import { adminAuth, adminDb } from '@/src/lib/firebase-admin';
 import { PLANS, type PlanId, getPlan } from '@/src/lib/billing/plans';
 import { Timestamp } from 'firebase-admin/firestore';
+import { toErrorMessage } from '@/src/lib/errors/to-message';
 
 export const runtime = 'nodejs';
 
@@ -46,7 +47,7 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  let body: { plan?: string };
+  let body: { plan?: string; targetUid?: string };
   try {
     body = await req.json();
   } catch {
@@ -91,7 +92,9 @@ export async function POST(req: NextRequest) {
 
     const walletRef = adminDb.collection('user_credits').doc(targetUid);
     const walletDoc = await walletRef.get();
-    const wallet = walletDoc.data() as Record<string, unknown> | undefined;
+    const wallet = walletDoc.data() as
+      | { dailyBalance?: number; monthlyBalance?: number }
+      | undefined;
 
     if (!walletDoc.exists) {
       await walletRef.set({
@@ -116,8 +119,8 @@ export async function POST(req: NextRequest) {
         dailyLimit: plan.dailyCredits,
         monthlyLimit: plan.monthlyCredits,
         unlimited: plan.unlimited,
-        dailyBalance: Math.max(wallet.dailyBalance || 0, plan.dailyCredits),
-        monthlyBalance: Math.max(wallet.monthlyBalance || 0, plan.monthlyCredits),
+        dailyBalance: Math.max(wallet?.dailyBalance ?? 0, plan.dailyCredits),
+        monthlyBalance: Math.max(wallet?.monthlyBalance ?? 0, plan.monthlyCredits),
         lastUpdated: now,
       });
     }
@@ -131,7 +134,7 @@ export async function POST(req: NextRequest) {
       { headers: { 'Content-Type': 'application/json' } }
     );
   } catch (e: unknown) {
-    return new Response(JSON.stringify({ error: e?.message || 'Failed' }), {
+    return new Response(JSON.stringify({ error: toErrorMessage(e, 'Failed') }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },
     });

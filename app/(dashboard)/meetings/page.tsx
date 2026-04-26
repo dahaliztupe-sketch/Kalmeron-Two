@@ -4,8 +4,10 @@ import { useEffect, useState } from "react";
 const DEPARTMENTS = ["marketing", "product", "finance", "sales", "support", "hr", "legal", "monitoring"];
 
 export default function MeetingsPage() {
-  const [meetings, setMeetings] = useState<Array<Record<string, unknown>>>([]);
-  const [opportunities, setOpportunities] = useState<Array<Record<string, unknown>>>([]);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [meetings, setMeetings] = useState<Array<Record<string, any>>>([]);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [opportunities, setOpportunities] = useState<Array<Record<string, any>>>([]);
   const [topic, setTopic] = useState("");
   const [selected, setSelected] = useState<string[]>(["marketing", "product"]);
   const [running, setRunning] = useState(false);

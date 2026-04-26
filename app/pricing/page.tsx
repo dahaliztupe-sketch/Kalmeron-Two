@@ -96,7 +96,7 @@ export default function PricingPage() {
       setCurrentPlan(planId);
       toast.success(data.message || `تم التبديل إلى ${PLANS[planId].nameAr}.`);
     } catch (e: unknown) {
-      toast.error(e?.message || "حدث خطأ أثناء تغيير الخطة.");
+      toast.error(e instanceof Error ? e.message : "حدث خطأ أثناء تغيير الخطة.");
     } finally {
       setLoadingPlan(null);
     }

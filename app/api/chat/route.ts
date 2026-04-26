@@ -13,6 +13,7 @@ import { searchUserKnowledge } from '@/src/lib/rag/user-rag';
 import { SystemMessage } from '@langchain/core/messages';
 import { markTtfvStage } from '@/src/lib/analytics/ttfv';
 import { quarantineCorpus } from '@/src/lib/security/context-quarantine';
+import { toErrorDetails } from '@/src/lib/errors/to-message';
 
 export const runtime = 'nodejs';
 
@@ -311,7 +312,8 @@ export async function POST(req: NextRequest) {
         }
         send('done', { intent: finalIntent, length: finalText.length, citations: citations.length });
       } catch (error: unknown) {
-        log.error({ msg: 'Chat SSE error', error: error?.message, stack: error?.stack });
+        const details = toErrorDetails(error);
+        log.error({ msg: 'Chat SSE error', error: details.message, stack: details.stack });
         send('error', { message: 'عذراً، كالميرون بيواجه مشكلة فنية حالياً.' });
       } finally {
         controller.close();

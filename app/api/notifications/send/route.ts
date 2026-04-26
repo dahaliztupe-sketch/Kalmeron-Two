@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getMessaging } from "firebase-admin/messaging";
 import { adminApp, adminAuth, adminDb } from "@/src/lib/firebase-admin";
+import { toErrorMessage } from "@/src/lib/errors/to-message";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -81,6 +82,6 @@ export async function POST(req: NextRequest) {
     });
   } catch (e: unknown) {
     console.error("[FCM Send]", e);
-    return NextResponse.json({ error: e.message }, { status: 500 });
+    return NextResponse.json({ error: toErrorMessage(e) }, { status: 500 });
   }
 }

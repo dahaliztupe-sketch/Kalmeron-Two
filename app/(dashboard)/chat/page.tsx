@@ -442,7 +442,7 @@ function ChatPageContent() {
         }
       }
     } catch (err: unknown) {
-      if (err?.name !== "AbortError") {
+      if (!(err instanceof Error) || err.name !== "AbortError") {
         toast.error("حدث خطأ أثناء التواصل مع كلميرون.");
         setMessages((prev) => prev.map((m) => m.id === assistantId ? { ...m, content: "عذراً، كلميرون يواجه مشكلة فنية حالياً. حاول مرة أخرى." } : m));
       }

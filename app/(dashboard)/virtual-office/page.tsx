@@ -2,7 +2,8 @@
 import { useEffect, useState } from "react";
 
 export default function VirtualOfficePage() {
-  const [vms, setVms] = useState<Array<Record<string, unknown>>>([]);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [vms, setVms] = useState<Array<Record<string, any>>>([]);
   const [loading, setLoading] = useState(true);
   const [agentId, setAgentId] = useState("");
   const [departmentId, setDepartmentId] = useState("general");

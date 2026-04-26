@@ -48,6 +48,7 @@ export default function DemoModePage() {
   }, [load]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     void checkSeed();
   }, [checkSeed]);
 
@@ -130,7 +131,7 @@ export default function DemoModePage() {
             تشغيل وضع العرض
           </h1>
           <p className="text-white/60 mt-2 max-w-2xl">
-            مفتاح واحد يحوّل المنصّة إلى نسخة "آمنة للعرض": يخفي الميزات التجريبية، يفعّل الشارات الجاهزة، ويُبرز المسار الموصى به للمستثمر.
+            مفتاح واحد يحوّل المنصّة إلى نسخة &quot;آمنة للعرض&quot;: يخفي الميزات التجريبية، يفعّل الشارات الجاهزة، ويُبرز المسار الموصى به للمستثمر.
           </p>
         </div>
 
@@ -202,7 +203,7 @@ export default function DemoModePage() {
             </div>
             <h3 className="text-white font-semibold mb-1">يخفي ما هو غير مكتمل</h3>
             <p className="text-sm text-white/60">
-              الوكلاء التجريبيون يظهرون بشارة "تجريبي" لتجنّب الإحراج وقت الأسئلة.
+              الوكلاء التجريبيون يظهرون بشارة &quot;تجريبي&quot; لتجنّب الإحراج وقت الأسئلة.
             </p>
           </div>
           <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
@@ -226,7 +227,7 @@ export default function DemoModePage() {
               <div>
                 <h3 className="text-white font-semibold">بيانات الاستعراض</h3>
                 <p className="text-sm text-white/60 mt-1 max-w-xl">
-                  بضغطة واحدة: حساب نموذجي لشركة "أكلة بيتنا" (FoodTech) فيه صوت علامة كامل، خطة عمل، نموذج مالي بستّة أشهر، وثلاث فرص تمويل محفوظة.
+                  بضغطة واحدة: حساب نموذجي لشركة &quot;أكلة بيتنا&quot; (FoodTech) فيه صوت علامة كامل، خطة عمل، نموذج مالي بستّة أشهر، وثلاث فرص تمويل محفوظة.
                 </p>
               </div>
             </div>

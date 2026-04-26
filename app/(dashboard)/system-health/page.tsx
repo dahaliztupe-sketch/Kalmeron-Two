@@ -7,7 +7,8 @@ interface Health {
   timestamp: string;
   version: string;
   checks: Record<string, string>;
-  meta: Record<string, unknown>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  meta: Record<string, any>;
 }
 
 function dot(status: string) {
@@ -41,7 +42,7 @@ export default function StatusPage() {
       const j = await r.json();
       setData(j);
     } catch (e: unknown) {
-      setError(e?.message || "فشل التحميل");
+      setError(e instanceof Error ? e.message : "فشل التحميل");
     } finally {
       setLoading(false);
     }
@@ -130,7 +131,8 @@ export default function StatusPage() {
 }
 
 function LiveEventsFeed() {
-  const [events, setEvents] = useState<Array<Record<string, unknown>>>([]);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [events, setEvents] = useState<Array<Record<string, any>>>([]);
   const [err, setErr] = useState("");
   async function load() {
     try {
@@ -154,15 +156,18 @@ function LiveEventsFeed() {
         <div className="text-xs text-gray-500">لا توجد أحداث بعد</div>
       ) : (
         <ul className="divide-y text-xs" role="list">
-          {events.slice(0, 20).map((e: unknown) => (
-            <li key={e.id} className="py-1.5 flex justify-between gap-2">
-              <span className="font-mono truncate flex-1">{e.resource}</span>
-              <span className="text-gray-500">{e.workspaceId?.slice(0, 8) || "—"}</span>
-              <span className={e.success ? "text-green-600" : "text-red-600"}>
-                {e.success ? "✓" : "✗"}
-              </span>
-            </li>
-          ))}
+          {events.slice(0, 20).map((e) => {
+            const ev = e as { id: string; resource?: string; workspaceId?: string; success?: boolean };
+            return (
+              <li key={ev.id} className="py-1.5 flex justify-between gap-2">
+                <span className="font-mono truncate flex-1">{ev.resource}</span>
+                <span className="text-gray-500">{ev.workspaceId?.slice(0, 8) || "—"}</span>
+                <span className={ev.success ? "text-green-600" : "text-red-600"}>
+                  {ev.success ? "✓" : "✗"}
+                </span>
+              </li>
+            );
+          })}
         </ul>
       )}
     </Card>

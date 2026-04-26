@@ -6,6 +6,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { adminDb } from '@/src/lib/firebase-admin';
 import { generateWeeklyGoals } from '@/src/ai/agents/okr/agent';
+import { toErrorMessage } from '@/src/lib/errors/to-message';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -45,7 +46,7 @@ export async function POST(req: NextRequest) {
       const r = await generateWeeklyGoals(uid);
       results.push({ userId: uid, count: r.count });
     } catch (e: unknown) {
-      results.push({ userId: uid, error: e?.message || 'failed' });
+      results.push({ userId: uid, error: toErrorMessage(e, 'failed') });
     }
   }
   return NextResponse.json({ usersProcessed: results.length, results });

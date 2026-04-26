@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { adminDb } from '@/src/lib/firebase-admin';
 import { isKnowledgeGraphEnabled } from '@/src/lib/memory/knowledge-graph';
+import { toErrorMessage } from '@/src/lib/errors/to-message';
 
 export const runtime = 'nodejs';
 // P0 quick win: prevent edge/CDN caching of dynamic health snapshot.
@@ -14,7 +15,7 @@ async function safe<T>(label: string, fn: () => Promise<T>): Promise<[string, Ch
     const v = await fn();
     return [label, 'connected', v];
   } catch (e: unknown) {
-    return [label, 'unreachable', e?.message];
+    return [label, 'unreachable', toErrorMessage(e)];
   }
 }
 

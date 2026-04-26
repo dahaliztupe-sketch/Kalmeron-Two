@@ -55,7 +55,7 @@ export default function WorkflowsRunnerPage() {
       if (!res.ok) throw new Error(data?.error ?? "request_failed");
       setResult(data);
     } catch (e: unknown) {
-      setError(e?.message ?? "unknown");
+      setError(e instanceof Error ? e.message : "unknown");
     } finally {
       setRunning(false);
     }

@@ -20,7 +20,7 @@ import { rateLimit, rateLimitResponse } from '@/src/lib/security/rate-limit';
 export const runtime = 'nodejs';
 
 const stripeSecret = process.env.STRIPE_SECRET_KEY;
-const stripe = stripeSecret ? new Stripe(stripeSecret, { apiVersion: '2025-08-27.basil' as Stripe.LatestApiVersion }) : null;
+const stripe = stripeSecret ? new Stripe(stripeSecret, { apiVersion: '2026-04-22.dahlia' }) : null;
 
 export async function POST(req: NextRequest) {
   const rl = rateLimit(req, { limit: 10, windowMs: 60_000 });

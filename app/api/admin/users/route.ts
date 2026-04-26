@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { adminAuth, adminDb } from '@/src/lib/firebase-admin';
 import { requirePlatformAdmin } from '@/src/lib/security/require-admin';
+import { toErrorMessage } from '@/src/lib/errors/to-message';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -27,7 +28,7 @@ export async function GET(req: NextRequest) {
     });
     return NextResponse.json({ users });
   } catch (e: unknown) {
-    return NextResponse.json({ error: e.message || 'Failed to load users' }, { status: 500 });
+    return NextResponse.json({ error: toErrorMessage(e, 'Failed to load users') }, { status: 500 });
   }
 }
 
@@ -52,6 +53,6 @@ export async function DELETE(req: NextRequest) {
     await adminAuth.deleteUser(uid).catch(() => null);
     return NextResponse.json({ ok: true });
   } catch (e: unknown) {
-    return NextResponse.json({ error: e.message || 'Delete failed' }, { status: 500 });
+    return NextResponse.json({ error: toErrorMessage(e, 'Delete failed') }, { status: 500 });
   }
 }

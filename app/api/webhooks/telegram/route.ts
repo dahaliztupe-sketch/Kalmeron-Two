@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { receptionistHandleChannelMessage } from '@/src/ai/receptionist/agent';
+import { toErrorMessage } from '@/src/lib/errors/to-message';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -30,11 +31,11 @@ export async function POST(req: NextRequest) {
           senderId,
           text,
           raw: msg,
-        }).catch((e) => console.warn('[webhook:telegram]', e?.message));
+        }).catch((e: unknown) => console.warn('[webhook:telegram]', toErrorMessage(e)));
       }
     }
     return NextResponse.json({ ok: true });
   } catch (e: unknown) {
-    return NextResponse.json({ ok: false, error: e?.message }, { status: 200 });
+    return NextResponse.json({ ok: false, error: toErrorMessage(e) }, { status: 200 });
   }
 }

@@ -36,7 +36,7 @@ export function DriftWidget({ windowDays = 7 }: { windowDays?: number }) {
           setErr(null);
         }
       } catch (e: unknown) {
-        if (!cancel) setErr(e.message);
+        if (!cancel) setErr(e instanceof Error ? e.message : String(e));
       } finally {
         if (!cancel) setLoading(false);
       }

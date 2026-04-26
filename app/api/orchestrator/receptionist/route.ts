@@ -4,6 +4,7 @@ import { NextRequest, NextResponse } from 'next/server';
   import { rateLimit, rateLimitResponse } from '@/src/lib/security/rate-limit';
   import { receptionistRespond } from '@/src/ai/receptionist/agent';
   import { createRequestLogger } from '@/src/lib/logger';
+  import { toErrorDetails } from '@/src/lib/errors/to-message';
 
   export const runtime = 'nodejs';
   export const maxDuration = 60;
@@ -39,7 +40,8 @@ import { NextRequest, NextResponse } from 'next/server';
 
       return NextResponse.json(result);
     } catch (err: unknown) {
-      log.error({ msg: 'Receptionist API error', error: err?.message, stack: err?.stack });
+      const details = toErrorDetails(err);
+      log.error({ msg: 'Receptionist API error', error: details.message, stack: details.stack });
       return NextResponse.json(
         { error: 'حدث خلل في فريق العمل. الفريق التقني يحقق في الأمر.' },
         { status: 500 }

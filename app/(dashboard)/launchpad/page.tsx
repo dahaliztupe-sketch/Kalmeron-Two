@@ -15,7 +15,8 @@ const STAGES = [
 export default function LaunchpadPage() {
   const [idea, setIdea] = useState("");
   const [runId, setRunId] = useState<string | null>(null);
-  const [run, setRun] = useState<Record<string, unknown> | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [run, setRun] = useState<Record<string, any> | null>(null);
   const [running, setRunning] = useState(false);
 
   async function launch() {

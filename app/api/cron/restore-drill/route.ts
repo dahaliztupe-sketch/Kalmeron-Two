@@ -12,6 +12,7 @@
  */
 import { NextRequest } from 'next/server';
 import { adminDb } from '@/src/lib/firebase-admin';
+import { toErrorMessage } from '@/src/lib/errors/to-message';
 
 export const runtime = 'nodejs';
 
@@ -45,27 +46,30 @@ export async function GET(req: NextRequest) {
       result = { ok: false, error: 'no-backup-found', startedAt };
     } else {
       const doc = snap.docs[0]!;
-      const data = doc.data() as { createdAt?: number; storageUrl?: string } | undefined;
+      const data = doc.data() as
+        | { createdAt?: number; storageUrl?: string; url?: string; bytes?: number }
+        | undefined;
       const ageHours = (now - (data?.createdAt ?? 0)) / 3_600_000;
       const fresh = ageHours <= STALE_HOURS;
 
       // 2. Optionally HEAD the backup artifact URL to verify reachability.
       let httpStatus: number | null = null;
       let contentLength: number | null = null;
-      if (typeof data.url === 'string') {
+      const url = data?.url ?? data?.storageUrl;
+      if (typeof url === 'string') {
         try {
-          const r = await fetch(data.url, { method: 'HEAD' });
+          const r = await fetch(url, { method: 'HEAD' });
           httpStatus = r.status;
           const cl = r.headers.get('content-length');
           contentLength = cl ? Number(cl) : null;
         } catch (e: unknown) {
           httpStatus = null;
-          result.urlError = e?.message;
+          result.urlError = toErrorMessage(e);
         }
       }
 
       // 3. Sanity checks.
-      const sizeOk = data.bytes ? Number(data.bytes) > 1024 : (contentLength ?? 0) > 1024;
+      const sizeOk = data?.bytes ? Number(data.bytes) > 1024 : (contentLength ?? 0) > 1024;
       const reachable = httpStatus == null ? true : httpStatus >= 200 && httpStatus < 400;
       const passed = fresh && sizeOk && reachable;
 
@@ -82,11 +86,12 @@ export async function GET(req: NextRequest) {
       };
     }
   } catch (e: unknown) {
-    result = { ok: false, error: e?.message, startedAt };
+    result = { ok: false, error: toErrorMessage(e), startedAt };
   }
 
-  result.finishedAt = Date.now();
-  result.durationMs = result.finishedAt - startedAt;
+  const finishedAt = Date.now();
+  result.finishedAt = finishedAt;
+  result.durationMs = finishedAt - startedAt;
 
   await drillRef.set(result).catch(() => {/* swallow */});
 

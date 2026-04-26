@@ -118,7 +118,8 @@ export async function instrumentAgent<T>(
     return result;
   } catch (e: unknown) {
     success = false;
-    errorCode = e?.code || e?.name || 'unknown_error';
+    const errObj = e as { code?: string; name?: string } | null | undefined;
+    errorCode = errObj?.code || errObj?.name || 'unknown_error';
     throw e;
   } finally {
     const latencyMs = Date.now() - start;
@@ -169,7 +170,7 @@ export async function instrumentAgent<T>(
     }
 
     void logAgentGeneration({
-      trace: opts.trace,
+      trace: opts.trace as Parameters<typeof logAgentGeneration>[0]['trace'],
       agent: agentName,
       model: opts.model || 'unknown',
       input: opts.input,

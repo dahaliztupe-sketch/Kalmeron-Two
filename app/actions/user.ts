@@ -47,8 +47,8 @@ export async function updateUserProfile(_prevState: unknown, formData: FormData)
 
     return { success: true, error: null };
   } catch (error: unknown) {
-    log.warn({ msg: 'updateUserProfile failed', err: error?.message });
-    if (error?.name === 'ZodError') {
+    log.warn({ msg: 'updateUserProfile failed', err: error instanceof Error ? error.message : String(error) });
+    if (error instanceof Error && error.name === 'ZodError') {
       return { success: false, error: 'تحقق من البيانات المدخلة.' };
     }
     return { success: false, error: 'فشل تحديث الملف الشخصي.' };

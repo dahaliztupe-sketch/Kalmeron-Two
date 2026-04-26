@@ -4,10 +4,20 @@ import { PageShell, Card, Skeleton, ErrorBlock } from "@/components/ui/page-shel
 import { apiJson } from "@/src/lib/api-client";
 import { AppShell } from "@/components/layout/AppShell";
 
+interface AuditEntry {
+  id: string;
+  ts?: number;
+  userId?: string;
+  actorType?: string;
+  action?: string;
+  resource?: string;
+  resourceId?: string;
+  success?: boolean;
+}
 interface Data {
   stats: { workspaces: number; users: number; launchRuns: number };
   workspaces: { id: string; name: string; tier: string }[];
-  recentAudit: unknown[];
+  recentAudit: AuditEntry[];
 }
 
 export default function PlatformAdminPage() {
@@ -22,7 +32,7 @@ export default function PlatformAdminPage() {
       setData(r);
       setErr("");
     } catch (e: unknown) {
-      setErr(e.message);
+      setErr(e instanceof Error ? e.message : String(e));
     } finally {
       setLoading(false);
     }
@@ -57,7 +67,7 @@ export default function PlatformAdminPage() {
             <Card>
               <h2 className="font-semibold mb-2">أحدث سجل التدقيق</h2>
               <ul className="divide-y text-xs font-mono" role="list">
-                {data.recentAudit.map((a: { id: string; ts?: number; userId?: string; action?: string; resource?: string; resourceId?: string; success?: boolean }) => (
+                {data.recentAudit.map((a) => (
                   <li key={a.id} className="py-1.5 flex gap-2">
                     <span className={`px-1.5 py-0.5 rounded ${a.success ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>
                       {a.action}

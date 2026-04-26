@@ -3,7 +3,7 @@
  * All helpers are best-effort — they log & swallow errors so they never break the agent.
  */
 import { recordUsage } from '@/src/lib/billing/metering';
-import { notify } from '@/src/lib/notifications/center';
+import { notify, type NotificationType } from '@/src/lib/notifications/center';
 import { dispatchEvent, type WebhookEvent } from '@/src/lib/webhooks/dispatcher';
 import { writeAudit } from '@/src/lib/audit/log';
 import { logger } from '@/src/lib/logger';
@@ -15,7 +15,7 @@ export async function afterAgentRun(args: {
   userId?: string;
   agent: string;
   event?: WebhookEvent;
-  notification?: { title: string; body: string; href?: string; type: string };
+  notification?: { title: string; body: string; href?: string; type: NotificationType };
   payload?: unknown;
   estimatedTokens?: number;
   estimatedCostUSD?: number;

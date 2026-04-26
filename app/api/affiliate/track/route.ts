@@ -12,14 +12,27 @@
  */
 import { NextRequest } from 'next/server';
 import { adminDb } from '@/src/lib/firebase-admin';
+import { toErrorMessage } from '@/src/lib/errors/to-message';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
+interface TrackBody {
+  ref?: string;
+  utmSource?: string;
+  utmCampaign?: string;
+  utmMedium?: string;
+  path?: string;
+  referer?: string;
+  code?: string;
+  event?: string;
+  meta?: unknown;
+}
+
 export async function POST(req: NextRequest) {
-  let body: { code?: string; event?: string; meta?: unknown } = {};
+  let body: TrackBody = {};
   try {
-    body = await req.json();
+    body = (await req.json()) as TrackBody;
   } catch {
     return Response.json({ ok: false, error: 'bad-json' }, { status: 400 });
   }
@@ -45,7 +58,7 @@ export async function POST(req: NextRequest) {
       ts: Date.now(),
     });
   } catch (e: unknown) {
-    return Response.json({ ok: false, error: e?.message }, { status: 500 });
+    return Response.json({ ok: false, error: toErrorMessage(e) }, { status: 500 });
   }
 
   return Response.json({ ok: true });

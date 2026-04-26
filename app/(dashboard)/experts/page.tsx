@@ -2,11 +2,13 @@
 import { useEffect, useState } from "react";
 
 export default function ExpertsPage() {
-  const [experts, setExperts] = useState<Array<Record<string, unknown>>>([]);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [experts, setExperts] = useState<Array<Record<string, any>>>([]);
   const [description, setDescription] = useState("");
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
-  const [active, setActive] = useState<Record<string, unknown> | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [active, setActive] = useState<Record<string, any> | null>(null);
   const [question, setQuestion] = useState("");
   const [answer, setAnswer] = useState("");
   const [asking, setAsking] = useState(false);

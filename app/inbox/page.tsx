@@ -79,7 +79,7 @@ export default function InboxPage() {
       toast.success(decision === "approve" ? "تمت الموافقة والتنفيذ." : "تم الرفض.");
       await refresh();
     } catch (e: unknown) {
-      toast.error(e.message);
+      toast.error(e instanceof Error ? e.message : 'فشلت العملية');
     } finally {
       setBusyId(null);
     }

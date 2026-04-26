@@ -9,6 +9,7 @@
 import { NextRequest } from 'next/server';
 import { adminDb } from '@/src/lib/firebase-admin';
 import { rateLimit } from '@/src/lib/security/rate-limit';
+import { toErrorMessage } from '@/src/lib/errors/to-message';
 
 export const runtime = 'nodejs';
 export const revalidate = 60;
@@ -41,7 +42,7 @@ export async function GET(req: NextRequest) {
     );
   } catch (e: unknown) {
     return Response.json(
-      { total: TOTAL_SEATS, taken: 0, left: TOTAL_SEATS, closed: false, error: e?.message },
+      { total: TOTAL_SEATS, taken: 0, left: TOTAL_SEATS, closed: false, error: toErrorMessage(e) },
       { status: 200 },
     );
   }

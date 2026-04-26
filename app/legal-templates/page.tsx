@@ -196,7 +196,7 @@ export default function LegalTemplatesPage() {
               ) : (
                 <div className="flex flex-col items-center justify-center text-center py-16 text-neutral-500">
                   <FileText className="w-10 h-10 mb-3 opacity-40" />
-                  <p className="text-sm">املأ الحقول واضغط "توليد النموذج" لرؤية المعاينة هنا.</p>
+                  <p className="text-sm">املأ الحقول واضغط &quot;توليد النموذج&quot; لرؤية المعاينة هنا.</p>
                 </div>
               )}
             </div>

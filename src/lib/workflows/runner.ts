@@ -119,14 +119,14 @@ async function defaultAgentAdapter(prompt: string, outputs: string[]): Promise<R
     const { generateText } = await import("ai");
     const { routeModel } = await import("@/src/lib/model-router");
     const { text } = await generateText({
-      model: routeModel("medium") as Parameters<typeof generateText>[0]["model"],
+      model: routeModel("medium") as unknown as Parameters<typeof generateText>[0]["model"],
       prompt,
     });
     const out: Record<string, string> = {};
     for (const k of outputs) out[k] = text;
     return out;
   } catch (e: unknown) {
-    throw new Error(`agent_call_failed: ${e?.message ?? "unknown"}`);
+    throw new Error(`agent_call_failed: ${e instanceof Error ? e.message : "unknown"}`);
   }
 }
 
@@ -157,6 +157,7 @@ export async function runWorkflow(
         prompt: interpolated,
       });
     } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : "unknown";
       stepsResult.push({
         id: step.id,
         agent: step.agent,
@@ -164,7 +165,7 @@ export async function runWorkflow(
         durationMs: Date.now() - t0,
         outputs: {},
         prompt: interpolated,
-        error: e?.message ?? "unknown",
+        error: msg,
       });
       const finishedAt = new Date();
       return {
@@ -174,7 +175,7 @@ export async function runWorkflow(
         totalMs: finishedAt.getTime() - startedAt.getTime(),
         status: "error",
         steps: stepsResult,
-        error: e?.message ?? "step failed",
+        error: msg || "step failed",
       };
     }
   }

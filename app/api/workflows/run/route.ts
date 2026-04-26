@@ -16,6 +16,7 @@ import { findWorkflow } from "@/src/lib/workflows/library";
 import { redactPii } from "@/src/lib/security/pii-redactor";
 import { adminAuth } from "@/src/lib/firebase-admin";
 import { rateLimit, rateLimitAgent, rateLimitResponse } from "@/src/lib/security/rate-limit";
+import { toErrorMessage } from "@/src/lib/errors/to-message";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -42,14 +43,19 @@ export async function POST(req: NextRequest) {
   const userRl = rateLimitAgent(userId, "workflow_run", { limit: 10, windowMs: 60_000 });
   if (!userRl.allowed) return rateLimitResponse();
 
-  let body: { workflowId?: string; templateId?: string; input?: Record<string, unknown> };
+  let body: {
+    workflowId?: string;
+    templateId?: string;
+    input?: Record<string, unknown>;
+    inputs?: Record<string, unknown>;
+  };
   try {
     body = await req.json();
   } catch {
     return NextResponse.json({ error: "invalid_json" }, { status: 400 });
   }
-  const workflowId: string = body?.workflowId;
-  const rawInputs: Record<string, unknown> = body?.inputs ?? {};
+  const workflowId: string | undefined = body?.workflowId;
+  const rawInputs: Record<string, unknown> = body?.inputs ?? body?.input ?? {};
 
   if (typeof workflowId !== "string" || !workflowId) {
     return NextResponse.json({ error: "workflow_id_required" }, { status: 400 });
@@ -75,7 +81,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(result);
   } catch (e: unknown) {
     return NextResponse.json(
-      { error: "runner_failed", message: e?.message ?? "unknown" },
+      { error: "runner_failed", message: toErrorMessage(e) },
       { status: 500 },
     );
   }

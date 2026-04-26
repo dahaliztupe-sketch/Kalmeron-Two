@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server';
 import { adminAuth, adminDb } from '@/src/lib/firebase-admin';
 import { getPlan, type PlanId } from '@/src/lib/billing/plans';
+import { toErrorMessage } from '@/src/lib/errors/to-message';
 
 export const runtime = 'nodejs';
 
@@ -50,7 +51,17 @@ export async function GET(req: NextRequest) {
         { headers: { 'Content-Type': 'application/json' } }
       );
     }
-    const w = walletDoc.data() as { plan?: PlanId; dailyBalance?: number; monthlyBalance?: number; rolledOverCredits?: number } | undefined;
+    const w = walletDoc.data() as
+      | {
+          plan?: PlanId;
+          dailyBalance?: number;
+          monthlyBalance?: number;
+          rolledOverCredits?: number;
+          dailyLimit?: number;
+          monthlyLimit?: number;
+          unlimited?: boolean;
+        }
+      | undefined;
     const planFromWallet = getPlan(w?.plan || userPlanId);
     const total = planFromWallet.unlimited
       ? -1
@@ -59,19 +70,19 @@ export async function GET(req: NextRequest) {
       JSON.stringify({
         plan: planFromWallet.id,
         planName: planFromWallet.nameAr,
-        dailyBalance: w.dailyBalance || 0,
-        monthlyBalance: w.monthlyBalance || 0,
-        rolledOverCredits: w.rolledOverCredits || 0,
-        dailyLimit: w.dailyLimit || planFromWallet.dailyCredits,
-        monthlyLimit: w.monthlyLimit || planFromWallet.monthlyCredits,
-        unlimited: !!w.unlimited || planFromWallet.unlimited,
+        dailyBalance: w?.dailyBalance || 0,
+        monthlyBalance: w?.monthlyBalance || 0,
+        rolledOverCredits: w?.rolledOverCredits || 0,
+        dailyLimit: w?.dailyLimit || planFromWallet.dailyCredits,
+        monthlyLimit: w?.monthlyLimit || planFromWallet.monthlyCredits,
+        unlimited: !!w?.unlimited || planFromWallet.unlimited,
         total,
         initialized: true,
       }),
       { headers: { 'Content-Type': 'application/json' } }
     );
   } catch (e: unknown) {
-    return new Response(JSON.stringify({ error: e?.message || 'Failed' }), {
+    return new Response(JSON.stringify({ error: toErrorMessage(e, 'Failed') }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },
     });

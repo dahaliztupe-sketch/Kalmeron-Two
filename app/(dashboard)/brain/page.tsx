@@ -44,7 +44,7 @@ export default function BrainPage() {
       setState(json.knowledgeGraph);
       setError(null);
     } catch (e: unknown) {
-      setError(e?.message || "تعذّر التحميل");
+      setError(e instanceof Error ? e.message : "تعذّر التحميل");
     } finally {
       setLoading(false);
     }
@@ -192,12 +192,12 @@ export default function BrainPage() {
                     <span className="text-[10px] text-text-secondary/60 font-mono truncate">{n.id}</span>
                   </div>
                   <div className="text-sm text-white whitespace-pre-wrap">
-                    {n.properties?.content || n.properties?.summary || n.properties?.name || "—"}
+                    {String(n.properties?.content || n.properties?.summary || n.properties?.name || "—")}
                   </div>
-                  {(n.properties?.source || n.properties?.department) && (
+                  {Boolean(n.properties?.source || n.properties?.department) && (
                     <div className="mt-1 flex gap-2 text-[11px] text-text-secondary">
-                      {n.properties?.department && <span>القسم: {n.properties.department}</span>}
-                      {n.properties?.source && <span>المصدر: {n.properties.source}</span>}
+                      {n.properties?.department != null && <span>القسم: {String(n.properties.department)}</span>}
+                      {n.properties?.source != null && <span>المصدر: {String(n.properties.source)}</span>}
                     </div>
                   )}
                 </li>

@@ -30,7 +30,7 @@ export default function OKRPage() {
       const json = await res.json();
       setData(json);
       setError(null);
-    } catch (e: unknown) { setError(e.message); }
+    } catch (e: unknown) { setError(e instanceof Error ? e.message : String(e)); }
     finally { setLoading(false); }
   }
 

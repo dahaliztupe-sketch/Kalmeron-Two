@@ -15,13 +15,14 @@ import { adminDb } from '@/src/lib/firebase-admin';
 import { Timestamp } from 'firebase-admin/firestore';
 import { getPlan, planFromStripePriceId, type PlanId } from '@/src/lib/billing/plans';
 import { rewardReferrerOnUpgrade } from '@/src/lib/referrals/manager';
+import { toErrorMessage } from '@/src/lib/errors/to-message';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 const stripeSecret = process.env.STRIPE_SECRET_KEY;
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
-const stripe = stripeSecret ? new Stripe(stripeSecret, { apiVersion: '2025-08-27.basil' as Stripe.LatestApiVersion }) : null;
+const stripe = stripeSecret ? new Stripe(stripeSecret, { apiVersion: '2026-04-22.dahlia' }) : null;
 
 async function applyPlanToUser(userId: string, planId: PlanId) {
   const plan = getPlan(planId);
@@ -49,7 +50,9 @@ async function applyPlanToUser(userId: string, planId: PlanId) {
       lastUpdated: now,
     });
   } else {
-    const wallet = walletDoc.data() as { credits?: number; tier?: string } | undefined;
+    const wallet = walletDoc.data() as
+      | { credits?: number; tier?: string; dailyBalance?: number; monthlyBalance?: number }
+      | undefined;
     await walletRef.update({
       plan: plan.id,
       dailyLimit: plan.dailyCredits,
@@ -76,8 +79,9 @@ export async function POST(req: NextRequest) {
   try {
     event = stripe.webhooks.constructEvent(rawBody, sig, webhookSecret);
   } catch (err: unknown) {
-    console.error('[stripe-webhook] signature verification failed', err?.message);
-    return new Response(`Webhook Error: ${err?.message}`, { status: 400 });
+    const msg = toErrorMessage(err);
+    console.error('[stripe-webhook] signature verification failed', msg);
+    return new Response(`Webhook Error: ${msg}`, { status: 400 });
   }
 
   // Idempotency guard: dedupe by event.id in `stripe_events` collection.
@@ -143,7 +147,7 @@ export async function POST(req: NextRequest) {
         break;
     }
   } catch (err: unknown) {
-    console.error('[stripe-webhook] handler failed', event.type, err?.message);
+    console.error('[stripe-webhook] handler failed', event.type, toErrorMessage(err));
     // Returning 500 lets Stripe retry; safe because we dedupe by event.id.
     return new Response('Handler failed', { status: 500 });
   }

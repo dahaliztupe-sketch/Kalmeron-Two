@@ -3,11 +3,22 @@
   import { AppShell } from '@/components/layout/AppShell';
   import { useAuth } from '@/contexts/AuthContext';
 
+  interface AgentMetrics {
+    invocations: number;
+    avgLatencyMs: number;
+    successRate: number;
+  }
+  interface AlertItem {
+    severity?: string;
+    source?: string;
+    timestamp: number | string;
+    message?: string;
+  }
   interface Snapshot {
-    agents: Record<string, unknown>;
+    agents: Record<string, AgentMetrics>;
     dailyCostUsd: number;
     dailyLimit: number;
-    alertsRecent: unknown[];
+    alertsRecent: AlertItem[];
   }
 
   export default function MissionControlPage() {

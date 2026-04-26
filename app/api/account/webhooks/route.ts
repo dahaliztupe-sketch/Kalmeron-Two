@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { guardedRoute } from '@/src/lib/security/route-guard';
-import { createSubscription, listSubscriptions } from '@/src/lib/webhooks/dispatcher';
+import { createSubscription, listSubscriptions, type WebhookEvent } from '@/src/lib/webhooks/dispatcher';
 
 export const runtime = 'nodejs';
 
@@ -17,7 +17,7 @@ export const POST = guardedRoute(
       ownerId: userId!,
       workspaceId: body.workspaceId,
       url: body.url,
-      events: body.events as string[],
+      events: body.events as WebhookEvent[],
     });
     return NextResponse.json({ success: true, subscription: sub });
   },

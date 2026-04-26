@@ -21,7 +21,7 @@ export default function PrivacyPage() {
       URL.revokeObjectURL(a.href);
       toast.success("تم التحميل");
     } catch (e: unknown) {
-      toast.error(e.message);
+      toast.error(e instanceof Error ? e.message : "فشل التصدير");
     } finally {
       setExporting(false);
     }
@@ -37,7 +37,7 @@ export default function PrivacyPage() {
       });
       toast.success(`تم الجدولة حتى ${new Date(r.scheduledFor).toLocaleDateString("ar")}`);
     } catch (e: unknown) {
-      toast.error(e.message);
+      toast.error(e instanceof Error ? e.message : "فشل حذف الحساب");
     } finally {
       setDeleting(false);
     }

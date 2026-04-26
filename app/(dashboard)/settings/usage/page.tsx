@@ -7,7 +7,7 @@ import { useAuth } from "@/contexts/AuthContext";
 
 interface Summary {
   tier: string;
-  limits: Record<string, unknown>;
+  limits: { dailyAgentRuns: number; monthlyTokens: number; monthlyCostUSD: number };
   usage: { dailyRuns: number; monthlyTokens: number; monthlyCostUSD: number };
   percent: { dailyRuns: number; monthlyTokens: number; monthlyCostUSD: number };
 }

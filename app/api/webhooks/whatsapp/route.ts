@@ -1,6 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'node:crypto';
 import { receptionistHandleChannelMessage } from '@/src/ai/receptionist/agent';
+import { toErrorMessage } from '@/src/lib/errors/to-message';
+
+interface WhatsAppMessage {
+  from?: string;
+  text?: { body?: string };
+  button?: { text?: string };
+  [key: string]: unknown;
+}
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -60,7 +68,7 @@ export async function POST(req: NextRequest) {
       return new NextResponse('invalid signature', { status: 401 });
     }
 
-    let body: { entry?: Array<{ changes?: Array<{ value?: { messages?: Array<Record<string, unknown>> } }> }> };
+    let body: { entry?: Array<{ changes?: Array<{ value?: { messages?: WhatsAppMessage[] } }> }> };
     try {
       body = JSON.parse(rawBody);
     } catch {
@@ -81,13 +89,13 @@ export async function POST(req: NextRequest) {
             senderId,
             text,
             raw: m,
-          }).catch((e) => console.warn('[webhook:whatsapp]', e?.message));
+          }).catch((e: unknown) => console.warn('[webhook:whatsapp]', toErrorMessage(e)));
         }
       }
     }
     return NextResponse.json({ ok: true });
   } catch (e: unknown) {
     // Return 200 so Meta does not retry on transient app bugs.
-    return NextResponse.json({ ok: false, error: e?.message }, { status: 200 });
+    return NextResponse.json({ ok: false, error: toErrorMessage(e) }, { status: 200 });
   }
 }
