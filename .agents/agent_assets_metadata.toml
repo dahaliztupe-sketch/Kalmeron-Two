@@ -12,3 +12,9 @@ id = "JdPpeMuNpXG41DWrC0ufB"
 uri = "file://docs/REMAINING_HUMAN_TASKS.pdf"
 type = "pdf"
 title = "كلميرون — المهام المتبقّية للمؤسس (PDF)"
+
+[[outputs]]
+id = "G4ZpNBM7U-KEl9CssXeSc"
+uri = "file://UX_AUDIT_REPORT.md"
+type = "text"
+title = "تقرير تدقيق تجربة المستخدم — كلميرون"

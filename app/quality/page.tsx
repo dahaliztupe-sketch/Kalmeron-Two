@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { ShieldCheck, Beaker, Eye, ArrowLeft } from "lucide-react";
 import { getEvalSummary } from "@/src/lib/eval/summary";
+import { BrandLogo } from "@/components/brand/BrandLogo";
 
 export const metadata: Metadata = {
   title: "الجودة والتقييم — كيف نقيس أداء كلميرون",
@@ -25,20 +25,7 @@ export default async function QualityPage() {
       {/* Header */}
       <header className="sticky top-0 z-40 border-b border-white/[0.06] bg-[#05070D]/80 backdrop-blur-xl">
         <div className="max-w-5xl mx-auto px-4 md:px-8 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-3 group">
-            <div className="relative w-9 h-9 rounded-xl border border-white/10 bg-[#070A18]/70 flex items-center justify-center">
-              <Image
-                src="/brand/kalmeron-mark.svg"
-                alt="Kalmeron"
-                width={24}
-                height={24}
-                className="w-6 h-6 object-contain"
-              />
-            </div>
-            <span className="font-display text-lg font-extrabold text-white">
-              Kalmeron
-            </span>
-          </Link>
+          <BrandLogo size={36} />
           <Link
             href="/demo"
             className="text-sm text-text-secondary hover:text-white transition"

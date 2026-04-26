@@ -5,6 +5,7 @@
  * Reads `_health/probe-summary` written by `/api/cron/health-probe`.
  */
 import { adminDb } from '@/src/lib/firebase-admin';
+import { PublicShell } from '@/components/layout/PublicShell';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -66,8 +67,8 @@ export default async function StatusPage() {
     : 'يوجد عُطل عام';
 
   return (
-    <main dir="rtl" className="min-h-screen bg-neutral-950 text-white p-8">
-      <div className="max-w-3xl mx-auto">
+    <PublicShell>
+      <div dir="rtl" className="max-w-3xl mx-auto p-8">
         <h1 className="text-3xl font-bold mb-2">حالة منصّة كالميرون</h1>
         <p className="text-neutral-400 mb-8">آخر تحديث: {updated}</p>
 
@@ -103,6 +104,6 @@ export default async function StatusPage() {
           </p>
         </div>
       </div>
-    </main>
+    </PublicShell>
   );
 }

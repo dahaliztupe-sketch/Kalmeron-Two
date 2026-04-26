@@ -12,6 +12,7 @@
  * area and changes should be reviewed.
  */
 import Link from 'next/link';
+import { PublicShell } from '@/components/layout/PublicShell';
 
 export const metadata = {
   title: 'مركز الثقة — كالميرون',
@@ -69,8 +70,8 @@ function Section({ title, items }: { title: string; items: Control[] }) {
 
 export default function TrustCenter() {
   return (
-    <main dir="rtl" className="min-h-screen bg-neutral-950 text-white">
-      <div className="max-w-5xl mx-auto p-8">
+    <PublicShell>
+      <div dir="rtl" className="max-w-5xl mx-auto p-8">
         <div className="mb-12">
           <h1 className="text-4xl font-bold mb-3">مركز الثقة</h1>
           <p className="text-neutral-400 max-w-2xl leading-8">
@@ -104,6 +105,6 @@ export default function TrustCenter() {
           آخر مراجعة لهذه الصفحة: 24 أبريل 2026
         </div>
       </div>
-    </main>
+    </PublicShell>
   );
 }
