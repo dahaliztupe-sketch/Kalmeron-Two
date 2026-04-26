@@ -110,7 +110,7 @@ export default function FinanceCrewPage() {
               ابدأ تجربة 14 يوم مجاناً
             </Link>
             <Link
-              href="/contact-sales"
+              href="/contact?intent=crew-finance"
               className="rounded-full border border-white/[0.1] px-8 py-4 text-white font-medium hover:bg-white/[0.04] transition"
             >
               تحدّث مع الفريق

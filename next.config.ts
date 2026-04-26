@@ -14,8 +14,8 @@ function buildCsp(): string {
   const directives: Record<string, string[]> = {
     'default-src': ["'self'"],
     'script-src': isProd
-      ? ["'self'", "'unsafe-inline'", 'https://js.stripe.com', 'https://*.sentry.io', 'https://*.vercel-insights.com', 'https://cdn.jsdelivr.net']
-      : ["'self'", "'unsafe-inline'", "'unsafe-eval'", 'https://js.stripe.com', 'https://cdn.jsdelivr.net'],
+      ? ["'self'", "'unsafe-inline'", 'https://js.stripe.com', 'https://*.sentry.io', 'https://*.vercel-insights.com', 'https://cdn.jsdelivr.net', 'https://apis.google.com', 'https://accounts.google.com']
+      : ["'self'", "'unsafe-inline'", "'unsafe-eval'", 'https://js.stripe.com', 'https://cdn.jsdelivr.net', 'https://apis.google.com', 'https://accounts.google.com'],
     'style-src': ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
     'img-src': ["'self'", 'data:', 'blob:', 'https:'],
     'font-src': ["'self'", 'data:', 'https://fonts.gstatic.com'],
@@ -33,7 +33,7 @@ function buildCsp(): string {
       'wss://*.firebaseio.com',
       ...(isProd ? [] : ['ws://localhost:*', 'http://localhost:*', 'https://localhost:*']),
     ],
-    'frame-src': ["'self'", 'https://js.stripe.com', 'https://hooks.stripe.com'],
+    'frame-src': ["'self'", 'https://js.stripe.com', 'https://hooks.stripe.com', 'https://accounts.google.com', 'https://*.firebaseapp.com'],
     'media-src': ["'self'", 'blob:', 'data:'],
     'worker-src': ["'self'", 'blob:'],
     'object-src': ["'none'"],

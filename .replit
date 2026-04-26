@@ -44,7 +44,7 @@ outputType = "webview"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "npm run dev"
+args = "bash .local/audit/runner.sh"
 waitForPort = 5000
 
 [[workflows.workflow]]
@@ -98,10 +98,6 @@ outputType = "console"
 [[ports]]
 localPort = 5000
 externalPort = 80
-
-[[ports]]
-localPort = 5004
-externalPort = 3002
 
 [[ports]]
 localPort = 5005
