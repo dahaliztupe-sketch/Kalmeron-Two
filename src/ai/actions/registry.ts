@@ -18,6 +18,14 @@
  */
 import { z } from 'zod';
 import { adminDb } from '@/src/lib/firebase-admin';
+import {
+  createCampaign as metaCreateCampaign,
+  createAdSet as metaCreateAdSet,
+  publishAd as metaPublishAd,
+  pauseCampaign as metaPauseCampaign,
+  getCampaignInsights as metaGetInsights,
+  metaConfigured,
+} from '@/src/lib/integrations/meta-ads';
 
 export type ActionStatus =
   | 'pending'
@@ -174,6 +182,136 @@ registerAction({
     }
   },
 });
+
+// ---------- Meta (Facebook/Instagram) Ads actions ----------
+
+registerAction({
+  id: 'meta_create_campaign',
+  label: 'إنشاء حملة إعلانية على Meta',
+  description: 'ينشئ حملة جديدة على Facebook/Instagram (تبدأ متوقّفة حتى تنشيطها).',
+  requiresApproval: true,
+  schema: z.object({
+    name: z.string().min(2).max(200),
+    objective: z.enum([
+      'OUTCOME_LEADS',
+      'OUTCOME_TRAFFIC',
+      'OUTCOME_AWARENESS',
+      'OUTCOME_ENGAGEMENT',
+      'OUTCOME_SALES',
+      'OUTCOME_APP_PROMOTION',
+    ]),
+    dailyBudgetMinor: z.number().int().min(100), // e.g. 100 piastres = 1 EGP
+    specialAdCategories: z.array(z.string()).optional(),
+  }),
+  async execute(input) {
+    const r = await metaCreateCampaign({
+      name: input.name,
+      objective: input.objective,
+      dailyBudgetMinor: input.dailyBudgetMinor,
+      status: 'PAUSED',
+      specialAdCategories: input.specialAdCategories,
+    });
+    if (!r.ok) return { ok: false, error: r.error };
+    return { ok: true, noop: !!r.noop, result: r.result };
+  },
+});
+
+registerAction({
+  id: 'meta_create_adset',
+  label: 'إنشاء مجموعة إعلانات على Meta',
+  description: 'ينشئ مجموعة إعلانات (استهداف + ميزانية يومية) داخل حملة قائمة.',
+  requiresApproval: true,
+  schema: z.object({
+    campaignId: z.string().min(2),
+    name: z.string().min(2).max(200),
+    dailyBudgetMinor: z.number().int().min(100),
+    optimizationGoal: z
+      .enum([
+        'LINK_CLICKS',
+        'LEAD_GENERATION',
+        'OFFSITE_CONVERSIONS',
+        'IMPRESSIONS',
+        'REACH',
+        'POST_ENGAGEMENT',
+      ])
+      .optional(),
+    targeting: z
+      .object({
+        geoCountries: z.array(z.string()).optional(),
+        geoCities: z.array(z.string()).optional(),
+        ageMin: z.number().int().min(13).max(65).optional(),
+        ageMax: z.number().int().min(13).max(65).optional(),
+        genders: z.array(z.number().int()).optional(),
+        interests: z
+          .array(z.object({ id: z.string(), name: z.string() }))
+          .optional(),
+      })
+      .optional(),
+  }),
+  async execute(input) {
+    const r = await metaCreateAdSet(input);
+    if (!r.ok) return { ok: false, error: r.error };
+    return { ok: true, noop: !!r.noop, result: r.result };
+  },
+});
+
+registerAction({
+  id: 'meta_publish_ad',
+  label: 'نشر إعلان على Meta',
+  description: 'ينشئ creative + إعلان داخل مجموعة إعلانات (يبدأ متوقّفاً للسلامة).',
+  requiresApproval: true,
+  schema: z.object({
+    adsetId: z.string().min(2),
+    name: z.string().min(2).max(200),
+    message: z.string().min(2).max(2000),
+    linkUrl: z.string().url(),
+    headline: z.string().max(200).optional(),
+    description: z.string().max(500).optional(),
+    imageHash: z.string().optional(),
+  }),
+  async execute(input) {
+    const r = await metaPublishAd(input);
+    if (!r.ok) return { ok: false, error: r.error };
+    return { ok: true, noop: !!r.noop, result: r.result };
+  },
+});
+
+registerAction({
+  id: 'meta_pause_campaign',
+  label: 'إيقاف حملة Meta',
+  description: 'إيقاف حملة فوراً (إجراء دفاعي — لا يحتاج موافقة).',
+  requiresApproval: false,
+  schema: z.object({ campaignId: z.string().min(2) }),
+  async execute(input) {
+    const r = await metaPauseCampaign(input.campaignId);
+    if (!r.ok) return { ok: false, error: r.error };
+    return { ok: true, noop: !!r.noop, result: r.result };
+  },
+});
+
+registerAction({
+  id: 'meta_get_campaign_insights',
+  label: 'قراءة أداء حملة Meta',
+  description: 'يجلب بيانات الأداء (مشاهدات، نقرات، صرف، CTR) لحملة (قراءة فقط).',
+  requiresApproval: false,
+  schema: z.object({
+    campaignId: z.string().min(2),
+    datePreset: z.enum(['today', 'yesterday', 'last_7d', 'last_30d']).default('last_7d'),
+  }),
+  async execute(input) {
+    const r = await metaGetInsights(input.campaignId, input.datePreset);
+    if (!r.ok) return { ok: false, error: r.error };
+    return { ok: true, noop: !!r.noop, result: r.result };
+  },
+});
+
+export function metaIntegrationStatus() {
+  return {
+    configured: metaConfigured(),
+    pageConfigured: Boolean(process.env.META_PAGE_ID),
+    requiredEnv: ['META_ACCESS_TOKEN', 'META_AD_ACCOUNT_ID', 'META_PAGE_ID'],
+  };
+}
 
 // ---------- Action requests (inbox) ----------
 
