@@ -5,13 +5,18 @@ import Link from "next/link";
 import { AppShell } from "@/components/layout/AppShell";
 import {
   Eye, EyeOff, CheckCircle2, ArrowLeft, Sparkles, Info,
-  Shield, Database, Hammer,
+  Shield, Database, Hammer, Trash2, Loader2,
 } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function DemoModePage() {
+  const { user } = useAuth();
   const [enabled, setEnabled] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [seeded, setSeeded] = useState<boolean | null>(null);
+  const [seeding, setSeeding] = useState<"idle" | "seed" | "delete">("idle");
+  const [seedMsg, setSeedMsg] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     try {
@@ -23,9 +28,28 @@ export default function DemoModePage() {
     }
   }, []);
 
+  const checkSeed = useCallback(async () => {
+    if (!user) return setSeeded(null);
+    try {
+      const token = await user.getIdToken();
+      const r = await fetch("/api/investor/seed", {
+        headers: { Authorization: `Bearer ${token}` },
+        cache: "no-store",
+      });
+      const j = await r.json();
+      setSeeded(Boolean(j.seeded));
+    } catch {
+      setSeeded(null);
+    }
+  }, [user]);
+
   useEffect(() => {
     void load();
   }, [load]);
+
+  useEffect(() => {
+    void checkSeed();
+  }, [checkSeed]);
 
   const toggle = async () => {
     setSaving(true);
@@ -40,6 +64,57 @@ export default function DemoModePage() {
       setEnabled(Boolean(j.enabled));
     } finally {
       setSaving(false);
+    }
+  };
+
+  const seedNow = async () => {
+    if (!user) {
+      setSeedMsg("سجّل الدخول أوّلاً لتعبئة بيانات العرض.");
+      return;
+    }
+    setSeeding("seed");
+    setSeedMsg(null);
+    try {
+      const token = await user.getIdToken();
+      const r = await fetch("/api/investor/seed", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const j = await r.json();
+      if (j.ok) {
+        setSeedMsg("تمّ تعبئة بيانات العرض بنجاح.");
+        setSeeded(true);
+      } else {
+        setSeedMsg(`تعذّر التعبئة: ${j.error ?? "غير معروف"}`);
+      }
+    } catch (err) {
+      setSeedMsg(err instanceof Error ? err.message : "خطأ غير متوقّع");
+    } finally {
+      setSeeding("idle");
+    }
+  };
+
+  const resetSeed = async () => {
+    if (!user) return;
+    setSeeding("delete");
+    setSeedMsg(null);
+    try {
+      const token = await user.getIdToken();
+      const r = await fetch("/api/investor/seed", {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const j = await r.json();
+      if (j.ok) {
+        setSeedMsg(`تمّ مسح ${j.deleted} عنصر من بيانات العرض.`);
+        setSeeded(false);
+      } else {
+        setSeedMsg(`تعذّر المسح: ${j.error ?? "غير معروف"}`);
+      }
+    } catch (err) {
+      setSeedMsg(err instanceof Error ? err.message : "خطأ غير متوقّع");
+    } finally {
+      setSeeding("idle");
     }
   };
 
@@ -140,6 +215,74 @@ export default function DemoModePage() {
             </p>
           </div>
         </div>
+
+        {/* Seed demo data */}
+        <section className="rounded-2xl border border-white/10 bg-white/[0.03] p-6">
+          <div className="flex flex-wrap items-start justify-between gap-4 mb-4">
+            <div className="flex items-start gap-3">
+              <div className="rounded-xl bg-emerald-500/15 size-10 flex items-center justify-center">
+                <Database className="size-5 text-emerald-300" />
+              </div>
+              <div>
+                <h3 className="text-white font-semibold">بيانات الاستعراض</h3>
+                <p className="text-sm text-white/60 mt-1 max-w-xl">
+                  بضغطة واحدة: حساب نموذجي لشركة "أكلة بيتنا" (FoodTech) فيه صوت علامة كامل، خطة عمل، نموذج مالي بستّة أشهر، وثلاث فرص تمويل محفوظة.
+                </p>
+              </div>
+            </div>
+            {seeded !== null && (
+              <span
+                className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs ${
+                  seeded
+                    ? "bg-emerald-500/15 text-emerald-300"
+                    : "bg-white/5 text-white/60"
+                }`}
+              >
+                {seeded ? "البيانات مُحمَّلة" : "غير مُحمَّلة"}
+              </span>
+            )}
+          </div>
+
+          <div className="flex flex-wrap gap-2">
+            <button
+              onClick={seedNow}
+              disabled={seeding !== "idle"}
+              className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 px-4 py-2 text-sm font-semibold text-white shadow-lg hover:opacity-95 disabled:opacity-60"
+            >
+              {seeding === "seed" ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : (
+                <Sparkles className="size-4" />
+              )}
+              تعبئة بيانات العرض الآن
+            </button>
+            {seeded && (
+              <button
+                onClick={resetSeed}
+                disabled={seeding !== "idle"}
+                className="inline-flex items-center gap-2 rounded-xl border border-rose-500/30 bg-rose-500/10 px-4 py-2 text-sm text-rose-200 hover:bg-rose-500/15 disabled:opacity-60"
+              >
+                {seeding === "delete" ? (
+                  <Loader2 className="size-4 animate-spin" />
+                ) : (
+                  <Trash2 className="size-4" />
+                )}
+                مسح بيانات العرض
+              </button>
+            )}
+            <Link
+              href="/investor/guide"
+              className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm text-white/85 hover:bg-white/10"
+            >
+              دليل المتحدّث للعرض
+              <ArrowLeft className="size-4" />
+            </Link>
+          </div>
+
+          {seedMsg && (
+            <p className="text-sm text-white/70 mt-3">{seedMsg}</p>
+          )}
+        </section>
 
         {/* Steps */}
         <section className="rounded-2xl border border-white/10 bg-white/[0.03] p-6">

@@ -1,5 +1,23 @@
 # Kalmeron AI (ai-studio-applet)
 
+## Session 2026-04-26 — Investor Readiness Round 2 (Seed Data + CLI + Speaker Guide)
+
+### إضافات على Round 1:
+- **`POST /api/investor/seed`** — يعبّئ Firestore للمستخدم الحالي (Bearer auth) ببيانات شركة "أكلة بيتنا": Brand Voice + Plan + Financial Scenario (6 أشهر) + 3 فرص محفوظة. كل وثيقة موسومة بـ `_demoSeed = "investor-demo-2026"` لإمكانية الإزالة لاحقاً.
+- **`DELETE /api/investor/seed`** — يمسح الوثائق الموسومة فقط (لا يلمس بيانات حقيقية).
+- **`GET /api/investor/seed`** — يخبر الـ UI هل الـ seed مُحمَّل أم لا.
+- **`/investor/demo-mode`** — أُضيف قسم "بيانات الاستعراض" بزرّيّ تعبئة/مسح + شارة حالة + رسائل توقيت.
+- **`/investor/guide`** صفحة جديدة — دليل المتحدّث للمستثمر: 5 أقسام (ما الذي نقدّم، لماذا الآن، تمييز تقني، حوكمة، أسئلة متوقّعة وإجابات).
+- **`scripts/pre-demo-check.ts`** — CLI يستدعي `/api/investor/health` ويطبع تقرير ملوّن، ينهي بـ exit code 1 إذا غير جاهز. يستخدم `npx tsx scripts/pre-demo-check.ts`.
+- **navigation**: أُضيف "دليل المتحدّث" تحت قسم "للمستثمرين".
+
+### التحقّق:
+- ✅ `/investor`, `/investor/health`, `/investor/demo-mode`, `/investor/guide` كلها 200.
+- ✅ `/api/investor/seed` يردّ 401 بدون Bearer (محمي).
+- ✅ `npx tsx scripts/pre-demo-check.ts` يعمل ويُخرج Score 60/100 (متوقّع لأن مفاتيح Gemini/Firebase Admin غير مضبوطة محلياً).
+
+---
+
 ## Session 2026-04-26 — Investor Readiness (Demo Mode + Metrics + Health Check)
 
 ### ما بُني في هذه الجلسة:
