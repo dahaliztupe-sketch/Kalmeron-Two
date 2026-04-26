@@ -1,4 +1,4 @@
-import { NextRequest } from 'next/server';
+import { NextRequest, after } from 'next/server';
 import xss from 'xss';
 import { intelligentOrchestrator } from '@/src/ai/orchestrator/supervisor';
 import { HumanMessage } from '@langchain/core/messages';
@@ -221,27 +221,48 @@ export async function POST(req: NextRequest) {
           }
         }
 
+        // ── Telemetry & shared-brain ingest ─────────────────────────
+        // كل العمل التالي يحدث *بعد* إرسال الـ stream للمستخدم، عبر
+        // `next/after`. هذا يقلّل زمن الاستجابة المُدرَك (TTLB) لأن
+        // المستخدم يحصل على آخر دلتا ثم نُحدّث الفوترة/الذاكرة في الخلفية.
         if (userId !== 'guest-system') {
-          await trackAgentUsage(userId, 'Supervisor', 'gemini-2.5-flash', 1000);
-          const creditManager = new CreditManager(userId);
-          await creditManager.checkAndNotifyThreshold();
+          const lastUserMsgRaw = messages?.[messages.length - 1]?.content || '';
+          const lastUserMsg = typeof lastUserMsgRaw === 'string' ? lastUserMsgRaw.slice(0, 500) : '';
+          const intentSnapshot = finalIntent || 'GENERAL_CHAT';
+          const answerSnapshot = finalText.slice(0, 500);
 
-          // Auto-feed the shared brain (best-effort, never blocks the response)
-          void (async () => {
+          after(async () => {
+            // 1) فوترة الاستخدام
+            try {
+              await trackAgentUsage(userId, 'Supervisor', 'gemini-2.5-flash', 1000);
+            } catch (e) {
+              log.warn({ msg: 'after_track_usage_failed', err: (e as any)?.message });
+            }
+
+            // 2) فحص حدّ الرصيد وإرسال إشعار إن لزم
+            try {
+              const creditManager = new CreditManager(userId);
+              await creditManager.checkAndNotifyThreshold();
+            } catch (e) {
+              log.warn({ msg: 'after_credit_check_failed', err: (e as any)?.message });
+            }
+
+            // 3) تغذية الـ knowledge-graph المشترك
             try {
               const { isKnowledgeGraphEnabled, addEntity } = await import('@/src/lib/memory/knowledge-graph');
               if (await isKnowledgeGraphEnabled()) {
-                const lastUserMsg = messages?.[messages.length - 1]?.content || '';
                 await addEntity(userId, 'Conversation', {
-                  intent: finalIntent || 'GENERAL_CHAT',
-                  question: typeof lastUserMsg === 'string' ? lastUserMsg.slice(0, 500) : '',
-                  answerSummary: finalText.slice(0, 500),
+                  intent: intentSnapshot,
+                  question: lastUserMsg,
+                  answerSummary: answerSnapshot,
                   thread: threadId || null,
                   source: 'chat',
                 });
               }
-            } catch { /* swallow */ }
-          })();
+            } catch (e) {
+              log.warn({ msg: 'after_knowledge_graph_failed', err: (e as any)?.message });
+            }
+          });
         }
 
         // أرسل اقتراحات متابعة (best-effort، لا تُفشل الرد إذا فشلت)

@@ -58,8 +58,18 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const result = await runCoordinator(parsed.goal);
-    return NextResponse.json({ result });
+    const result = await runCoordinator(parsed.goal, { userId });
+    return NextResponse.json({
+      result: result.output,
+      meta: {
+        agentUsed: result.agentUsed,
+        intent: result.intent,
+        confidence: result.confidence,
+        reasoning: result.reasoning,
+        traceId: result.traceId,
+        latencyMs: result.latencyMs,
+      },
+    });
   } catch (error) {
     const { logger } = await import('@/src/lib/logger');
     logger.error({ err: error, userId }, 'Supervisor Engine Error');

@@ -1532,3 +1532,57 @@ into a deliberating multi-perspective panel.
 - `app/api/cron/{aggregate-costs,consolidate-skills,firestore-backup,health-probe,restore-drill}/route.ts`: كانت بالفعل fail-closed بشكل صحيح.
 - `app/api/webhooks/stripe/route.ts`: signature verification كانت موجودة وصحيحة (constructEvent مع STRIPE_WEBHOOK_SECRET).
 - `npm audit`: 31 vulnerabilities متبقّية في firebase-admin/next/xlsx، تحتاج breaking upgrades — تُركت للمستخدم.
+
+---
+
+## Round 6 — Smart Coordinator + Hardened Prompt Guard + Semantic Cache + after() (April 26, 2026)
+
+**Goal:** Push platform toward "world-class leader" status by fixing the dumbest hot-path bugs and adding modern Next.js 16 / RAG patterns.
+
+**1. Smart Supervisor Coordinator (`src/ai/supervisor/coordinator.ts`)** — rewrite without `@ts-nocheck`.
+- LLM intent classification via `gemini-2.5-flash-lite` + Zod `RoutingDecisionSchema` (intent + confidence + reasoning).
+- Fallback to keyword classifier covering all 11 registered intents.
+- Bounded loop: `MAX_AGENT_HOPS=3`, `60s` timeout via `withDefaultTimeout`.
+- Returns rich `CoordinatorResult { output, agentUsed, intent, confidence, reasoning, traceId, latencyMs }` for full observability.
+- `app/api/supervisor/route.ts` updated to surface the new shape.
+
+**2. Hardened Prompt-Injection Guard (`src/lib/security/prompt-guard.ts`)** — full rewrite, no `@ts-nocheck`.
+- 30+ regex patterns covering AR + EN + mixed for: instruction-override, role-flip, system-leak, no-filter, indirect injection (PDF/web/email), code-exec, token-leak, DAN/DUDE jailbreaks.
+- Arabic alif/ya/ta-marbuta normalization pre-match (`normalizeArabic`) so detection works regardless of writer's diacritics.
+- New `scorePromptRisk(input, threshold) → { score, matched, blocked }` for observability.
+- `validatePromptIntegrity` kept as backwards-compatible wrapper used by `gateway.ts`.
+- `sanitizeInput` extended: removes `<|im_start|>`, `### Instruction:`, HTML comments, all chat-template tags.
+- `isolateUserInput(text, source)` now namespaces by source (pdf/web/email) and escapes nested XML.
+
+**3. Golden Test Corpus (`test/prompt-injection.test.ts`)** — 38 jailbreak samples + 10 clean prompts.
+- Categories: instruction-override, role-flip, system-leak, no-filter, indirect-injection, code-exec, token-leak.
+- Aggregate guarantees: ≥95% jailbreak detection, ≤5% false-positive rate.
+- Final result: **54/54 pass** (100% detection, 0% false positives).
+
+**4. Semantic Prompt Cache (`src/lib/llm/semantic-cache.ts`)** — embedding-based fuzzy lookup over `prompt-cache.ts`.
+- `cosineSimilarity(a, b)` pure helper.
+- `getSemanticCached / setSemanticCached` with cosine ≥0.92 default threshold.
+- L1 in-memory map (200 entries, 6h TTL) + L2 Firestore `semantic_prompt_cache` (7d TTL) with lazy warm-up.
+- L2 read protected by 1.5s `Promise.race` timeout — never blocks hot path.
+- Disabled in `NODE_ENV=test` to avoid Firebase admin import.
+- Embedder injected at runtime via `setSemanticEmbedder` (decoupled from `gemini-embedding-001` for testability).
+- Test file `test/semantic-cache.test.ts`: **12/12 pass** (cosine, scope/model isolation, threshold behavior).
+
+**5. `next/after` for non-blocking telemetry (`app/api/chat/route.ts`)**
+- Moved `trackAgentUsage`, `creditManager.checkAndNotifyThreshold`, and knowledge-graph ingest into `after(async () => …)` callback.
+- User now sees the final stream chunk *before* billing/memory writes — measurable TTLB improvement.
+- Each block individually try/caught so one failure doesn't kill the others.
+
+**Validation:**
+- `npx vitest run` → **143/143 pass** in 18 files (was 77 — added 66 new across prompt-injection + semantic-cache).
+- All 5 workflows running clean: Next.js (1021ms ready) + 4 Python sidecars (PDF:8000, Egypt:8008, LLM Judge:8080, Embeddings:8099).
+- No `@ts-nocheck` on any of the four new/rewritten files.
+
+**Files added/changed:**
+- NEW `src/ai/supervisor/coordinator.ts` (smart routing + bounded loop)
+- REWROTE `src/lib/security/prompt-guard.ts` (30+ patterns + AR normalization + risk scoring)
+- NEW `test/prompt-injection.test.ts` (golden corpus)
+- NEW `src/lib/llm/semantic-cache.ts` (embedding-based cache)
+- NEW `test/semantic-cache.test.ts` (12 tests)
+- MODIFIED `app/api/chat/route.ts` (next/after telemetry)
+- MODIFIED `app/api/supervisor/route.ts` (rich CoordinatorResult shape)
