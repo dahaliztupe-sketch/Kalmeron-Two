@@ -10,7 +10,7 @@ const UserSchema = z.object({
   startupStage: z.enum(['idea', 'validation', 'launch', 'growth', 'scale']),
 });
 
-export async function updateUserProfile(_prevState: any, formData: FormData) {
+export async function updateUserProfile(_prevState: unknown, formData: FormData) {
   const log = createRequestLogger(crypto.randomUUID());
   try {
     const validated = UserSchema.parse({
@@ -46,7 +46,7 @@ export async function updateUserProfile(_prevState: any, formData: FormData) {
     );
 
     return { success: true, error: null };
-  } catch (error: any) {
+  } catch (error: unknown) {
     log.warn({ msg: 'updateUserProfile failed', err: error?.message });
     if (error?.name === 'ZodError') {
       return { success: false, error: 'تحقق من البيانات المدخلة.' };

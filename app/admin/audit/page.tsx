@@ -13,7 +13,7 @@ interface Entry {
   userId: string;
   action: string;
   target?: string | null;
-  details?: Record<string, any>;
+  details?: Record<string, unknown>;
   timestamp?: number | null;
 }
 

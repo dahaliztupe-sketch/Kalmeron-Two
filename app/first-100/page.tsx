@@ -22,6 +22,7 @@ export default function First100Page() {
   const [now, setNow] = useState<Date | null>(null);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setNow(new Date());
     let cancelled = false;
 

@@ -7,7 +7,7 @@ import { MODELS } from './gemini';
 
 // Initialize Mem0 for Advanced Long-Term Memory (Agentic Architecture)
 export const mem0 = new Mem0({
-  userId: (user: any) => user.id,  // ربط الذكريات بالمستخدم
+  userId: (user: unknown) => user.id,  // ربط الذكريات بالمستخدم
   config: {
     vectorStore: {
       provider: 'pinecone',  // أو 'chroma' للتطوير المحلي
@@ -17,12 +17,12 @@ export const mem0 = new Mem0({
       model: 'gemini-2.5-flash-lite',
     },
   },
-} as any);
+} as unknown);
 
 // دورة الذاكرة لكل تفاعل (Mult-Agent Memory Cycle)
-export async function processWithMemory(userId: string, targetQuery: string, handler: (context: any) => Promise<any>) {
+export async function processWithMemory(userId: string, targetQuery: string, handler: (context: unknown) => Promise<unknown>) {
   // 1. استرجاع الذكريات ذات الصلة قبل التفكير
-  const relevantMemories = await mem0.search(targetQuery, { user_id: userId, limit: 5 } as any);
+  const relevantMemories = await mem0.search(targetQuery, { user_id: userId, limit: 5 } as unknown);
   
   // 2. تنفيذ استدعاء LLM مع السياق
   const result = await handler({ context: relevantMemories });
@@ -31,7 +31,7 @@ export async function processWithMemory(userId: string, targetQuery: string, han
   await mem0.add([
     { role: 'user', content: targetQuery },
     { role: 'assistant', content: result }
-  ] as any, { user_id: userId } as any);
+  ] as unknown, { user_id: userId } as unknown);
   
   return result;
 }
@@ -61,7 +61,7 @@ ${recentSummaries}`;
 /**
  * Summarizes the current conversation and saves it to the user's permanent memory.
  */
-export async function summarizeAndStoreMemory(userId: string, messages: any[]) {
+export async function summarizeAndStoreMemory(userId: string, messages: unknown[]) {
     if (messages.length < 2) return;
 
     const { text: summary } = await generateText({

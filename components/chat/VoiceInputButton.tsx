@@ -16,24 +16,47 @@ interface Props {
  * browsers without SpeechRecognition (older Firefox). For those we render
  * a disabled button with a tooltip; the chat still works via typing.
  */
+interface SpeechRecognitionResult {
+  0: { transcript: string };
+}
+interface SpeechRecognitionEvent {
+  results: ArrayLike<SpeechRecognitionResult>;
+}
+interface SpeechRecognitionInstance {
+  lang: string;
+  continuous: boolean;
+  interimResults: boolean;
+  onresult: ((e: SpeechRecognitionEvent) => void) | null;
+  onend: (() => void) | null;
+  onerror: (() => void) | null;
+  start: () => void;
+  stop: () => void;
+  abort: () => void;
+}
+type SpeechRecognitionCtor = new () => SpeechRecognitionInstance;
+
 export function VoiceInputButton({ onTranscript, lang = "ar-EG", className }: Props) {
   const [supported, setSupported] = useState(false);
   const [listening, setListening] = useState(false);
-  const recRef = useRef<any>(null);
+  const recRef = useRef<SpeechRecognitionInstance | null>(null);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    const SR =
-      (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    const w = window as unknown as {
+      SpeechRecognition?: SpeechRecognitionCtor;
+      webkitSpeechRecognition?: SpeechRecognitionCtor;
+    };
+    const SR = w.SpeechRecognition || w.webkitSpeechRecognition;
     if (!SR) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setSupported(true);
     const r = new SR();
     r.lang = lang;
     r.continuous = false;
     r.interimResults = false;
-    r.onresult = (e: any) => {
+    r.onresult = (e) => {
       const transcript = Array.from(e.results)
-        .map((res: any) => res[0]?.transcript || "")
+        .map((res) => res[0]?.transcript || "")
         .join(" ")
         .trim();
       if (transcript) onTranscript(transcript);

@@ -11,11 +11,14 @@ const BASE_URL = process.env.LANGFUSE_BASE_URL || 'https://cloud.langfuse.com';
 
 const isConfigured = Boolean(PUBLIC_KEY && SECRET_KEY);
 
+type LangfuseSpanParams = Record<string, unknown>;
+type LangfuseEndData = Record<string, unknown>;
+
 interface NoOpTrace {
   id: string;
-  span: (params: any) => { end: (data?: any) => void };
-  generation: (params: any) => { end: (data?: any) => void };
-  update: (data: any) => void;
+  span: (params: LangfuseSpanParams) => { end: (data?: LangfuseEndData) => void };
+  generation: (params: LangfuseSpanParams) => { end: (data?: LangfuseEndData) => void };
+  update: (data: LangfuseEndData) => void;
 }
 
 const noopTrace = (): NoOpTrace => ({
@@ -32,7 +35,7 @@ const noopClient = {
   shutdownAsync: async () => {},
 };
 
-export const langfuse: any = isConfigured
+export const langfuse: Langfuse | typeof noopClient = isConfigured
   ? new Langfuse({ publicKey: PUBLIC_KEY!, secretKey: SECRET_KEY!, baseUrl: BASE_URL })
   : noopClient;
 
@@ -45,7 +48,7 @@ export function startConversationTrace(opts: {
   userId?: string;
   threadId?: string;
   input: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }) {
   return langfuse.trace({
     name: 'conversation',
@@ -59,17 +62,19 @@ export function startConversationTrace(opts: {
 /**
  * تسجيل استدعاء وكيل واحد كـ generation داخل trace أو منفصلاً.
  */
+type TraceLike = { generation: (p: LangfuseSpanParams) => { end: (d?: LangfuseEndData) => void } };
+
 export function logAgentGeneration(params: {
-  trace?: any;
+  trace?: TraceLike;
   agent: string;
   model: string;
-  input: any;
-  output: any;
+  input: unknown;
+  output: unknown;
   latencyMs: number;
   success: boolean;
   totalTokens?: number;
 }) {
-  const target = params.trace || langfuse.trace({ name: params.agent });
+  const target = params.trace || (langfuse.trace({ name: params.agent }) as TraceLike);
   const gen = target.generation({
     name: params.agent,
     model: params.model,

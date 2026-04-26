@@ -21,7 +21,7 @@ const LOW_SUCCESS_PCT = Number(process.env.LOW_SUCCESS_PCT || 90);
 
 export async function observe(): Promise<ObservationReport> {
   const snap = getMetricsSnapshot();
-  const entries = Object.entries(snap.agents) as Array<[string, any]>;
+  const entries = Object.entries(snap.agents) as Array<[string, { invocations: number; failures: number; avgLatencyMs: number; successRate: number }]>;
 
   const totalInvocations = entries.reduce((s, [, m]) => s + m.invocations, 0);
   const totalFailures = entries.reduce((s, [, m]) => s + m.failures, 0);

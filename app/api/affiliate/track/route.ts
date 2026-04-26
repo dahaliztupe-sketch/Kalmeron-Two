@@ -17,7 +17,7 @@ export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 export async function POST(req: NextRequest) {
-  let body: any = {};
+  let body: { code?: string; event?: string; meta?: unknown } = {};
   try {
     body = await req.json();
   } catch {
@@ -44,7 +44,7 @@ export async function POST(req: NextRequest) {
       ua: req.headers.get('user-agent')?.slice(0, 256) ?? null,
       ts: Date.now(),
     });
-  } catch (e: any) {
+  } catch (e: unknown) {
     return Response.json({ ok: false, error: e?.message }, { status: 500 });
   }
 

@@ -21,13 +21,13 @@ export async function POST(req: NextRequest) {
   const rl = rateLimit(req, { limit: 20, windowMs: 60_000, userId, scope: 'action-request' });
   if (!rl.success) return NextResponse.json({ error: 'rate_limited' }, { status: 429 });
 
-  let body: any; try { body = await req.json(); } catch { return NextResponse.json({ error: 'invalid_json' }, { status: 400 }); }
+  let body: unknown; try { body = await req.json(); } catch { return NextResponse.json({ error: 'invalid_json' }, { status: 400 }); }
   const { actionId, input, rationale } = body || {};
   if (!actionId) return NextResponse.json({ error: 'actionId_required' }, { status: 400 });
   try {
     const r = await requestAction({ userId, actionId, input: input || {}, rationale, requestedBy: 'user' });
     return NextResponse.json({ ok: true, ...r });
-  } catch (e: any) {
+  } catch (e: unknown) {
     return NextResponse.json({ error: e?.message || 'request_failed' }, { status: 400 });
   }
 }

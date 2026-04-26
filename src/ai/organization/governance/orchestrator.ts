@@ -18,7 +18,7 @@
   export interface OrchestrationRequest {
     userId: string;
     message: string;
-    uiContext?: Record<string, any>;
+    uiContext?: Record<string, unknown>;
     segment?: AudienceSegment;
     threadId?: string;
   }
@@ -70,7 +70,7 @@
   export async function orchestrate(req: OrchestrationRequest): Promise<{
     taskId: string;
     plan: OrchestrationPlan;
-    results: Record<string, any>;
+    results: Record<string, unknown>;
   }> {
     const taskId = await createTask({
       userId: req.userId,
@@ -97,9 +97,9 @@
         priority: 'high',
       }));
 
-      const results: Record<string, any> = {};
+      const results: Record<string, unknown> = {};
       if (plan.mode === 'sequential') {
-        let prev: any = null;
+        let prev: unknown = null;
         for (const dept of plan.departments) {
           const ack = await sendMessage({
             from: 'global-orchestrator',
@@ -118,7 +118,7 @@
 
       await updateTaskStatus(taskId, 'completed', results);
       return { taskId, plan, results };
-    } catch (err: any) {
+    } catch (err: unknown) {
       await updateTaskStatus(taskId, 'failed', { error: err?.message });
       await dispatchAlert({
         severity: 'high',

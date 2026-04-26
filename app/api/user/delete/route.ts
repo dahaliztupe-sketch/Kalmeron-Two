@@ -58,7 +58,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ success: true, message: "تم حذف جميع البيانات بنجاح." });
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     const { logger } = await import('@/src/lib/logger');
     logger.error({ err: error, userId }, 'User Deletion Error');
     return NextResponse.json({ error: "حدث خطأ أثناء حذف البيانات" }, { status: 500 });

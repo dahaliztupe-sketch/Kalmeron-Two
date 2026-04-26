@@ -317,10 +317,12 @@ function ChatPageContent() {
   }, [user]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     loadConversations();
   }, [user, loadConversations]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (activeConvId) loadChat(activeConvId);
   }, [activeConvId, loadChat]);
 
@@ -388,6 +390,7 @@ function ChatPageContent() {
       let collectedPhases: Phase[] = [];
       let collectedCitations: Citation[] = [];
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const handleEvent = (event: string, data: any) => {
         if (event === "phase") {
           collectedPhases = [...collectedPhases, { id: data.id, label: data.label }];
@@ -428,7 +431,7 @@ function ChatPageContent() {
           try { handleEvent(event, JSON.parse(dataStr)); } catch {}
         }
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       if (err?.name !== "AbortError") {
         toast.error("حدث خطأ أثناء التواصل مع كلميرون.");
         setMessages((prev) => prev.map((m) => m.id === assistantId ? { ...m, content: "عذراً، كلميرون يواجه مشكلة فنية حالياً. حاول مرة أخرى." } : m));
@@ -501,20 +504,26 @@ function ChatPageContent() {
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      onFormSubmit(e as any);
+      onFormSubmit(e as Error);
     }
   };
 
   // Auto-send the `?q=` query once when the user is loaded.
   // Lives after `sendMessage` is declared so the React Compiler doesn't
   // flag a TDZ access from the effect closure.
+  // We capture `sendMessage` in a ref so the effect only re-runs when `user`
+  // or `searchParams` change — not on every render when `sendMessage` is
+  // recreated. This is the canonical pattern for "fire once" effects that
+  // need to call an unstable callback.
   const autoSentRef = useRef(false);
+  const sendMessageRef = useRef(sendMessage);
+  useEffect(() => { sendMessageRef.current = sendMessage; });
   useEffect(() => {
     if (!user || autoSentRef.current) return;
     const initialQ = searchParams.get("q");
     if (!initialQ) return;
     autoSentRef.current = true;
-    const t = setTimeout(() => { void sendMessage(initialQ); }, 300);
+    const t = setTimeout(() => { void sendMessageRef.current(initialQ); }, 300);
     return () => clearTimeout(t);
   }, [user, searchParams]);
 

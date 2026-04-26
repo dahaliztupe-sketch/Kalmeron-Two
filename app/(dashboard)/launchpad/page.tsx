@@ -15,7 +15,7 @@ const STAGES = [
 export default function LaunchpadPage() {
   const [idea, setIdea] = useState("");
   const [runId, setRunId] = useState<string | null>(null);
-  const [run, setRun] = useState<any>(null);
+  const [run, setRun] = useState<Record<string, unknown> | null>(null);
   const [running, setRunning] = useState(false);
 
   async function launch() {

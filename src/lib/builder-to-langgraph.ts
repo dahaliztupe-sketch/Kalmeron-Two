@@ -10,7 +10,7 @@ import { BaseMessage } from '@langchain/core/messages';
 export interface ReactFlowNode {
   id: string;
   type: 'trigger' | 'ai_prompt' | 'ai_condition' | 'knowledge_base' | 'action';
-  data: any;
+  data: unknown;
 }
 
 export interface ReactFlowEdge {
@@ -24,7 +24,7 @@ export interface ReactFlowEdge {
 
 const DynamicGraphState = Annotation.Root({
   messages: Annotation<BaseMessage[]>({ reducer: (a, b) => a.concat(b) }),
-  contextData: Annotation<Record<string, any>>(),
+  contextData: Annotation<Record<string, unknown>>(),
   currentNode: Annotation<string>(), // Tracks which node we are evaluating
 });
 

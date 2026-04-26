@@ -205,7 +205,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 <p className="text-[13px] font-bold text-white">{dbUser?.name || user.displayName}</p>
                 {/* lexicon-allow: bilingual fallback — "Founder" is the legitimate English term */}
                 <p className="text-[9.5px] text-cyan-300/70 uppercase tracking-[0.20em] mt-0.5">
-                  {(dbUser as any)?.industry || (language === "ar" ? "مؤسس" : "Founder")}
+                  {(dbUser as { industry?: string } | null | undefined)?.industry || (language === "ar" ? "مؤسس" : "Founder")}
                 </p>
               </div>
               <div className="relative">

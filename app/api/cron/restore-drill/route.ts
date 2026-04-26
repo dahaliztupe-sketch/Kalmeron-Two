@@ -31,7 +31,7 @@ export async function GET(req: NextRequest) {
   const startedAt = now;
   const drillRef = adminDb.collection('restore_drills').doc(String(now));
 
-  let result: any = { ok: false, startedAt };
+  let result: Record<string, unknown> = { ok: false, startedAt };
 
   try {
     // 1. Pull most recent backup record.
@@ -45,8 +45,8 @@ export async function GET(req: NextRequest) {
       result = { ok: false, error: 'no-backup-found', startedAt };
     } else {
       const doc = snap.docs[0]!;
-      const data = doc.data() as any;
-      const ageHours = (now - (data.createdAt ?? 0)) / 3_600_000;
+      const data = doc.data() as { createdAt?: number; storageUrl?: string } | undefined;
+      const ageHours = (now - (data?.createdAt ?? 0)) / 3_600_000;
       const fresh = ageHours <= STALE_HOURS;
 
       // 2. Optionally HEAD the backup artifact URL to verify reachability.
@@ -58,7 +58,7 @@ export async function GET(req: NextRequest) {
           httpStatus = r.status;
           const cl = r.headers.get('content-length');
           contentLength = cl ? Number(cl) : null;
-        } catch (e: any) {
+        } catch (e: unknown) {
           httpStatus = null;
           result.urlError = e?.message;
         }
@@ -81,7 +81,7 @@ export async function GET(req: NextRequest) {
         reachable,
       };
     }
-  } catch (e: any) {
+  } catch (e: unknown) {
     result = { ok: false, error: e?.message, startedAt };
   }
 

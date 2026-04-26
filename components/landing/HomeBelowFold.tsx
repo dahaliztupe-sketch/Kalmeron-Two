@@ -501,6 +501,7 @@ function LiveDemoSection() {
   const conv = LIVE_DEMO_CONVERSATIONS[activeConv];
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setDisplayedText("");
     setIsTyping(true);
     let i = 0;

@@ -28,10 +28,10 @@ export async function POST(req: NextRequest) {
     try { const snap = await adminDb.collection('twins').limit(500).get(); userIds = snap.docs.map((d) => d.id); }
     catch { userIds = []; }
   }
-  const results: any[] = [];
+  const results: unknown[] = [];
   for (const uid of userIds) {
-    try { const r: any = await runWeeklyReview(uid); results.push({ userId: uid, reviewId: r?.reviewId ?? null }); }
-    catch (e: any) { results.push({ userId: uid, error: e?.message }); }
+    try { const r = await runWeeklyReview(uid) as { reviewId?: string } | null; results.push({ userId: uid, reviewId: r?.reviewId ?? null }); }
+    catch (e: unknown) { results.push({ userId: uid, error: e instanceof Error ? e.message : String(e) }); }
   }
   return NextResponse.json({ usersProcessed: results.length, results });
 }

@@ -2,7 +2,7 @@
 import * as math from 'mathjs';
 
 // أداة تحليل السيناريوهات
-export async function runScenarioAnalysis(baseModel: any, scenario: { variable: string, changePercent: number }) {
+export async function runScenarioAnalysis(baseModel: unknown, scenario: { variable: string, changePercent: number }) {
   // مثال بسيط للنمذجة
   const adjustedModel = { ...baseModel };
   adjustedModel[scenario.variable] = baseModel[scenario.variable] * (1 + scenario.changePercent / 100);

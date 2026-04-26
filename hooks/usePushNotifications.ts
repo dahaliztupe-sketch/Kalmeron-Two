@@ -31,6 +31,7 @@ export function usePushNotifications(userId?: string) {
 
   useEffect(() => {
     if (typeof Notification === "undefined") {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setPermission("unsupported");
       return;
     }

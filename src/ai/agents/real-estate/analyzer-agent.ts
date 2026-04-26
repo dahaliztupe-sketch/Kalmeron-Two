@@ -66,7 +66,7 @@ export const realEstateAnalyzerAgent = new Agent({
 
 export async function realEstateAnalyzerRun(prompt: string) {
   return instrumentAgent('real_estate_analyzer', async () => {
-    const res: any = await realEstateAnalyzerAgent.generate(prompt);
+    const res: unknown = await realEstateAnalyzerAgent.generate(prompt);
     return res?.text ?? res;
   }, { model: 'gemini-2.5-flash', input: { prompt }, toolsUsed: ['analyze_deal', 'search_properties'] });
 }

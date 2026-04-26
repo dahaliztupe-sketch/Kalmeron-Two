@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
   const rl = rateLimit(req, { limit: 30, windowMs: 60_000, userId, scope: 'rag-search' });
   if (!rl.success) return NextResponse.json({ error: 'rate_limited' }, { status: 429 });
 
-  let body: any; try { body = await req.json(); } catch { return NextResponse.json({ error: 'invalid_json' }, { status: 400 }); }
+  let body: unknown; try { body = await req.json(); } catch { return NextResponse.json({ error: 'invalid_json' }, { status: 400 }); }
   const q = String(body?.query || '').trim();
   if (!q) return NextResponse.json({ error: 'query_required' }, { status: 400 });
   const topK = Math.min(10, Math.max(1, Number(body?.topK || 4)));
@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
   try {
     const citations = await searchUserKnowledge({ userId, query: q, topK });
     return NextResponse.json({ citations });
-  } catch (e: any) {
+  } catch (e: unknown) {
     return NextResponse.json({ error: e?.message || 'search_failed' }, { status: 500 });
   }
 }

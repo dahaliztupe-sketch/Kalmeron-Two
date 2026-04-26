@@ -21,7 +21,7 @@ export const dynamic = 'force-dynamic';
 
 const stripeSecret = process.env.STRIPE_SECRET_KEY;
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
-const stripe = stripeSecret ? new Stripe(stripeSecret, { apiVersion: '2025-08-27.basil' as any }) : null;
+const stripe = stripeSecret ? new Stripe(stripeSecret, { apiVersion: '2025-08-27.basil' as Stripe.LatestApiVersion }) : null;
 
 async function applyPlanToUser(userId: string, planId: PlanId) {
   const plan = getPlan(planId);
@@ -49,7 +49,7 @@ async function applyPlanToUser(userId: string, planId: PlanId) {
       lastUpdated: now,
     });
   } else {
-    const wallet = walletDoc.data() as any;
+    const wallet = walletDoc.data() as { credits?: number; tier?: string } | undefined;
     await walletRef.update({
       plan: plan.id,
       dailyLimit: plan.dailyCredits,
@@ -75,7 +75,7 @@ export async function POST(req: NextRequest) {
   let event: Stripe.Event;
   try {
     event = stripe.webhooks.constructEvent(rawBody, sig, webhookSecret);
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error('[stripe-webhook] signature verification failed', err?.message);
     return new Response(`Webhook Error: ${err?.message}`, { status: 400 });
   }
@@ -142,7 +142,7 @@ export async function POST(req: NextRequest) {
         // ack but ignore
         break;
     }
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error('[stripe-webhook] handler failed', event.type, err?.message);
     // Returning 500 lets Stripe retry; safe because we dedupe by event.id.
     return new Response('Handler failed', { status: 500 });

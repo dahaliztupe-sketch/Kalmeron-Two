@@ -42,7 +42,7 @@ function buildInitialWallet(userId: string, planId: PlanId): CreditWallet {
 async function getUserPlanId(userId: string): Promise<PlanId> {
   try {
     const userDoc = await adminDb.collection('users').doc(userId).get();
-    const data = userDoc.data() as any;
+    const data = userDoc.data() as unknown;
     const plan = data?.plan as PlanId | undefined;
     if (plan && PLANS[plan]) return plan;
   } catch {}

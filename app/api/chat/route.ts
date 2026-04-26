@@ -31,8 +31,15 @@ const PHASE_MAP: Record<string, string> = {
   general_chat_node: 'صياغة الرد بأفضل صيغة...',
 };
 
-function sseEncode(event: string, data: any) {
+function sseEncode(event: string, data: unknown) {
   return `event: ${event}\ndata: ${JSON.stringify(data)}\n\n`;
+}
+
+interface ChatPayload {
+  messages?: Array<{ content?: string }>;
+  isGuest?: boolean;
+  threadId?: string;
+  uiContext?: Record<string, unknown>;
 }
 
 export async function POST(req: NextRequest) {
@@ -41,9 +48,9 @@ export async function POST(req: NextRequest) {
   const rl = rateLimit(req, { limit: 20, windowMs: 60_000 });
   if (!rl.success) return rateLimitResponse();
 
-  let payload: any;
+  let payload: ChatPayload;
   try {
-    payload = await req.json();
+    payload = (await req.json()) as ChatPayload;
   } catch {
     return new Response('Invalid JSON', { status: 400 });
   }
@@ -99,8 +106,8 @@ export async function POST(req: NextRequest) {
   }
 
   // PII redaction قبل تمرير المحتوى لأي LLM (audit + privacy).
-  const langchainMessages: any[] = messages.map((m: any) =>
-    new HumanMessage(redactPII(xss(m.content)).redacted),
+  const langchainMessages: Array<HumanMessage | SystemMessage> = messages.map((m) =>
+    new HumanMessage(redactPII(xss(m.content ?? '')).redacted),
   );
 
   // RAG على مستندات المستخدم (Phase 6) — استرجاع الاستشهادات وإدراجها كسياق.
@@ -127,14 +134,14 @@ export async function POST(req: NextRequest) {
         );
       }
     } catch (e) {
-      log.warn({ msg: 'rag_search_failed', err: (e as any)?.message });
+      log.warn({ msg: 'rag_search_failed', err: (e as Error)?.message });
     }
   }
 
   // P0-3: قَيِّد لحظة "أوّل رسالة" لِقياس TTFV-cold (signup → first_message).
   if (userId !== 'guest-system') {
     void markTtfvStage({ userId, stage: 'first_message' }).catch((e) => {
-      log.warn({ msg: 'ttfv_first_message_failed', err: (e as any)?.message });
+      log.warn({ msg: 'ttfv_first_message_failed', err: (e as Error)?.message });
     });
   }
 
@@ -142,7 +149,7 @@ export async function POST(req: NextRequest) {
 
   const stream = new ReadableStream({
     async start(controller) {
-      const send = (event: string, data: any) => {
+      const send = (event: string, data: unknown) => {
         try {
           controller.enqueue(encoder.encode(sseEncode(event, data)));
         } catch {
@@ -172,7 +179,18 @@ export async function POST(req: NextRequest) {
         let finalText = '';
         let finalIntent = '';
 
-        for await (const ev of eventStream as AsyncIterable<any>) {
+        type StreamEvent = {
+          event?: string;
+          name?: string;
+          data?: {
+            chunk?: { content?: string | Array<string | { text?: string }> };
+            output?: {
+              intent?: string;
+              messages?: Array<{ content?: string | Array<string | { text?: string }> }>;
+            };
+          };
+        };
+        for await (const ev of eventStream as AsyncIterable<StreamEvent>) {
           // عقد LangGraph تظهر كـ on_chain_start مع name = اسم العقدة
           if (ev.event === 'on_chain_start' && ev.name && PHASE_MAP[ev.name] && !seenPhases.has(ev.name)) {
             seenPhases.add(ev.name);
@@ -187,7 +205,7 @@ export async function POST(req: NextRequest) {
                 ? chunk.content
                 : Array.isArray(chunk?.content)
                   ? chunk.content
-                      .map((c: any) => (typeof c === 'string' ? c : c?.text || ''))
+                      .map((c) => (typeof c === 'string' ? c : c?.text || ''))
                       .join('')
                   : '';
             if (piece) {
@@ -197,7 +215,7 @@ export async function POST(req: NextRequest) {
               // P0-3: أول chunk فعلي للمستخدم = "first_value" (TTFV-warm).
               if (wasFirst && userId !== 'guest-system') {
                 void markTtfvStage({ userId, stage: 'first_value' }).catch((e) => {
-                  log.warn({ msg: 'ttfv_first_value_failed', err: (e as any)?.message });
+                  log.warn({ msg: 'ttfv_first_value_failed', err: (e as Error)?.message });
                 });
               }
             }
@@ -212,7 +230,7 @@ export async function POST(req: NextRequest) {
               typeof last?.content === 'string'
                 ? last.content
                 : Array.isArray(last?.content)
-                  ? last.content.map((c: any) => (typeof c === 'string' ? c : c?.text || '')).join('')
+                  ? last.content.map((c) => (typeof c === 'string' ? c : c?.text || '')).join('')
                   : '';
             if (content && !finalText) {
               finalText = content;
@@ -236,7 +254,7 @@ export async function POST(req: NextRequest) {
             try {
               await trackAgentUsage(userId, 'Supervisor', 'gemini-2.5-flash', 1000);
             } catch (e) {
-              log.warn({ msg: 'after_track_usage_failed', err: (e as any)?.message });
+              log.warn({ msg: 'after_track_usage_failed', err: (e as Error)?.message });
             }
 
             // 2) فحص حدّ الرصيد وإرسال إشعار إن لزم
@@ -244,7 +262,7 @@ export async function POST(req: NextRequest) {
               const creditManager = new CreditManager(userId);
               await creditManager.checkAndNotifyThreshold();
             } catch (e) {
-              log.warn({ msg: 'after_credit_check_failed', err: (e as any)?.message });
+              log.warn({ msg: 'after_credit_check_failed', err: (e as Error)?.message });
             }
 
             // 3) تغذية الـ knowledge-graph المشترك
@@ -260,7 +278,7 @@ export async function POST(req: NextRequest) {
                 });
               }
             } catch (e) {
-              log.warn({ msg: 'after_knowledge_graph_failed', err: (e as any)?.message });
+              log.warn({ msg: 'after_knowledge_graph_failed', err: (e as Error)?.message });
             }
           });
         }
@@ -292,7 +310,7 @@ export async function POST(req: NextRequest) {
           });
         }
         send('done', { intent: finalIntent, length: finalText.length, citations: citations.length });
-      } catch (error: any) {
+      } catch (error: unknown) {
         log.error({ msg: 'Chat SSE error', error: error?.message, stack: error?.stack });
         send('error', { message: 'عذراً، كالميرون بيواجه مشكلة فنية حالياً.' });
       } finally {

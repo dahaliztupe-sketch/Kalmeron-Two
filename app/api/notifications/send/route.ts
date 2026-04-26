@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
     const idToken = authHeader.replace("Bearer ", "").trim();
     if (idToken) {
       const decoded = await adminAuth.verifyIdToken(idToken).catch(() => null);
-      if (!decoded || (decoded.uid !== targetUid && !(decoded as any).admin)) {
+      if (!decoded || (decoded.uid !== targetUid && !(decoded as { admin?: boolean }).admin)) {
         return NextResponse.json({ error: "unauthorized" }, { status: 403 });
       }
     }
@@ -79,7 +79,7 @@ export async function POST(req: NextRequest) {
       sent: result.successCount,
       failed: result.failureCount,
     });
-  } catch (e: any) {
+  } catch (e: unknown) {
     console.error("[FCM Send]", e);
     return NextResponse.json({ error: e.message }, { status: 500 });
   }

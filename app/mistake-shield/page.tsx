@@ -23,7 +23,7 @@ interface Mistake {
   fix: string;
   preventionTip: string;
   realExample?: string;
-  icon: any;
+  icon: React.ComponentType<{ className?: string; size?: number }>;
 }
 
 const MISTAKES: Mistake[] = [

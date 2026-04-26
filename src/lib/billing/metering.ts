@@ -54,7 +54,7 @@ export async function getWorkspaceTier(workspaceId: string): Promise<Tier> {
   try {
     const doc = await adminDb.collection('workspaces').doc(workspaceId).get();
     if (!doc.exists) return 'free';
-    return ((doc.data() as any).tier as Tier) ?? 'free';
+    return ((doc.data() as { tier?: Tier } | undefined)?.tier) ?? 'free';
   } catch {
     return 'free';
   }
@@ -114,8 +114,8 @@ export async function checkQuota(workspaceId: string): Promise<{
     adminDb.collection('usage_daily').doc(`${workspaceId}_${dk}`).get(),
     adminDb.collection('usage_monthly').doc(`${workspaceId}_${mk}`).get(),
   ]);
-  const d = (daily.data() as any) || {};
-  const m = (monthly.data() as any) || {};
+  const d = (daily.data() as Record<string, number> | undefined) || {};
+  const m = (monthly.data() as Record<string, number> | undefined) || {};
   const usage = {
     dailyRuns: d.runs || 0,
     monthlyTokens: m.totalTokens || 0,

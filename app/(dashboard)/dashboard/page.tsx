@@ -26,7 +26,7 @@ const STAGE_LABELS: Record<string, string> = {
 
 interface DashboardData {
   welcome: { stage: string; companyName: string | null; industry: string | null };
-  teamActivity: Array<{ taskId: string; description: string; status: string; updatedAt?: any }>;
+  teamActivity: Array<{ taskId: string; description: string; status: string; updatedAt?: unknown }>;
   pendingTasks: Array<{ taskId: string; description: string; status: string }>;
   alerts: Array<{ severity: string; source: string; message: string; timestamp?: string }>;
   metrics: { dailyCostUsd: number; dailyLimit: number; agentCount: number };
@@ -82,7 +82,7 @@ export default function DashboardPage() {
         if (!r.ok) throw new Error(String(r.status));
         const j = await r.json();
         if (!cancel) { setData(j); setError(null); }
-      } catch (e: any) {
+      } catch (e: unknown) {
         if (!cancel) setError("تعذّر تحميل البيانات.");
       } finally {
         if (!cancel) setLoading(false);

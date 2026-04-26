@@ -14,7 +14,7 @@ export interface InboundMessage {
   channel: Channel;
   senderId: string;
   text: string;
-  raw?: any;
+  raw?: unknown;
   receivedAt: number;
 }
 
@@ -26,7 +26,7 @@ export interface OutboundResult {
 
 /* ---------- shared helpers ---------- */
 
-async function logMessage(direction: 'in' | 'out', msg: any) {
+async function logMessage(direction: 'in' | 'out', msg: unknown) {
   try {
     await adminDb.collection('omnichannel_messages').add({
       direction,
@@ -51,7 +51,7 @@ async function resolveUserByChannel(channel: Channel, senderId: string): Promise
 
 export async function receiveMessage(
   channel: Channel,
-  message: { text: string; raw?: any },
+  message: { text: string; raw?: unknown },
   senderId: string
 ): Promise<InboundMessage & { userId: string | null }> {
   const inbound: InboundMessage = {
@@ -68,7 +68,7 @@ export async function receiveMessage(
 
 export async function sendMessage(
   channel: Channel,
-  message: { text: string; subject?: string; attachments?: any[] },
+  message: { text: string; subject?: string; attachments?: unknown[] },
   recipientId: string
 ): Promise<OutboundResult> {
   let result: OutboundResult;
@@ -77,7 +77,7 @@ export async function sendMessage(
     else if (channel === 'telegram') result = await sendTelegram(recipientId, message.text);
     else if (channel === 'email') result = await sendEmail(recipientId, message.subject || '(no subject)', message.text);
     else result = { ok: false, error: `Unsupported channel: ${channel}` };
-  } catch (err: any) {
+  } catch (err: unknown) {
     result = { ok: false, error: err?.message || String(err) };
   }
   await logMessage('out', { channel, recipientId, message, result });

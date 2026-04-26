@@ -4,7 +4,7 @@ import { MODELS } from '@/src/lib/gemini';
 import { instrumentAgent } from '@/src/lib/observability/agent-instrumentation';
 import { getCurrentLearnedSkillsAddon } from '@/src/lib/learning/context';
 
-export async function analyzeInterviewResults(ideaDescription: string, results: any[]) {
+export async function analyzeInterviewResults(ideaDescription: string, results: unknown[]) {
   return instrumentAgent(
     'insights_analyzer',
     async () => {

@@ -21,7 +21,7 @@ export const complianceAgent = new Agent({
 
 export async function complianceAgentRun(prompt: string) {
   return instrumentAgent('compliance_agent', async () => {
-    const res: any = await complianceAgent.generate(prompt);
+    const res: unknown = await complianceAgent.generate(prompt);
     return res?.text ?? res;
   }, { model: 'gemini-pro', input: prompt, toolsUsed: ['mastra.generate'] });
 }

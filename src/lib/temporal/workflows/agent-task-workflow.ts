@@ -2,12 +2,12 @@
 import { proxyActivities } from '@temporalio/workflow';
 
 const { executeStepOne, executeStepTwo, updateTaskStatus } = proxyActivities<{
-  executeStepOne(input: any): Promise<any>;
-  executeStepTwo(input: any): Promise<any>;
-  updateTaskStatus(taskId: string, status: string, result?: any): Promise<void>;
+  executeStepOne(input: unknown): Promise<unknown>;
+  executeStepTwo(input: unknown): Promise<unknown>;
+  updateTaskStatus(taskId: string, status: string, result?: unknown): Promise<void>;
 }>({ startToCloseTimeout: '1 hour' });
 
-export async function agentTaskWorkflow(taskId: string, initialInput: any): Promise<any> {
+export async function agentTaskWorkflow(taskId: string, initialInput: unknown): Promise<unknown> {
   await updateTaskStatus(taskId, 'in_progress');
   
   const stepOneResult = await executeStepOne(initialInput);

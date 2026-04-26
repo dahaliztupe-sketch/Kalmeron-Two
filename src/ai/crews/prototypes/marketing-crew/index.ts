@@ -26,22 +26,22 @@ const marketingAnalyst = createCrewAgent({
 // المهام
 const strategyTask = new Task({
   description: 'تطوير استراتيجية تسويق لمشروع {project_name} في قطاع {industry}',
-  agent: marketingStrategist as any,
+  agent: marketingStrategist as unknown,
 });
 
 const contentTask = new Task({
   description: 'إنشاء محتوى تسويقي للقنوات المختلفة (سوشيال ميديا، بريد إلكتروني، موقع)',
-  agent: contentCreator as any,
+  agent: contentCreator as unknown,
 });
 
 const analysisTask = new Task({
   description: 'تحليل المنافسين وتحديد فرص السوق',
-  agent: marketingAnalyst as any,
+  agent: marketingAnalyst as unknown,
 });
 
 // الطاقم
 export const marketingCrew = new Crew({
-  agents: [marketingStrategist, contentCreator, marketingAnalyst] as any[],
+  agents: [marketingStrategist, contentCreator, marketingAnalyst] as unknown[],
   tasks: [strategyTask, contentTask, analysisTask],
   process: Process.sequential,
   verbose: true,

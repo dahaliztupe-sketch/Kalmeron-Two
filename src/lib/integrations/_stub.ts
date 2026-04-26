@@ -10,7 +10,7 @@ import { evaluatePolicy } from '@/src/lib/security/agent-governance';
 export interface IntegrationToolDef<T extends z.ZodTypeAny = z.ZodTypeAny> {
   description: string;
   parameters: T;
-  execute: (args: z.infer<T>, ctx?: { userId?: string; agentId?: string; autonomyLevel?: number }) => Promise<any>;
+  execute: (args: z.infer<T>, ctx?: { userId?: string; agentId?: string; autonomyLevel?: number }) => Promise<unknown>;
 }
 
 export function defineNotConfigured<T extends z.ZodTypeAny>(

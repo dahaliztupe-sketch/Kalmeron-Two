@@ -62,8 +62,8 @@ export default function SettingsPage() {
   const router = useRouter();
 
   const [name, setName] = useState(dbUser?.name || "");
-  const [stage, setStage] = useState((dbUser as any)?.startup_stage || "");
-  const [industry, setIndustry] = useState((dbUser as any)?.industry || "");
+  const [stage, setStage] = useState((dbUser as { startup_stage?: string } | null | undefined)?.startup_stage || "");
+  const [industry, setIndustry] = useState((dbUser as { industry?: string } | null | undefined)?.industry || "");
   const [savingProfile, setSavingProfile] = useState(false);
 
   const [currentPwd, setCurrentPwd] = useState("");

@@ -15,7 +15,7 @@ type TaskItem = {
   department?: string;
 };
 
-const STATUS_META: Record<TaskItem['status'], { label: string; color: string; Icon: any }> = {
+const STATUS_META: Record<TaskItem['status'], { label: string; color: string; Icon: React.ComponentType<{ className?: string; size?: number }> }> = {
   completed:        { label: 'مكتمل',           color: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/30', Icon: CheckCircle2 },
   in_progress:      { label: 'قيد التنفيذ',     color: 'text-brand-blue bg-brand-blue/10 border-brand-blue/30',     Icon: Clock },
   pending:          { label: 'في الانتظار',     color: 'text-text-secondary bg-white/5 border-white/10',            Icon: Hourglass },
@@ -40,7 +40,7 @@ export default function RoadmapPage() {
         if (!res.ok) throw new Error(String(res.status));
         const data = await res.json();
         if (!cancel) setTasks(data.teamActivity || []);
-      } catch (e: any) {
+      } catch (e: unknown) {
         if (!cancel) setError('تعذر تحميل المخطط حالياً.');
       } finally {
         if (!cancel) setLoading(false);

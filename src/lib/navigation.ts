@@ -1,3 +1,4 @@
+import type React from "react";
 import {
   LayoutDashboard, MessageSquareText, Map, Megaphone, TrendingUp,
   Settings as SettingsIcon, Wallet, Users as UsersIcon, Heart, Scale,
@@ -10,7 +11,7 @@ import {
 export type NavItem = {
   href: string;
   label: string;
-  icon: any;
+  icon: React.ComponentType<{ className?: string; size?: number }>;
   exact?: boolean;
 };
 

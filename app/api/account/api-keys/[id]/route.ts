@@ -25,7 +25,7 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
     resource: 'api_key',
     resourceId: id,
     success: true,
-    ...extractClientInfo(req as any),
+    ...extractClientInfo(req),
   }).catch(() => {});
   return NextResponse.json({ success: true });
 }

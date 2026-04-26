@@ -38,7 +38,7 @@ import { NextRequest, NextResponse } from 'next/server';
       });
 
       return NextResponse.json(result);
-    } catch (err: any) {
+    } catch (err: unknown) {
       log.error({ msg: 'Receptionist API error', error: err?.message, stack: err?.stack });
       return NextResponse.json(
         { error: 'حدث خلل في فريق العمل. الفريق التقني يحقق في الأمر.' },

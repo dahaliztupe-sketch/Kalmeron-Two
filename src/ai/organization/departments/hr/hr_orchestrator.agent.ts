@@ -48,7 +48,7 @@ import { globalGraphTools } from '@/src/lib/memory/graph-tools';
 
   export async function hrCrewRun(prompt: string) {
     return instrumentAgent('hr_crew', async () => {
-      const res: any = await hrOrchestratorAgent.generate(prompt);
+      const res: unknown = await hrOrchestratorAgent.generate(prompt);
       return res?.text ?? res;
     }, { model: 'gemini-2.5-flash', input: { prompt }, toolsUsed: ['delegate_task', 'aggregate_results'] });
   }

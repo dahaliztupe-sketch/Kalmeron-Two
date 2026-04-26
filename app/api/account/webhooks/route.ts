@@ -17,7 +17,7 @@ export const POST = guardedRoute(
       ownerId: userId!,
       workspaceId: body.workspaceId,
       url: body.url,
-      events: body.events as any,
+      events: body.events as string[],
     });
     return NextResponse.json({ success: true, subscription: sub });
   },

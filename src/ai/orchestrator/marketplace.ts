@@ -17,7 +17,7 @@ export interface MarketplaceJob {
   claimedBy?: string;
   claimedAt?: Date;
   completedAt?: Date;
-  result?: any;
+  result?: unknown;
   createdAt?: Date;
 }
 
@@ -38,14 +38,14 @@ export async function claimJob(jobId: string, agentId: string) {
   return adminDb.runTransaction(async (tx) => {
     const snap = await tx.get(ref);
     if (!snap.exists) throw new Error('job_not_found');
-    const data: any = snap.data();
+    const data: unknown = snap.data();
     if (data.status !== 'open') throw new Error('job_not_open');
     tx.update(ref, { status: 'claimed', claimedBy: agentId, claimedAt: new Date() });
     return { id: jobId, ...data, status: 'claimed', claimedBy: agentId };
   });
 }
 
-export async function completeJob(jobId: string, result: any) {
+export async function completeJob(jobId: string, result: unknown) {
   await col().doc(jobId).update({ status: 'completed', completedAt: new Date(), result });
   return { id: jobId, status: 'completed' as const };
 }

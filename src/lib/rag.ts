@@ -59,7 +59,7 @@ export async function searchKnowledge(queryText: string, category?: string, topK
 }
 
 // 3. الدمج (Fusion) — إعادة ترتيب النتائج (Reranking)
-export function rerank(results: any[], query: string) {
+export function rerank(results: unknown[], query: string) {
   // استخدام نموذج إعادة ترتيب لتحسين الدقة
   return results.sort((a, b) => b.similarity - a.similarity);
 }

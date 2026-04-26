@@ -40,7 +40,7 @@ export function useAudioAgent() {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       streamRef.current = stream;
       
-      const AudioContextCtor = window.AudioContext || (window as any).webkitAudioContext;
+      const AudioContextCtor = window.AudioContext || (window as unknown).webkitAudioContext;
       const audioCtx = new AudioContextCtor({ sampleRate: 16000 });
       audioContextRef.current = audioCtx;
 

@@ -62,6 +62,7 @@ export default function Logo3D({
   alt?: string;
 }) {
   const [supported, setSupported] = useState<boolean | null>(null);
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => setSupported(hasWebGL()), []);
 
   if (supported === false) {

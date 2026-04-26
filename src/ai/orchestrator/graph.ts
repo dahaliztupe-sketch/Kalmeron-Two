@@ -39,7 +39,7 @@ const AgentState = Annotation.Root({
   }),
   task: Annotation<string>(),
   currentAgent: Annotation<string>(),
-  intermediateResults: Annotation<Record<string, any>>(),
+  intermediateResults: Annotation<Record<string, unknown>>(),
   complexity: Annotation<'simple' | 'medium' | 'complex'>(),
   // مساحة العمل الحالية — مطلوبة لعزل المهارات المُتعلَّمة بين المستأجرين.
   workspaceId: Annotation<string>(),
@@ -166,7 +166,7 @@ const workflow = new StateGraph(AgentState)
   .addNode('synthesizer', synthesizerNode)
   .addEdge('__start__', 'router')
   .addEdge('router', 'loadSkills')
-  .addConditionalEdges('loadSkills', (state: any) => state.currentAgent)
+  .addConditionalEdges('loadSkills', (state: unknown) => state.currentAgent)
   .addEdge('ideaValidator', 'synthesizer')
   .addEdge('planBuilder', 'synthesizer')
   .addEdge('cfoAgent', 'synthesizer')

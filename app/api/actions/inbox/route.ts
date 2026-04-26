@@ -19,7 +19,7 @@ export async function GET(req: NextRequest) {
   const userId = await authedUserId(req);
   if (!userId) return NextResponse.json({ error: 'auth_required' }, { status: 401 });
   const status = new URL(req.url).searchParams.get('status') || undefined;
-  const items = await listInbox(userId, status as any);
+  const items = await listInbox(userId, status as unknown);
   const safe = items.map((r) => ({
     id: r.id,
     actionId: r.actionId,
@@ -39,7 +39,7 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   const userId = await authedUserId(req);
   if (!userId) return NextResponse.json({ error: 'auth_required' }, { status: 401 });
-  let body: any; try { body = await req.json(); } catch { return NextResponse.json({ error: 'invalid_json' }, { status: 400 }); }
+  let body: unknown; try { body = await req.json(); } catch { return NextResponse.json({ error: 'invalid_json' }, { status: 400 }); }
   const { actionDocId, decision, editedInput } = body || {};
   if (!actionDocId || (decision !== 'approve' && decision !== 'reject')) {
     return NextResponse.json({ error: 'invalid_request' }, { status: 400 });
@@ -53,7 +53,7 @@ export async function POST(req: NextRequest) {
       details: { status: r.status, error: r.error || null },
     });
     return NextResponse.json({ ok: true, ...r });
-  } catch (e: any) {
+  } catch (e: unknown) {
     return NextResponse.json({ error: e?.message || 'decide_failed' }, { status: 400 });
   }
 }

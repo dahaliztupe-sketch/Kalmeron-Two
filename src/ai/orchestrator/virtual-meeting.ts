@@ -39,7 +39,7 @@ const DEPT_AGENT: Record<string, string> = {
 async function askDepartment(
   departmentId: string,
   topic: string,
-  context: Record<string, any>
+  context: Record<string, unknown>
 ): Promise<MeetingOpinion> {
   const agentName = DEPT_AGENT[departmentId] || `وكيل ${departmentId}`;
   const { text } = await generateText({
@@ -61,7 +61,7 @@ async function askDepartment(
 export async function conveneMeeting(
   topic: string,
   departmentIds: string[],
-  context: Record<string, any> = {},
+  context: Record<string, unknown> = {},
   hookMeta: { workspaceId?: string; userId?: string } = {}
 ): Promise<MeetingResult> {
   const result = await instrumentAgent(
@@ -91,7 +91,7 @@ export async function conveneMeeting(
 async function conveneMeetingInner(
   topic: string,
   departmentIds: string[],
-  context: Record<string, any> = {}
+  context: Record<string, unknown> = {}
 ): Promise<MeetingResult> {
   const opinions = await Promise.all(
     departmentIds.map((id) => askDepartment(id, topic, context).catch((e) => ({
@@ -153,12 +153,12 @@ export async function detectCollaborationOpportunity(
   limit = 20
 ): Promise<CollabOpportunity[]> {
   try {
-    let q: any = adminDb.collection('tasks').where('status', 'in', ['in_progress', 'queued']);
+    let q: unknown = adminDb.collection('tasks').where('status', 'in', ['in_progress', 'queued']);
     if (workspaceId) q = q.where('workspaceId', '==', workspaceId);
     const snap = await q.limit(limit).get();
     if (snap.empty) return [];
 
-    const tasks = snap.docs.map((d: any) => ({ id: d.id, ...d.data() }));
+    const tasks = snap.docs.map((d: unknown) => ({ id: d.id, ...d.data() }));
     const { text } = await generateText({
       model: MODELS.FLASH,
       system: `أنت منسق استراتيجي. حلّل قائمة المهام الحالية وحدد فرص التعاون بين أقسام مختلفة.
@@ -167,7 +167,7 @@ export async function detectCollaborationOpportunity(
     });
     const j = JSON.parse(text.slice(text.indexOf('{'), text.lastIndexOf('}') + 1));
     return Array.isArray(j.opportunities) ? j.opportunities : [];
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.warn('[virtual-meeting:detectCollab]', err?.message || err);
     return [];
   }

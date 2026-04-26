@@ -19,16 +19,17 @@ const COLLECTIONS = [
 
 export const GET = guardedRoute(
   async ({ userId, req }) => {
-    const bundle: Record<string, any[]> = {};
+    type ExportedDoc = { id: string } & Record<string, unknown>;
+    const bundle: Record<string, ExportedDoc[]> = {};
     for (const col of COLLECTIONS) {
       try {
         // Try common user-scope fields
         const fields = ['ownerId', 'userId', 'createdBy', 'creatorId'];
-        const docs: any[] = [];
+        const docs: ExportedDoc[] = [];
         for (const f of fields) {
           try {
             const snap = await adminDb.collection(col).where(f, '==', userId!).limit(500).get();
-            snap.docs.forEach((d) => docs.push({ id: d.id, ...(d.data() as any) }));
+            snap.docs.forEach((d) => docs.push({ id: d.id, ...(d.data() as Record<string, unknown>) }));
           } catch {}
         }
         bundle[col] = docs;
@@ -38,7 +39,7 @@ export const GET = guardedRoute(
     }
     writeAudit({
       actorId: userId, actorType: 'user', action: 'export', resource: 'account',
-      success: true, ...extractClientInfo(req as any),
+      success: true, ...extractClientInfo(req as unknown as Request),
     }).catch(() => {});
     return new NextResponse(JSON.stringify({ exportedAt: Date.now(), userId, data: bundle }, null, 2), {
       status: 200,

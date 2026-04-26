@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
   const userRl = rateLimitAgent(userId, "workflow_run", { limit: 10, windowMs: 60_000 });
   if (!userRl.allowed) return rateLimitResponse();
 
-  let body: any;
+  let body: { workflowId?: string; templateId?: string; input?: Record<string, unknown> };
   try {
     body = await req.json();
   } catch {
@@ -73,7 +73,7 @@ export async function POST(req: NextRequest) {
   try {
     const result = await runWorkflow(wf, cleaned);
     return NextResponse.json(result);
-  } catch (e: any) {
+  } catch (e: unknown) {
     return NextResponse.json(
       { error: "runner_failed", message: e?.message ?? "unknown" },
       { status: 500 },

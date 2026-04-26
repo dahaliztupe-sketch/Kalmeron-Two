@@ -121,6 +121,7 @@ export default function AuroraBackground({
   const [supported, setSupported] = useState<boolean | null>(null);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setSupported(hasWebGL());
   }, []);
 

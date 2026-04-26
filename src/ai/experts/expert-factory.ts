@@ -34,7 +34,7 @@ const ALLOWED_TOOLS = [
   'run_code',
 ];
 
-function sanitizeTools(tools: any[]): string[] {
+function sanitizeTools(tools: unknown[]): string[] {
   if (!Array.isArray(tools)) return [];
   return tools.filter((t) => typeof t === 'string' && ALLOWED_TOOLS.includes(t));
 }
@@ -59,7 +59,7 @@ export async function createExpertFromDescription(
     prompt: description,
   });
 
-  let parsed: any = {};
+  let parsed: unknown = {};
   try {
     const first = text.indexOf('{');
     const last = text.lastIndexOf('}');
@@ -124,11 +124,11 @@ export async function loadExpert(expertId: string): Promise<Expert | null> {
 }
 
 export async function listExperts(filter: { workspaceId?: string; creatorId?: string } = {}): Promise<Expert[]> {
-  let q: any = adminDb.collection(COLLECTION);
+  let q: unknown = adminDb.collection(COLLECTION);
   if (filter.workspaceId) q = q.where('workspaceId', '==', filter.workspaceId);
   if (filter.creatorId) q = q.where('creatorId', '==', filter.creatorId);
   const snap = await q.limit(100).get();
-  return snap.docs.map((d: any) => ({ id: d.id, ...d.data() }));
+  return snap.docs.map((d: unknown) => ({ id: d.id, ...d.data() }));
 }
 
 /** تُنفّذ استعلام المستخدم على خبير محفوظ (helper للاستخدام في الواجهة). */

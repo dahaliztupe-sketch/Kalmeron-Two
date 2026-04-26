@@ -11,7 +11,7 @@ export interface RiskFinding {
   level: RiskLevel;
   category: 'cost' | 'reliability' | 'performance';
   title: string;
-  evidence: any;
+  evidence: unknown;
 }
 
 export function analyze(report: ObservationReport): RiskFinding[] {

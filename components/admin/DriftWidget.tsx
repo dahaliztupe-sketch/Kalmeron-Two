@@ -35,7 +35,7 @@ export function DriftWidget({ windowDays = 7 }: { windowDays?: number }) {
           setReports(j.agents || []);
           setErr(null);
         }
-      } catch (e: any) {
+      } catch (e: unknown) {
         if (!cancel) setErr(e.message);
       } finally {
         if (!cancel) setLoading(false);

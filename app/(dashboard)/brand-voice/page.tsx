@@ -21,7 +21,7 @@ interface BrandVoiceData {
   values: string;
   avoid: string;
   sampleMessage: string;
-  updatedAt?: any;
+  updatedAt?: unknown;
 }
 
 const TONE_OPTIONS = [
@@ -77,7 +77,7 @@ export default function BrandVoicePage() {
       });
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
-    } catch (e: any) {
+    } catch (e: unknown) {
       setError("تعذّر الحفظ. حاول مرة أخرى.");
     }
     setSaving(false);

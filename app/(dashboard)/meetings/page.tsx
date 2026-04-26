@@ -4,8 +4,8 @@ import { useEffect, useState } from "react";
 const DEPARTMENTS = ["marketing", "product", "finance", "sales", "support", "hr", "legal", "monitoring"];
 
 export default function MeetingsPage() {
-  const [meetings, setMeetings] = useState<any[]>([]);
-  const [opportunities, setOpportunities] = useState<any[]>([]);
+  const [meetings, setMeetings] = useState<Array<Record<string, unknown>>>([]);
+  const [opportunities, setOpportunities] = useState<Array<Record<string, unknown>>>([]);
   const [topic, setTopic] = useState("");
   const [selected, setSelected] = useState<string[]>(["marketing", "product"]);
   const [running, setRunning] = useState(false);
@@ -16,6 +16,7 @@ export default function MeetingsPage() {
     setMeetings(j.meetings || []);
     setOpportunities(j.opportunities || []);
   }
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { load(); }, []);
 
   function toggle(d: string) {

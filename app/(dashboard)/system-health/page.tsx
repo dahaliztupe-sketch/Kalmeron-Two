@@ -7,7 +7,7 @@ interface Health {
   timestamp: string;
   version: string;
   checks: Record<string, string>;
-  meta: Record<string, any>;
+  meta: Record<string, unknown>;
 }
 
 function dot(status: string) {
@@ -40,7 +40,7 @@ export default function StatusPage() {
       const r = await fetch("/api/health", { cache: "no-store" });
       const j = await r.json();
       setData(j);
-    } catch (e: any) {
+    } catch (e: unknown) {
       setError(e?.message || "فشل التحميل");
     } finally {
       setLoading(false);
@@ -48,6 +48,7 @@ export default function StatusPage() {
   }
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     load();
     const t = setInterval(load, 15_000);
     return () => clearInterval(t);
@@ -111,7 +112,7 @@ export default function StatusPage() {
             <Card>
               <div className="font-semibold mb-3">آخر عمليات الإطلاق</div>
               <ul className="space-y-1 text-sm" role="list">
-                {data.meta.recentLaunchRuns.map((r: any) => (
+                {data.meta.recentLaunchRuns.map((r: { id: string; status?: string }) => (
                   <li key={r.id} className="flex justify-between">
                     <span className="font-mono text-xs">{r.id}</span>
                     <span className="text-xs text-gray-500">{r.status}</span>
@@ -129,7 +130,7 @@ export default function StatusPage() {
 }
 
 function LiveEventsFeed() {
-  const [events, setEvents] = useState<any[]>([]);
+  const [events, setEvents] = useState<Array<Record<string, unknown>>>([]);
   const [err, setErr] = useState("");
   async function load() {
     try {
@@ -140,6 +141,7 @@ function LiveEventsFeed() {
     } catch {}
   }
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     load();
     const t = setInterval(load, 10_000);
     return () => clearInterval(t);
@@ -152,7 +154,7 @@ function LiveEventsFeed() {
         <div className="text-xs text-gray-500">لا توجد أحداث بعد</div>
       ) : (
         <ul className="divide-y text-xs" role="list">
-          {events.slice(0, 20).map((e: any) => (
+          {events.slice(0, 20).map((e: unknown) => (
             <li key={e.id} className="py-1.5 flex justify-between gap-2">
               <span className="font-mono truncate flex-1">{e.resource}</span>
               <span className="text-gray-500">{e.workspaceId?.slice(0, 8) || "—"}</span>

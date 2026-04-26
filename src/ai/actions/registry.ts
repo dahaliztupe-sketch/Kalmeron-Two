@@ -32,13 +32,13 @@ export interface ActionContext {
   workspaceId?: string;
 }
 
-export interface ActionDefinition<TInput = any> {
+export interface ActionDefinition<TInput = unknown> {
   id: string;
   label: string;
   description: string;
   requiresApproval: boolean;
   schema: z.ZodSchema<TInput>;
-  execute: (input: TInput, ctx: ActionContext) => Promise<{ ok: true; result?: any; noop?: boolean } | { ok: false; error: string }>;
+  execute: (input: TInput, ctx: ActionContext) => Promise<{ ok: true; result?: unknown; noop?: boolean } | { ok: false; error: string }>;
 }
 
 const REGISTRY = new Map<string, ActionDefinition>();
@@ -90,7 +90,7 @@ registerAction({
       });
       if (!r.ok) return { ok: false, error: `resend_${r.status}` };
       return { ok: true, result: await r.json() };
-    } catch (e: any) {
+    } catch (e: unknown) {
       return { ok: false, error: e?.message || 'send_failed' };
     }
   },
@@ -169,7 +169,7 @@ registerAction({
       });
       if (!r.ok) return { ok: false, error: `whatsapp_${r.status}` };
       return { ok: true, result: await r.json() };
-    } catch (e: any) {
+    } catch (e: unknown) {
       return { ok: false, error: e?.message || 'whatsapp_failed' };
     }
   },
@@ -182,7 +182,7 @@ const ACTIONS_COLLECTION = 'agent_actions';
 export async function requestAction(opts: {
   userId: string;
   actionId: string;
-  input: any;
+  input: unknown;
   rationale?: string;
   requestedBy?: string;
   workspaceId?: string;
@@ -233,13 +233,13 @@ export async function decideAction(opts: {
   userId: string;
   actionDocId: string;
   decision: 'approve' | 'reject';
-  editedInput?: any;
-}): Promise<{ status: ActionStatus; result?: any; error?: string }> {
+  editedInput?: unknown;
+}): Promise<{ status: ActionStatus; result?: unknown; error?: string }> {
   if (!adminDb?.collection) throw new Error('firestore_unavailable');
   const ref = adminDb.collection(ACTIONS_COLLECTION).doc(opts.actionDocId);
   const snap = await ref.get();
   if (!snap.exists) throw new Error('action_not_found');
-  const data: any = snap.data();
+  const data: unknown = snap.data();
   if (data.userId !== opts.userId) throw new Error('forbidden');
   if (data.status !== 'pending') throw new Error(`already_${data.status}`);
 
@@ -272,14 +272,14 @@ export async function decideAction(opts: {
   return { status, result: r.ok ? r.result : undefined, error: r.ok ? undefined : r.error };
 }
 
-export async function listInbox(userId: string, status?: ActionStatus): Promise<any[]> {
+export async function listInbox(userId: string, status?: ActionStatus): Promise<unknown[]> {
   if (!adminDb?.collection) return [];
   let q = adminDb.collection(ACTIONS_COLLECTION).where('userId', '==', userId);
   if (status) q = q.where('status', '==', status);
   const snap = await q.limit(200).get().catch(() => null);
   if (!snap || snap.empty) return [];
-  const rows: any[] = [];
-  snap.forEach((d: any) => rows.push({ id: d.id, ...d.data() }));
+  const rows: unknown[] = [];
+  snap.forEach((d: unknown) => rows.push({ id: d.id, ...d.data() }));
   rows.sort((a, b) => (b.createdAt?._seconds || 0) - (a.createdAt?._seconds || 0));
   return rows;
 }

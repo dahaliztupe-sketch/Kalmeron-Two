@@ -11,23 +11,23 @@
     userId: string;
     description: string;
     status: TaskStatus;
-    payload?: any;
-    result?: any;
+    payload?: unknown;
+    result?: unknown;
     createdAt: Date;
     updatedAt: Date;
   }
 
   const memoryStore = new Map<string, TaskRecord>();
 
-  async function getDb(): Promise<any | null> {
+  async function getDb(): Promise<unknown | null> {
     try {
       const mod = await import('@/src/lib/firebase-admin');
       // adminDb may be null if Firebase Admin isn't configured
-      return (mod as any).adminDb || null;
+      return (mod as { adminDb?: unknown }).adminDb || null;
     } catch { return null; }
   }
 
-  export async function createTask(input: { userId: string; description: string; payload?: any }): Promise<string> {
+  export async function createTask(input: { userId: string; description: string; payload?: unknown }): Promise<string> {
     const taskId = crypto.randomUUID();
     const rec: TaskRecord = {
       taskId, userId: input.userId, description: input.description,
@@ -42,7 +42,7 @@
     return taskId;
   }
 
-  export async function updateTaskStatus(taskId: string, status: TaskStatus, result?: any) {
+  export async function updateTaskStatus(taskId: string, status: TaskStatus, result?: unknown) {
     const rec = memoryStore.get(taskId);
     if (rec) {
       rec.status = status; rec.updatedAt = new Date();

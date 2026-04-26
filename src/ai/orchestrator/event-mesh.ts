@@ -6,15 +6,15 @@
 import { EventEmitter } from 'events';
 import { adminDb } from '@/src/lib/firebase-admin';
 
-const bus: EventEmitter = (globalThis as any).__kalmeronEventMesh
-  || ((globalThis as any).__kalmeronEventMesh = new EventEmitter());
+const bus: EventEmitter = (globalThis as unknown).__kalmeronEventMesh
+  || ((globalThis as unknown).__kalmeronEventMesh = new EventEmitter());
 bus.setMaxListeners(0);
 
 export interface MeshEvent {
   topic: string;
   userId: string;
   source: string;
-  payload: any;
+  payload: unknown;
   timestamp?: Date;
 }
 

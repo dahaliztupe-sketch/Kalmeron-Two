@@ -30,9 +30,9 @@ import {
 
 export interface InstrumentOptions {
   model?: string;
-  input?: any;
+  input?: unknown;
   toolsUsed?: string[];
-  trace?: any;
+  trace?: unknown;
   /** اختياري: تسجيل المخرجات تلقائياً في الدماغ المشترك */
   userId?: string;
   /** اختياري: نوع الكيان الذي ينتج عن نجاح الاستدعاء */
@@ -116,7 +116,7 @@ export async function instrumentAgent<T>(
   try {
     result = await exec();
     return result;
-  } catch (e: any) {
+  } catch (e: unknown) {
     success = false;
     errorCode = e?.code || e?.name || 'unknown_error';
     throw e;
@@ -160,7 +160,7 @@ export async function instrumentAgent<T>(
           } else if (typeof opts.okrUpdate!.delta === 'number') {
             // delta-based: requires read-modify-write inside the store layer
             const { getOKR } = await import('@/src/lib/okr/okr-store');
-            const okr: any = await getOKR(opts.okrUpdate!.okrId);
+            const okr = await getOKR(opts.okrUpdate!.okrId) as { keyResults?: Array<{ current?: number }> } | null;
             const cur = okr?.keyResults?.[opts.okrUpdate!.krIndex]?.current || 0;
             await updateOKRProgress(opts.okrUpdate!.okrId, opts.okrUpdate!.krIndex, cur + opts.okrUpdate!.delta);
           }

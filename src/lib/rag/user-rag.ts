@@ -22,7 +22,7 @@ export interface RagChunk {
   chunkIndex: number;
   text: string;
   embedding?: number[];
-  createdAt?: any;
+  createdAt?: unknown;
 }
 
 export interface RagCitation {
@@ -119,7 +119,7 @@ export async function searchUserKnowledge(opts: {
   if (!snap || snap.empty) return [];
 
   const scored: RagCitation[] = [];
-  snap.forEach((d: any) => {
+  snap.forEach((d: unknown) => {
     const data = d.data();
     if (!Array.isArray(data.embedding)) return;
     const sim = cosine(q, data.embedding);
@@ -146,7 +146,7 @@ export async function listUserDocuments(userId: string): Promise<Array<{ documen
     .catch(() => null);
   if (!snap || snap.empty) return [];
   const m = new Map<string, { documentId: string; documentName: string; chunks: number; source: string }>();
-  snap.forEach((d: any) => {
+  snap.forEach((d: unknown) => {
     const x = d.data();
     const cur = m.get(x.documentId);
     if (cur) cur.chunks += 1;
@@ -166,7 +166,7 @@ export async function deleteUserDocument(userId: string, documentId: string): Pr
     .catch(() => null);
   if (!snap || snap.empty) return 0;
   const writer = adminDb.batch();
-  snap.forEach((d: any) => writer.delete(d.ref));
+  snap.forEach((d: unknown) => writer.delete(d.ref));
   await writer.commit();
   return snap.size;
 }

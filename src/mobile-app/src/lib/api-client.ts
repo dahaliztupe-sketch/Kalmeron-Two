@@ -108,14 +108,14 @@ export async function apiFetch(path: string, opts: ApiOptions = {}): Promise<Res
   // like a standard Response object for consumer code.
   return new Response(response.bodyString || '', {
     status: response.status,
-    headers: response.headers as any,
+    headers: response.headers as unknown,
   });
 }
 
 /** Convenience helpers. */
 export const api = {
   get:    (p: string, o?: ApiOptions) => apiFetch(p, { ...o, method: 'GET' }),
-  post:   (p: string, body?: any, o?: ApiOptions) => apiFetch(p, { ...o, method: 'POST', body }),
-  put:    (p: string, body?: any, o?: ApiOptions) => apiFetch(p, { ...o, method: 'PUT', body }),
+  post:   (p: string, body?: unknown, o?: ApiOptions) => apiFetch(p, { ...o, method: 'POST', body }),
+  put:    (p: string, body?: unknown, o?: ApiOptions) => apiFetch(p, { ...o, method: 'PUT', body }),
   delete: (p: string, o?: ApiOptions) => apiFetch(p, { ...o, method: 'DELETE' }),
 };

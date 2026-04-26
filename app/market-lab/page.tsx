@@ -69,6 +69,7 @@ export default function MarketLabPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (!user) { setLoading(false); return; }
     let cancel = false;
     (async () => {

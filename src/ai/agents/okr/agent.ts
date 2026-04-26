@@ -19,14 +19,14 @@ export async function generateWeeklyGoals(userId: string) {
       const overview = await getProjectOverview(userId, 100);
       if (overview && overview.nodes.length > 0) {
         context = `العقد: ${overview.nodes.length}، العلاقات: ${overview.edges.length}\n` +
-          overview.nodes.slice(0, 30).map((n: any) => `- ${n.id}: ${n.name || n.title || n.description || ''}`).join('\n');
+          overview.nodes.slice(0, 30).map((n: unknown) => `- ${n.id}: ${n.name || n.title || n.description || ''}`).join('\n');
       }
     }
 
     const start = startOfWeek(new Date());
     const end = new Date(start); end.setDate(end.getDate() + 7);
 
-    const created: any[] = [];
+    const created: unknown[] = [];
     for (const dept of DEPARTMENTS) {
       const { text } = await generateText({
         model: MODEL,
@@ -38,7 +38,7 @@ ${context}
 {"objective": "...", "keyResults": [{"description":"...","target":<number>,"current":0,"unit":"..."}]}`,
       });
 
-      let parsed: any = null;
+      let parsed: unknown = null;
       try {
         const match = text.match(/\{[\s\S]*\}/);
         if (match) parsed = JSON.parse(match[0]);
@@ -69,12 +69,12 @@ export async function trackOKRProgress(okrId: string, krIndex: number, current: 
 export async function selfReport(userId: string, agentId: string) {
   return instrumentAgent('okr_agent', async () => {
     const okrs = await listCurrentWeekOKRs(userId);
-    const mine = okrs.filter((o: any) => o.agentId === agentId);
+    const mine = okrs.filter((o: unknown) => o.agentId === agentId);
     if (mine.length === 0) {
       return { agentId, summary: 'لا توجد أهداف هذا الأسبوع.', okrs: [] };
     }
-    const lines = mine.map((o: any) => {
-      const krs = o.keyResults.map((k: any) =>
+    const lines = mine.map((o: unknown) => {
+      const krs = o.keyResults.map((k: unknown) =>
         `  • ${k.description}: ${k.current}/${k.target} ${k.unit}`).join('\n');
       return `الهدف: ${o.objective}\n${krs}`;
     }).join('\n\n');

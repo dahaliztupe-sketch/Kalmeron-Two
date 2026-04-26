@@ -60,7 +60,7 @@ export async function POST(req: NextRequest) {
       return new NextResponse('invalid signature', { status: 401 });
     }
 
-    let body: any;
+    let body: { entry?: Array<{ changes?: Array<{ value?: { messages?: Array<Record<string, unknown>> } }> }> };
     try {
       body = JSON.parse(rawBody);
     } catch {
@@ -86,7 +86,7 @@ export async function POST(req: NextRequest) {
       }
     }
     return NextResponse.json({ ok: true });
-  } catch (e: any) {
+  } catch (e: unknown) {
     // Return 200 so Meta does not retry on transient app bugs.
     return NextResponse.json({ ok: false, error: e?.message }, { status: 200 });
   }

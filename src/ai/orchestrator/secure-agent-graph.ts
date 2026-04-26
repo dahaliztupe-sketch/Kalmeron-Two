@@ -14,7 +14,7 @@ export const SecureAgentState = Annotation.Root({
   taskClassification: Annotation<TaskClass>(),
   allowedTools: Annotation<string[]>(),
   trajectoryPlan: Annotation<string>(),
-  pendingToolCall: Annotation<{ name: string, args: any } | null>(),
+  pendingToolCall: Annotation<{ name: string, args: unknown } | null>(),
   toolVerified: Annotation<boolean>(),
   sandboxResult: Annotation<string>(),
   maskedMemory: Annotation<string>(),

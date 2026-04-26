@@ -16,6 +16,7 @@ export function NotificationPermissionBanner({ userId, className }: Props) {
   const [dismissed, setDismissed] = useState(false);
   const [mounted, setMounted] = useState(false);
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => setMounted(true), []);
 
   const shouldShow = mounted && permission === "default" && !dismissed;
@@ -80,6 +81,7 @@ interface InlineButtonProps {
 export function NotificationToggleButton({ userId, className }: InlineButtonProps) {
   const { permission, loading, enable } = usePushNotifications(userId);
   const [mounted, setMounted] = useState(false);
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => setMounted(true), []);
 
   if (!mounted) return null;

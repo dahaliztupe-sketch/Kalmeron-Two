@@ -13,11 +13,11 @@ interface Item {
   id: string;
   actionId: string;
   label: string;
-  input: any;
+  input: Record<string, unknown>;
   rationale?: string | null;
   requestedBy?: string;
   status: string;
-  result?: any;
+  result?: unknown;
   error?: string | null;
   createdAt?: number | null;
   decidedAt?: number | null;
@@ -78,7 +78,7 @@ export default function InboxPage() {
       if (!r.ok) throw new Error(j.error || "فشلت العملية");
       toast.success(decision === "approve" ? "تمت الموافقة والتنفيذ." : "تم الرفض.");
       await refresh();
-    } catch (e: any) {
+    } catch (e: unknown) {
       toast.error(e.message);
     } finally {
       setBusyId(null);

@@ -14,7 +14,7 @@ import { rateLimit, rateLimitResponse } from '@/src/lib/security/rate-limit';
 export const runtime = 'nodejs';
 
 const stripeSecret = process.env.STRIPE_SECRET_KEY;
-const stripe = stripeSecret ? new Stripe(stripeSecret, { apiVersion: '2025-08-27.basil' as any }) : null;
+const stripe = stripeSecret ? new Stripe(stripeSecret, { apiVersion: '2025-08-27.basil' as Stripe.LatestApiVersion }) : null;
 
 export async function POST(req: NextRequest) {
   const rl = rateLimit(req, { limit: 10, windowMs: 60_000 });
@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
   }
 
   const userSnap = await adminDb.collection('users').doc(userId).get();
-  const customerId = (userSnap.data() as any)?.stripeCustomerId as string | undefined;
+  const customerId = (userSnap.data() as { stripeCustomerId?: string } | undefined)?.stripeCustomerId;
   if (!customerId) {
     return Response.json(
       { error: 'No Stripe customer', message: 'لم يتم العثور على اشتراك مدفوع لهذا الحساب.' },

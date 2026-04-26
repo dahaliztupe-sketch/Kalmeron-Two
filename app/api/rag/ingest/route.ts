@@ -71,7 +71,7 @@ export async function POST(req: NextRequest) {
       text,
     });
     return NextResponse.json({ ok: true, ...r, documentName: file.name, source });
-  } catch (e: any) {
+  } catch (e: unknown) {
     const { logger } = await import('@/src/lib/logger');
     logger.error({ err: e }, 'rag_ingest_failed');
     return NextResponse.json({ error: e?.message || 'ingest_failed' }, { status: 500 });

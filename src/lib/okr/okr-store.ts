@@ -42,12 +42,12 @@ export async function createOKR(o: OKR): Promise<OKR> {
 }
 
 export async function listOKRs(userId: string, opts: { period?: OKRPeriod; department?: string; limit?: number } = {}) {
-  let q: any = col().where('userId', '==', userId);
+  let q: unknown = col().where('userId', '==', userId);
   if (opts.period) q = q.where('period', '==', opts.period);
   if (opts.department) q = q.where('department', '==', opts.department);
   q = q.orderBy('createdAt', 'desc').limit(opts.limit || 50);
   const snap = await q.get();
-  return snap.docs.map((d: any) => ({ id: d.id, ...d.data() }));
+  return snap.docs.map((d: unknown) => ({ id: d.id, ...d.data() }));
 }
 
 export async function listCurrentWeekOKRs(userId: string) {
@@ -57,8 +57,8 @@ export async function listCurrentWeekOKRs(userId: string) {
     .where('period', '==', 'weekly')
     .get();
   return snap.docs
-    .map((d: any) => ({ id: d.id, ...d.data() }))
-    .filter((o: any) => {
+    .map((d: unknown) => ({ id: d.id, ...d.data() }))
+    .filter((o: unknown) => {
       const sd = toDate(o.startDate);
       return sd && sd >= start;
     });
@@ -68,7 +68,7 @@ export async function updateOKRProgress(okrId: string, krIndex: number, current:
   const ref = col().doc(okrId);
   const snap = await ref.get();
   if (!snap.exists) throw new Error('okr_not_found');
-  const data: any = snap.data();
+  const data: unknown = snap.data();
   const krs = [...(data.keyResults || [])];
   if (!krs[krIndex]) throw new Error('kr_index_out_of_range');
   krs[krIndex] = { ...krs[krIndex], current };
@@ -92,7 +92,7 @@ function startOfWeek(d: Date) {
   return x;
 }
 
-function toDate(v: any): Date | null {
+function toDate(v: unknown): Date | null {
   if (!v) return null;
   if (v.toDate) return v.toDate();
   const d = new Date(v);

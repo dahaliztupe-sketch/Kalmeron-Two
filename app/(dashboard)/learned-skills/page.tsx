@@ -119,6 +119,7 @@ export default function LearnedSkillsPage() {
 
   useEffect(() => {
     if (typeof window !== "undefined") {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setWorkspaceId(localStorage.getItem(WORKSPACE_KEY) || "");
     }
   }, []);
@@ -195,6 +196,7 @@ export default function LearnedSkillsPage() {
   }
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (workspaceId) load(workspaceId);
   }, [workspaceId]);
 

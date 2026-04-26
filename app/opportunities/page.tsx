@@ -84,7 +84,7 @@ const OPPORTUNITIES: Opportunity[] = [
   },
 ];
 
-const CATEGORIES: { id: OppCategory; label: string; icon: any; count: number }[] = [
+const CATEGORIES: { id: OppCategory; label: string; icon: React.ComponentType<{ className?: string; size?: number }>; count: number }[] = [
   { id: "all", label: "الكل", icon: Radar, count: OPPORTUNITIES.length },
   { id: "funding", label: "تمويل ومنح", icon: Coins, count: OPPORTUNITIES.filter(o => o.category === "funding").length },
   { id: "hackathon", label: "هاكاثون", icon: Trophy, count: OPPORTUNITIES.filter(o => o.category === "hackathon").length },

@@ -38,7 +38,7 @@ async function loadSloRows(): Promise<SloRow[]> {
       .limit(5000)
       .get();
     snap.forEach((d) => {
-      const v = d.data() as any;
+      const v = d.data() as Record<string, unknown>;
       probeTotal++;
       if (v.ok === true || v.status === "ok") probeOk++;
     });
@@ -58,7 +58,7 @@ async function loadSloRows(): Promise<SloRow[]> {
       .limit(5000)
       .get();
     snap.forEach((d) => {
-      const v = d.data() as any;
+      const v = d.data() as Record<string, unknown>;
       cronTotal++;
       if (v.ok === true || v.status === "ok") cronOk++;
     });

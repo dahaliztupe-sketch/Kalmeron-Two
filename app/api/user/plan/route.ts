@@ -46,7 +46,7 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  let body: any;
+  let body: { plan?: string };
   try {
     body = await req.json();
   } catch {
@@ -91,7 +91,7 @@ export async function POST(req: NextRequest) {
 
     const walletRef = adminDb.collection('user_credits').doc(targetUid);
     const walletDoc = await walletRef.get();
-    const wallet = walletDoc.data() as any;
+    const wallet = walletDoc.data() as Record<string, unknown> | undefined;
 
     if (!walletDoc.exists) {
       await walletRef.set({
@@ -130,7 +130,7 @@ export async function POST(req: NextRequest) {
       }),
       { headers: { 'Content-Type': 'application/json' } }
     );
-  } catch (e: any) {
+  } catch (e: unknown) {
     return new Response(JSON.stringify({ error: e?.message || 'Failed' }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },

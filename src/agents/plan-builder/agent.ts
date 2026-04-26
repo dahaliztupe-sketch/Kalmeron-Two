@@ -36,7 +36,7 @@ export type BusinessPlan = z.infer<typeof BusinessPlanSchema>;
 /**
  * High-Reasoning Business Plan Agent using Gemini 3.1 Pro.
  */
-export async function buildBusinessPlanStream(projectInfo: string, conversationHistory: any[]) {
+export async function buildBusinessPlanStream(projectInfo: string, conversationHistory: unknown[]) {
   return instrumentAgent('plan_builder', async () => {
     // RAG: Search for industry benchmarks or similar business models
     const benchmarks = await searchKnowledge(projectInfo);

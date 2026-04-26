@@ -11,7 +11,7 @@ export interface Artifact {
   producerAgent: string;
   type: string; // 'doc', 'plan', 'report', 'leads_csv', ...
   name: string;
-  content: any; // serialisable
+  content: unknown; // serialisable
   refs?: string[]; // related artifact ids
   createdAt?: Date;
 }
@@ -24,11 +24,11 @@ export async function publishArtifact(a: Omit<Artifact, 'id' | 'createdAt'>) {
 }
 
 export async function listArtifacts(userId: string, type?: string, limit = 50) {
-  let q: any = col().where('userId', '==', userId);
+  let q: unknown = col().where('userId', '==', userId);
   if (type) q = q.where('type', '==', type);
   q = q.orderBy('createdAt', 'desc').limit(limit);
   const snap = await q.get();
-  return snap.docs.map((d: any) => ({ id: d.id, ...d.data() }));
+  return snap.docs.map((d: unknown) => ({ id: d.id, ...d.data() }));
 }
 
 export async function getArtifact(artifactId: string) {

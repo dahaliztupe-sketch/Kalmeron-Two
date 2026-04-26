@@ -8,15 +8,15 @@ export const GET = guardedRoute(
   async () => {
     const [ws, users, runs, audits] = await Promise.all([
       adminDb.collection('workspaces').limit(100).get(),
-      adminDb.collection('users').limit(100).get().catch(() => ({ size: 0, docs: [] } as any)),
-      adminDb.collection('launch_runs').limit(100).get().catch(() => ({ size: 0, docs: [] } as any)),
-      adminDb.collection('audit_logs').orderBy('createdAt', 'desc').limit(25).get().catch(() => ({ docs: [] } as any)),
+      adminDb.collection('users').limit(100).get().catch(() => ({ size: 0, docs: [] as Array<FirebaseFirestore.QueryDocumentSnapshot> })),
+      adminDb.collection('launch_runs').limit(100).get().catch(() => ({ size: 0, docs: [] as Array<FirebaseFirestore.QueryDocumentSnapshot> })),
+      adminDb.collection('audit_logs').orderBy('createdAt', 'desc').limit(25).get().catch(() => ({ docs: [] as Array<FirebaseFirestore.QueryDocumentSnapshot> })),
     ]);
     const workspaces = ws.docs.map((d) => {
-      const data = d.data() as any;
+      const data = d.data() as { name?: string; tier?: string };
       return { id: d.id, name: data.name || d.id, tier: data.tier || 'free' };
     });
-    const recentAudit = audits.docs.map((d: any) => ({ id: d.id, ...(d.data() as any) }));
+    const recentAudit = audits.docs.map((d) => ({ id: d.id, ...(d.data() as Record<string, unknown>) }));
     return NextResponse.json({
       success: true,
       stats: {

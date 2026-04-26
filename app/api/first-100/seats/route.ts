@@ -39,7 +39,7 @@ export async function GET(req: NextRequest) {
         },
       },
     );
-  } catch (e: any) {
+  } catch (e: unknown) {
     return Response.json(
       { total: TOTAL_SEATS, taken: 0, left: TOTAL_SEATS, closed: false, error: e?.message },
       { status: 200 },

@@ -4,7 +4,7 @@ import { AppShell } from "@/components/layout/AppShell";
 import { auth } from "@/src/lib/firebase";
 import { Brain, RefreshCw, Plus, AlertTriangle, Network, Sparkles } from "lucide-react";
 
-interface KGNode { id: string; type: string; properties: Record<string, any> }
+interface KGNode { id: string; type: string; properties: Record<string, unknown> }
 interface KGEdge { from: string; to: string; type: string }
 interface BrainState {
   enabled: boolean;
@@ -43,7 +43,7 @@ export default function BrainPage() {
       const json = await res.json();
       setState(json.knowledgeGraph);
       setError(null);
-    } catch (e: any) {
+    } catch (e: unknown) {
       setError(e?.message || "تعذّر التحميل");
     } finally {
       setLoading(false);
@@ -51,6 +51,7 @@ export default function BrainPage() {
   }
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     load();
     const i = setInterval(load, 15000);
     return () => clearInterval(i);

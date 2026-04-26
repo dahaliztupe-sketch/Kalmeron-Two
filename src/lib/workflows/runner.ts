@@ -119,13 +119,13 @@ async function defaultAgentAdapter(prompt: string, outputs: string[]): Promise<R
     const { generateText } = await import("ai");
     const { routeModel } = await import("@/src/lib/model-router");
     const { text } = await generateText({
-      model: routeModel("medium") as any,
+      model: routeModel("medium") as Parameters<typeof generateText>[0]["model"],
       prompt,
     });
     const out: Record<string, string> = {};
     for (const k of outputs) out[k] = text;
     return out;
-  } catch (e: any) {
+  } catch (e: unknown) {
     throw new Error(`agent_call_failed: ${e?.message ?? "unknown"}`);
   }
 }
@@ -156,7 +156,7 @@ export async function runWorkflow(
         outputs: outs,
         prompt: interpolated,
       });
-    } catch (e: any) {
+    } catch (e: unknown) {
       stepsResult.push({
         id: step.id,
         agent: step.agent,

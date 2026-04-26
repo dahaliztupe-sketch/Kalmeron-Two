@@ -37,7 +37,7 @@ export async function GET(req: NextRequest) {
   const stream = new ReadableStream({
     start(controller) {
       let closed = false;
-      const send = (event: string, data: any) => {
+      const send = (event: string, data: unknown) => {
         if (closed) return;
         try {
           controller.enqueue(encoder.encode(`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`));
@@ -46,8 +46,8 @@ export async function GET(req: NextRequest) {
 
       send('snapshot', getMetricsSnapshot());
 
-      const onInvocation = (payload: any) => send('invocation', payload);
-      const onAlert = (payload: any) => send('alert', payload);
+      const onInvocation = (payload: Record<string, unknown>) => send('invocation', payload);
+      const onAlert = (payload: Record<string, unknown>) => send('alert', payload);
       monitorEvents.on('invocation', onInvocation);
       monitorEvents.on('alert', onAlert);
 

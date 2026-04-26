@@ -17,16 +17,16 @@ export async function runWeeklyPlanning(userId: string) {
     const okrs = await listCurrentWeekOKRs(userId);
     if (!okrs.length) return { plans: [], collaborations: [], message: 'no_weekly_okrs' };
 
-    const plans: any[] = [];
+    const plans: unknown[] = [];
     for (const okr of okrs) {
-      const krList = okr.keyResults.map((k: any) => `- ${k.description} (target: ${k.target} ${k.unit})`).join('\n');
+      const krList = okr.keyResults.map((k: unknown) => `- ${k.description} (target: ${k.target} ${k.unit})`).join('\n');
       const { text } = await generateText({
         model: MODEL,
         prompt: `أنت قائد قسم ${okr.department}. هدف الأسبوع: "${okr.objective}".\nالنتائج الرئيسية:\n${krList}\n
 ضع خطة عمل أسبوعية مختصرة (5 خطوات بحد أقصى)، يشمل كل خطوة: نشاط، اليوم المتوقع، أداة/قسم آخر يلزم.
 أعد JSON فقط: {"steps": [{"day":"الإثنين","activity":"...","needs":"..."}]}`,
       });
-      let parsed: any = { steps: [] };
+      let parsed: unknown = { steps: [] };
       try { parsed = JSON.parse(text.match(/\{[\s\S]*\}/)?.[0] || '{"steps":[]}'); } catch {}
       plans.push({ okrId: okr.id, department: okr.department, objective: okr.objective, plan: parsed });
     }
@@ -39,7 +39,7 @@ export async function runWeeklyPlanning(userId: string) {
 حدد فرص التعاون بين الأقسام (مثال: التسويق يحتاج قائمة من المبيعات).
 أعد JSON: {"collaborations": [{"from":"...","to":"...","handoff":"..."}]}`,
     });
-    let coordinator: any = { collaborations: [] };
+    let coordinator: unknown = { collaborations: [] };
     try { coordinator = JSON.parse(coordText.match(/\{[\s\S]*\}/)?.[0] || '{"collaborations":[]}'); } catch {}
 
     const planDoc = {

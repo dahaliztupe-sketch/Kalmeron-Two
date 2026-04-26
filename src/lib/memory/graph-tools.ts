@@ -70,7 +70,7 @@ export const globalGraphTools = {
       term: z.string(),
       limit: z.number().int().min(1).max(50).default(20),
     }),
-    execute: async ({ userId, term, limit }: any) => {
+    execute: async ({ userId, term, limit }: unknown) => {
       if (!(await isKnowledgeGraphEnabled())) return { enabled: false, results: [] };
       return { enabled: true, results: (await searchEntities(userId, term, limit)) || [] };
     },
@@ -84,7 +84,7 @@ export const globalGraphTools = {
       linkTo: z.string().optional(),
       relationType: z.string().default('RELATED_TO'),
     }),
-    execute: async ({ userId, type, properties, linkTo, relationType }: any) => {
+    execute: async ({ userId, type, properties, linkTo, relationType }: unknown) => {
       if (!(await isKnowledgeGraphEnabled())) return { enabled: false, stored: false };
       const node = await addEntity(userId, type, properties);
       if (linkTo && node?.id) await addRelationship(userId, node.id, linkTo, relationType);
@@ -97,7 +97,7 @@ export const globalGraphTools = {
       userId: z.string(),
       limit: z.number().int().min(1).max(500).default(200),
     }),
-    execute: async ({ userId, limit }: any) => {
+    execute: async ({ userId, limit }: unknown) => {
       if (!(await isKnowledgeGraphEnabled())) return { enabled: false, nodes: [], edges: [] };
       return { enabled: true, ...((await getProjectOverview(userId, limit)) || { nodes: [], edges: [] }) };
     },

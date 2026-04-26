@@ -17,9 +17,9 @@ export async function runWeeklyReview(userId: string) {
     const okrs = await listCurrentWeekOKRs(userId);
     if (!okrs.length) return { report: null, message: 'no_weekly_okrs' };
 
-    const reports: any[] = [];
+    const reports: unknown[] = [];
     for (const okr of okrs) {
-      const progress = okr.keyResults.map((k: any) => {
+      const progress = okr.keyResults.map((k: unknown) => {
         const pct = Math.round(((k.current || 0) / (k.target || 1)) * 100);
         return `- ${k.description}: ${k.current}/${k.target} ${k.unit} (${pct}%)`;
       }).join('\n');

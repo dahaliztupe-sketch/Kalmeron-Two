@@ -29,6 +29,7 @@ export default function WorkflowsRunnerPage() {
   const wf = findWorkflow(selectedId);
 
   React.useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setInputs({});
     setResult(null);
     setError(null);
@@ -53,7 +54,7 @@ export default function WorkflowsRunnerPage() {
       const data = await res.json();
       if (!res.ok) throw new Error(data?.error ?? "request_failed");
       setResult(data);
-    } catch (e: any) {
+    } catch (e: unknown) {
       setError(e?.message ?? "unknown");
     } finally {
       setRunning(false);

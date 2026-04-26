@@ -85,7 +85,7 @@ export interface AgentDefinition {
   /** Schema المدخلات. */
   inputSchema: z.ZodTypeAny;
   /** الدالة التنفيذية. */
-  action: (...args: any[]) => Promise<any>;
+  action: (...args: unknown[]) => Promise<unknown>;
   /** عنوان عربي قصير يظهر في ThoughtChain. */
   thinkingLabelAr?: string;
 }

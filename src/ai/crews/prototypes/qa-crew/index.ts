@@ -15,10 +15,10 @@ const factChecker = createCrewAgent({
 });
 
 export const qaCrew = new Crew({
-  agents: [outputEvaluator, factChecker] as any[],
+  agents: [outputEvaluator, factChecker] as unknown[],
   tasks: [
-    new Task({ description: 'تقييم جودة المخرجات', agent: outputEvaluator as any }),
-    new Task({ description: 'التحقق من صحة المعلومات', agent: factChecker as any }),
+    new Task({ description: 'تقييم جودة المخرجات', agent: outputEvaluator as unknown }),
+    new Task({ description: 'التحقق من صحة المعلومات', agent: factChecker as unknown }),
   ],
   process: Process.sequential,
 });

@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState, useRef } from "react";
+import { useCallback, useEffect, useState, useRef } from "react";
 import { apiJson } from "@/src/lib/api-client";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -10,7 +10,7 @@ interface Item {
   body: string;
   href?: string;
   read: boolean;
-  createdAt?: any;
+  createdAt?: unknown;
 }
 
 export function NotificationBell() {
@@ -20,21 +20,22 @@ export function NotificationBell() {
   const [unread, setUnread] = useState(0);
   const ref = useRef<HTMLDivElement>(null);
 
-  async function load() {
+  const load = useCallback(async () => {
     if (!user) return;
     try {
       const res = await apiJson<{ items: Item[]; unread: number }>("/api/account/notifications");
       setItems(res.items || []);
       setUnread(res.unread || 0);
     } catch {}
-  }
+  }, [user]);
 
   useEffect(() => {
     if (!user) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     load();
     const t = setInterval(load, 30_000);
     return () => clearInterval(t);
-  }, [user]);
+  }, [user, load]);
 
   useEffect(() => {
     function onClick(e: MouseEvent) {

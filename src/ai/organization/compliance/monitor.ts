@@ -6,8 +6,8 @@
   import { logger } from '@/src/lib/logger';
   import { EventEmitter } from 'events';
 
-  export const monitorEvents = (globalThis as any).__kalmeronMonitorEvents
-    || ((globalThis as any).__kalmeronMonitorEvents = new EventEmitter());
+  export const monitorEvents = (globalThis as unknown).__kalmeronMonitorEvents
+    || ((globalThis as unknown).__kalmeronMonitorEvents = new EventEmitter());
   monitorEvents.setMaxListeners(0);
 
   export type AlertSeverity = 'low' | 'medium' | 'high' | 'critical';
@@ -16,7 +16,7 @@
     severity: AlertSeverity;
     source: string;
     message: string;
-    metadata?: Record<string, any>;
+    metadata?: Record<string, unknown>;
     timestamp?: Date;
   }
 
@@ -91,7 +91,7 @@
   }
 
   export function getMetricsSnapshot() {
-    const out: Record<string, any> = {};
+    const out: Record<string, unknown> = {};
     for (const [id, m] of metrics.entries()) {
       out[id] = {
         invocations: m.invocations,

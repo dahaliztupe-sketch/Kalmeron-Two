@@ -9,7 +9,7 @@ const PHOENIX_ENDPOINT = process.env.PHOENIX_ENDPOINT; // مثل http://localhos
 const isEnabled = Boolean(PHOENIX_ENDPOINT);
 
 export const phoenix = {
-  log: async (params: any) => {
+  log: async (params: Record<string, unknown>) => {
     if (!isEnabled) return;
     // نقطة تكامل: إرسال HTTP بسيط لـ Phoenix collector.
     try {
@@ -22,8 +22,8 @@ export const phoenix = {
       /* ignore */
     }
   },
-  evaluate: async (_params: any) => ({ accuracy: null }),
-  getAlerts: async (_params: any) => [],
+  evaluate: async (_params: Record<string, unknown>) => ({ accuracy: null }),
+  getAlerts: async (_params: Record<string, unknown>) => [],
 };
 
 export const isPhoenixEnabled = isEnabled;
@@ -33,7 +33,7 @@ export async function logAgentInteraction(
   userId: string,
   input: string,
   output: string,
-  metadata: Record<string, any> = {}
+  metadata: Record<string, unknown> = {}
 ) {
   await phoenix.log({
     agentName,

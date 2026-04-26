@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
     }, { merge: true });
 
     return NextResponse.json({ ok: true });
-  } catch (e: any) {
+  } catch (e: unknown) {
     console.error("[FCM Subscribe]", e);
     return NextResponse.json({ error: e.message }, { status: 500 });
   }

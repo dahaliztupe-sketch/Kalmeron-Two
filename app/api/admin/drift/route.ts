@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
   const guard = await requirePlatformAdmin(req);
   if (guard instanceof Response) return guard;
 
-  let body: any;
+  let body: { policyId?: string; observed?: unknown; expected?: unknown; severity?: string };
   try {
     body = await req.json();
   } catch {

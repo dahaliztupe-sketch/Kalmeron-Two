@@ -50,11 +50,11 @@ export async function GET(req: NextRequest) {
         { headers: { 'Content-Type': 'application/json' } }
       );
     }
-    const w = walletDoc.data() as any;
-    const planFromWallet = getPlan((w.plan as PlanId) || userPlanId);
+    const w = walletDoc.data() as { plan?: PlanId; dailyBalance?: number; monthlyBalance?: number; rolledOverCredits?: number } | undefined;
+    const planFromWallet = getPlan(w?.plan || userPlanId);
     const total = planFromWallet.unlimited
       ? -1
-      : (w.dailyBalance || 0) + (w.monthlyBalance || 0) + (w.rolledOverCredits || 0);
+      : (w?.dailyBalance || 0) + (w?.monthlyBalance || 0) + (w?.rolledOverCredits || 0);
     return new Response(
       JSON.stringify({
         plan: planFromWallet.id,
@@ -70,7 +70,7 @@ export async function GET(req: NextRequest) {
       }),
       { headers: { 'Content-Type': 'application/json' } }
     );
-  } catch (e: any) {
+  } catch (e: unknown) {
     return new Response(JSON.stringify({ error: e?.message || 'Failed' }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },

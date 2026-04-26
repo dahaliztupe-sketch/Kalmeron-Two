@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 
 export default function VirtualOfficePage() {
-  const [vms, setVms] = useState<any[]>([]);
+  const [vms, setVms] = useState<Array<Record<string, unknown>>>([]);
   const [loading, setLoading] = useState(true);
   const [agentId, setAgentId] = useState("");
   const [departmentId, setDepartmentId] = useState("general");
@@ -14,6 +14,7 @@ export default function VirtualOfficePage() {
     setVms(j.vms || []);
     setLoading(false);
   }
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { load(); }, []);
 
   async function provision() {

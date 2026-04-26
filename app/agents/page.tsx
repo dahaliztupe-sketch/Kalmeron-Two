@@ -23,13 +23,13 @@ interface Agent {
   dept: Dept;
   desc: string;
   capabilities: string[];
-  icon: any;
+  icon: React.ComponentType<{ className?: string; size?: number }>;
   color: string;
   popular?: boolean;
   new?: boolean;
 }
 
-const DEPARTMENTS: { id: Dept; label: string; icon: any; color: string; desc: string }[] = [
+const DEPARTMENTS: { id: Dept; label: string; icon: React.ComponentType<{ className?: string; size?: number }>; color: string; desc: string }[] = [
   { id: "all", label: "جميع المساعدين", icon: Sparkles, color: "white", desc: "عرض الكل" },
   { id: "idea", label: "مُحقّق الأفكار", icon: Lightbulb, color: "cyan", desc: "تحليل وتقييم الفكرة" },
   { id: "cfo", label: "المدير المالي", icon: BarChart3, color: "emerald", desc: "النمذجة المالية" },

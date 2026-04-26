@@ -2,11 +2,11 @@
 import { useEffect, useState } from "react";
 
 export default function ExpertsPage() {
-  const [experts, setExperts] = useState<any[]>([]);
+  const [experts, setExperts] = useState<Array<Record<string, unknown>>>([]);
   const [description, setDescription] = useState("");
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
-  const [active, setActive] = useState<any>(null);
+  const [active, setActive] = useState<Record<string, unknown> | null>(null);
   const [question, setQuestion] = useState("");
   const [answer, setAnswer] = useState("");
   const [asking, setAsking] = useState(false);
@@ -18,6 +18,7 @@ export default function ExpertsPage() {
     setExperts(j.experts || []);
     setLoading(false);
   }
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { load(); }, []);
 
   async function create() {

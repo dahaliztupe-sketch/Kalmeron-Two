@@ -15,8 +15,8 @@ export async function afterAgentRun(args: {
   userId?: string;
   agent: string;
   event?: WebhookEvent;
-  notification?: { title: string; body: string; href?: string; type: any };
-  payload?: any;
+  notification?: { title: string; body: string; href?: string; type: string };
+  payload?: unknown;
   estimatedTokens?: number;
   estimatedCostUSD?: number;
 }) {

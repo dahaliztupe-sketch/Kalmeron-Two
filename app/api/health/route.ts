@@ -9,11 +9,11 @@ export const revalidate = 0;
 
 type CheckStatus = 'connected' | 'unreachable' | 'disabled' | 'configured' | 'unconfigured' | 'protected' | 'unprotected';
 
-async function safe<T>(label: string, fn: () => Promise<T>): Promise<[string, CheckStatus, any?]> {
+async function safe<T>(label: string, fn: () => Promise<T>): Promise<[string, CheckStatus, unknown?]> {
   try {
     const v = await fn();
     return [label, 'connected', v];
-  } catch (e: any) {
+  } catch (e: unknown) {
     return [label, 'unreachable', e?.message];
   }
 }
@@ -21,7 +21,7 @@ async function safe<T>(label: string, fn: () => Promise<T>): Promise<[string, Ch
 export async function GET() {
   const timestamp = new Date().toISOString();
   const checks: Record<string, CheckStatus> = {};
-  const meta: Record<string, any> = {};
+  const meta: Record<string, unknown> = {};
 
   // Core infrastructure
   const [firestoreLabel, firestoreStatus] = await safe('firestore', async () => {
@@ -60,7 +60,7 @@ export async function GET() {
   // Launch runs snapshot
   try {
     const snap = await adminDb.collection('launch_runs').orderBy('updatedAt', 'desc').limit(5).get();
-    meta.recentLaunchRuns = snap.docs.map((d) => ({ id: d.id, status: (d.data() as any).status }));
+    meta.recentLaunchRuns = snap.docs.map((d) => ({ id: d.id, status: (d.data() as { status?: string }).status }));
   } catch {
     meta.recentLaunchRuns = [];
   }

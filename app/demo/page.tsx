@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { SCENARIOS } from "./scenarios";
@@ -25,9 +26,11 @@ export default function DemoPage() {
         <div className="max-w-6xl mx-auto px-4 md:px-8 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-3 group">
             <div className="relative w-9 h-9 rounded-xl border border-white/10 bg-[#070A18]/70 flex items-center justify-center">
-              <img
+              <Image
                 src="/brand/kalmeron-mark.svg"
                 alt="Kalmeron"
+                width={24}
+                height={24}
                 className="w-6 h-6 object-contain"
               />
             </div>

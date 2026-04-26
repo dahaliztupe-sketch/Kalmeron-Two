@@ -34,7 +34,7 @@ export function CostByModelWidget() {
           setEntries(j.byModel || []);
           setErr(null);
         }
-      } catch (e: any) {
+      } catch (e: unknown) {
         if (!cancel) setErr(e.message);
       } finally {
         if (!cancel) setLoading(false);

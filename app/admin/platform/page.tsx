@@ -7,7 +7,7 @@ import { AppShell } from "@/components/layout/AppShell";
 interface Data {
   stats: { workspaces: number; users: number; launchRuns: number };
   workspaces: { id: string; name: string; tier: string }[];
-  recentAudit: any[];
+  recentAudit: unknown[];
 }
 
 export default function PlatformAdminPage() {
@@ -21,13 +21,14 @@ export default function PlatformAdminPage() {
       const r = await apiJson<Data>("/api/admin/platform");
       setData(r);
       setErr("");
-    } catch (e: any) {
+    } catch (e: unknown) {
       setErr(e.message);
     } finally {
       setLoading(false);
     }
   }
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { load(); }, []);
 
   return (
@@ -56,7 +57,7 @@ export default function PlatformAdminPage() {
             <Card>
               <h2 className="font-semibold mb-2">أحدث سجل التدقيق</h2>
               <ul className="divide-y text-xs font-mono" role="list">
-                {data.recentAudit.map((a: any) => (
+                {data.recentAudit.map((a: { id: string; ts?: number; userId?: string; action?: string; resource?: string; resourceId?: string; success?: boolean }) => (
                   <li key={a.id} className="py-1.5 flex gap-2">
                     <span className={`px-1.5 py-0.5 rounded ${a.success ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>
                       {a.action}

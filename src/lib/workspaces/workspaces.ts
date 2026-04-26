@@ -20,13 +20,13 @@ export interface Workspace {
   id: string;
   name: string;
   ownerUid: string;
-  createdAt?: any;
+  createdAt?: unknown;
 }
 
 export interface WorkspaceMember {
   uid: string;
   role: WorkspaceRole;
-  addedAt?: any;
+  addedAt?: unknown;
   addedBy?: string;
 }
 
@@ -59,7 +59,7 @@ export async function listUserWorkspaces(uid: string): Promise<Workspace[]> {
     .catch(() => null);
   if (!memberSnap) return [];
   const ids = new Set<string>();
-  memberSnap.forEach((d: any) => {
+  memberSnap.forEach((d: unknown) => {
     if (d.id !== uid) return;
     const parent = d.ref.parent.parent;
     if (parent) ids.add(parent.id);
@@ -68,7 +68,7 @@ export async function listUserWorkspaces(uid: string): Promise<Workspace[]> {
   const out: Workspace[] = [];
   for (const id of ids) {
     const w = await adminDb.collection('workspaces').doc(id).get();
-    if (w.exists) out.push({ id: w.id, ...(w.data() as any) });
+    if (w.exists) out.push({ id: w.id, ...(w.data() as unknown) });
   }
   return out.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
 }
@@ -77,7 +77,7 @@ export async function getMemberRole(workspaceId: string, uid: string): Promise<W
   if (!adminDb?.collection) return null;
   const m = await adminDb.collection('workspaces').doc(workspaceId).collection('members').doc(uid).get();
   if (!m.exists) return null;
-  return (m.data() as any)?.role || 'viewer';
+  return (m.data() as unknown)?.role || 'viewer';
 }
 
 /**
@@ -96,7 +96,7 @@ export async function listMembers(workspaceId: string): Promise<WorkspaceMember[
     .limit(LIST_MEMBERS_HARD_CAP)
     .get();
   const out: WorkspaceMember[] = [];
-  snap.forEach((d: any) => out.push({ uid: d.id, ...(d.data() as any) }));
+  snap.forEach((d: unknown) => out.push({ uid: d.id, ...(d.data() as unknown) }));
   return out;
 }
 
@@ -136,7 +136,7 @@ export interface AuditEntry {
   userId: string;
   action: string;        // e.g. 'agent.restart', 'action.approve', 'member.add'
   target?: string | null;
-  details?: Record<string, any>;
+  details?: Record<string, unknown>;
 }
 
 export async function recordAudit(entry: AuditEntry): Promise<void> {
@@ -155,14 +155,14 @@ export async function recordAudit(entry: AuditEntry): Promise<void> {
 export async function listAudit(opts: {
   workspaceId?: string;
   limit?: number;
-}): Promise<any[]> {
+}): Promise<unknown[]> {
   if (!adminDb?.collection) return [];
-  let q: any = adminDb.collection('audit_log');
+  let q: unknown = adminDb.collection('audit_log');
   if (opts.workspaceId) q = q.where('workspaceId', '==', opts.workspaceId);
   const snap = await q.limit(opts.limit || 100).get().catch(() => null);
   if (!snap || snap.empty) return [];
-  const rows: any[] = [];
-  snap.forEach((d: any) => rows.push({ id: d.id, ...d.data() }));
+  const rows: unknown[] = [];
+  snap.forEach((d: unknown) => rows.push({ id: d.id, ...d.data() }));
   rows.sort((a, b) => (b.timestamp?._seconds || 0) - (a.timestamp?._seconds || 0));
   return rows;
 }

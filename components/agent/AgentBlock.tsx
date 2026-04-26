@@ -121,13 +121,14 @@ export type AgentBlockData =
   | TimelineBlockData;
 
 // ─────────────── Guards ───────────────
-function isValid(block: any): block is AgentBlockData {
-  if (!block || typeof block !== "object") return false;
+function isValid(input: unknown): input is AgentBlockData {
+  if (!input || typeof input !== "object") return false;
+  const block = input as Record<string, unknown>;
   switch (block.type) {
     case "stat":
       return typeof block.label === "string" && (typeof block.value === "number" || typeof block.value === "string");
     case "list":
-      return Array.isArray(block.items) && block.items.every((s: unknown) => typeof s === "string");
+      return Array.isArray(block.items) && (block.items as unknown[]).every((s) => typeof s === "string");
     case "table":
       return Array.isArray(block.headers) && Array.isArray(block.rows);
     case "callout":
@@ -138,20 +139,25 @@ function isValid(block: any): block is AgentBlockData {
       return (
         (block.variant === "area" || block.variant === "bar") &&
         typeof block.xKey === "string" &&
-        Array.isArray(block.yKeys) && block.yKeys.length > 0 &&
+        Array.isArray(block.yKeys) && (block.yKeys as unknown[]).length > 0 &&
         Array.isArray(block.data)
       );
     case "form":
-      return Array.isArray(block.fields) && block.fields.every((f: any) =>
-        typeof f?.name === "string" && typeof f?.label === "string" &&
-        ["text", "number", "select", "textarea"].includes(f?.kind),
-      );
+      return Array.isArray(block.fields) && (block.fields as unknown[]).every((raw) => {
+        const f = raw as Record<string, unknown>;
+        return typeof f?.name === "string" && typeof f?.label === "string" &&
+          ["text", "number", "select", "textarea"].includes(f?.kind as string);
+      });
     case "checklist":
-      return Array.isArray(block.items) && block.items.every((i: any) => typeof i?.label === "string");
+      return Array.isArray(block.items) && (block.items as unknown[]).every((raw) => {
+        const i = raw as Record<string, unknown>;
+        return typeof i?.label === "string";
+      });
     case "timeline":
-      return Array.isArray(block.events) && block.events.every((e: any) =>
-        typeof e?.when === "string" && typeof e?.title === "string",
-      );
+      return Array.isArray(block.events) && (block.events as unknown[]).every((raw) => {
+        const e = raw as Record<string, unknown>;
+        return typeof e?.when === "string" && typeof e?.title === "string";
+      });
     default:
       return false;
   }
@@ -283,9 +289,9 @@ function ChartRenderer({ data }: { data: ChartBlockData }) {
     <div className="rounded-2xl border border-white/[0.07] bg-white/[0.025] p-4">
       {data.title && <h4 className="text-sm font-bold text-white mb-2.5">{data.title}</h4>}
       {data.variant === "area" ? (
-        <KalmeronAreaChart data={data.data as any} xKey={data.xKey} yKeys={data.yKeys} height={220} />
+        <KalmeronAreaChart data={data.data} xKey={data.xKey} yKeys={data.yKeys} height={220} />
       ) : (
-        <KalmeronBarChart data={data.data as any} xKey={data.xKey} yKeys={data.yKeys} height={220} />
+        <KalmeronBarChart data={data.data} xKey={data.xKey} yKeys={data.yKeys} height={220} />
       )}
     </div>
   );

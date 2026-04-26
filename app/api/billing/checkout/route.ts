@@ -20,7 +20,7 @@ import { rateLimit, rateLimitResponse } from '@/src/lib/security/rate-limit';
 export const runtime = 'nodejs';
 
 const stripeSecret = process.env.STRIPE_SECRET_KEY;
-const stripe = stripeSecret ? new Stripe(stripeSecret, { apiVersion: '2025-08-27.basil' as any }) : null;
+const stripe = stripeSecret ? new Stripe(stripeSecret, { apiVersion: '2025-08-27.basil' as Stripe.LatestApiVersion }) : null;
 
 export async function POST(req: NextRequest) {
   const rl = rateLimit(req, { limit: 10, windowMs: 60_000 });
@@ -88,7 +88,7 @@ export async function POST(req: NextRequest) {
   // Find or create Stripe Customer keyed by uid.
   const userRef = adminDb.collection('users').doc(userId);
   const userSnap = await userRef.get();
-  let customerId = (userSnap.data() as any)?.stripeCustomerId as string | undefined;
+  let customerId = (userSnap.data() as { stripeCustomerId?: string } | undefined)?.stripeCustomerId;
   if (!customerId) {
     const customer = await stripe.customers.create({
       email: userEmail,

@@ -2,7 +2,7 @@
 // Placeholder for Galileo.
 // Replace with actual @galileo-ai/sdk when available.
 export const galileo = {
-  evaluate: async (params: any) => ({
+  evaluate: async (params: unknown) => ({
     hallucination: { score: 0.05, explanation: 'Low' },
   }),
 };

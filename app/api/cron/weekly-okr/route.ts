@@ -39,12 +39,12 @@ export async function POST(req: NextRequest) {
     } catch { userIds = []; }
   }
 
-  const results: any[] = [];
+  const results: unknown[] = [];
   for (const uid of userIds) {
     try {
       const r = await generateWeeklyGoals(uid);
       results.push({ userId: uid, count: r.count });
-    } catch (e: any) {
+    } catch (e: unknown) {
       results.push({ userId: uid, error: e?.message || 'failed' });
     }
   }

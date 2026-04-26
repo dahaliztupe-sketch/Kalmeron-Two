@@ -21,7 +21,7 @@ export const billingAgent = new Agent({
 
 export async function billingAgentRun(prompt: string) {
   return instrumentAgent('billing_agent', async () => {
-    const res: any = await billingAgent.generate(prompt);
+    const res: unknown = await billingAgent.generate(prompt);
     return res?.text ?? res;
   }, { model: 'gemini-2.5-flash', input: { prompt }, toolsUsed: ['mastra.generate'] });
 }

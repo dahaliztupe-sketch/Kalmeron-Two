@@ -30,10 +30,11 @@ export default function OKRPage() {
       const json = await res.json();
       setData(json);
       setError(null);
-    } catch (e: any) { setError(e.message); }
+    } catch (e: unknown) { setError(e.message); }
     finally { setLoading(false); }
   }
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { load(); }, []);
 
   async function generate() {

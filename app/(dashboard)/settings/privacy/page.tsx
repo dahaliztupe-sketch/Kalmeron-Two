@@ -20,7 +20,7 @@ export default function PrivacyPage() {
       a.click();
       URL.revokeObjectURL(a.href);
       toast.success("تم التحميل");
-    } catch (e: any) {
+    } catch (e: unknown) {
       toast.error(e.message);
     } finally {
       setExporting(false);
@@ -36,7 +36,7 @@ export default function PrivacyPage() {
         body: JSON.stringify({ confirm: true }),
       });
       toast.success(`تم الجدولة حتى ${new Date(r.scheduledFor).toLocaleDateString("ar")}`);
-    } catch (e: any) {
+    } catch (e: unknown) {
       toast.error(e.message);
     } finally {
       setDeleting(false);

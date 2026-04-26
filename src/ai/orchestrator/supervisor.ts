@@ -28,7 +28,7 @@ async function withCouncil(opts: {
   agentDisplayNameAr: string;
   agentRoleAr: string;
   userMessage: string;
-  uiContext?: any;
+  uiContext?: unknown;
   userId?: string;
   draft?: string;
   fallback: string;
@@ -51,7 +51,7 @@ export const SupervisorState = Annotation.Root({
   messages: Annotation<BaseMessage[]>({ reducer: (a, b) => a.concat(b) }),
   isGuest: Annotation<boolean>(),
   messageCount: Annotation<number>(),
-  uiContext: Annotation<any>(),
+  uiContext: Annotation<unknown>(),
   intent: Annotation<string>(),
   nextStep: Annotation<string>(),
   userId: Annotation<string>(),
@@ -254,7 +254,7 @@ async function opportunityRadarNode(state: typeof SupervisorState.State) {
     );
     const formatted = `## الفرص المتاحة لك الآن 🎯
 
-${opportunities.map((opp: any, i: number) => `### ${i + 1}. ${opp.title}
+${opportunities.map((opp: unknown, i: number) => `### ${i + 1}. ${opp.title}
 **النوع:** ${opp.type} | **الجهة:** ${opp.organizer}
 **الموعد النهائي:** ${opp.deadline} | **المكان:** ${opp.location}
 ${opp.description}

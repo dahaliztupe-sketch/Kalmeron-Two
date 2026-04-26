@@ -6,11 +6,11 @@ import * as tools from './tools';
 import { instrumentAgent } from '@/src/lib/observability/agent-instrumentation';
 import { getCurrentLearnedSkillsAddon } from '@/src/lib/learning/context';
 
-export async function cfoAgentAction(task: string, parameters: any) {
+export async function cfoAgentAction(task: string, parameters: unknown) {
   return instrumentAgent(
     'cfo_agent',
     async () => {
-      let result: any;
+      let result: unknown;
       const usedTools: string[] = [];
 
       switch (task) {

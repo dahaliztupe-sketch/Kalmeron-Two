@@ -1,8 +1,8 @@
 // @ts-nocheck
 // Note: Quick mock for '@tthbfo2/firebase-cost-trimmer' because the exact imaginary npm 2026 library structure is speculative.
-const quickFirebase = (app: any) => ({
-    registerUser: (params: any) => console.log('Registered user for caching', params),
-    query: async (collection: string, args: any) => { return []; } 
+const quickFirebase = (app: unknown) => ({
+    registerUser: (params: unknown) => console.log('Registered user for caching', params),
+    query: async (collection: string, args: unknown) => { return []; } 
 });
 
 import { db } from './firebase';

@@ -85,7 +85,7 @@ export async function executeRightToBeForgotten(
         .get();
       if (snapshot.empty) break;
       const batch = adminDb.batch();
-      snapshot.docs.forEach((doc: any) => batch.delete(doc.ref));
+      snapshot.docs.forEach((doc) => batch.delete(doc.ref));
       await batch.commit();
       totalDeleted += snapshot.size;
       log.info({ collection, deleted: snapshot.size, requestId }, 'rtbf_chunk_deleted');

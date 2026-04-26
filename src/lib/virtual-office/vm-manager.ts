@@ -30,12 +30,12 @@ export interface VMRecord {
 
 export interface VMTask {
   kind: 'shell' | 'browse' | 'email' | 'fs-read' | 'fs-write' | 'custom';
-  payload: Record<string, any>;
+  payload: Record<string, unknown>;
 }
 
 export interface VMTaskResult {
   ok: boolean;
-  output?: any;
+  output?: unknown;
   error?: string;
   durationMs: number;
 }
@@ -68,8 +68,8 @@ export async function provisionVM(agentId: string, departmentId: string): Promis
     departmentId,
     provider,
     status: 'provisioning',
-    createdAt: FieldValue.serverTimestamp() as any,
-    updatedAt: FieldValue.serverTimestamp() as any,
+    createdAt: FieldValue.serverTimestamp() as unknown,
+    updatedAt: FieldValue.serverTimestamp() as unknown,
   };
   const ref = await adminDb.collection(COLL).add(base);
 
@@ -88,7 +88,7 @@ export async function provisionVM(agentId: string, departmentId: string): Promis
       updatedAt: FieldValue.serverTimestamp(),
     });
     return { ...base, id: ref.id, providerSandboxId, status: 'running' };
-  } catch (err: any) {
+  } catch (err: unknown) {
     await ref.update({
       status: 'error',
       lastError: err?.message || String(err),
@@ -126,7 +126,7 @@ export async function runTaskOnVM(
 
   const exec = async (): Promise<VMTaskResult> => {
     try {
-      let output: any;
+      let output: unknown;
       if (vm.provider === 'e2b') {
         output = await e2bExec(vm.providerSandboxId!, task);
       } else if (vm.provider === 'daytona') {
@@ -135,7 +135,7 @@ export async function runTaskOnVM(
         output = { stubbed: true, echoed: task };
       }
       return { ok: true, output, durationMs: Date.now() - start };
-    } catch (err: any) {
+    } catch (err: unknown) {
       return { ok: false, error: err?.message || String(err), durationMs: Date.now() - start };
     }
   };
@@ -197,7 +197,7 @@ async function e2bCreate(): Promise<string> {
   return data.sandboxId || data.id;
 }
 
-async function e2bExec(sandboxId: string, task: VMTask): Promise<any> {
+async function e2bExec(sandboxId: string, task: VMTask): Promise<unknown> {
   const res = await fetch(`https://api.e2b.dev/sandboxes/${sandboxId}/commands`, {
     method: 'POST',
     headers: {
@@ -224,7 +224,7 @@ async function daytonaCreate(): Promise<string> {
   return data.id;
 }
 
-async function daytonaExec(workspaceId: string, task: VMTask): Promise<any> {
+async function daytonaExec(workspaceId: string, task: VMTask): Promise<unknown> {
   const res = await fetch(`${process.env.DAYTONA_API_URL}/workspaces/${workspaceId}/exec`, {
     method: 'POST',
     headers: {

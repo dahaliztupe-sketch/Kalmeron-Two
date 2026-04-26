@@ -56,7 +56,7 @@ export function WorkspaceSwitcher() {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger render={(p: any) => (
+      <DropdownMenuTrigger render={(p: React.HTMLAttributes<HTMLButtonElement>) => (
         <button {...p} className="flex items-center gap-2 w-full px-3 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-sm text-white transition-colors">
           <Building2 className="w-4 h-4 text-brand-cyan" />
           <span className="flex-1 text-right truncate">{active?.name || "—"}</span>

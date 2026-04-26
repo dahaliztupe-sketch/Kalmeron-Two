@@ -8,10 +8,10 @@ export const RAGState = Annotation.Root({
   question: Annotation<string>(),
   originalQuestion: Annotation<string>(),
   hypotheticalAnswer: Annotation<string>(),
-  documents: Annotation<any[]>({
+  documents: Annotation<unknown[]>({
     reducer: (a, b) => a.concat(b),
   }),
-  gradedDocuments: Annotation<any[]>(),
+  gradedDocuments: Annotation<unknown[]>(),
   needsWebSearch: Annotation<boolean>(),
   discourseAnalysis: Annotation<string>(),
   answerPlan: Annotation<string>(),
@@ -43,8 +43,8 @@ async function retrieveNode(state: typeof RAGState.State) {
     const snap = await adminDb.collection('knowledge_base').limit(50).get().catch(() => null);
     if (!snap || snap.empty) return { documents: [] };
 
-    const docs: any[] = [];
-    snap.forEach((d: any) => {
+    const docs: unknown[] = [];
+    snap.forEach((d: unknown) => {
       const data = d.data() || {};
       const content: string = data.content || data.text || '';
       if (!content) return;

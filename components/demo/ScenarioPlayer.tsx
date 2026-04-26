@@ -36,6 +36,7 @@ export function ScenarioPlayer({ scenario }: Props) {
   useEffect(() => {
     timersRef.current.forEach(clearTimeout);
     timersRef.current = [];
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setVisible(0);
     setThinking(null);
 
@@ -68,7 +69,7 @@ export function ScenarioPlayer({ scenario }: Props) {
     return () => {
       timersRef.current.forEach(clearTimeout);
     };
-  }, [scenario.id]);
+  }, [scenario.id, scenario.messages]);
 
   const replay = () => setVisible(0);
   const skipToEnd = () => {

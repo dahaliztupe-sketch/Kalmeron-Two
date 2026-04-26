@@ -13,7 +13,7 @@
     from: string;
     to: string;
     type: MessageType;
-    payload: any;
+    payload: unknown;
     timestamp?: Date;
     priority?: Priority;
   }
@@ -21,7 +21,7 @@
   const bus = new EventEmitter();
   bus.setMaxListeners(200);
 
-  export function subscribe(agentId: string, handler: (msg: AgentMessage) => Promise<any> | any) {
+  export function subscribe(agentId: string, handler: (msg: AgentMessage) => Promise<unknown> | unknown) {
     bus.on(`msg:${agentId}`, async (msg: AgentMessage) => {
       const start = Date.now();
       try {
@@ -33,13 +33,13 @@
             payload: result, timestamp: new Date(), priority: msg.priority,
           });
         }
-      } catch (err: any) {
+      } catch (err: unknown) {
         recordInvocation(agentId, Date.now() - start, 0, err?.message);
       }
     });
   }
 
-  export async function sendMessage(msg: AgentMessage): Promise<any> {
+  export async function sendMessage(msg: AgentMessage): Promise<unknown> {
     const enriched: AgentMessage = { ...msg, timestamp: msg.timestamp || new Date() };
     bus.emit(`msg:${msg.to}`, enriched);
     // For request-response pattern, wait briefly for ACK; otherwise return enqueued ack.

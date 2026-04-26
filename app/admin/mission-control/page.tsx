@@ -4,10 +4,10 @@
   import { useAuth } from '@/contexts/AuthContext';
 
   interface Snapshot {
-    agents: Record<string, any>;
+    agents: Record<string, unknown>;
     dailyCostUsd: number;
     dailyLimit: number;
-    alertsRecent: any[];
+    alertsRecent: unknown[];
   }
 
   export default function MissionControlPage() {
@@ -16,11 +16,12 @@
     const [error, setError] = useState<string | null>(null);
     const [live, setLive] = useState(false);
     const [pulse, setPulse] = useState<string | null>(null);
-    const pulseTimer = useRef<any>(null);
+    const pulseTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     useEffect(() => {
       if (authLoading) return;
       if (!user) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setError('يجب تسجيل الدخول بحساب Platform Admin.');
         return;
       }
@@ -101,7 +102,7 @@
               <div className="md:col-span-2 p-6 rounded-2xl bg-neutral-900/60 border border-white/[0.05]">
                 <h2 className="text-xl font-bold mb-4">خريطة المساعدين النشطين</h2>
                 <div className="space-y-2 max-h-96 overflow-y-auto">
-                  {Object.entries(data.agents).map(([id, m]: any) => (
+                  {Object.entries(data.agents).map(([id, m]) => (
                     <div
                       key={id}
                       className={`flex items-center justify-between p-3 rounded-lg text-sm transition-all duration-500 ${

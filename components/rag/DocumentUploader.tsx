@@ -28,7 +28,7 @@ export function DocumentUploader({ title = "مكتبة المستندات" }: { 
       const r = await fetch("/api/rag/documents", { headers: { Authorization: `Bearer ${token}` } });
       const j = await r.json();
       if (r.ok) setDocs(j.documents || []);
-    } catch (e: any) {
+    } catch (e: unknown) {
       // silent
     } finally {
       setLoading(false);
@@ -53,7 +53,7 @@ export function DocumentUploader({ title = "مكتبة المستندات" }: { 
       if (!r.ok) throw new Error(j.error || "فشل الرفع");
       toast.success(`تم رفع "${file.name}" (${j.chunks} مقطع).`);
       await refresh();
-    } catch (e: any) {
+    } catch (e: unknown) {
       toast.error(e.message || "فشل الرفع");
     } finally {
       setUploading(false);
@@ -73,7 +73,7 @@ export function DocumentUploader({ title = "مكتبة المستندات" }: { 
       if (!r.ok) throw new Error((await r.json()).error || "فشل الحذف");
       setDocs(d => d.filter(x => x.documentId !== documentId));
       toast.success("تم الحذف.");
-    } catch (e: any) {
+    } catch (e: unknown) {
       toast.error(e.message || "فشل الحذف");
     }
   };

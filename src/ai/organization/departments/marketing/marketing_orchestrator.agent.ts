@@ -49,7 +49,7 @@ import { globalGraphTools } from '@/src/lib/memory/graph-tools';
 
   export async function marketingCrewRun(prompt: string) {
     return instrumentAgent('marketing_crew', async () => {
-      const res: any = await marketingOrchestratorAgent.generate(prompt);
+      const res: unknown = await marketingOrchestratorAgent.generate(prompt);
       return res?.text ?? res;
     }, { model: 'gemini-2.5-flash', input: { prompt }, toolsUsed: ['delegate_task', 'aggregate_results'] });
   }

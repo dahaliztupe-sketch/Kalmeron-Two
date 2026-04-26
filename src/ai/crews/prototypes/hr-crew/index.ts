@@ -21,11 +21,11 @@ const interviewCoach = createCrewAgent({
 });
 
 export const hrCrew = new Crew({
-  agents: [recruiter, jobDescriptionWriter, interviewCoach] as any[],
+  agents: [recruiter, jobDescriptionWriter, interviewCoach] as unknown[],
   tasks: [
-    new Task({ description: 'تحديد المهارات المطلوبة للدور', agent: recruiter as any }),
-    new Task({ description: 'كتابة توصيف وظيفي', agent: jobDescriptionWriter as any }),
-    new Task({ description: 'اقتراح أسئلة مقابلة', agent: interviewCoach as any }),
+    new Task({ description: 'تحديد المهارات المطلوبة للدور', agent: recruiter as unknown }),
+    new Task({ description: 'كتابة توصيف وظيفي', agent: jobDescriptionWriter as unknown }),
+    new Task({ description: 'اقتراح أسئلة مقابلة', agent: interviewCoach as unknown }),
   ],
   process: Process.sequential,
 });

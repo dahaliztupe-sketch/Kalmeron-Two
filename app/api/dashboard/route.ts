@@ -17,14 +17,14 @@ async function getLatestOpportunity() {
       .get();
     if (snap.empty) return null;
     const doc = snap.docs[0];
-    const d: any = doc.data();
+    const d = doc.data() as { title?: string; type?: string; organizer?: string; deadline?: string; link?: string } | undefined;
     return {
       id: doc.id,
-      title: d.title || 'فرصة جديدة',
-      type: d.type || 'opportunity',
-      organizer: d.organizer || null,
-      deadline: d.deadline || null,
-      link: d.link || null,
+      title: d?.title || 'فرصة جديدة',
+      type: d?.type || 'opportunity',
+      organizer: d?.organizer || null,
+      deadline: d?.deadline || null,
+      link: d?.link || null,
     };
   } catch { return null; }
 }

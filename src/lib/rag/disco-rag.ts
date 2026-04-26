@@ -66,8 +66,8 @@ export async function buildRhetoricalGraph(documents: string[]): Promise<{
 }> {
   const discourse = await analyzeDiscourse(documents);
   
-  const nodes: any[] = [];
-  const edges: any[] = [];
+  const nodes: unknown[] = [];
+  const edges: unknown[] = [];
   
   // إضافة الادعاءات كعقد
   discourse.mainClaims.forEach((claim, i) => {
@@ -105,9 +105,9 @@ export async function buildRhetoricalGraph(documents: string[]): Promise<{
 export async function discoGenerateAnswer(
   query: string,
   documents: string[],
-  rhetoricalGraph: any
+  rhetoricalGraph: unknown
 ): Promise<string> {
-  const contradictions = rhetoricalGraph.edges.filter((e: any) => e.relation === 'contradicts');
+  const contradictions = rhetoricalGraph.edges.filter((e: unknown) => e.relation === 'contradicts');
   
   const prompt = `
   أنت مساعد ذكي. أجب عن الاستعلام بناءً على المستندات المقدمة.
@@ -136,7 +136,7 @@ export async function discoGenerateAnswer(
 export async function discoRAG(
   query: string,
   retrieveFn: (q: string) => Promise<string[]>
-): Promise<{ answer: string; rhetoricalGraph: any; discourse: any }> {
+): Promise<{ answer: string; rhetoricalGraph: unknown; discourse: unknown }> {
   // 1. استرجاع المستندات
   const documents = await retrieveFn(query);
   

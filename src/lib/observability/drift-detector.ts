@@ -89,7 +89,7 @@ export async function buildAgentDriftReport(
   const toolDist: Record<string, number> = {};
   const errCount: Record<string, number> = {};
 
-  snap.forEach((d: any) => {
+  snap.forEach((d) => {
     const s = d.data();
     if (s.success) success++;
     totalLatency += s.latencyMs || 0;
@@ -146,7 +146,7 @@ export async function listObservedAgents(windowDays: number = 7): Promise<string
     .catch(() => null);
   if (!snap) return [];
   const set = new Set<string>();
-  snap.forEach((d: any) => {
+  snap.forEach((d) => {
     const a = d.data()?.agent;
     if (a) set.add(a);
   });

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { AlertTriangle } from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
@@ -94,7 +95,7 @@ export default function PricingPage() {
       if (!res.ok) throw new Error(data?.error || "فشل التبديل");
       setCurrentPlan(planId);
       toast.success(data.message || `تم التبديل إلى ${PLANS[planId].nameAr}.`);
-    } catch (e: any) {
+    } catch (e: unknown) {
       toast.error(e?.message || "حدث خطأ أثناء تغيير الخطة.");
     } finally {
       setLoadingPlan(null);
@@ -195,9 +196,11 @@ export default function PricingPage() {
         <div className="max-w-7xl mx-auto px-4 md:px-8 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-3 group">
             <div className="relative w-9 h-9 rounded-xl border border-white/10 bg-[#070A18]/70 flex items-center justify-center">
-              <img
+              <Image
                 src="/brand/kalmeron-mark.svg"
                 alt="Kalmeron"
+                width={24}
+                height={24}
                 className="w-6 h-6 object-contain"
               />
             </div>

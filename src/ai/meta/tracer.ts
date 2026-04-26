@@ -7,8 +7,8 @@ export interface AgentTrace {
   agentName: string;
   userId: string;
   timestamp: Date;
-  input: any;
-  finalOutput: any;
+  input: unknown;
+  finalOutput: unknown;
   metrics: {
     totalDuration: number;
     tokensUsed: number;

@@ -16,7 +16,7 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
   if (!ok) return NextResponse.json({ error: 'not_found' }, { status: 404 });
   writeAudit({
     actorId: userId, actorType: 'user', action: 'revoke', resource: 'webhook',
-    resourceId: id, success: true, ...extractClientInfo(req as any),
+    resourceId: id, success: true, ...extractClientInfo(req),
   }).catch(() => {});
   return NextResponse.json({ success: true });
 }

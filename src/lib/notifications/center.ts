@@ -41,7 +41,7 @@ export async function listNotifications(userId: string, limit = 30) {
     .orderBy('createdAt', 'desc')
     .limit(limit)
     .get();
-  return snap.docs.map((d) => ({ id: d.id, ...(d.data() as any) }));
+  return snap.docs.map((d) => ({ id: d.id, ...(d.data() as Record<string, unknown>) }));
 }
 
 export async function unreadCount(userId: string): Promise<number> {

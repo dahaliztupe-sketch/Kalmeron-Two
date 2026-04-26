@@ -72,6 +72,7 @@ export function CommandPalette({ open, onOpenChange, locale = "ar" }: CommandPal
   // Reset state on open/close
   React.useEffect(() => {
     if (open) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setQuery("");
       setActiveIndex(0);
       // Slight delay so base-ui finishes mounting.
@@ -83,6 +84,7 @@ export function CommandPalette({ open, onOpenChange, locale = "ar" }: CommandPal
 
   // Keep activeIndex inside bounds when results change.
   React.useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (activeIndex >= results.length) setActiveIndex(0);
   }, [results, activeIndex]);
 

@@ -32,14 +32,14 @@ const LaunchState = Annotation.Root({
   runId: Annotation<string>(),
   workspaceId: Annotation<string>(),
   idea: Annotation<string>(),
-  validation: Annotation<any>(),
-  plan: Annotation<any>(),
-  financials: Annotation<any>(),
-  mvp: Annotation<any>(),
-  security: Annotation<any>(),
-  marketing: Annotation<any>(),
-  pitchDeck: Annotation<any>(),
-  bundle: Annotation<any>(),
+  validation: Annotation<unknown>(),
+  plan: Annotation<unknown>(),
+  financials: Annotation<unknown>(),
+  mvp: Annotation<unknown>(),
+  security: Annotation<unknown>(),
+  marketing: Annotation<unknown>(),
+  pitchDeck: Annotation<unknown>(),
+  bundle: Annotation<unknown>(),
   progress: Annotation<LaunchProgress[]>({ reducer: (a, b) => a.concat(b), default: () => [] }),
 });
 
@@ -61,7 +61,7 @@ async function publishProgress(runId: string, entry: LaunchProgress) {
   }
 }
 
-async function llmJSON(system: string, prompt: string): Promise<any> {
+async function llmJSON(system: string, prompt: string): Promise<unknown> {
   const { text } = await generateText({
     model: MODELS.FLASH,
     system: `${system}\nأجب بصيغة JSON صالحة فقط بدون أي تعليق.`,
@@ -77,14 +77,14 @@ async function llmJSON(system: string, prompt: string): Promise<any> {
 }
 
 function progressNode(stage: LaunchStage, pct: number, message: string) {
-  return async (state: any) => {
+  return async (state: unknown) => {
     const entry: LaunchProgress = { stage, pct, message, at: Date.now() };
     await publishProgress(state.runId, entry);
     return { progress: [entry] };
   };
 }
 
-async function ideaValidatorNode(state: any) {
+async function ideaValidatorNode(state: unknown) {
   await publishProgress(state.runId, {
     stage: 'idea_validator', pct: 10, message: 'تحليل الفكرة...', at: Date.now(),
   });
@@ -95,7 +95,7 @@ async function ideaValidatorNode(state: any) {
   return { validation, progress: [{ stage: 'idea_validator', pct: 12, message: 'تم التحقق من الفكرة', at: Date.now() }] };
 }
 
-async function planBuilderNode(state: any) {
+async function planBuilderNode(state: unknown) {
   await publishProgress(state.runId, { stage: 'plan_builder', pct: 20, message: 'بناء خطة العمل...', at: Date.now() });
   const plan = await llmJSON(
     'أنت استشاري استراتيجي. ابنِ خطة عمل تتضمن: mission, vision, targetMarket, valueProposition, milestones[6].',
@@ -104,7 +104,7 @@ async function planBuilderNode(state: any) {
   return { plan, progress: [{ stage: 'plan_builder', pct: 25, message: 'اكتملت خطة العمل', at: Date.now() }] };
 }
 
-async function cfoAgentNode(state: any) {
+async function cfoAgentNode(state: unknown) {
   await publishProgress(state.runId, { stage: 'cfo_agent', pct: 35, message: 'بناء النموذج المالي...', at: Date.now() });
   const financials = await llmJSON(
     'أنت مدير مالي. ابنِ نموذجاً مالياً ل3 سنوات: revenue[], costs[], cac, ltv, burnRate, breakEvenMonth.',
@@ -113,7 +113,7 @@ async function cfoAgentNode(state: any) {
   return { financials, progress: [{ stage: 'cfo_agent', pct: 42, message: 'اكتمل النموذج المالي', at: Date.now() }] };
 }
 
-async function productCrewNode(state: any) {
+async function productCrewNode(state: unknown) {
   await publishProgress(state.runId, { stage: 'product_crew', pct: 55, message: 'بناء MVP...', at: Date.now() });
   const mvp = await llmJSON(
     'أنت فريق منتج. حدّد: coreFeatures[], techStack, architectureSketch, mvpScope, deliveryWeeks.',
@@ -122,7 +122,7 @@ async function productCrewNode(state: any) {
   return { mvp, progress: [{ stage: 'product_crew', pct: 62, message: 'اكتملت مواصفات MVP', at: Date.now() }] };
 }
 
-async function securityAgentNode(state: any) {
+async function securityAgentNode(state: unknown) {
   await publishProgress(state.runId, { stage: 'security_agent', pct: 70, message: 'التدقيق الأمني...', at: Date.now() });
   const security = await llmJSON(
     'أنت مدقق أمني. حدّد: threats[], mitigations[], complianceRequirements[].',
@@ -131,7 +131,7 @@ async function securityAgentNode(state: any) {
   return { security, progress: [{ stage: 'security_agent', pct: 75, message: 'اكتمل التدقيق الأمني', at: Date.now() }] };
 }
 
-async function marketingCrewNode(state: any) {
+async function marketingCrewNode(state: unknown) {
   await publishProgress(state.runId, { stage: 'marketing_crew', pct: 85, message: 'استراتيجية التسويق...', at: Date.now() });
   const marketing = await llmJSON(
     'أنت فريق تسويق. حدّد: positioning, channels[], launchCampaigns[], budgetMonthlyUSD, kpis[].',
@@ -140,7 +140,7 @@ async function marketingCrewNode(state: any) {
   return { marketing, progress: [{ stage: 'marketing_crew', pct: 90, message: 'اكتملت استراتيجية التسويق', at: Date.now() }] };
 }
 
-async function investorRelationsNode(state: any) {
+async function investorRelationsNode(state: unknown) {
   await publishProgress(state.runId, { stage: 'investor_relations', pct: 95, message: 'بناء العرض التقديمي...', at: Date.now() });
   const pitchDeck = await llmJSON(
     'أنت مسؤول علاقات المستثمرين. ابنِ عرضاً من 10 شرائح: slides[{title, bullets[]}].',
@@ -149,7 +149,7 @@ async function investorRelationsNode(state: any) {
   return { pitchDeck, progress: [{ stage: 'investor_relations', pct: 97, message: 'اكتمل العرض التقديمي', at: Date.now() }] };
 }
 
-async function orchestratorNode(state: any) {
+async function orchestratorNode(state: unknown) {
   const bundle = {
     idea: state.idea,
     validation: state.validation,

@@ -32,7 +32,7 @@ export function classifyTaskType(task: string): 'parallelizable' | 'sequential' 
 }
 
 // الدمج المتقدم (Hybrid) بين LangGraph و CrewAI 
-export function createHybridWorkflow(crew: any) {
+export function createHybridWorkflow(crew: unknown) {
   const workflow = new StateGraph({
     channels: { agentState: null, taskResult: null },
   });

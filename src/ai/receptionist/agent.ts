@@ -41,7 +41,7 @@
     channel: Channel;
     senderId: string;
     text: string;
-    raw?: any;
+    raw?: unknown;
   }) {
     const inbound = await receiveChannelMessage(args.channel, { text: args.text, raw: args.raw }, args.senderId);
     const userId = inbound.userId || `${args.channel}:${args.senderId}`;
@@ -54,8 +54,8 @@
   export async function receptionistRespond(args: {
     userId: string;
     message: string;
-    uiContext?: Record<string, any>;
-    segment?: any;
+    uiContext?: Record<string, unknown>;
+    segment?: unknown;
     threadId?: string;
   }): Promise<ReceptionistResponse> {
     // 1. Pull shared-memory context

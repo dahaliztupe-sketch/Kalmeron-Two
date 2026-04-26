@@ -6,7 +6,7 @@ import { updateUserProfile } from '@/app/actions/user';
 
 const initialState = { success: false, error: null };
 
-export function ProfileForm({ user }: { user: any }) {
+export function ProfileForm({ user }: { user: unknown }) {
   const [state, formAction, isPending] = useActionState(updateUserProfile, initialState);
   
   return (

@@ -5,7 +5,7 @@ export interface CrewAgentConfig {
   role: string;
   goal: string;
   backstory: string;
-  tools?: any[];
+  tools?: unknown[];
   verbose?: boolean;
 }
 

@@ -25,10 +25,10 @@ export async function GET(req: NextRequest) {
       workspaces = [w];
     }
     const wid = new URL(req.url).searchParams.get('workspaceId');
-    let members: any[] = [];
+    let members: unknown[] = [];
     if (wid) members = await listMembers(wid);
     return NextResponse.json({ workspaces, members });
-  } catch (e: any) {
+  } catch (e: unknown) {
     return NextResponse.json({ error: e?.message || 'load_failed' }, { status: 500 });
   }
 }
@@ -36,7 +36,7 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   const uid = await authedUserId(req);
   if (!uid) return NextResponse.json({ error: 'auth_required' }, { status: 401 });
-  let body: any; try { body = await req.json(); } catch { return NextResponse.json({ error: 'invalid_json' }, { status: 400 }); }
+  let body: unknown; try { body = await req.json(); } catch { return NextResponse.json({ error: 'invalid_json' }, { status: 400 }); }
   const { op, workspaceId, targetUid, role } = body || {};
   try {
     if (op === 'add_member') {
@@ -49,7 +49,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'unknown_op' }, { status: 400 });
     }
     return NextResponse.json({ ok: true });
-  } catch (e: any) {
+  } catch (e: unknown) {
     return NextResponse.json({ error: e?.message || 'op_failed' }, { status: 400 });
   }
 }

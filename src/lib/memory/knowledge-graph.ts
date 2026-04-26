@@ -33,14 +33,14 @@ function getDriver(): Driver | null {
 }
 
 /** Recursively convert Neo4j Integer ({low, high}) values into plain JS numbers/strings. */
-export function neo4jToPlain(v: any): any {
+export function neo4jToPlain(v: unknown): unknown {
   if (v === null || v === undefined) return v;
   if (neo4j.isInt && neo4j.isInt(v)) {
     return v.inSafeRange() ? v.toNumber() : v.toString();
   }
   if (Array.isArray(v)) return v.map(neo4jToPlain);
   if (typeof v === 'object') {
-    const out: any = {};
+    const out: unknown = {};
     for (const k of Object.keys(v)) out[k] = neo4jToPlain(v[k]);
     return out;
   }
@@ -53,7 +53,7 @@ async function withSession<T>(fn: (s: Session) => Promise<T>): Promise<T | null>
   const session = d.session();
   try {
     return await fn(session);
-  } catch (e: any) {
+  } catch (e: unknown) {
     logger?.error?.({ msg: 'KG_QUERY_FAILED', error: e?.message }) ?? console.error('[KG]', e?.message);
     return null;
   } finally {
@@ -64,11 +64,11 @@ async function withSession<T>(fn: (s: Session) => Promise<T>): Promise<T | null>
 export interface Entity {
   id?: string;
   type: string;
-  properties: Record<string, any>;
+  properties: Record<string, unknown>;
 }
 
 /** Add or merge an entity scoped to a user/project. */
-export async function addEntity(userId: string, type: string, properties: Record<string, any>) {
+export async function addEntity(userId: string, type: string, properties: Record<string, unknown>) {
   const id = properties.id || `${type}_${Date.now()}_${(typeof crypto !== 'undefined' && 'randomUUID' in crypto ? crypto.randomUUID().replace(/-/g, '') : Math.random().toString(36).slice(2)).slice(0, 6)}`;
   return withSession(async (s) => {
     const res = await s.run(
@@ -90,7 +90,7 @@ export async function addRelationship(
   fromId: string,
   toId: string,
   relationType: string,
-  properties: Record<string, any> = {},
+  properties: Record<string, unknown> = {},
 ) {
   return withSession(async (s) => {
     await s.run(
@@ -105,7 +105,7 @@ export async function addRelationship(
 }
 
 /** Run an arbitrary read-only Cypher query (use cautiously). */
-export async function queryGraph(cypher: string, params: Record<string, any> = {}) {
+export async function queryGraph(cypher: string, params: Record<string, unknown> = {}) {
   return withSession(async (s) => {
     const res = await s.run(cypher, params);
     return res.records.map((r) => Object.fromEntries(r.keys.map((k) => [k, r.get(k)])));
@@ -134,8 +134,8 @@ export async function getProjectOverview(userId: string, limit = 200) {
        RETURN e, type(r) AS rel, target LIMIT $limit`,
       { userId, limit: neo4j.int(limit) },
     );
-    const nodes = new Map<string, any>();
-    const edges: any[] = [];
+    const nodes = new Map<string, unknown>();
+    const edges: unknown[] = [];
     for (const rec of res.records) {
       const e = neo4jToPlain(rec.get('e').properties);
       nodes.set(e.id, e);

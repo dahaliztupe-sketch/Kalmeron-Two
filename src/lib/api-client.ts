@@ -15,12 +15,12 @@ export async function apiFetch(input: string, init: RequestInit = {}): Promise<R
   return fetch(input, { ...init, headers });
 }
 
-export async function apiJson<T = any>(input: string, init: RequestInit = {}): Promise<T> {
+export async function apiJson<T = unknown>(input: string, init: RequestInit = {}): Promise<T> {
   const res = await apiFetch(input, init);
   const text = await res.text();
   const json = text ? JSON.parse(text) : {};
   if (!res.ok) {
-    const msg = (json as any).message || (json as any).error || `HTTP ${res.status}`;
+    const msg = (json as { message?: string; error?: string }).message || (json as { message?: string; error?: string }).error || `HTTP ${res.status}`;
     throw new Error(msg);
   }
   return json as T;

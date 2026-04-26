@@ -6,7 +6,7 @@ import { Runnable } from '@langchain/core/runnables';
  * يحول طاقم CrewAI إلى عقدة LangGraph قابلة للاستخدام
  */
 export function crewToLangGraphNode(crew: Crew, nodeName: string): Runnable {
-  return async (state: any) => {
+  return async (state: unknown) => {
     let result = '';
     
     try {

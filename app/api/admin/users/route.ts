@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
 
   try {
     const snap = await adminDb.collection('users').limit(100).get();
-    const users = snap.docs.map((d: any) => {
+    const users = snap.docs.map((d) => {
       const data = d.data() || {};
       return {
         id: d.id,
@@ -26,7 +26,7 @@ export async function GET(req: NextRequest) {
       };
     });
     return NextResponse.json({ users });
-  } catch (e: any) {
+  } catch (e: unknown) {
     return NextResponse.json({ error: e.message || 'Failed to load users' }, { status: 500 });
   }
 }
@@ -51,7 +51,7 @@ export async function DELETE(req: NextRequest) {
     ]);
     await adminAuth.deleteUser(uid).catch(() => null);
     return NextResponse.json({ ok: true });
-  } catch (e: any) {
+  } catch (e: unknown) {
     return NextResponse.json({ error: e.message || 'Delete failed' }, { status: 500 });
   }
 }

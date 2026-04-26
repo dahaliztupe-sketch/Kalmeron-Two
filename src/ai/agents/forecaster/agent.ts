@@ -55,7 +55,7 @@ export const ForecasterAgent = {
     return anomalies;
   },
 
-  async fallbackLLMPrediction(data: any[], horizon: number) {
+  async fallbackLLMPrediction(data: unknown[], horizon: number) {
      const { text } = await generateText({
         model: MODELS.PRO_PREVIEW,
         prompt: `Predict the next ${horizon} months of revenue based on this historical data: ${JSON.stringify(data)}. 
