@@ -1,5 +1,47 @@
 # Kalmeron AI (ai-studio-applet)
 
+## Session 2026-04-26 — Investor Readiness (Demo Mode + Metrics + Health Check)
+
+### ما بُني في هذه الجلسة:
+
+**1. تشغيل كل الخدمات المساعدة (Sidecars):**
+- ثبّت dependencies الـ Python على مستوى المنصّة (.pythonlibs) عبر installLanguagePackages.
+- أنشأ venv داخلي لكل خدمة (egypt-calc / embeddings-worker / llm-judge) كاحتياطي.
+- 4/4 sidecars الآن RUNNING وصحّتهم 200: PDF Worker (8000), Egypt Calc (8008), Embeddings Worker (8099), LLM Judge (8080).
+
+**2. مصدر الحقيقة الواحد لجاهزية العرض — `src/lib/investor/demo-config.ts`:**
+- `DEMO_PATH`: 8 وكلاء مرتّبون على مسار العرض (6 ready + 2 beta) مع pitch عربي لكل واحد.
+- `DEMO_SIDECARS`: قائمة الخدمات المساعدة + URLs الصحّة + درجة الأهمية.
+- `DEMO_ENV_REQUIREMENTS`: 10 متغيّرات بيئة مع تصنيف critical / non-critical.
+- `PLATFORM_FACTS`: حقائق المنصّة (لغات، أسواق، LLM providers، compliance modules).
+- `DEMO_MODE_COOKIE` + helper للقراءة من cookie store.
+
+**3. واجهات API جديدة:**
+- `app/api/investor/health/route.ts` — يفحص الـ sidecars بـ `AbortController` (timeout 2.5s) ويحسب readinessScore (0-100).
+- `app/api/investor/metrics/route.ts` — حقائق المنصّة + DEMO_PATH.
+- `app/api/investor/demo-mode/route.ts` — GET/POST للتحكّم في كوكي وضع العرض (TTL = 24 ساعة).
+
+**4. ثلاث صفحات للمستثمرين تحت `(dashboard)/investor/`:**
+- `/investor` — نبضة المنصّة (StatCards: # وكلاء، # خدمات مساعدة، أسواق، سقف يومي + DemoPath + Capabilities + Sidecars).
+- `/investor/health` — فحص جاهزية العرض (ScoreBadge كبير + قائمة sidecars + قائمة env vars + تحذيرات حرجة).
+- `/investor/demo-mode` — تشغيل/إيقاف وضع العرض + قائمة فحص ما قبل العرض (6 خطوات).
+
+**5. تحديث الـ navigation (`src/lib/navigation.ts`):**
+- قسم جديد "للمستثمرين" يضمّ الصفحات الثلاثة.
+
+### التحقّق:
+- ✅ كل الـ sidecars تردّ 200 على /health (latency 7-9ms).
+- ✅ `/api/investor/health` تردّ بـ readyForDemo=false، readinessScore=60 (الخادم محلّي بدون مفاتيح Gemini/Firebase Admin — متوقّع).
+- ✅ `/api/investor/metrics` تردّ بكل حقائق المنصّة و DEMO_PATH.
+- ✅ `/api/investor/demo-mode` تردّ GET/POST بنجاح (يحفظ الكوكي).
+- ✅ كل صفحات `/investor/*` تردّ HTTP 200.
+
+### ما يبقى للمستثمر (يتطلّب تدخّل المستخدم — موثّق في USER_INTERVENTION_REQUIRED.md):
+- ضبط مفاتيح Gemini و Firebase Admin (يرفع readinessScore إلى 100).
+- ضبط مفاتيح Stripe / Fawry / Resend / Sentry (تحسينات إضافية).
+
+---
+
 ## Session 2026-04-26 — Security Hardening Round 2 (route auth + rate limits + LLM timeouts)
 
 ### ما بُني في هذه الجلسة:

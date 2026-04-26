@@ -5,7 +5,7 @@ import {
   FlaskConical, Trophy, ShieldAlert, Radar, FileText,
   Building2, ScrollText, Lightbulb, Store, User as UserIcon,
   Target, Brain, CreditCard, Inbox as InboxIcon, Sparkles, Cpu,
-  BarChart3, Calculator, LayoutTemplate, Layers, Mic,
+  BarChart3, Calculator, LayoutTemplate, Layers, Mic, Eye, ShieldCheck,
 } from "lucide-react";
 
 export type NavItem = {
@@ -51,6 +51,14 @@ export const NAV_SECTIONS: NavSection[] = [
     heading: "إعدادات العلامة التجارية",
     items: [
       { href: "/brand-voice", label: "صوت العلامة التجارية", icon: Mic },
+    ],
+  },
+  {
+    heading: "للمستثمرين",
+    items: [
+      { href: "/investor", label: "نبضة المنصّة", icon: Sparkles, exact: true },
+      { href: "/investor/health", label: "فحص جاهزية العرض", icon: ShieldCheck },
+      { href: "/investor/demo-mode", label: "وضع العرض", icon: Eye },
     ],
   },
   {
