@@ -16,7 +16,14 @@ export default function Loading() {
       <div className="relative z-10 flex flex-col items-center gap-6">
         <div className="relative w-24 h-24 rounded-3xl border border-white/10 bg-[#070A18]/80 backdrop-blur-md flex items-center justify-center overflow-hidden">
           <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-cyan-500/30 via-indigo-500/30 to-fuchsia-500/30 blur-2xl animate-pulse" />
-          <span className="relative font-display text-2xl font-black text-white tracking-wider">K</span>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/brand/kalmeron-mark.svg"
+            alt="Kalmeron AI"
+            width={72}
+            height={72}
+            className="relative w-[78%] h-[78%] object-contain"
+          />
         </div>
         <div className="flex flex-col items-center">
           <span className="font-display text-xl font-black uppercase text-white tracking-[0.3em]">KALMERON</span>

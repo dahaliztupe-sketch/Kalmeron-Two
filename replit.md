@@ -1,5 +1,24 @@
 # Kalmeron AI (ai-studio-applet)
 
+## Session 2026-04-26 — Visual Polish: K-Letter → Brand Mark Everywhere
+
+### المشكلة:
+المستخدم اشتكى أن شاشة التحميل وعدّة مواضع أخرى تعرض حرف "K" بدل اللوجو الفعلي (`/brand/kalmeron-mark.svg`)، بالإضافة إلى أخطاء بصرية مخفية أخرى.
+
+### الإصلاحات:
+1. **`app/loading.tsx`** — استبدال `<span>K</span>` بصورة `kalmeron-mark.svg` فعلية بحجم 78%.
+2. **`app/(dashboard)/chat/page.tsx`** — 3 مواضع كانت تستخدم `https://api.dicebear.com/7.x/bottts/svg?seed=Kalmeron` (روبوت خارجي + خط مكسور = حرف K يظهر عند الفشل). تمّ استبدال الكلّ بـ `/brand/kalmeron-mark.svg` محلياً (EmptyState، MessageBubble، Header). إزالة `AvatarImage` import غير المستخدم.
+3. **`app/(dashboard)/chat/page.tsx`** — إصلاح حساب الارتفاع `md:h-[calc(100vh-80px)]` كان خطأ (الـ AppShell header `h-16` = 64px). الآن `h-[calc(100vh-64px)]` ثابت.
+4. **`app/(dashboard)/chat/page.tsx`** — إصلاح `onFormSubmit(e as Error)` cast خاطئ (KeyboardEvent → FormEvent). تم تبديله بمنطق إرسال مباشر داخل `handleKeyDown` يستدعي `sendMessage` مع نفس الفحوصات.
+
+### النتيجة:
+- لا يوجد حرف K معروض في أي شاشة (loading، chat avatars، header).
+- لا اعتماد خارجي على dicebear (يحسّن السرعة + يمنع تغيّر هوية البصرية).
+- ارتفاع المحادثة صحيح على الديسكتوب (لا فجوة 16px أسفل الصفحة).
+- لا warnings عن type cast غير صحيح.
+
+---
+
 ## Session 2026-04-26 — Auth/Routing Race Conditions Fixed
 
 ### المشكلة:

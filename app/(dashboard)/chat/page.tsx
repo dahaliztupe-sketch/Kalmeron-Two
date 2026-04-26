@@ -10,7 +10,7 @@ import {
   collection, getDocs, query, orderBy, limit, deleteDoc,
 } from "firebase/firestore";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   Loader2, Send, Paperclip, X, Square, FileText,
   ShieldAlert, Radar, Plus, MessageSquare, Trash2,
@@ -154,11 +154,15 @@ function EmptyState({ onSuggestion }: { onSuggestion: (s: string) => void }) {
         className="relative mb-6"
       >
         <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-cyan-500/30 via-indigo-500/30 to-fuchsia-500/30 blur-2xl logo-halo" />
-        <div className="relative w-20 h-20 rounded-3xl border border-white/10 bg-[#070A18]/80 backdrop-blur-md flex items-center justify-center shadow-xl">
-          <Avatar className="h-16 w-16">
-            <AvatarImage src="https://api.dicebear.com/7.x/bottts/svg?seed=Kalmeron" />
-            <AvatarFallback className="bg-indigo-500/20 text-indigo-300 font-bold text-xl">K</AvatarFallback>
-          </Avatar>
+        <div className="relative w-20 h-20 rounded-3xl border border-white/10 bg-[#070A18]/80 backdrop-blur-md flex items-center justify-center shadow-xl overflow-hidden">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/brand/kalmeron-mark.svg"
+            alt="Kalmeron AI"
+            width={64}
+            height={64}
+            className="w-[78%] h-[78%] object-contain"
+          />
         </div>
         <div className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-emerald-400 flex items-center justify-center border-2 border-[#080c14]">
           <span className="w-2 h-2 rounded-full bg-white animate-ping" />
@@ -194,14 +198,20 @@ function MessageBubble({ m, isStreaming, activePhases }: { m: ChatMessage; isStr
     <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
       className={cn("flex gap-3 w-full items-end group", isUser ? "justify-start flex-row" : "justify-end flex-row-reverse")}
     >
-      <Avatar className="h-8 w-8 shrink-0 border border-white/10">
+      <Avatar className="h-8 w-8 shrink-0 border border-white/10 overflow-hidden">
         {isUser ? (
           <AvatarFallback className="bg-indigo-500/20 text-indigo-300 font-semibold text-sm">أ</AvatarFallback>
         ) : (
-          <>
-            <AvatarImage src="https://api.dicebear.com/7.x/bottts/svg?seed=Kalmeron" />
-            <AvatarFallback className="bg-cyan-500/20 text-cyan-300">K</AvatarFallback>
-          </>
+          <div className="w-full h-full bg-[#070A18] flex items-center justify-center">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/brand/kalmeron-mark.svg"
+              alt="Kalmeron AI"
+              width={32}
+              height={32}
+              className="w-[78%] h-[78%] object-contain"
+            />
+          </div>
         )}
       </Avatar>
 
@@ -504,7 +514,13 @@ function ChatPageContent() {
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      onFormSubmit(e as Error);
+      if (isLoading) return;
+      if (!input.trim() && !pdfContext) return;
+      const messageContent = pdfContext ? `[سياق من ملف PDF]: ${pdfContext}\n\n[رسالة المستخدم]: ${input}` : input;
+      void sendMessage(messageContent);
+      setInput("");
+      setPdfContext(null);
+      if (textareaRef.current) { textareaRef.current.style.height = "auto"; }
     }
   };
 
@@ -529,7 +545,7 @@ function ChatPageContent() {
 
   return (
     <AppShell>
-      <div className="flex h-[calc(100vh-64px)] md:h-[calc(100vh-80px)] overflow-hidden" dir="rtl">
+      <div className="flex h-[calc(100vh-64px)] overflow-hidden" dir="rtl">
         <ChatSidebar
           conversations={conversations}
           activeId={activeConvId}
@@ -550,9 +566,17 @@ function ChatPageContent() {
             </button>
 
             <div className="flex items-center gap-2.5 flex-1">
-              <Avatar className="h-8 w-8 border border-cyan-500/30">
-                <AvatarImage src="https://api.dicebear.com/7.x/bottts/svg?seed=Kalmeron" />
-                <AvatarFallback className="bg-cyan-500/20 text-cyan-300 font-bold text-xs">K</AvatarFallback>
+              <Avatar className="h-8 w-8 border border-cyan-500/30 overflow-hidden">
+                <div className="w-full h-full bg-[#070A18] flex items-center justify-center">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src="/brand/kalmeron-mark.svg"
+                    alt="Kalmeron AI"
+                    width={32}
+                    height={32}
+                    className="w-[78%] h-[78%] object-contain"
+                  />
+                </div>
               </Avatar>
               <div>
                 <h2 className="font-bold text-sm text-white leading-tight">كلميرون</h2>
