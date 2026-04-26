@@ -293,7 +293,7 @@ export default function BrandVoicePage() {
               </div>
             ) : (
               <div className="rounded-xl bg-white/[0.02] border border-white/[0.06] p-4 text-xs text-neutral-500 text-center">
-                اضغط "اولّد مثالاً" لتجربة كيف سيكتب المساعد بصوت علامتك التجارية
+                اضغط &quot;اولّد مثالاً&quot; لتجربة كيف سيكتب المساعد بصوت علامتك التجارية
               </div>
             )}
           </div>

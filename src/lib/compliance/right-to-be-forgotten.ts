@@ -76,7 +76,7 @@ export async function executeRightToBeForgotten(
     //    will surface the next CHUNK_SIZE docs naturally).
     // This is safe because we never read a "next" cursor; we always fetch
     // the head of the still-matching set.
-    // eslint-disable-next-line no-constant-condition
+     
     while (true) {
       const snapshot = await adminDb
         .collection(collection)

@@ -20,7 +20,7 @@ const VOCAB = ['kalmeron', 'كلميرون', 'what', 'is', 'ما', 'هو', 'how'
 
 function fakeEmbedder(text: string): Promise<number[]> {
   const lower = text.toLowerCase();
-  const vec = VOCAB.map(t => (lower.includes(t) ? 1 : 0));
+  const vec: number[] = VOCAB.map(t => (lower.includes(t) ? 1 : 0));
   // أضف ضوضاء ثابتة بسيطة لتجنّب صفر مطلق
   vec.push(text.length / 1000);
   return Promise.resolve(vec);
