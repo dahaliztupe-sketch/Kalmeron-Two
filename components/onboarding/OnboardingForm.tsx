@@ -109,35 +109,39 @@ export function OnboardingForm() {
     setGoals((prev) => prev.includes(id) ? prev.filter((g) => g !== id) : [...prev, id]);
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = () => {
     if (!user) return;
     setLoading(true);
-    try {
-      const userRef = doc(db, "users", user.uid);
-      await updateDoc(userRef, {
-        name,
-        startup_stage: stage,
-        industry,
-        governorate: location,
-        goals,
-        profile_completed: true,
-        onboarded_at: new Date(),
-      });
-      // Optimistically merge the new profile into the auth context so the
-      // AuthGuard on /dashboard passes immediately — no extra Firestore
-      // round-trip and no perceived hang on slow mobile connections.
-      mergeDBUser({
-        name,
-        startup_stage: stage,
-        industry,
-        governorate: location,
-        profile_completed: true,
-      });
-      router.replace("/dashboard");
-    } catch (err) {
-      console.error(err);
-      setLoading(false);
-    }
+
+    // 1) Merge optimistically into auth context so AuthGuard on /dashboard
+    //    sees profile_completed=true immediately and does NOT bounce back here.
+    mergeDBUser({
+      name,
+      startup_stage: stage,
+      industry,
+      governorate: location,
+      profile_completed: true,
+    });
+
+    // 2) Navigate right away — the dashboard skeleton paints instantly thanks
+    //    to the prefetch above. The user no longer sits on a disabled
+    //    "جاري التجهيز" button waiting for Firestore + route transition.
+    router.replace("/dashboard");
+
+    // 3) Persist to Firestore in the background. We deliberately do NOT await
+    //    this because the user has already moved on. Failures are logged.
+    const userRef = doc(db, "users", user.uid);
+    updateDoc(userRef, {
+      name,
+      startup_stage: stage,
+      industry,
+      governorate: location,
+      goals,
+      profile_completed: true,
+      onboarded_at: new Date(),
+    }).catch((err) => {
+      console.error("Failed to persist onboarding profile:", err);
+    });
   };
 
   const variants = {

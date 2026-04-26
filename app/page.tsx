@@ -243,9 +243,20 @@ function Hero() {
         </motion.h1>
 
         <motion.p initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}
-          className="text-sm sm:text-[17px] md:text-lg text-neutral-300 max-w-2xl mx-auto mb-6 leading-[1.8] sm:leading-[1.85] px-3 sm:px-1 break-words [overflow-wrap:anywhere]"
+          className="text-sm sm:text-[17px] md:text-lg text-neutral-300 max-w-2xl mx-auto mb-6 leading-[1.8] sm:leading-[1.85] px-4 sm:px-2 break-words [overflow-wrap:anywhere] [word-break:normal] [text-wrap:pretty]"
         >
-          بدل ما تدفع آلاف الجنيهات لمستشار مالي ومحامي ومحلل سوق — <span className="text-white font-bold">١٦ مساعداً ذكياً</span> يعملون كفريقك كاملاً، بالعربية الأصيلة.
+          {/*
+            On narrow Arabic viewports, an em-dash + LTR digits + bold span used
+            to form a single bidi-isolated run that the browser refused to break,
+            spilling past the viewport edge. We split into two short sentences,
+            wrap the digit run in <bdi> for clean bidi handling, and let each
+            piece wrap independently.
+          */}
+          بدل ما تدفع آلاف الجنيهات لمستشار مالي ومحامي ومحلل سوق.
+          {" "}
+          <bdi className="text-white font-bold">١٦ مساعداً ذكياً</bdi>
+          {" "}
+          يعملون كفريقك كاملاً، بالعربية الأصيلة.
         </motion.p>
 
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}
