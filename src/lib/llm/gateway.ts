@@ -32,6 +32,38 @@ export interface GatewayContext {
   softCostBudgetUsd?: number;
   /** للمعالجة الإضافية: مصادر input غير موثوقة (مثل RAG/PDF). */
   untrustedSources?: string[];
+  /**
+   * Hard timeout in ms for the upstream model call. If the caller does not
+   * provide an `abortSignal` in the call args, the gateway attaches one
+   * defaulted to {@link DEFAULT_LLM_TIMEOUT_MS} (overridable per-context).
+   * This prevents hung Gemini sessions from holding a serverless function
+   * open indefinitely (LLM04 — Model DoS / runaway cost protection).
+   */
+  timeoutMs?: number;
+}
+
+/**
+ * 60s default — generous enough for medium prompts on `gemini-2.5-pro`,
+ * tight enough that a stuck connection cannot keep a route open.
+ * Override via env `LLM_GATEWAY_TIMEOUT_MS` for region-specific tuning.
+ */
+const DEFAULT_LLM_TIMEOUT_MS = (() => {
+  const fromEnv = Number(process.env.LLM_GATEWAY_TIMEOUT_MS);
+  return Number.isFinite(fromEnv) && fromEnv > 0 ? fromEnv : 60_000;
+})();
+
+/**
+ * Attach a default `AbortSignal.timeout` to the call args when the caller
+ * has not provided one. Returns args unchanged when an abort signal is
+ * already in place so caller-provided semantics always win.
+ */
+function withDefaultTimeout<T extends { abortSignal?: AbortSignal }>(
+  args: T,
+  ctx: GatewayContext,
+): T {
+  if (args.abortSignal) return args;
+  const ms = ctx.timeoutMs ?? DEFAULT_LLM_TIMEOUT_MS;
+  return { ...args, abortSignal: AbortSignal.timeout(ms) };
 }
 
 export interface GatewayMeta {
@@ -226,7 +258,7 @@ export async function safeGenerateText<TOOLS extends ToolSet = ToolSet>(
   const modelId = extractModelId(args.model);
   const result = await instrumentAgent<GenerateTextResult<TOOLS, never>>(
     ctx.agent,
-    () => generateText<TOOLS>(applyPromptOverride(args, promptToSend)),
+    () => generateText<TOOLS>(withDefaultTimeout(applyPromptOverride(args, promptToSend), ctx)),
     { model: modelId, input: { hash: promptHash }, toolsUsed: [] },
   );
   const durationMs = Date.now() - t0;
@@ -275,7 +307,7 @@ export async function safeGenerateObject<SCHEMA extends z.ZodType>(
 
   const t0 = Date.now();
   const modelId = extractModelId(args.model);
-  const result = await generateObject<SCHEMA>(applyPromptOverride(args, promptToSend));
+  const result = await generateObject<SCHEMA>(withDefaultTimeout(applyPromptOverride(args, promptToSend), ctx));
   const durationMs = Date.now() - t0;
 
   const outLen = JSON.stringify(result.object ?? {}).length;
@@ -328,5 +360,5 @@ export async function safeStreamText<TOOLS extends ToolSet = ToolSet>(
     outputLength: 0, piiHits, injectionBlocked: false, durationMs: 0,
   });
 
-  return streamText<TOOLS>(applyPromptOverride(args, promptToSend));
+  return streamText<TOOLS>(withDefaultTimeout(applyPromptOverride(args, promptToSend), ctx));
 }

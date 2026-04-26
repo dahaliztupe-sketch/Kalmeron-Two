@@ -1,5 +1,41 @@
 # Kalmeron AI (ai-studio-applet)
 
+## Session 2026-04-26 — Security Hardening Round 2 (route auth + rate limits + LLM timeouts)
+
+### ما بُني في هذه الجلسة:
+
+**1. حواجز المصادقة على المسارات الحساسة المتبقية:**
+- `app/api/supervisor/route.ts` — أُضيف `Bearer token` + `rateLimit (20/min IP, 5/min user)` + Zod schema ومحدّد الطول (2KB) لمنع هجمات حشو الموجّهات (LLM01/LLM04 من OWASP LLM Top 10).
+- `app/api/daily-brief/route.ts` — أُضيف `Bearer token` + `rateLimit (30/min IP, 10/min user)` + `AbortSignal.timeout(20s)` على استدعاء Gemini.
+- `app/api/support/live/route.ts` — كان يصدر رموز WebSocket لأي زائر مجهول؛ أصبح يتطلّب `Bearer token` + `rateLimit (30/min IP, 10/min user)` ويوقّع الرموز بـ HMAC-SHA256 مع TTL = 5 دقائق ومرتبطة بـ UID.
+
+**2. حدود معدّلات على المسارات العامّة:**
+- `app/api/social-proof/route.ts` (60/min)
+- `app/api/first-100/seats/route.ts` (60/min)
+- `app/api/edge/route.ts` (30/min)
+- `app/api/analytics/vitals/route.ts` (120/min)
+- `app/api/workflows/list/route.ts` (60/min)
+
+**3. مهلات LLM افتراضية في `src/lib/llm/gateway.ts`:**
+- أُضيف `DEFAULT_LLM_TIMEOUT_MS = 60_000` (قابل للتعديل عبر `LLM_DEFAULT_TIMEOUT_MS`) و `withDefaultTimeout()` helper.
+- طُبّق على `safeGenerateText` و `safeGenerateObject` و `safeStreamText` — أيّ استدعاء يفوق 60 ثانية يُلغى تلقائياً، مما يمنع تجمّد دوال serverless ويوفّر تكاليف.
+
+**4. تحديث المستهلكين:**
+- `app/(dashboard)/daily-brief/page.tsx` — يرسل `Authorization: Bearer <idToken>` ويعطّل الجلب حتى تكتمل المصادقة.
+
+### التحقق:
+- ✅ 77/77 vitest pass
+- ✅ Workflow `Start application` قيد التشغيل بدون أخطاء (Next.js 16.2.4 جاهز خلال 516ms)
+- ✅ كل مسارات المراقبة الأربع تعمل (PDF Worker / Egypt Calc / LLM Judge / Embeddings Worker)
+- ⚠️ `tsc --noEmit` لا يزال يصطدم بـ stack overflow معروف من قبل في TypeScript نفسه (غير مرتبط بهذه التغييرات)
+
+### الأثر الأمني التراكمي (مع الجلسة السابقة):
+- جميع نقاط النهاية الإدارية والحساسة محميّة بـ Bearer + Zod + rate-limit + audit.
+- جميع المسارات العامّة محميّة بـ per-IP rate-limit (طبقة دفاع ثانية فوق rate-limit الـ 100/min على مستوى proxy).
+- جميع استدعاءات LLM لها مهلة افتراضية، مما يجعل المنصّة مقاومة لهجمات استنزاف الموارد (DoW — Denial of Wallet).
+
+---
+
 ## Session 2026-04-25 — FCM Push Notifications + Brand Voice + Trending Tools + Dashboard Improvements
 
 ### ما بُني في هذه الجلسة:

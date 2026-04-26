@@ -9,8 +9,9 @@
  * All counts are aggregated server-side and cached for 5 minutes — visitors
  * never query Firestore directly.
  */
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { adminDb } from '@/src/lib/firebase-admin';
+import { rateLimit } from '@/src/lib/security/rate-limit';
 
 export const runtime = 'nodejs';
 export const revalidate = 300; // 5 minutes
@@ -56,7 +57,12 @@ async function safeCountByEvent(event: string): Promise<number> {
   }
 }
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  // Per-IP rate limit — public endpoint, but 60/min is generous for honest
+  // visitors and crushes simple scrapers.
+  const rl = rateLimit(req, { limit: 60, windowMs: 60_000 });
+  if (!rl.success) return new NextResponse('Too Many Requests', { status: 429 });
+
   const [usersCount, ideasCount, plansCount] = await Promise.all([
     safeCount('users'),
     safeCountByEvent('idea_analyzed'),

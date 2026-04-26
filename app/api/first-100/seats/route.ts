@@ -8,13 +8,18 @@
  */
 import { NextRequest } from 'next/server';
 import { adminDb } from '@/src/lib/firebase-admin';
+import { rateLimit } from '@/src/lib/security/rate-limit';
 
 export const runtime = 'nodejs';
 export const revalidate = 60;
 
 const TOTAL_SEATS = 100;
 
-export async function GET(_req: NextRequest) {
+export async function GET(req: NextRequest) {
+  // Per-IP rate limit — landing page polls every 60s, so 60/min is plenty.
+  const rl = rateLimit(req, { limit: 60, windowMs: 60_000 });
+  if (!rl.success) return new Response('Too Many Requests', { status: 429 });
+
   try {
     // `count()` aggregation: O(1) for billing, no doc reads.
     const snap = await adminDb.collection('first_100_signups').count().get();

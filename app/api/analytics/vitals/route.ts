@@ -1,9 +1,14 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { sanitizeLogValue } from "@/src/lib/security/sanitize-log";
+import { rateLimit } from "@/src/lib/security/rate-limit";
 
 export const runtime = "edge";
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
+  // Per-IP rate limit — analytics beacon; ~120/min handles even chatty SPAs.
+  const rl = rateLimit(req, { limit: 120, windowMs: 60_000 });
+  if (!rl.success) return new NextResponse("Too Many Requests", { status: 429 });
+
   try {
     const body = await req.json();
     if (process.env.NODE_ENV !== "production") {

@@ -7,6 +7,7 @@ import { motion } from "motion/react";
 import {
   Sun, AlertTriangle, Send, RefreshCw, Sparkles, ArrowLeft, Copy, Check,
 } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface BriefBlock {
   type: "anomaly" | "decision" | "message";
@@ -32,6 +33,7 @@ interface DailyBrief {
  */
 export default function DailyBriefPage() {
   const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
+  const { user } = useAuth();
 
   const {
     data: brief,
@@ -40,9 +42,15 @@ export default function DailyBriefPage() {
     refetch,
     isRefetching,
   } = useQuery<DailyBrief, Error>({
-    queryKey: ["daily-brief"],
+    queryKey: ["daily-brief", user?.uid ?? "anon"],
+    enabled: !!user,
     queryFn: async () => {
-      const res = await fetch("/api/daily-brief", { cache: "no-store" });
+      if (!user) throw new Error("not_authenticated");
+      const idToken = await user.getIdToken();
+      const res = await fetch("/api/daily-brief", {
+        cache: "no-store",
+        headers: { Authorization: `Bearer ${idToken}` },
+      });
       if (!res.ok) throw new Error(`status ${res.status}`);
       return (await res.json()) as DailyBrief;
     },

@@ -17,11 +17,13 @@
  * SECURITY: any free-text we pull from Firestore is run through the PII
  * redactor before being included in the prompt.
  */
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { generateText } from 'ai';
 import { routeModel } from '@/src/lib/model-router';
 import { redactPii } from '@/src/lib/security/pii-redactor';
+import { adminAuth } from '@/src/lib/firebase-admin';
+import { rateLimit, rateLimitAgent, rateLimitResponse } from '@/src/lib/security/rate-limit';
 
 interface BriefBlock {
   type: 'anomaly' | 'decision' | 'message';
@@ -148,6 +150,9 @@ async function generateBrief(signals: string): Promise<BriefBlock[] | null> {
       prompt: `سياق اليوم:\n${signals}`,
       temperature: 0.4,
       maxOutputTokens: 1200,
+      // Hard 20s ceiling — daily brief is best-effort; we'd rather fall back
+      // to the deterministic stub than hold a serverless function open.
+      abortSignal: AbortSignal.timeout(20_000),
     });
 
     // Strip optional ```json fences the model may add.
@@ -162,7 +167,36 @@ async function generateBrief(signals: string): Promise<BriefBlock[] | null> {
 }
 
 // ── Route handler ───────────────────────────────────────────────────────────
-export async function GET() {
+/**
+ * GET /api/daily-brief — produces a per-user "brief of the day".
+ *
+ * SECURITY: Requires a Firebase ID token because each call may dispatch a
+ * Gemini request (cost + LLM04 abuse surface). Per-user rate limit (10/min)
+ * is on top of the per-IP rate limit applied at the proxy layer.
+ */
+export async function GET(req: NextRequest) {
+  // 1) Per-IP rate-limit (defense-in-depth — anonymous spam can't even reach
+  //    the auth check at scale).
+  const ipRl = rateLimit(req, { limit: 30, windowMs: 60_000 });
+  if (!ipRl.success) return new NextResponse('Too Many Requests', { status: 429 });
+
+  // 2) Authenticate
+  const authHeader = req.headers.get('Authorization');
+  if (!authHeader?.startsWith('Bearer ')) {
+    return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
+  }
+  let userId: string;
+  try {
+    const decoded = await adminAuth.verifyIdToken(authHeader.slice('Bearer '.length).trim());
+    userId = decoded.uid;
+  } catch {
+    return NextResponse.json({ error: 'invalid_token' }, { status: 401 });
+  }
+
+  // 3) Per-user rate-limit (LLM cost protection)
+  const userRl = rateLimitAgent(userId, 'daily_brief', { limit: 10, windowMs: 60_000 });
+  if (!userRl.allowed) return new NextResponse('Too Many Requests', { status: 429 });
+
   const today = new Date();
   const dayIndex = today.getUTCFullYear() * 366 + today.getUTCMonth() * 31 + today.getUTCDate();
 
