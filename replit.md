@@ -1,5 +1,39 @@
 # Kalmeron AI (ai-studio-applet)
 
+## Session 2026-04-26 — Auth/Routing Race Conditions Fixed
+
+### المشكلة:
+بعد تسجيل الدخول، المستخدمون المُسجَّلون مسبقاً (profile_completed=true) كانوا يُحوَّلون خطأً إلى `/onboarding` بدلاً من `/dashboard`. السبب: `AuthContext` كان يضبط `user` فوراً عبر `onAuthStateChanged` ثم يطلق `fetchOrCreateDBUser` كـ fire-and-forget. النتيجة: ملايين الميلي ثانية يكون `user !== null` لكن `dbUser === null`، فيمرّ تعبير `!dbUser?.profile_completed` كـ truthy ويُطلق التحويل الخاطئ.
+
+### الإصلاحات:
+1. **`contexts/AuthContext.tsx`**:
+   - إضافة `dbUserLoading` كـ state منفصل عن `loading` (auth bootstrap).
+   - إضافة `optimisticUidRef` يمنع `fetchOrCreateDBUser` من الكتابة فوق الحالة المحلّية المفائلة (optimistic) إذا كان السيرفر لا يزال يردّ بـ `profile_completed=false` بسبب write في الطريق.
+   - تم تعطيل `setDbUser` لو الـ uid موسوم بأنه optimistic ولم يلحق السيرفر بعد.
+
+2. **`app/auth/login/page.tsx` و `app/auth/signup/page.tsx`**:
+   - useEffect الآن ينتظر `!loading && !dbUserLoading` معاً قبل اتّخاذ قرار التحويل.
+   - الشرط الجديد: `if (dbUser && dbUser.profile_completed) → /dashboard, else → /onboarding`.
+   - الزرّ يظهر "جارِ التحويل" فقط بعد أن نعرف الوجهة.
+
+3. **`components/auth/AuthGuard.tsx`**:
+   - يحتجز اللودر طالما `dbUserLoading` أيضاً (وليس فقط `loading`) — يمنع وميض المحتوى المحمي للمستخدمين قبل أن يكتمل تحميل الملف الشخصي.
+   - يرجع `null` إذا كانت `requireProfile=true` لكن `dbUser` ناقص — يمنع flash للأطفال.
+
+4. **`app/onboarding/page.tsx`**:
+   - يحتجز اللودر أيضاً عند `dbUserLoading` أو `dbUser?.profile_completed` (أثناء التحويل) — يمنع المستخدم المُسجَّل من رؤية شاشة الـ onboarding ولو للحظة.
+   - حذف الكود الميت `OnboardingFormWithRedirect` (كان يستورد `refreshDBUser` بدون استخدامه).
+
+5. **`app/profile/page.tsx`**:
+   - كانت غير محمية بـ `AuthGuard` لأنها خارج مجموعة `(dashboard)`. تمّ لفّها الآن في `AuthGuard`.
+
+### النتيجة:
+- مستخدم سبق له الـ onboarding يدخل عبر Google → يذهب فوراً إلى `/dashboard` (لا يمرّ بـ `/onboarding`).
+- مستخدم جديد بعد إكمال الـ onboarding form → التحويل لـ `/dashboard` فوراً (mergeDBUser المفائل) + Firestore write يجري بالخلفية بدون انتظار + لا يُعاد للأذونة بسبب race مع fetchOrCreateDBUser.
+- لا يوجد flash لمحتوى الـ dashboard للمستخدمين غير المُكمِلين للـ onboarding.
+
+---
+
 ## Session 2026-04-26 — Investor Readiness Round 2 (Seed Data + CLI + Speaker Guide)
 
 ### إضافات على Round 1:

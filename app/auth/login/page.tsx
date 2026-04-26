@@ -9,17 +9,23 @@ import Link from "next/link";
 import Image from "next/image";
 
 export default function LoginPage() {
-  const { user, dbUser, loading, signInWithGoogle } = useAuth();
+  const { user, dbUser, loading, dbUserLoading, signInWithGoogle } = useAuth();
   const router = useRouter();
   const reduce = useReducedMotion();
   const [signingIn, setSigningIn] = useState(false);
 
   useEffect(() => {
-    if (!loading && user) {
-      if (!dbUser?.profile_completed) router.replace("/onboarding");
-      else router.replace("/dashboard");
+    // CRITICAL: only route AFTER both auth and the Firestore user doc have
+    // resolved. Otherwise dbUser is still null and `!dbUser?.profile_completed`
+    // is truthy, sending an already-onboarded user to /onboarding by mistake.
+    if (loading || dbUserLoading) return;
+    if (!user) return;
+    if (dbUser && dbUser.profile_completed) {
+      router.replace("/dashboard");
+    } else {
+      router.replace("/onboarding");
     }
-  }, [user, dbUser, loading, router]);
+  }, [user, dbUser, loading, dbUserLoading, router]);
 
   const handleGoogleLogin = async () => {
     if (signingIn) return;
@@ -35,9 +41,10 @@ export default function LoginPage() {
   };
 
   // Render the form immediately. Show a small redirecting overlay only when
-  // we already have an authenticated user and are about to navigate away.
-  // This avoids the long full-screen spinner while Firebase bootstraps.
-  const isRedirecting = !loading && !!user;
+  // we already have an authenticated user AND the Firestore profile has
+  // resolved — otherwise the button flashes "جارِ التحويل" before we even
+  // know where to send the user.
+  const isRedirecting = !loading && !dbUserLoading && !!user;
 
   return (
     <div className="min-h-screen mesh-gradient aurora-bg starfield flex items-center justify-center relative overflow-hidden px-4 sm:px-6" dir="rtl">

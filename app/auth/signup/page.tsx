@@ -17,19 +17,31 @@ const PERKS = [
 ];
 
 export default function SignUpPage() {
-  const { user, dbUser, loading, signInWithGoogle } = useAuth();
+  const { user, dbUser, loading, dbUserLoading, signInWithGoogle } = useAuth();
   const router = useRouter();
   const reduce = useReducedMotion();
   const [signingIn, setSigningIn] = useState(false);
 
+  // Referral attribution can fire as soon as we have a Firebase user — it does
+  // not depend on the Firestore profile.
   useEffect(() => {
     if (!loading && user) {
-      // attempt to attribute any captured referral code (non-blocking)
       user.getIdToken().then((t) => attributeReferralIfAny(t)).catch(() => {});
-      if (!dbUser?.profile_completed) router.replace("/onboarding");
-      else router.replace("/dashboard");
     }
-  }, [user, dbUser, loading, router]);
+  }, [user, loading]);
+
+  useEffect(() => {
+    // Wait for both auth and the Firestore user doc before deciding where to
+    // route — otherwise an existing user signing in via the signup page would
+    // be wrongly sent through onboarding again.
+    if (loading || dbUserLoading) return;
+    if (!user) return;
+    if (dbUser && dbUser.profile_completed) {
+      router.replace("/dashboard");
+    } else {
+      router.replace("/onboarding");
+    }
+  }, [user, dbUser, loading, dbUserLoading, router]);
 
   const handleGoogleSignUp = async () => {
     if (signingIn) return;
@@ -43,10 +55,10 @@ export default function SignUpPage() {
     }
   };
 
-  // Render the form immediately. Show a small redirecting state only when we
-  // detect an authenticated user and are about to navigate. This avoids the
-  // long full-screen spinner during Firebase bootstrap.
-  const isRedirecting = !loading && !!user;
+  // Render the form immediately. Show the redirecting state only once we have
+  // both the auth user AND the Firestore profile, so we don't flash the
+  // wrong CTA before knowing where to send them.
+  const isRedirecting = !loading && !dbUserLoading && !!user;
 
   return (
     <div className="min-h-screen mesh-gradient aurora-bg starfield flex items-center justify-center relative overflow-hidden px-4 sm:px-6" dir="rtl">

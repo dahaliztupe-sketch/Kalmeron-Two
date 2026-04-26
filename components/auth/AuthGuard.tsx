@@ -11,20 +11,28 @@ interface AuthGuardProps {
 }
 
 export function AuthGuard({ children, requireProfile = true }: AuthGuardProps) {
-  const { user, dbUser, loading } = useAuth();
+  const { user, dbUser, loading, dbUserLoading } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    if (!loading) {
-      if (!user) {
-        router.replace("/auth/login");
-      } else if (requireProfile && dbUser && !dbUser.profile_completed) {
+    if (loading) return;
+    if (!user) {
+      router.replace("/auth/login");
+      return;
+    }
+    if (requireProfile) {
+      // Wait for the Firestore profile fetch before deciding onboarding —
+      // checking against `null` would race with the in-flight fetch.
+      if (dbUserLoading) return;
+      if (dbUser && !dbUser.profile_completed) {
         router.replace("/onboarding");
       }
     }
-  }, [user, dbUser, loading, router, requireProfile]);
+  }, [user, dbUser, loading, dbUserLoading, router, requireProfile]);
 
-  if (loading) {
+  // Hold the loader while either auth OR (when required) the profile is still
+  // resolving so we never flash protected content to a not-yet-onboarded user.
+  if (loading || (requireProfile && user && dbUserLoading)) {
     return (
       <div className="min-h-screen bg-[#0A0A0F] flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
@@ -36,6 +44,9 @@ export function AuthGuard({ children, requireProfile = true }: AuthGuardProps) {
   }
 
   if (!user) return null;
+  // Profile required but missing/incomplete → redirect already queued above;
+  // render nothing to avoid flashing protected children.
+  if (requireProfile && (!dbUser || !dbUser.profile_completed)) return null;
 
   return <>{children}</>;
 }

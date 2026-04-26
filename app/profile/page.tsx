@@ -1,6 +1,7 @@
 "use client";
 
 import { AppShell } from "@/components/layout/AppShell";
+import { AuthGuard } from "@/components/auth/AuthGuard";
 import { useAuth } from "@/contexts/AuthContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Settings, User, Briefcase, MapPin, Building, LogOut } from "lucide-react";
@@ -12,6 +13,14 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
 export default function ProfilePage() {
+  return (
+    <AuthGuard>
+      <ProfilePageContent />
+    </AuthGuard>
+  );
+}
+
+function ProfilePageContent() {
   const { dbUser, signOut: logout, user } = useAuth();
   const [isDeleting, setIsDeleting] = useState(false);
   const router = useRouter();

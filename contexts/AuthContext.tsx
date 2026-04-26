@@ -28,6 +28,14 @@ interface AuthContextType {
   user: User | null;
   dbUser: DBUser | null;
   loading: boolean;
+  /**
+   * `true` while we are still fetching the Firestore user document for the
+   * currently signed-in user. Components that route based on
+   * `dbUser.profile_completed` MUST wait for this to be `false` — otherwise
+   * they will see `dbUser === null` and incorrectly treat the user as
+   * not-onboarded, sending an existing user back through onboarding.
+   */
+  dbUserLoading: boolean;
   signInWithGoogle: () => Promise<void>;
   signOut: () => Promise<void>;
   refreshDBUser: () => Promise<void>;
@@ -57,8 +65,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [dbUser, setDbUser] = useState<DBUser | null>(null);
   const [loading, setLoading] = useState(true);
+  const [dbUserLoading, setDbUserLoading] = useState(false);
+  // Tracks if mergeDBUser was called for the current uid. When true, we will
+  // NOT overwrite local optimistic state with a stale Firestore re-fetch —
+  // this prevents the post-onboarding bounce where a background fetch races
+  // an in-flight write and momentarily reports profile_completed=false.
+  const optimisticUidRef = React.useRef<string | null>(null);
 
   const fetchOrCreateDBUser = async (currentUser: User) => {
+    setDbUserLoading(true);
     const userRef = doc(db, "users", currentUser.uid);
     try {
       const userSnap = await getDoc(userRef);
@@ -71,12 +86,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           profile_completed: false,
         };
         await setDoc(userRef, newUser);
-        setDbUser(newUser);
+        if (optimisticUidRef.current !== currentUser.uid) setDbUser(newUser);
       } else {
-        setDbUser(userSnap.data() as DBUser);
+        // If we have an optimistic state for this uid AND the server still
+        // says profile_completed=false, prefer the optimistic value so the
+        // user is not bounced back to /onboarding while their write is
+        // in-flight. Once the server catches up, future fetches will agree.
+        const serverData = userSnap.data() as DBUser;
+        if (
+          optimisticUidRef.current === currentUser.uid &&
+          serverData.profile_completed === false
+        ) {
+          // keep current optimistic dbUser
+        } else {
+          setDbUser(serverData);
+          // server caught up — drop the optimistic guard
+          if (serverData.profile_completed) optimisticUidRef.current = null;
+        }
       }
     } catch (error) {
       console.error("Error setting up user doc:", error);
+    } finally {
+      setDbUserLoading(false);
     }
   };
 
@@ -98,16 +129,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     });
 
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      // Set user + finish loading immediately so the UI can react. Firestore
-      // doc setup is fired-and-forgotten — it must not gate the loading flag,
-      // because slow Firestore writes were making the post-login redirect
-      // appear to "hang" for 3-8 seconds on mobile.
+      // Set user + finish auth-loading immediately so the UI can react.
+      // Firestore doc setup runs in parallel and is tracked separately by
+      // `dbUserLoading` — routing components should wait on BOTH before
+      // making profile-based decisions.
       setUser(currentUser);
       setLoading(false);
       if (currentUser) {
+        // Drop optimistic guard if the uid changed (different account).
+        if (optimisticUidRef.current && optimisticUidRef.current !== currentUser.uid) {
+          optimisticUidRef.current = null;
+        }
         void fetchOrCreateDBUser(currentUser);
       } else {
         setDbUser(null);
+        setDbUserLoading(false);
+        optimisticUidRef.current = null;
       }
     });
 
@@ -170,13 +207,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   // Optimistic local merge — used by flows like onboarding submit so the UI can
-  // proceed without waiting for an extra Firestore round-trip.
+  // proceed without waiting for an extra Firestore round-trip. We also flag
+  // the uid so a concurrent fetchOrCreateDBUser() doesn't overwrite the
+  // merged value with stale server data while the background write is
+  // still in-flight.
   const mergeDBUser = (patch: Partial<DBUser>) => {
-    setDbUser((prev) => (prev ? { ...prev, ...patch } : prev));
+    setDbUser((prev) => {
+      if (!prev) return prev;
+      const merged = { ...prev, ...patch } as DBUser;
+      if (user) optimisticUidRef.current = user.uid;
+      return merged;
+    });
   };
 
   return (
-    <AuthContext.Provider value={{ user, dbUser, loading, signInWithGoogle, signOut, refreshDBUser, mergeDBUser }}>
+    <AuthContext.Provider value={{ user, dbUser, loading, dbUserLoading, signInWithGoogle, signOut, refreshDBUser, mergeDBUser }}>
       {children}
     </AuthContext.Provider>
   );
