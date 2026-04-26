@@ -54,9 +54,12 @@ else:
     log.info("LLM judge: stub mode (no GEMINI_API_KEY)")
 
 app = FastAPI(title="Kalmeron LLM Judge", version="1.0.0")
+
+# CORS: قابل للتكوين. الافتراضي محصور بـ main app في dev.
+_origins = [o.strip() for o in os.getenv("LLM_JUDGE_CORS", "http://localhost:5000").split(",") if o.strip()]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=_origins,
     allow_methods=["GET", "POST"],
     allow_headers=["*"],
 )

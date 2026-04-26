@@ -7,10 +7,13 @@
 
 ## ✅ ما تم إنجازه بالفعل (لا تدخل مطلوب)
 
-- جميع تحذيرات TypeScript مُعالَجة → `npm run typecheck` ينتهي بنجاح بدون رسائل.
-- جميع تحذيرات ESLint مُعالَجة → `npm run lint` ينتهي بنجاح بدون رسائل (من **467** تحذير → **0**).
-- تحذيرات React hooks (`exhaustive-deps`, `set-state-in-effect`) مُعالجة أو موثَّقة.
+- جميع أخطاء TypeScript مُعالَجة → `npx tsc --noEmit` ينتهي بنجاح (من **80** خطأ → **0**).
+- جميع أخطاء وتحذيرات ESLint مُعالَجة → `npm run lint` نظيف (من **8 أخطاء + 10 تحذيرات** → **0 + 0**).
+- البناء الإنتاجي ناجح (`npm run build`) مع `typescript.ignoreBuildErrors: false` (حماية من التراجع).
 - التطبيق يستجيب بـ HTTP 200 على `/` و`/agents`.
+- خدمات Python الأربع (Egypt Calc، Embeddings Worker، LLM Judge، PDF Worker) مُثبَّتة وتعمل وتمر بـ `/health`.
+- 11 اختبار pytest في `services/egypt-calc/tests/` يمر بنجاح.
+- CORS في خدمات Python (الثلاثة المفتوحة) صار قابلاً للتكوين عبر env vars (الافتراضي محصور بـ main app في dev).
 
 ---
 
@@ -227,10 +230,36 @@
 | متغير إضافي | الوصف |
 |---|---|
 | `PDF_WORKER_MAX_BYTES` | السقف الأعلى للرفع (افتراضي 20MB) |
-| `PDF_WORKER_CORS` | نطاقات CORS مسموح بها |
+| `PDF_WORKER_CORS` | نطاقات CORS مسموح بها لـ pdf-worker |
+| `EGYPT_CALC_CORS` | نطاقات CORS مسموح بها لـ egypt-calc (افتراضي محصور بـ localhost:5000) |
+| `LLM_JUDGE_CORS` | نطاقات CORS مسموح بها لـ llm-judge (افتراضي محصور بـ localhost:5000) |
+| `EMBEDDINGS_WORKER_CORS` | نطاقات CORS مسموح بها لـ embeddings-worker (افتراضي محصور بـ localhost:5000) |
 | `EMBEDDINGS_MODEL` | نموذج التضمينات المستعمل |
 | `EMBEDDINGS_CACHE_SIZE` | حجم الذاكرة المؤقتة |
 | `JUDGE_MODEL` | نموذج LLM-as-judge (افتراضي gemini-2.5-flash-lite) |
+
+**⚠️ ملاحظة أمنية:** افتراضات CORS تسمح فقط بـ `http://localhost:5000` (main app في dev). في الإنتاج **يجب** تعيين هذه المتغيرات بنطاقاتك الإنتاجية الفعلية، مثل:
+```
+EGYPT_CALC_CORS=https://kalmeron.com,https://www.kalmeron.com
+LLM_JUDGE_CORS=https://kalmeron.com
+EMBEDDINGS_WORKER_CORS=https://kalmeron.com
+PDF_WORKER_CORS=https://kalmeron.com
+```
+
+---
+
+## 🛡️ ٧.١ ثغرات npm المعتمدة على مكتبات قديمة
+
+`npm audit` يُظهر **31 ثغرة** (1 عالية، 28 متوسطة، 2 منخفضة) في مكتبات تابعة (transitive dependencies):
+
+| المكتبة | الثغرة | الحل |
+|---|---|---|
+| `xlsx` | Prototype Pollution + ReDoS (عالية) | لا إصلاح متاح من الناشر — استبدل بـ `exceljs` أو `papaparse` للقراءة فقط |
+| `natural` | يعتمد على `uuid` قديم | تحديث `natural` لـ v8+ يكسر API — يحتاج اختبار يدوي |
+| `node-fetch` (transitive) | متعدد | معظمها مُصلَّح بـ Node 18+ المُستخدَم |
+
+`npm audit fix` بدون `--force` لا يحلّها. `npm audit fix --force` يكسر البناء.
+**القرار:** أبقيتها كما هي لتجنّب كسر الإنتاج. إذا كنت لا تستخدم `xlsx` بكثافة، يمكن الانتقال لـ `exceljs` لاحقًا.
 
 ---
 

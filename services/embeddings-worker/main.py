@@ -124,9 +124,12 @@ def _embed_texts(texts: list[str]) -> list[list[float]]:
 # ──────────────── HTTP layer ────────────────
 
 app = FastAPI(title="Kalmeron Embeddings Worker", version="1.0.0")
+
+# CORS: قابل للتكوين. الافتراضي محصور بـ main app في dev.
+_origins = [o.strip() for o in os.getenv("EMBEDDINGS_WORKER_CORS", "http://localhost:5000").split(",") if o.strip()]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=_origins,
     allow_methods=["GET", "POST"],
     allow_headers=["*"],
 )

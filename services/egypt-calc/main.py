@@ -34,9 +34,14 @@ logging.basicConfig(level=logging.INFO,
 log = logging.getLogger("egypt-calc")
 
 app = FastAPI(title="Kalmeron Egypt Calc", version="1.0.0")
+
+# CORS: قابل للتكوين عبر env var. الافتراضي محصور بالـ main app
+# في dev (localhost:5000) — في الإنتاج عيّن EGYPT_CALC_CORS بقيم محدّدة.
+import os as _os
+_origins = [o.strip() for o in _os.getenv("EGYPT_CALC_CORS", "http://localhost:5000").split(",") if o.strip()]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=_origins,
     allow_methods=["GET", "POST"],
     allow_headers=["*"],
 )
