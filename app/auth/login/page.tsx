@@ -94,7 +94,7 @@ export default function LoginPage() {
 
           <div className="relative flex items-center gap-3 text-xs text-neutral-600">
             <span className="flex-1 h-px bg-white/[0.08]" />
-            <span>OR</span>
+            <span>أو</span>
             <span className="flex-1 h-px bg-white/[0.08]" />
           </div>
 

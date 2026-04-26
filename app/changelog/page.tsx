@@ -82,7 +82,7 @@ export default async function ChangelogPage() {
                   <h2 className="text-xl font-bold text-cyan-200">{e.version}</h2>
                   {e.date && <span className="text-neutral-500 text-xs tabular-nums">{e.date}</span>}
                 </div>
-                <pre className="whitespace-pre-wrap font-sans text-sm text-neutral-300 leading-relaxed">{e.body}</pre>
+                <pre dir="ltr" className="whitespace-pre-wrap font-sans text-sm text-neutral-300 leading-relaxed text-left">{e.body}</pre>
               </article>
             ))}
           </div>

@@ -1,4 +1,4 @@
-import { AppShell } from "@/components/layout/AppShell";
+import { PublicShell } from "@/components/layout/PublicShell";
 import Link from "next/link";
 
 export const metadata = {
@@ -8,7 +8,7 @@ export const metadata = {
 
 export default function PrivacyPage() {
   return (
-    <AppShell>
+    <PublicShell>
       <div className="max-w-4xl mx-auto py-12 px-4" dir="rtl">
         <h1 className="text-4xl font-bold mb-2 text-[rgb(var(--brand-cyan))]">سياسة الخصوصية وحماية البيانات</h1>
         <p className="text-neutral-500 text-sm mb-10">آخر تحديث: أبريل 2026</p>
@@ -106,6 +106,6 @@ export default function PrivacyPage() {
 
         </div>
       </div>
-    </AppShell>
+    </PublicShell>
   );
 }

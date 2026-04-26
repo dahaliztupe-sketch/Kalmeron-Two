@@ -55,7 +55,7 @@ export function BrandLogo({
         />
       </div>
 
-      {showWordmark && useIconOnly && (
+      {showWordmark && (
         <div className="leading-none">
           <span
             className={cn(

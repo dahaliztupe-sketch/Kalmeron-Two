@@ -14,8 +14,8 @@ function buildCsp(): string {
   const directives: Record<string, string[]> = {
     'default-src': ["'self'"],
     'script-src': isProd
-      ? ["'self'", "'unsafe-inline'", 'https://js.stripe.com', 'https://*.sentry.io', 'https://*.vercel-insights.com']
-      : ["'self'", "'unsafe-inline'", "'unsafe-eval'", 'https://js.stripe.com'],
+      ? ["'self'", "'unsafe-inline'", 'https://js.stripe.com', 'https://*.sentry.io', 'https://*.vercel-insights.com', 'https://cdn.jsdelivr.net']
+      : ["'self'", "'unsafe-inline'", "'unsafe-eval'", 'https://js.stripe.com', 'https://cdn.jsdelivr.net'],
     'style-src': ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
     'img-src': ["'self'", 'data:', 'blob:', 'https:'],
     'font-src': ["'self'", 'data:', 'https://fonts.gstatic.com'],

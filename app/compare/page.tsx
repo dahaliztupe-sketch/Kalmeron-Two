@@ -88,7 +88,6 @@ export default function ComparePage() {
         <div className="max-w-7xl mx-auto px-4 md:px-8 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
             <BrandLogo size={36} iconOnly href={null} />
-            <span className="font-display font-extrabold text-white text-base hidden sm:block">KALMERON</span>
           </Link>
           <div className="flex items-center gap-2">
             <Link href="/auth/login" className="text-sm text-neutral-400 hover:text-white px-3 py-2 transition-colors">دخول</Link>

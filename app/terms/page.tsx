@@ -1,4 +1,4 @@
-import { AppShell } from "@/components/layout/AppShell";
+import { PublicShell } from "@/components/layout/PublicShell";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 
 export default function TermsPage() {
   return (
-    <AppShell>
+    <PublicShell>
       <div className="max-w-4xl mx-auto py-12 px-6">
         <h1 className="text-4xl font-black text-white mb-8 border-r-4 border-[rgb(var(--azure))] pr-4">شروط الخدمة | Kalmeron AI</h1>
         
@@ -39,6 +39,6 @@ export default function TermsPage() {
           </section>
         </div>
       </div>
-    </AppShell>
+    </PublicShell>
   );
 }

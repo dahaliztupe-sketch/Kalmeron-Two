@@ -1,8 +1,8 @@
-import { AppShell } from "@/components/layout/AppShell";
+import { PublicShell } from "@/components/layout/PublicShell";
 
 export default function CompliancePage() {
   return (
-    <AppShell>
+    <PublicShell>
       <div className="max-w-4xl mx-auto py-12 px-4" dir="rtl">
         <h1 className="text-4xl font-bold mb-8 text-[rgb(var(--brand-cyan))]">الامتثال التنظيمي (Regional Compliance)</h1>
         <p className="text-neutral-300 mb-8">نعمل في Kalmeron AI على مواءمة عملياتنا التقنية والقانونية مع أعلى المعايير التنظيمية في منطقة الشرق الأوسط وشمال أفريقيا (MENA).</p>
@@ -19,6 +19,6 @@ export default function CompliancePage() {
           </div>
         </div>
       </div>
-    </AppShell>
+    </PublicShell>
   );
 }
