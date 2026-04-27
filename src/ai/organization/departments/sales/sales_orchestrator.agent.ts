@@ -2,6 +2,7 @@
 import { globalGraphTools } from '@/src/lib/memory/graph-tools';
   import { Agent } from '@mastra/core';
   import { z } from 'zod';
+  import { executorTools } from '@/src/ai/actions/executor-tools';
 
   /**
    * Sales Orchestrator — منسق قسم المبيعات
@@ -28,6 +29,14 @@ import { globalGraphTools } from '@/src/lib/memory/graph-tools';
     model: { provider: 'google', name: 'gemini-2.5-flash' },
     tools: {
       ...globalGraphTools,
+      ...executorTools([
+        'crm_add_lead',
+        'crm_update_lead_status',
+        'sales_send_outreach_email',
+        'send_email',
+        'send_whatsapp',
+        'schedule_meeting',
+      ]),
       delegate_task: {
         description: 'تفويض مهمة فرعية إلى وكيل متخصص داخل القسم',
         parameters: z.object({

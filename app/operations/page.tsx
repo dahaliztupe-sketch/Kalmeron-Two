@@ -27,9 +27,11 @@ interface FeedItem {
   executedAt?: number | null;
 }
 
+interface IntegrationStatus { configured: boolean; requiredEnv: string[]; pageConfigured?: boolean }
 interface FeedResponse {
   integrations: {
     meta: { configured: boolean; pageConfigured: boolean; requiredEnv: string[] };
+    all?: Record<string, IntegrationStatus>;
   };
   summary: {
     pending: number;
@@ -83,11 +85,20 @@ function timeAgo(ms?: number | null): string {
 
 function agentNameOf(actionId: string, requestedBy?: string): string {
   if (requestedBy === "user") return "أنت";
-  if (actionId.startsWith("meta_")) return "وكيل التسويق · Meta Ads";
-  if (actionId === "send_email") return "وكيل المراسلات";
+  if (actionId.startsWith("meta_")) return "التسويق · Meta Ads";
+  if (actionId.startsWith("google_ads_")) return "التسويق · Google Ads";
+  if (actionId.startsWith("tiktok_")) return "التسويق · TikTok Ads";
+  if (actionId.startsWith("crm_") || actionId.startsWith("sales_")) return "المبيعات · CRM";
+  if (actionId.startsWith("hr_")) return "الموارد البشرية";
+  if (actionId.startsWith("ops_")) return "العمليات";
+  if (actionId.startsWith("cfo_")) return "المالية · CFO";
+  if (actionId.startsWith("legal_")) return "القانوني";
+  if (actionId.startsWith("support_")) return "خدمة العملاء";
+  if (actionId.startsWith("investor_")) return "علاقات المستثمرين";
+  if (actionId === "send_email") return "وكيل المراسلات · إيميل";
   if (actionId === "send_whatsapp") return "وكيل المراسلات · واتساب";
-  if (actionId === "create_invoice_draft") return "وكيل العمليات · فواتير";
-  if (actionId === "schedule_meeting") return "وكيل العمليات · اجتماعات";
+  if (actionId === "create_invoice_draft") return "العمليات · فواتير";
+  if (actionId === "schedule_meeting") return "العمليات · اجتماعات";
   return requestedBy || "وكيل";
 }
 
@@ -129,6 +140,15 @@ export default function OperationsRoomPage() {
 
   const metaConfigured = data?.integrations?.meta?.configured;
   const pageConfigured = data?.integrations?.meta?.pageConfigured;
+  const allIntegrations = data?.integrations?.all || {};
+  const integrationLabels: Record<string, string> = {
+    meta: "Meta Ads (Facebook/Instagram)",
+    google_ads: "Google Ads",
+    tiktok: "TikTok Ads",
+    docusign: "DocuSign (توقيع إلكتروني)",
+    email: "البريد الإلكتروني (Resend)",
+    whatsapp: "WhatsApp Business",
+  };
 
   return (
     <AppShell>
@@ -170,48 +190,52 @@ export default function OperationsRoomPage() {
           </Card>
         ) : (
           <>
-            {/* Integrations status */}
+            {/* Integrations status — all 6 */}
             <Card className="bg-dark-surface/60 border-white/10 mb-6">
               <CardHeader className="pb-3">
                 <CardTitle className="text-white text-base flex items-center gap-2">
                   <Megaphone className="w-5 h-5 text-brand-cyan" />
-                  حالة اتصالات وكيل التسويق
+                  حالة الاتصالات الخارجية
                 </CardTitle>
+                <p className="text-xs text-neutral-400 mt-1">
+                  الوكلاء يعملون دائماً — الاتصالات غير المربوطة تعمل بـ"وضع المحاكاة" (يُسجَّل كل شيء بدون صرف فعلي).
+                </p>
               </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="flex flex-wrap items-center gap-3">
-                  <Badge
-                    variant="outline"
-                    className={
-                      metaConfigured
-                        ? "bg-emerald-500/15 text-emerald-300 border-emerald-500/30"
-                        : "bg-amber-500/15 text-amber-300 border-amber-500/30"
-                    }
-                  >
-                    {metaConfigured ? "Meta Ads متّصل ✓" : "Meta Ads غير متّصل (وضع المحاكاة)"}
-                  </Badge>
-                  <Badge
-                    variant="outline"
-                    className={
-                      pageConfigured
-                        ? "bg-emerald-500/15 text-emerald-300 border-emerald-500/30"
-                        : "bg-neutral-500/15 text-neutral-300 border-neutral-500/30"
-                    }
-                  >
-                    {pageConfigured ? "صفحة Facebook مربوطة ✓" : "صفحة Facebook غير مربوطة"}
-                  </Badge>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+                  {Object.entries(allIntegrations).map(([key, integ]) => (
+                    <div
+                      key={key}
+                      className={`rounded-lg border p-3 ${
+                        integ.configured
+                          ? "border-emerald-500/30 bg-emerald-500/5"
+                          : "border-amber-500/20 bg-amber-500/5"
+                      }`}
+                    >
+                      <div className="flex items-start justify-between gap-2 mb-1">
+                        <p className="text-xs font-medium text-white">
+                          {integrationLabels[key] || key}
+                        </p>
+                        <Badge
+                          variant="outline"
+                          className={`text-[10px] ${
+                            integ.configured
+                              ? "bg-emerald-500/15 text-emerald-300 border-emerald-500/30"
+                              : "bg-amber-500/15 text-amber-300 border-amber-500/30"
+                          }`}
+                        >
+                          {integ.configured ? "مربوط ✓" : "محاكاة"}
+                        </Badge>
+                      </div>
+                      {!integ.configured && integ.requiredEnv?.length > 0 && (
+                        <p className="text-[10px] text-amber-200/70 leading-relaxed">
+                          يلزم: {integ.requiredEnv.slice(0, 2).join("، ")}
+                          {integ.requiredEnv.length > 2 ? "..." : ""}
+                        </p>
+                      )}
+                    </div>
+                  ))}
                 </div>
-                {!metaConfigured && (
-                  <p className="text-xs text-neutral-300 leading-relaxed">
-                    لتفعيل تنفيذ الحملات الفعلية على Facebook/Instagram، أضف هذه المتغيّرات في إعدادات
-                    المشروع:{" "}
-                    <code className="bg-black/40 px-1.5 py-0.5 rounded text-amber-300">META_ACCESS_TOKEN</code>،{" "}
-                    <code className="bg-black/40 px-1.5 py-0.5 rounded text-amber-300">META_AD_ACCOUNT_ID</code>،{" "}
-                    <code className="bg-black/40 px-1.5 py-0.5 rounded text-amber-300">META_PAGE_ID</code>.
-                    حتى ذلك الحين، الوكيل سيعمل بـ"وضع المحاكاة" — تطلب الموافقة وتُسجَّل العملية بالكامل
-                    لكن لا يحدث صرف فعلي.
-                  </p>
-                )}
               </CardContent>
             </Card>
 

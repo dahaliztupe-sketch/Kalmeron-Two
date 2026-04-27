@@ -2,6 +2,7 @@
 import { globalGraphTools } from '@/src/lib/memory/graph-tools';
   import { Agent } from '@mastra/core';
   import { z } from 'zod';
+  import { executorTools } from '@/src/ai/actions/executor-tools';
 
   /**
    * Support Orchestrator — منسق قسم خدمة العملاء
@@ -27,6 +28,12 @@ import { globalGraphTools } from '@/src/lib/memory/graph-tools';
     model: { provider: 'google', name: 'gemini-2.5-flash' },
     tools: {
       ...globalGraphTools,
+      ...executorTools([
+        'support_create_ticket',
+        'support_send_reply',
+        'send_email',
+        'send_whatsapp',
+      ]),
       delegate_task: {
         description: 'تفويض مهمة فرعية إلى وكيل متخصص داخل القسم',
         parameters: z.object({

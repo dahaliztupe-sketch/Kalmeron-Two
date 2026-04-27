@@ -3,6 +3,7 @@ import { globalGraphTools } from '@/src/lib/memory/graph-tools';
   import { Agent } from '@mastra/core';
   import { z } from 'zod';
   import { instrumentAgent } from '@/src/lib/observability/agent-instrumentation';
+  import { executorTools } from '@/src/ai/actions/executor-tools';
 
   /**
    * HR Orchestrator — منسق قسم الموارد البشرية والعمليات
@@ -29,6 +30,13 @@ import { globalGraphTools } from '@/src/lib/memory/graph-tools';
     model: { provider: 'google', name: 'gemini-2.5-flash' },
     tools: {
       ...globalGraphTools,
+      ...executorTools([
+        'hr_post_job',
+        'hr_screen_cv',
+        'hr_send_offer',
+        'schedule_meeting',
+        'send_email',
+      ]),
       delegate_task: {
         description: 'تفويض مهمة فرعية إلى وكيل متخصص داخل القسم',
         parameters: z.object({

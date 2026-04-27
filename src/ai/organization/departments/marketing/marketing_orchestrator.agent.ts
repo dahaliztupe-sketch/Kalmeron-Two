@@ -1,6 +1,7 @@
 // @ts-nocheck
 import { globalGraphTools } from '@/src/lib/memory/graph-tools';
   import { Agent } from '@mastra/core';
+import { executorTools } from '@/src/ai/actions/executor-tools';
   import { z } from 'zod';
   import { instrumentAgent } from '@/src/lib/observability/agent-instrumentation';
 
@@ -30,6 +31,16 @@ import { globalGraphTools } from '@/src/lib/memory/graph-tools';
     model: { provider: 'google', name: 'gemini-2.5-flash' },
     tools: {
       ...globalGraphTools,
+      ...executorTools([
+        'meta_create_campaign',
+        'meta_create_adset',
+        'meta_publish_ad',
+        'meta_pause_campaign',
+        'meta_get_campaign_insights',
+        'google_ads_create_campaign',
+        'google_ads_pause_campaign',
+        'tiktok_create_campaign',
+      ]),
       delegate_task: {
         description: 'تفويض مهمة فرعية إلى وكيل متخصص داخل القسم',
         parameters: z.object({

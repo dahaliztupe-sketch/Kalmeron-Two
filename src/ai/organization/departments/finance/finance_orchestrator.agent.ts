@@ -2,6 +2,7 @@
 import { globalGraphTools } from '@/src/lib/memory/graph-tools';
   import { Agent } from '@mastra/core';
   import { z } from 'zod';
+  import { executorTools } from '@/src/ai/actions/executor-tools';
 
   /**
    * Finance Orchestrator — منسق قسم المالية والاستراتيجية
@@ -28,6 +29,14 @@ import { globalGraphTools } from '@/src/lib/memory/graph-tools';
     model: { provider: 'google', name: 'gemini-2.5-flash' },
     tools: {
       ...globalGraphTools,
+      ...executorTools([
+        'cfo_log_bank_transaction',
+        'cfo_generate_pl_report',
+        'cfo_set_budget_alert',
+        'create_invoice_draft',
+        'investor_add_data_room_file',
+        'investor_send_pitch_email',
+      ]),
       delegate_task: {
         description: 'تفويض مهمة فرعية إلى وكيل متخصص داخل القسم',
         parameters: z.object({

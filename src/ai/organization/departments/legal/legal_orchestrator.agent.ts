@@ -2,6 +2,7 @@
 import { globalGraphTools } from '@/src/lib/memory/graph-tools';
   import { Agent } from '@mastra/core';
   import { z } from 'zod';
+  import { executorTools } from '@/src/ai/actions/executor-tools';
 
   /**
    * Legal Orchestrator — منسق قسم الشؤون القانونية والملكية الفكرية
@@ -28,6 +29,12 @@ import { globalGraphTools } from '@/src/lib/memory/graph-tools';
     model: { provider: 'google', name: 'gemini-2.5-flash' },
     tools: {
       ...globalGraphTools,
+      ...executorTools([
+        'legal_create_contract_draft',
+        'legal_send_for_signature',
+        'legal_log_compliance_check',
+        'send_email',
+      ]),
       delegate_task: {
         description: 'تفويض مهمة فرعية إلى وكيل متخصص داخل القسم',
         parameters: z.object({

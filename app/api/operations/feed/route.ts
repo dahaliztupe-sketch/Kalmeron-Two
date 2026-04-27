@@ -12,7 +12,7 @@
  */
 import { NextRequest, NextResponse } from 'next/server';
 import { adminAuth, adminDb } from '@/src/lib/firebase-admin';
-import { metaIntegrationStatus } from '@/src/ai/actions/registry';
+import { metaIntegrationStatus, integrationsStatus } from '@/src/ai/actions/registry';
 
 export const runtime = 'nodejs';
 
@@ -41,7 +41,7 @@ export async function GET(req: NextRequest) {
   const url = new URL(req.url);
   const limit = Math.min(Number(url.searchParams.get('limit') || '60'), 200);
 
-  const integrations = { meta: metaIntegrationStatus() };
+  const integrations = { meta: metaIntegrationStatus(), all: integrationsStatus() };
 
   if (!adminDb?.collection) {
     return NextResponse.json({
