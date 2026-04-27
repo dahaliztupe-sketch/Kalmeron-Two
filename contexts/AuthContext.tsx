@@ -135,6 +135,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // making profile-based decisions.
       setUser(currentUser);
       setLoading(false);
+      // Mirror the auth state into a non-HTTP-only marker cookie so the
+      // server-side middleware can decide whether to render or redirect
+      // protected routes. The real authorization still happens via Firebase
+      // ID-token verification in API routes — this cookie is only a UX hint
+      // to avoid flashing protected pages to logged-out visitors.
+      try {
+        if (typeof document !== 'undefined') {
+          if (currentUser) {
+            const isHttps =
+              typeof window !== 'undefined' && window.location.protocol === 'https:';
+            const secure = isHttps ? '; Secure' : '';
+            document.cookie = `kal_session=1; Path=/; Max-Age=2592000; SameSite=Lax${secure}`;
+          } else {
+            document.cookie = 'kal_session=; Path=/; Max-Age=0; SameSite=Lax';
+          }
+        }
+      } catch {
+        /* cookie set is best-effort; never block auth */
+      }
       if (currentUser) {
         // Drop optimistic guard if the uid changed (different account).
         if (optimisticUidRef.current && optimisticUidRef.current !== currentUser.uid) {

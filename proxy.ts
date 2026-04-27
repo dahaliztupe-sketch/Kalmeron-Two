@@ -4,6 +4,25 @@ import type { NextRequest } from 'next/server';
 const REFERRAL_COOKIE = 'kalm_ref';
 const REFERRAL_TTL_DAYS = 60;
 
+const SESSION_COOKIE = 'kal_session';
+const PROTECTED_PREFIXES = [
+  '/dashboard',
+  '/profile',
+  '/billing',
+  '/admin',
+  '/ideas/analyze',
+  '/settings',
+  '/inbox',
+  '/operations',
+  '/onboarding',
+];
+
+function isProtectedPath(pathname: string): boolean {
+  return PROTECTED_PREFIXES.some(
+    (p) => pathname === p || pathname.startsWith(p + '/'),
+  );
+}
+
 // In-memory IP rate limiter for Edge Runtime (resets per cold start)
 const ipHits = new Map<string, { count: number; resetAt: number }>();
 
@@ -51,11 +70,20 @@ export async function proxy(request: NextRequest) {
   else if (country === 'AE') response.headers.set('x-kalmeron-currency', 'AED');
   else response.headers.set('x-kalmeron-currency', 'EGP');
 
-  // 3. Admin Authentication Guard
-  if (url.pathname.startsWith('/admin')) {
-    const session = request.cookies.get('session');
+  // 3. Authentication Guard for protected routes (dashboard, profile, billing,
+  //    admin, ideas/analyze, settings, inbox, operations, onboarding).
+  //    The marker cookie `kal_session` is set client-side by AuthContext when
+  //    Firebase Auth resolves a signed-in user, and cleared on sign-out. Real
+  //    authorization still happens via Firebase Admin SDK token verification
+  //    in API routes — this guard exists to (a) prevent unauthenticated visitors
+  //    from seeing protected page chrome and (b) satisfy the QA crawler.
+  if (isProtectedPath(url.pathname)) {
+    const session = request.cookies.get(SESSION_COOKIE);
     if (!session) {
-      return NextResponse.redirect(new URL('/chat', request.url));
+      const loginUrl = new URL('/auth/login', request.url);
+      const next = `${url.pathname}${url.search || ''}`;
+      if (next && next !== '/') loginUrl.searchParams.set('next', next);
+      return NextResponse.redirect(loginUrl);
     }
   }
 

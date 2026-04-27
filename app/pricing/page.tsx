@@ -179,17 +179,16 @@ export default function PricingPage() {
     </div>
   );
 
-  if (authLoading) {
-    return (
-      <div className="min-h-screen bg-dark-bg" />
-    );
-  }
-
-  if (user) {
+  // Render the public (logged-out) shell as the SSR/initial output so search
+  // engines and the QA crawler can see the <h1> and full content immediately.
+  // Once auth resolves we swap to the authenticated AppShell on the client.
+  if (!authLoading && user) {
     return <AppShell>{content}</AppShell>;
   }
 
-  // Public (logged-out) view: minimal header + pricing content
+  // Public (logged-out) view: minimal header + pricing content.
+  // Also shown during the brief authLoading window — better than a blank page
+  // for both perceived-performance and SEO/SSR.
   return (
     <div className="min-h-screen bg-dark-bg text-white" dir="rtl">
       <header className="sticky top-0 z-40 border-b border-white/[0.06] bg-[#05070D]/80 backdrop-blur-xl">
