@@ -57,3 +57,7 @@ diagnostics/gaps/
 diagnostics/reports/
 diagnostics/history/
 
+# QA reports (regenerated each run; keep .gitkeep)
+qa/reports/*
+!qa/reports/.gitkeep
+
