@@ -3,6 +3,7 @@ import { globalGraphTools } from '@/src/lib/memory/graph-tools';
 import { Agent } from '@mastra/core';
 import { z } from 'zod';
 import { executorTools } from '@/src/ai/actions/executor-tools';
+import { smartTools, SMART_AGENT_GUIDELINES } from '@/src/ai/reasoning/smart-tools';
 
 /**
  * Operations Orchestrator — منسق قسم العمليات
@@ -29,6 +30,7 @@ export const operationsOrchestratorAgent = new Agent({
   model: { provider: 'google', name: 'gemini-2.5-flash' },
   tools: {
     ...globalGraphTools,
+    ...smartTools(),
     ...executorTools([
       'ops_create_task',
       'ops_update_inventory',

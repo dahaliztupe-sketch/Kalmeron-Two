@@ -3,6 +3,7 @@ import { globalGraphTools } from '@/src/lib/memory/graph-tools';
   import { Agent } from '@mastra/core';
   import { z } from 'zod';
   import { executorTools } from '@/src/ai/actions/executor-tools';
+  import { smartTools, SMART_AGENT_GUIDELINES } from '@/src/ai/reasoning/smart-tools';
 
   /**
    * Finance Orchestrator — منسق قسم المالية والاستراتيجية
@@ -25,10 +26,13 @@ import { globalGraphTools } from '@/src/lib/memory/graph-tools';
   - تستقبل المهمة من المنسق العام (Global Orchestrator).
   - تحلّل المهمة وتقرّر: تنفيذ متوازٍ (للمهام المستقلة) أم متسلسل (للمهام التابعة).
   - تجمّع نتائج الوكلاء في استجابة واحدة متماسكة.
-  - تُسجّل التكلفة وزمن الاستجابة في طبقة المراقبة.`,
+  - تُسجّل التكلفة وزمن الاستجابة في طبقة المراقبة.
+
+${SMART_AGENT_GUIDELINES}`,
     model: { provider: 'google', name: 'gemini-2.5-flash' },
     tools: {
       ...globalGraphTools,
+      ...smartTools(),
       ...executorTools([
         'cfo_log_bank_transaction',
         'cfo_generate_pl_report',

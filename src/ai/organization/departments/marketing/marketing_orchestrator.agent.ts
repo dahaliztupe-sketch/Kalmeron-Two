@@ -2,6 +2,7 @@
 import { globalGraphTools } from '@/src/lib/memory/graph-tools';
   import { Agent } from '@mastra/core';
 import { executorTools } from '@/src/ai/actions/executor-tools';
+import { smartTools, SMART_AGENT_GUIDELINES } from '@/src/ai/reasoning/smart-tools';
   import { z } from 'zod';
   import { instrumentAgent } from '@/src/lib/observability/agent-instrumentation';
 
@@ -27,10 +28,13 @@ import { executorTools } from '@/src/ai/actions/executor-tools';
   - تستقبل المهمة من المنسق العام (Global Orchestrator).
   - تحلّل المهمة وتقرّر: تنفيذ متوازٍ (للمهام المستقلة) أم متسلسل (للمهام التابعة).
   - تجمّع نتائج الوكلاء في استجابة واحدة متماسكة.
-  - تُسجّل التكلفة وزمن الاستجابة في طبقة المراقبة.`,
+  - تُسجّل التكلفة وزمن الاستجابة في طبقة المراقبة.
+
+${SMART_AGENT_GUIDELINES}`,
     model: { provider: 'google', name: 'gemini-2.5-flash' },
     tools: {
       ...globalGraphTools,
+      ...smartTools(),
       ...executorTools([
         'meta_create_campaign',
         'meta_create_adset',
