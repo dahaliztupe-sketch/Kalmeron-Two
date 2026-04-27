@@ -3,7 +3,7 @@ import { DEVICES, type DeviceKey } from './devices';
 export const BASE_URL = process.env.QA_BASE_URL ?? 'http://localhost:5000';
 export const AUTH_TOKEN = process.env.QA_AUTH_TOKEN ?? '';
 
-export const PUBLIC_PAGES_TO_CHECK = [
+const DEFAULT_PAGES = [
   '/',
   '/auth/login',
   '/auth/signup',
@@ -21,6 +21,20 @@ export const PUBLIC_PAGES_TO_CHECK = [
   '/marketplace',
   '/success-museum',
 ];
+
+const SMOKE_PAGES = ['/', '/auth/login', '/pricing', '/terms'];
+
+/**
+ * - QA_PAGES="smoke" → 4 صفحات سريعة فقط
+ * - QA_PAGES="/a,/b,/c" → قائمة محدّدة
+ * - أي قيمة أخرى → الافتراضي (16 صفحة)
+ */
+export const PUBLIC_PAGES_TO_CHECK = (() => {
+  const env = process.env.QA_PAGES?.trim();
+  if (!env) return DEFAULT_PAGES;
+  if (env === 'smoke') return SMOKE_PAGES;
+  return env.split(',').map((p) => p.trim()).filter(Boolean);
+})();
 
 export const PROTECTED_PAGES = [
   '/dashboard',

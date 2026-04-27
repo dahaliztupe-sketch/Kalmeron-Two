@@ -13,7 +13,7 @@ export async function checkAuth(
   // 1. الصفحات المحمية يجب أن تُعيد redirect لـ login
   for (const path of PROTECTED_PAGES) {
     await page
-      .goto(`${baseUrl}${path}`, { waitUntil: 'networkidle', timeout: 10000 })
+      .goto(`${baseUrl}${path}`, { waitUntil: 'domcontentloaded', timeout: 15000 })
       .catch(() => null);
 
     const finalUrl = page.url();

@@ -1,6 +1,12 @@
 import { runQA } from './runner';
 import { generateReport } from './reporter';
 
+// تفريغ مخرجات stdout/stderr فوراً حتى تظهر السجلّات في الملفات/الأنابيب
+const stdoutHandle = (process.stdout as unknown as { _handle?: { setBlocking?: (b: boolean) => void } })._handle;
+const stderrHandle = (process.stderr as unknown as { _handle?: { setBlocking?: (b: boolean) => void } })._handle;
+stdoutHandle?.setBlocking?.(true);
+stderrHandle?.setBlocking?.(true);
+
 async function main() {
   try {
     const report = await runQA();

@@ -88,7 +88,10 @@ export async function runQA(): Promise<QAReport> {
 
         try {
           const startLoad = Date.now();
-          await p.goto(pageUrl, { waitUntil: 'networkidle', timeout: 20000 });
+          // domcontentloaded أكثر موثوقية في وضع Next.js التطويري حيث يبقى HMR نشطاً
+          await p.goto(pageUrl, { waitUntil: 'domcontentloaded', timeout: 30000 });
+          // انتظار قصير للسماح بإكمال التهيئة الديناميكية
+          await p.waitForLoadState('load', { timeout: 10000 }).catch(() => {});
           loadTimeMs = Date.now() - startLoad;
 
           const [layoutRes, contentRes, perfRes, rtlRes, seoRes] = await Promise.all([
