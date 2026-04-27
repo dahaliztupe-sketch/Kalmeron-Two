@@ -50,3 +50,10 @@ uv.lock
 # Eval reports (regenerated each run)
 eval-reports/
 test/eval/results.json
+
+# Diagnostics outputs (regenerated each run; keep README + scripts)
+diagnostics/errors/
+diagnostics/gaps/
+diagnostics/reports/
+diagnostics/history/
+

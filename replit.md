@@ -1,5 +1,39 @@
 # Kalmeron AI (ai-studio-applet)
 
+## Session 2026-04-27 — نظام التشخيص الذاتي الداخلي (Internal Diagnostics)
+
+أُضيف نظام آلي يفحص المشروع من الداخل ويُنتج تقارير تلقائية في فولدر `diagnostics/`:
+
+### المكوّنات
+- `scripts/diagnostics/scan-errors.mjs` — يجمع كل الأخطاء: TypeScript، ESLint، npm audit (ثغرات أمنية)، استيراد مكسور، Python syntax، أخطاء من logs أحدث 24 ساعة.
+- `scripts/diagnostics/scan-gaps.mjs` — يكتشف ما هو ناقص: TODO/FIXME/HACK/BUG/@ts-ignore، ملفات فارغة وstubs (Not implemented)، مكوّنات بلا اختبارات، مفاتيح ترجمة ناقصة بين ar/en، متغيرات بيئة معرّفة في `.env.example` ومفقودة، routes بلا `loading.tsx`/`error.tsx`، فولدرات بلا README، صفحات هيكلية فارغة.
+- `scripts/diagnostics/run-all.mjs` — Orchestrator يُشغّل الإثنين ويولّد لوحة موحّدة في `diagnostics/reports/dashboard.md` مع Health Score (0-100) وأهم 15 أولوية.
+
+### المخرجات
+- `diagnostics/errors/latest.{md,json}` — تقرير الأخطاء.
+- `diagnostics/gaps/latest.{md,json}` — تقرير ما ينقص ويحتاج تطوير.
+- `diagnostics/reports/dashboard.{md,json}` — لوحة الصحة الموحّدة.
+- `diagnostics/history/` — لقطات مؤرّخة لكل تشغيل (لمتابعة التحسّن/التراجع).
+
+### npm scripts
+```bash
+npm run diag         # فحص شامل: أخطاء + فجوات + لوحة
+npm run diag:errors  # أخطاء فقط
+npm run diag:gaps    # فجوات فقط
+```
+
+### معادلة Health Score
+`100 - (critical*10 + high*4 + medium*1.5 + low*0.3)` مع وزن 50% للفجوات. كل تشغيل يُقارن نفسه بالسابق ويظهر Δ في الجدول.
+
+### أول تشغيل (baseline)
+- 64 خطأ (4 high شامل ثغرة xlsx، 40 medium، 20 low).
+- 665 فجوة (7 high BUG markers، 148 medium شامل ترجمات/route boundaries، 510 low).
+- Health Score مبدئي: 0/100 (مساحة كبيرة للتحسين، خاصة في تغطية الاختبارات والترجمات).
+
+التقارير تُولَّد في فولدر مُستثنى من Git (`.gitignore`) ما عدا README والـ scripts.
+
+---
+
 ## Session 2026-04-26 — التحوّل الإستراتيجي: من "وكلاء استشاريين" إلى "وكلاء منفّذين فعلاً"
 
 ### المشكلة الأساسية (شكوى المؤسّس):
