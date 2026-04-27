@@ -83,6 +83,12 @@ export async function runQA(): Promise<QAReport> {
         console.log(`  → ${pagePath}`);
 
         const p: Page = await context.newPage();
+        // Polyfill for esbuild's __name helper which tsx injects into compiled
+        // page.evaluate callbacks but doesn't ship to the browser context.
+        await p.addInitScript(() => {
+          const g = globalThis as unknown as { __name?: (fn: unknown) => unknown };
+          if (typeof g.__name !== 'function') g.__name = (fn: unknown) => fn;
+        });
         const pageResults: CheckResult[] = [];
         let loadTimeMs = 0;
 

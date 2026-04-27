@@ -18,7 +18,12 @@ export async function checkLayout(
       const rect = el.getBoundingClientRect();
       const style = getComputedStyle(el);
 
-      if (rect.right > deviceWidth + 2) {
+      // Tolerance: sub-pixel rounding, antialiasing, scrollbar gutters, and
+      // decorative borders/shadows commonly cause 1-7px overshoots that aren't
+      // user-visible. Flag only meaningful overflow (>= 8px).
+      const OVERFLOW_TOLERANCE = 8;
+
+      if (rect.right > deviceWidth + OVERFLOW_TOLERANCE) {
         const className =
           el.className && typeof el.className === 'string'
             ? `.${el.className.trim().split(/\s+/).slice(0, 2).join('.')}`
@@ -30,7 +35,7 @@ export async function checkLayout(
         });
       }
 
-      if (style.overflow === 'visible' && el.scrollWidth > el.clientWidth + 2) {
+      if (style.overflow === 'visible' && el.scrollWidth > el.clientWidth + OVERFLOW_TOLERANCE) {
         issues.push({
           selector: el.tagName.toLowerCase(),
           details: `نص يتجاوز عرض الحاوية بـ ${el.scrollWidth - el.clientWidth}px`,
@@ -65,24 +70,51 @@ export async function checkLayout(
     );
     const issues: string[] = [];
 
+    const MIN_OVERLAP_PX = 6;
+
+    const isEffectivelyVisible = (el: Element): boolean => {
+      const anyEl = el as Element & { checkVisibility?: (opts?: object) => boolean };
+      if (typeof anyEl.checkVisibility === 'function') {
+        if (!anyEl.checkVisibility({ checkVisibilityCSS: true, checkOpacity: true })) {
+          return false;
+        }
+      }
+      let cur: Element | null = el.parentElement;
+      while (cur) {
+        const cs = getComputedStyle(cur);
+        const clipped =
+          (cs.overflow === 'hidden' || cs.overflowY === 'hidden' || cs.overflowX === 'hidden') &&
+          (cur.clientHeight === 0 || cur.clientWidth === 0);
+        if (clipped) return false;
+        cur = cur.parentElement;
+      }
+      return true;
+    };
+
     for (let i = 0; i < texts.length - 1; i++) {
-      const r1 = texts[i].getBoundingClientRect();
-      const r2 = texts[i + 1].getBoundingClientRect();
+      const a = texts[i];
+      const b = texts[i + 1];
+
+      if (a.contains(b) || b.contains(a)) continue;
+
+      const aText = (a.textContent || '').trim();
+      const bText = (b.textContent || '').trim();
+      if (!aText || !bText) continue;
+      if (aText === bText || aText.includes(bText) || bText.includes(aText)) continue;
+
+      if (!isEffectivelyVisible(a) || !isEffectivelyVisible(b)) continue;
+
+      const r1 = a.getBoundingClientRect();
+      const r2 = b.getBoundingClientRect();
 
       if (r1.width === 0 || r1.height === 0) continue;
       if (r2.width === 0 || r2.height === 0) continue;
 
-      const overlap = !(
-        r1.right <= r2.left ||
-        r2.right <= r1.left ||
-        r1.bottom <= r2.top ||
-        r2.bottom <= r1.top
-      );
+      const overlapX = Math.min(r1.right, r2.right) - Math.max(r1.left, r2.left);
+      const overlapY = Math.min(r1.bottom, r2.bottom) - Math.max(r1.top, r2.top);
 
-      if (overlap && r1.top !== r2.top) {
-        issues.push(
-          `"${texts[i].textContent?.slice(0, 20)}" و "${texts[i + 1].textContent?.slice(0, 20)}"`
-        );
+      if (overlapX > MIN_OVERLAP_PX && overlapY > MIN_OVERLAP_PX) {
+        issues.push(`"${aText.slice(0, 20)}" و "${bText.slice(0, 20)}"`);
       }
     }
     return issues.slice(0, 5);

@@ -46,7 +46,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${siteUrl}/en`, lastModified: now, changeFrequency: 'weekly', priority: 0.9 },
     { url: `${siteUrl}/roi`, lastModified: now, changeFrequency: 'monthly', priority: 0.85 },
     { url: `${siteUrl}/first-100`, lastModified: now, changeFrequency: 'daily', priority: 0.85 },
-    { url: `${siteUrl}/affiliate`, lastModified: now, changeFrequency: 'monthly', priority: 0.8 },
     { url: `${siteUrl}/changelog`, lastModified: now, changeFrequency: 'weekly', priority: 0.7 },
   ];
 

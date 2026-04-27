@@ -1,9 +1,6 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-const REFERRAL_COOKIE = 'kalm_ref';
-const REFERRAL_TTL_DAYS = 60;
-
 const SESSION_COOKIE = 'kal_session';
 const PROTECTED_PREFIXES = [
   '/dashboard',
@@ -85,34 +82,6 @@ export async function proxy(request: NextRequest) {
       if (next && next !== '/') loginUrl.searchParams.set('next', next);
       return NextResponse.redirect(loginUrl);
     }
-  }
-
-  // 4. Affiliate referral attribution (P1-5): capture ?ref=CODE on first hit.
-  const ref = url.searchParams.get('ref');
-  if (ref && !request.cookies.get(REFERRAL_COOKIE)) {
-    response.cookies.set(REFERRAL_COOKIE, ref.slice(0, 64), {
-      maxAge: 60 * 60 * 24 * REFERRAL_TTL_DAYS,
-      path: '/',
-      sameSite: 'lax',
-      httpOnly: false,
-    });
-
-    const utmSource = url.searchParams.get('utm_source');
-    const utmCampaign = url.searchParams.get('utm_campaign');
-    const utmMedium = url.searchParams.get('utm_medium');
-
-    void fetch(`${url.origin}/api/affiliate/track`, {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({
-        ref,
-        utmSource,
-        utmCampaign,
-        utmMedium,
-        path: url.pathname,
-        referer: request.headers.get('referer') ?? null,
-      }),
-    }).catch(() => {/* swallow */});
   }
 
   return response;

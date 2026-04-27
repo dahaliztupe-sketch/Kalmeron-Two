@@ -33,7 +33,6 @@ export function Footer() {
             <FLink href="/opportunities">رادار الفرص</FLink>
             <FLink href="/marketplace">السوق</FLink>
             <FLink href="/changelog">سجل التحديثات</FLink>
-            <FLink href="/affiliate">برنامج الشركاء</FLink>
             <FLink href="/first-100">عرض أول 100 شركة</FLink>
           </FooterCol>
         </div>

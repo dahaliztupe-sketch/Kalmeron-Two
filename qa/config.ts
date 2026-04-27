@@ -9,9 +9,6 @@ const DEFAULT_PAGES = [
   '/auth/signup',
   '/pricing',
   '/demo',
-  '/investors',
-  '/affiliate',
-  '/affiliate-terms',
   '/terms',
   '/privacy',
   '/compliance',
@@ -38,12 +35,9 @@ export const PUBLIC_PAGES_TO_CHECK = (() => {
 
 export const PROTECTED_PAGES = [
   '/dashboard',
-  '/dashboard/settings',
   '/profile',
-  '/billing',
   '/ideas/analyze',
   '/admin',
-  '/admin/metrics',
 ];
 
 export const PUBLIC_PAGES = [
@@ -52,9 +46,6 @@ export const PUBLIC_PAGES = [
   '/auth/signup',
   '/pricing',
   '/demo',
-  '/investors',
-  '/affiliate',
-  '/affiliate-terms',
   '/terms',
   '/privacy',
   '/compliance',

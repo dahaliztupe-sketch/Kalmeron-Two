@@ -88,10 +88,11 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   compress: true,
   typescript: {
-    // ✅ صار 0 أخطاء (تدقيق 2026-04-26)؛ نُفعّل فحص Next للبناء
-    // كحماية من التراجع. لو عاد stack-overflow في المستقبل، أعد `true`
-    // واترك `npm run typecheck` يحرس البوابة قبل البناء.
-    ignoreBuildErrors: false,
+    // ⚠️ stack-overflow معروف في Next.js 16 TS-checker على بعض المشاريع
+    // (https://github.com/vercel/next.js/issues — "Maximum call stack size exceeded")
+    // نتجاوزه بتفعيل ignoreBuildErrors=true، ونعتمد على `npm run typecheck`
+    // (الذي يستخدم --stack-size=8192) كحارس قبل البناء/النشر.
+    ignoreBuildErrors: true,
   },
   async headers() {
     return [
