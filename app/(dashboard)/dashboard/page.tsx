@@ -12,6 +12,7 @@ import {
   Flame, Mic,
 } from "lucide-react";
 import { NotificationPermissionBanner } from "@/components/ui/NotificationPermissionBanner";
+import { SmartHubSection } from "@/src/components/dashboard/SmartHubSection";
 import { KalmeronAreaChart } from "@/src/components/charts";
 import Link from "next/link";
 import { cn } from "@/src/lib/utils";
@@ -132,6 +133,9 @@ export default function DashboardPage() {
 
         {/* Notification Banner */}
         <NotificationPermissionBanner userId={user?.uid} className="mb-5" />
+
+        {/* Smart Hub — unified center of latest capabilities */}
+        <SmartHubSection />
 
         {loading ? (
           <div className="flex flex-col items-center justify-center py-24 gap-3">

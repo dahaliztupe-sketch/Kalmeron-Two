@@ -197,31 +197,24 @@ export async function GET(req: NextRequest) {
   const userRl = rateLimitAgent(userId, 'daily_brief', { limit: 10, windowMs: 60_000 });
   if (!userRl.allowed) return new NextResponse('Too Many Requests', { status: 429 });
 
-  const today = new Date();
-  const dayIndex = today.getUTCFullYear() * 366 + today.getUTCMonth() * 31 + today.getUTCDate();
-
-  let blocks: BriefBlock[] | null = null;
-  let source: DailyBrief['source'] = 'fallback';
-
+  // Use shared generator (real Firestore signals + LLM + fallback).
   try {
-    const signals = await pullWorkspaceSignals();
-    blocks = await generateBrief(signals);
-    if (blocks) source = 'generated';
-  } catch {
-    blocks = null;
+    const { generateDailyBrief } = await import('@/src/lib/daily-brief/generator');
+    const brief = await generateDailyBrief(userId);
+    return NextResponse.json(brief, {
+      headers: { 'Cache-Control': 'private, max-age=21600' },
+    });
+  } catch (err) {
+    // Last-resort fallback if shared generator import/runtime fails.
+    const today = new Date();
+    const dayIndex = today.getUTCFullYear() * 366 + today.getUTCMonth() * 31 + today.getUTCDate();
+    const blocks = pickStub(dayIndex);
+    const brief: DailyBrief = {
+      generatedAt: today.toISOString(),
+      greeting: GREETINGS[dayIndex % GREETINGS.length],
+      blocks,
+      source: 'fallback',
+    };
+    return NextResponse.json(brief, { headers: { 'Cache-Control': 'private, max-age=21600' } });
   }
-
-  if (!blocks) blocks = pickStub(dayIndex);
-
-  const brief: DailyBrief = {
-    generatedAt: today.toISOString(),
-    greeting: GREETINGS[dayIndex % GREETINGS.length],
-    blocks,
-    source,
-  };
-
-  return NextResponse.json(brief, {
-    // 6h cache, but per-user (private) so we don't leak briefs across tenants.
-    headers: { 'Cache-Control': 'private, max-age=21600' },
-  });
 }
