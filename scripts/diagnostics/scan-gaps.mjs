@@ -33,20 +33,36 @@ function add(item) {
 function scanTodos() {
   process.stdout.write('  • TODO/FIXME/HACK markers ... ');
   let count = 0;
-  const re = /\b(TODO|FIXME|HACK|XXX|BUG|@ts-ignore|@ts-expect-error)\b[:\s-]*(.{0,200})/i;
-  const exts = ['.ts', '.tsx', '.js', '.jsx', '.mjs', '.py', '.md'];
+  // Only flag markers inside source code comments (// or # or /* */) or
+  // explicit comment lines — markdown documentation often legitimately uses
+  // words like "Bug Fixes" in headings.
+  const codeRe = /(?:^|\s)(?:\/\/|#|\/\*+|\*)\s*(TODO|FIXME|HACK|XXX|BUG)\b[:\s-]*(.{0,200})/i;
+  const tsIgnoreRe = /@ts-(ignore|expect-error)\b[:\s-]*(.{0,200})/i;
+  const exts = ['.ts', '.tsx', '.js', '.jsx', '.mjs', '.py'];
   for (const file of walk(ROOT, exts)) {
     let src;
     try { src = fs.readFileSync(file, 'utf8'); } catch { continue; }
     const lines = src.split('\n');
     for (let i = 0; i < lines.length; i++) {
-      const m = lines[i].match(re);
+      const ts = lines[i].match(tsIgnoreRe);
+      if (ts) {
+        add({
+          scanner: 'todos',
+          severity: SEVERITY.MEDIUM,
+          code: '@TS-' + ts[1].toUpperCase(),
+          file: rel(file),
+          line: i + 1,
+          message: lines[i].trim().slice(0, 200),
+        });
+        count++;
+        continue;
+      }
+      const m = lines[i].match(codeRe);
       if (!m) continue;
       const tag = m[1].toUpperCase();
       const sev =
         tag === 'FIXME' || tag === 'BUG' ? SEVERITY.HIGH :
         tag === 'HACK' || tag === 'XXX' ? SEVERITY.MEDIUM :
-        tag === '@TS-IGNORE' || tag === '@TS-EXPECT-ERROR' ? SEVERITY.MEDIUM :
         SEVERITY.LOW;
       add({
         scanner: 'todos',
@@ -235,42 +251,46 @@ function scanRouteStates() {
   const appDir = path.join(ROOT, 'app');
   if (!fs.existsSync(appDir)) { console.log('skip'); return; }
   let count = 0;
-  function walkApp(dir) {
+  // Next.js inherits loading.tsx and error.tsx down the segment tree —
+  // only flag a route if NO ancestor segment provides one.
+  function walkApp(dir, inheritedLoading, inheritedError) {
     let entries;
     try { entries = fs.readdirSync(dir, { withFileTypes: true }); } catch { return; }
     const names = entries.map((e) => e.name);
+    const hasOwnLoading = names.some((n) => /^loading\.(tsx?|jsx?)$/.test(n));
+    const hasOwnError = names.some((n) => /^error\.(tsx?|jsx?)$/.test(n));
+    const loadingNow = inheritedLoading || hasOwnLoading;
+    const errorNow = inheritedError || hasOwnError;
     const hasPage = names.some((n) => /^page\.(tsx?|jsx?|mdx)$/.test(n));
     if (hasPage) {
-      const hasLoading = names.some((n) => /^loading\.(tsx?|jsx?)$/.test(n));
-      const hasError = names.some((n) => /^error\.(tsx?|jsx?)$/.test(n));
-      if (!hasLoading) {
+      if (!loadingNow) {
         add({
           scanner: 'routes',
           severity: SEVERITY.LOW,
           code: 'NO_LOADING',
           file: rel(dir),
-          message: 'Route is missing a loading.tsx fallback',
+          message: 'Route has no loading.tsx fallback (and none inherited)',
         });
         count++;
       }
-      if (!hasError) {
+      if (!errorNow) {
         add({
           scanner: 'routes',
           severity: SEVERITY.MEDIUM,
           code: 'NO_ERROR_BOUNDARY',
           file: rel(dir),
-          message: 'Route is missing an error.tsx boundary',
+          message: 'Route has no error.tsx boundary (and none inherited)',
         });
         count++;
       }
     }
     for (const e of entries) {
       if (e.isDirectory() && !e.name.startsWith('_') && !e.name.startsWith('.')) {
-        walkApp(path.join(dir, e.name));
+        walkApp(path.join(dir, e.name), loadingNow, errorNow);
       }
     }
   }
-  walkApp(appDir);
+  walkApp(appDir, false, false);
   console.log(count + ' route(s) needing fallback');
 }
 

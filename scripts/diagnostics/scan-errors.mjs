@@ -138,9 +138,12 @@ function scanBrokenImports() {
     } catch {
       continue;
     }
+    // Strip template literals to avoid false positives in scaffolders
+    // that contain `import X from './...'` inside backticks.
+    const cleaned = src.replace(/`[\s\S]*?`/g, (m) => ' '.repeat(m.length));
     const dir = path.dirname(file);
     let m;
-    while ((m = importRe.exec(src))) {
+    while ((m = importRe.exec(cleaned))) {
       const spec = m[1];
       if (!spec.startsWith('.') && !spec.startsWith('/')) continue;
       const base = spec.startsWith('/')

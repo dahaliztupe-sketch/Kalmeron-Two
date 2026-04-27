@@ -198,7 +198,7 @@ export default function OperationsRoomPage() {
                   حالة الاتصالات الخارجية
                 </CardTitle>
                 <p className="text-xs text-neutral-400 mt-1">
-                  الوكلاء يعملون دائماً — الاتصالات غير المربوطة تعمل بـ"وضع المحاكاة" (يُسجَّل كل شيء بدون صرف فعلي).
+                  الوكلاء يعملون دائماً — الاتصالات غير المربوطة تعمل بـ&laquo;وضع المحاكاة&raquo; (يُسجَّل كل شيء بدون صرف فعلي).
                 </p>
               </CardHeader>
               <CardContent>
@@ -331,7 +331,7 @@ export default function OperationsRoomPage() {
                           <pre className="mt-2 bg-black/40 border border-white/5 rounded-lg p-3 text-[11px] text-neutral-300 overflow-x-auto whitespace-pre-wrap">
                             {JSON.stringify(it.input, null, 2)}
                           </pre>
-                          {it.result && (
+                          {it.result != null && (
                             <pre className="mt-2 bg-emerald-950/30 border border-emerald-500/20 rounded-lg p-3 text-[11px] text-emerald-200 overflow-x-auto whitespace-pre-wrap">
                               {JSON.stringify(it.result, null, 2)}
                             </pre>

@@ -156,8 +156,8 @@ export default function ValuePropositionPage() {
             <h3 className="text-white font-bold">قراءة سريعة لقماشك</h3>
           </div>
           <ul className="space-y-2 text-sm text-neutral-300">
-            <li className="flex items-start gap-2"><span className="text-amber-400 mt-1">●</span> كل "ألم" يجب أن يقابله "مسكّن ألم" واحد على الأقلّ. عدّ كم ألم بدون حلّ.</li>
-            <li className="flex items-start gap-2"><span className="text-amber-400 mt-1">●</span> كل "مكسب" يجب أن يقابله "صانع مكسب". الفجوات هنا = فرص ميزات جديدة.</li>
+            <li className="flex items-start gap-2"><span className="text-amber-400 mt-1">●</span> كل &laquo;ألم&raquo; يجب أن يقابله &laquo;مسكّن ألم&raquo; واحد على الأقلّ. عدّ كم ألم بدون حلّ.</li>
+            <li className="flex items-start gap-2"><span className="text-amber-400 mt-1">●</span> كل &laquo;مكسب&raquo; يجب أن يقابله &laquo;صانع مكسب&raquo;. الفجوات هنا = فرص ميزات جديدة.</li>
             <li className="flex items-start gap-2"><span className="text-amber-400 mt-1">●</span> لو منتجك يقدّم أشياء لا يحتاجها العميل (في يمين بدون يسار) — هذا overengineering.</li>
             <li className="flex items-start gap-2"><span className="text-amber-400 mt-1">●</span> اطلب من ٥ عملاء حقيقيّين تقييم الجانب الأيسر قبل بناء الأيمن.</li>
           </ul>

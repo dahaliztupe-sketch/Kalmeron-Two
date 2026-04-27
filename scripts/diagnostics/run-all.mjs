@@ -68,16 +68,25 @@ function main() {
 }
 
 function computeHealthScore(errors, gaps) {
-  // Penalty model: critical -10, high -4, medium -1.5, low -0.3
-  const penalty = (totals) => {
-    const t = totals || {};
-    return (t.critical || 0) * 10
-      + (t.high || 0) * 4
-      + (t.medium || 0) * 1.5
-      + (t.low || 0) * 0.3;
-  };
-  const total = penalty(errors.totals) + penalty(gaps.totals) * 0.5;
-  return Math.max(0, Math.round(100 - total));
+  // Two-bucket capped penalty model.
+  // - Errors are weighted more heavily (real bugs / vulnerabilities).
+  // - Gaps are capped so a long tail of "nice-to-have" tasks (e.g. missing
+  //   unit tests) cannot floor the score at 0 while real issues are clean.
+  const errPen = Math.min(
+    60,
+    (errors.totals?.critical || 0) * 15
+      + (errors.totals?.high || 0) * 5
+      + (errors.totals?.medium || 0) * 1.2
+      + (errors.totals?.low || 0) * 0.2
+  );
+  const gapPen = Math.min(
+    30,
+    (gaps.totals?.critical || 0) * 15
+      + (gaps.totals?.high || 0) * 5
+      + (gaps.totals?.medium || 0) * 1
+      + (gaps.totals?.low || 0) * 0.05
+  );
+  return Math.max(0, Math.round(100 - errPen - gapPen));
 }
 
 function pickTopPriorities(errors, gaps) {

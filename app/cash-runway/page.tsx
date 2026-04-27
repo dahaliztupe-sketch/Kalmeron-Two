@@ -109,7 +109,7 @@ export default function CashRunwayPage() {
               <ReferenceLine y={0} stroke="#ef4444" strokeDasharray="4 4" label={{ value: "الصفر", fill: "#ef4444", position: "right" }} />
               <Tooltip
                 contentStyle={{ backgroundColor: "#0a0d14", border: "1px solid #ffffff20", borderRadius: 8 }}
-                formatter={(v: number) => [`${fmt(v)} ج`, "السيولة"]}
+                formatter={((v: number) => [`${fmt(v)} ج`, "السيولة"]) as never}
                 labelFormatter={(l) => `الشهر ${l}`}
               />
               <Area type="monotone" dataKey="cash" stroke="#06b6d4" fillOpacity={1} fill="url(#cashGradient)" strokeWidth={2.5} />

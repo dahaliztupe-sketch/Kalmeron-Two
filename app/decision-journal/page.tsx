@@ -80,7 +80,7 @@ export default function DecisionJournalPage() {
             </div>
             <h1 className="font-display text-3xl md:text-4xl font-extrabold text-white mb-2">دفتر القرارات</h1>
             <p className="text-text-secondary max-w-2xl">
-              سجّل كل قرار مهم — السياق، الخيارات، السبب، التوقّع. راجعه بعد ٣٠ يوماً وابنِ "حدساً مدعوماً بالبيانات" بدل التخمين.
+              سجّل كل قرار مهم — السياق، الخيارات، السبب، التوقّع. راجعه بعد ٣٠ يوماً وابنِ &laquo;حدساً مدعوماً بالبيانات&raquo; بدل التخمين.
             </p>
           </div>
           <button onClick={() => setShowForm(true)} className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-violet-500/20 hover:bg-violet-500/30 text-violet-200 border border-violet-500/40 text-sm transition-colors">
