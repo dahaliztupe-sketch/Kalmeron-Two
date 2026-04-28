@@ -1,0 +1,465 @@
+﻿2026-04-28T17:24:55.6317629Z ##[group]Run npm run test:e2e
+2026-04-28T17:24:55.6317927Z [36;1mnpm run test:e2e[0m
+2026-04-28T17:24:55.6338842Z shell: /usr/bin/bash -e {0}
+2026-04-28T17:24:55.6339089Z env:
+2026-04-28T17:24:55.6339254Z   CI: true
+2026-04-28T17:24:55.6339426Z   NEXT_TELEMETRY_DISABLED: 1
+2026-04-28T17:24:55.6339646Z   PORT: 5000
+2026-04-28T17:24:55.6339814Z   MOCK_AUTH: true
+2026-04-28T17:24:55.6339981Z   MOCK_LLM: true
+2026-04-28T17:24:55.6340164Z   NEXT_PUBLIC_MOCK_AUTH: true
+2026-04-28T17:24:55.6340429Z   NEXT_PUBLIC_FIREBASE_API_KEY: ci-dummy-key
+2026-04-28T17:24:55.6340756Z   NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: example.firebaseapp.com
+2026-04-28T17:24:55.6341097Z   NEXT_PUBLIC_FIREBASE_PROJECT_ID: ci-example
+2026-04-28T17:24:55.6341418Z   NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: example.appspot.com
+2026-04-28T17:24:55.6341734Z   NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: 0
+2026-04-28T17:24:55.6341993Z   NEXT_PUBLIC_FIREBASE_APP_ID: 1:0:web:0
+2026-04-28T17:24:55.6342233Z   GEMINI_API_KEY: ci-mock
+2026-04-28T17:24:55.6342459Z ##[endgroup]
+2026-04-28T17:24:55.7462766Z 
+2026-04-28T17:24:55.7463884Z > ai-studio-applet@0.1.0 test:e2e
+2026-04-28T17:24:55.7464528Z > playwright test
+2026-04-28T17:24:55.7464785Z 
+2026-04-28T17:24:57.2189591Z [WebServer] 
+2026-04-28T17:24:57.2190215Z [WebServer] > ai-studio-applet@0.1.0 start
+2026-04-28T17:24:57.2190942Z [WebServer] > next start -p 5000 -H 0.0.0.0 -p 5000
+2026-04-28T17:24:57.2191484Z [WebServer] 
+2026-04-28T17:24:57.4475081Z [WebServer] [1m[38;2;173;127;168m▲ Next.js 16.2.4[39m[22m
+2026-04-28T17:24:57.4476120Z [WebServer] - Local:         http://localhost:5000
+2026-04-28T17:24:57.4476624Z [WebServer] - Network:       http://0.0.0.0:5000
+2026-04-28T17:24:57.4481056Z [WebServer] [32m[1m✓[22m[39m Ready in 137ms
+2026-04-28T17:24:58.3700637Z 
+2026-04-28T17:24:58.3701274Z Running 27 tests using 1 worker
+2026-04-28T17:24:58.3701739Z 
+2026-04-28T17:24:58.7282440Z [WebServer] Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+2026-04-28T17:25:05.3370003Z   ✓   1 [chromium] › e2e/api-docs.spec.ts:4:7 › Public API surface › /api-docs page loads (6.2s)
+2026-04-28T17:25:05.6846514Z   ✓   2 [chromium] › e2e/api-docs.spec.ts:9:7 › Public API surface › OpenAPI spec is reachable and parseable (329ms)
+2026-04-28T17:25:14.8848918Z [WebServer] {"level":"warn","time":1777397114883,"service":"kalmeron-two","env":"production","msg":"KG_DISABLED","reason":"NEO4J credentials missing"}
+2026-04-28T17:25:14.8849965Z [WebServer] [knowledge-graph] disabled: missing NEO4J_URI/USER/PASSWORD
+2026-04-28T17:25:14.9056077Z   ✓   3 [chromium] › e2e/api-docs.spec.ts:17:7 › Public API surface › health endpoint declines caching (9.2s)
+2026-04-28T17:25:16.3605117Z   ✓   4 [chromium] › e2e/auth.spec.ts:4:7 › Auth flows › signup page renders with Google OAuth and email form (1.4s)
+2026-04-28T17:25:17.9116731Z   ✓   5 [chromium] › e2e/auth.spec.ts:11:7 › Auth flows › login page renders (1.5s)
+2026-04-28T17:25:19.4851368Z   ✓   6 [chromium] › e2e/auth.spec.ts:16:7 › Auth flows › protected /dashboard redirects when no session (1.5s)
+2026-04-28T17:25:19.5195741Z   ✓   7 [chromium] › e2e/auth.spec.ts:25:7 › Auth flows › logout endpoint clears session cookie (18ms)
+2026-04-28T17:25:22.6419336Z   ✓   8 [chromium] › e2e/billing.spec.ts:4:7 › Billing & quotas › pricing page renders 3 tiers (3.1s)
+2026-04-28T17:25:22.6732141Z   ✓   9 [chromium] › e2e/billing.spec.ts:11:7 › Billing & quotas › Stripe webhook endpoint rejects unsigned payload (14ms)
+2026-04-28T17:25:22.6923420Z   ✓  10 [chromium] › e2e/billing.spec.ts:19:7 › Billing & quotas › checkout endpoint requires auth (10ms)
+2026-04-28T17:25:22.7126836Z   ✓  11 [chromium] › e2e/chat.spec.ts:4:7 › Chat (unauthenticated guards) › GET /api/chat is forbidden without auth (10ms)
+2026-04-28T17:25:22.7361580Z   ✓  12 [chromium] › e2e/chat.spec.ts:9:7 › Chat (unauthenticated guards) › POST /api/chat without token returns 401 (13ms)
+2026-04-28T17:25:23.1941730Z   ✓  13 [chromium] › e2e/chat.spec.ts:18:7 › Chat (unauthenticated guards) › rate limiting kicks in on rapid bursts (447ms)
+2026-04-28T17:25:33.9094480Z   ✘  14 [chromium] › e2e/landing.spec.ts:4:7 › Landing & SEO › homepage shows hero, CTA, and 16-agent showcase (10.6s)
+2026-04-28T17:25:45.3638967Z   ✘  15 [chromium] › e2e/landing.spec.ts:4:7 › Landing & SEO › homepage shows hero, CTA, and 16-agent showcase (retry #1) (10.7s)
+2026-04-28T17:25:56.6301986Z   ✘  16 [chromium] › e2e/landing.spec.ts:4:7 › Landing & SEO › homepage shows hero, CTA, and 16-agent showcase (retry #2) (10.6s)
+2026-04-28T17:26:07.9000485Z   ✘  17 [chromium] › e2e/landing.spec.ts:14:7 › Landing & SEO › homepage emits a valid <title> and meta description (10.6s)
+2026-04-28T17:26:09.9376272Z   ✓  18 [chromium] › e2e/landing.spec.ts:14:7 › Landing & SEO › homepage emits a valid <title> and meta description (retry #1) (1.3s)
+2026-04-28T17:26:10.2889406Z   ✓  19 [chromium] › e2e/landing.spec.ts:21:7 › Landing & SEO › robots.txt and sitemap.xml are reachable (337ms)
+2026-04-28T17:26:10.3311024Z   ✓  20 [chromium] › e2e/landing.spec.ts:28:7 › Landing & SEO › CSP header is present on root (31ms)
+2026-04-28T17:26:22.0692558Z   ✘  21 [chromium] › e2e/onboarding.spec.ts:4:7 › تدفق التسجيل وإكمال الملف الشخصي › صفحة التسجيل تظهر بشكل صحيح (11.7s)
+2026-04-28T17:26:34.7204617Z   ✘  22 [chromium] › e2e/onboarding.spec.ts:4:7 › تدفق التسجيل وإكمال الملف الشخصي › صفحة التسجيل تظهر بشكل صحيح (retry #1) (11.8s)
+2026-04-28T17:26:46.7767298Z   ✘  23 [chromium] › e2e/onboarding.spec.ts:4:7 › تدفق التسجيل وإكمال الملف الشخصي › صفحة التسجيل تظهر بشكل صحيح (retry #2) (11.4s)
+2026-04-28T17:26:48.3958825Z   ✓  24 [chromium] › e2e/onboarding.spec.ts:10:7 › تدفق التسجيل وإكمال الملف الشخصي › الصفحة الرئيسية تعرض محتوى التسويق للزوار (988ms)
+2026-04-28T17:26:49.8188929Z   ✓  25 [chromium] › e2e/onboarding.spec.ts:15:7 › تدفق التسجيل وإكمال الملف الشخصي › الداشبورد يُعيد التوجيه للتسجيل إذا لم يكن هناك جلسة (1.4s)
+2026-04-28T17:26:50.1943738Z   ✘  26 [chromium] › e2e/onboarding.spec.ts:28:7 › تدفق التسجيل وإكمال الملف الشخصي › نقطة الصحة تستجيب بـ 200 (329ms)
+2026-04-28T17:26:51.1488438Z   ✘  27 [chromium] › e2e/onboarding.spec.ts:28:7 › تدفق التسجيل وإكمال الملف الشخصي › نقطة الصحة تستجيب بـ 200 (retry #1) (371ms)
+2026-04-28T17:26:52.0463473Z   ✘  28 [chromium] › e2e/onboarding.spec.ts:28:7 › تدفق التسجيل وإكمال الملف الشخصي › نقطة الصحة تستجيب بـ 200 (retry #2) (341ms)
+2026-04-28T17:27:03.3698993Z   ✘  29 [chromium] › e2e/onboarding.spec.ts:35:7 › تدفق التسجيل وإكمال الملف الشخصي › صفحة الخصوصية تحتوي على بيانات PDPL (10.7s)
+2026-04-28T17:27:14.7168185Z   ✘  30 [chromium] › e2e/onboarding.spec.ts:35:7 › تدفق التسجيل وإكمال الملف الشخصي › صفحة الخصوصية تحتوي على بيانات PDPL (retry #1) (10.7s)
+2026-04-28T17:27:15.9868861Z   ✓  31 [chromium] › e2e/onboarding.spec.ts:35:7 › تدفق التسجيل وإكمال الملف الشخصي › صفحة الخصوصية تحتوي على بيانات PDPL (retry #2) (644ms)
+2026-04-28T17:27:16.6190843Z   ✓  32 [chromium] › e2e/onboarding.spec.ts:40:7 › تدفق التسجيل وإكمال الملف الشخصي › صفحة الشروط تحتوي على محتوى الاستخدام (615ms)
+2026-04-28T17:27:16.9762443Z   ✓  33 [chromium] › e2e/security-headers.spec.ts:13:9 › Security headers › required headers present on / (342ms)
+2026-04-28T17:27:17.0304708Z   ✓  34 [chromium] › e2e/security-headers.spec.ts:13:9 › Security headers › required headers present on /pricing (41ms)
+2026-04-28T17:27:17.0649593Z   ✓  35 [chromium] › e2e/security-headers.spec.ts:13:9 › Security headers › required headers present on /auth/login (24ms)
+2026-04-28T17:27:17.0942834Z   ✓  36 [chromium] › e2e/security-headers.spec.ts:24:7 › Security headers › no Server header leaks software version (20ms)
+2026-04-28T17:27:17.1608043Z 
+2026-04-28T17:27:17.1613981Z 
+2026-04-28T17:27:17.1631821Z   1) [chromium] › e2e/landing.spec.ts:4:7 › Landing & SEO › homepage shows hero, CTA, and 16-agent showcase 
+2026-04-28T17:27:17.1632484Z 
+2026-04-28T17:27:17.1633243Z     Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+2026-04-28T17:27:17.1633851Z 
+2026-04-28T17:27:17.1634244Z     Locator: getByText(/كلميرون|Kalmeron/i).first()
+2026-04-28T17:27:17.1634758Z     Expected: visible
+2026-04-28T17:27:17.1635566Z     Timeout: 10000ms
+2026-04-28T17:27:17.1635956Z     Error: element(s) not found
+2026-04-28T17:27:17.1636222Z 
+2026-04-28T17:27:17.1636346Z     Call log:
+2026-04-28T17:27:17.1636911Z     [2m  - Expect "toBeVisible" with timeout 10000ms[22m
+2026-04-28T17:27:17.1637697Z     [2m  - waiting for getByText(/كلميرون|Kalmeron/i).first()[22m
+2026-04-28T17:27:17.1637944Z 
+2026-04-28T17:27:17.1637952Z 
+2026-04-28T17:27:17.1638218Z       4 |   test('homepage shows hero, CTA, and 16-agent showcase', async ({ page }) => {
+2026-04-28T17:27:17.1638698Z       5 |     await page.goto('/');
+2026-04-28T17:27:17.1639184Z     > 6 |     await expect(page.getByText(/كلميرون|Kalmeron/i).first()).toBeVisible();
+2026-04-28T17:27:17.1639717Z         |                                                               ^
+2026-04-28T17:27:17.1640336Z       7 |     // Should have a clear primary CTA above the fold.
+2026-04-28T17:27:17.1641605Z       8 |     const cta = page.getByRole('link', { name: /ابدأ مجاناً|ابدأ الآن|انضم|Sign up/i }).first();
+2026-04-28T17:27:17.1642309Z       9 |     await expect(cta).toBeVisible();
+2026-04-28T17:27:17.1642740Z         at /home/runner/work/Kalmeron-Two/Kalmeron-Two/e2e/landing.spec.ts:6:63
+2026-04-28T17:27:17.1643359Z 
+2026-04-28T17:27:17.1643805Z     attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+2026-04-28T17:27:17.1644714Z     test-results/landing-Landing-SEO-homepa-9615b-o-CTA-and-16-agent-showcase-chromium/test-failed-1.png
+2026-04-28T17:27:17.1645722Z     ────────────────────────────────────────────────────────────────────────────────────────────────
+2026-04-28T17:27:17.1645992Z 
+2026-04-28T17:27:17.1646353Z     attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+2026-04-28T17:27:17.1647023Z     test-results/landing-Landing-SEO-homepa-9615b-o-CTA-and-16-agent-showcase-chromium/video.webm
+2026-04-28T17:27:17.1647756Z     ────────────────────────────────────────────────────────────────────────────────────────────────
+2026-04-28T17:27:17.1648041Z 
+2026-04-28T17:27:17.1648480Z     Error Context: test-results/landing-Landing-SEO-homepa-9615b-o-CTA-and-16-agent-showcase-chromium/error-context.md
+2026-04-28T17:27:17.1648961Z 
+2026-04-28T17:27:17.1649477Z     Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+2026-04-28T17:27:17.1650004Z 
+2026-04-28T17:27:17.1650440Z     Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+2026-04-28T17:27:17.1650784Z 
+2026-04-28T17:27:17.1650988Z     Locator: getByText(/كلميرون|Kalmeron/i).first()
+2026-04-28T17:27:17.1651267Z     Expected: visible
+2026-04-28T17:27:17.1651587Z     Timeout: 10000ms
+2026-04-28T17:27:17.1651930Z     Error: element(s) not found
+2026-04-28T17:27:17.1652090Z 
+2026-04-28T17:27:17.1652169Z     Call log:
+2026-04-28T17:27:17.1652496Z     [2m  - Expect "toBeVisible" with timeout 10000ms[22m
+2026-04-28T17:27:17.1653288Z     [2m  - waiting for getByText(/كلميرون|Kalmeron/i).first()[22m
+2026-04-28T17:27:17.1653824Z 
+2026-04-28T17:27:17.1653835Z 
+2026-04-28T17:27:17.1654220Z       4 |   test('homepage shows hero, CTA, and 16-agent showcase', async ({ page }) => {
+2026-04-28T17:27:17.1654649Z       5 |     await page.goto('/');
+2026-04-28T17:27:17.1655150Z     > 6 |     await expect(page.getByText(/كلميرون|Kalmeron/i).first()).toBeVisible();
+2026-04-28T17:27:17.1655596Z         |                                                               ^
+2026-04-28T17:27:17.1655975Z       7 |     // Should have a clear primary CTA above the fold.
+2026-04-28T17:27:17.1656575Z       8 |     const cta = page.getByRole('link', { name: /ابدأ مجاناً|ابدأ الآن|انضم|Sign up/i }).first();
+2026-04-28T17:27:17.1657034Z       9 |     await expect(cta).toBeVisible();
+2026-04-28T17:27:17.1657457Z         at /home/runner/work/Kalmeron-Two/Kalmeron-Two/e2e/landing.spec.ts:6:63
+2026-04-28T17:27:17.1657756Z 
+2026-04-28T17:27:17.1658147Z     attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+2026-04-28T17:27:17.1658904Z     test-results/landing-Landing-SEO-homepa-9615b-o-CTA-and-16-agent-showcase-chromium-retry1/test-failed-1.png
+2026-04-28T17:27:17.1659703Z     ────────────────────────────────────────────────────────────────────────────────────────────────
+2026-04-28T17:27:17.1659973Z 
+2026-04-28T17:27:17.1660330Z     attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+2026-04-28T17:27:17.1661204Z     test-results/landing-Landing-SEO-homepa-9615b-o-CTA-and-16-agent-showcase-chromium-retry1/video.webm
+2026-04-28T17:27:17.1661968Z     ────────────────────────────────────────────────────────────────────────────────────────────────
+2026-04-28T17:27:17.1662236Z 
+2026-04-28T17:27:17.1662719Z     Error Context: test-results/landing-Landing-SEO-homepa-9615b-o-CTA-and-16-agent-showcase-chromium-retry1/error-context.md
+2026-04-28T17:27:17.1663560Z 
+2026-04-28T17:27:17.1663969Z     attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+2026-04-28T17:27:17.1664711Z     test-results/landing-Landing-SEO-homepa-9615b-o-CTA-and-16-agent-showcase-chromium-retry1/trace.zip
+2026-04-28T17:27:17.1665215Z     Usage:
+2026-04-28T17:27:17.1665325Z 
+2026-04-28T17:27:17.1665835Z         npx playwright show-trace test-results/landing-Landing-SEO-homepa-9615b-o-CTA-and-16-agent-showcase-chromium-retry1/trace.zip
+2026-04-28T17:27:17.1666368Z 
+2026-04-28T17:27:17.1666702Z     ────────────────────────────────────────────────────────────────────────────────────────────────
+2026-04-28T17:27:17.1666969Z 
+2026-04-28T17:27:17.1667298Z     Retry #2 ───────────────────────────────────────────────────────────────────────────────────────
+2026-04-28T17:27:17.1667568Z 
+2026-04-28T17:27:17.1667907Z     Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+2026-04-28T17:27:17.1668218Z 
+2026-04-28T17:27:17.1668409Z     Locator: getByText(/كلميرون|Kalmeron/i).first()
+2026-04-28T17:27:17.1668848Z     Expected: visible
+2026-04-28T17:27:17.1669048Z     Timeout: 10000ms
+2026-04-28T17:27:17.1669269Z     Error: element(s) not found
+2026-04-28T17:27:17.1669418Z 
+2026-04-28T17:27:17.1669493Z     Call log:
+2026-04-28T17:27:17.1669803Z     [2m  - Expect "toBeVisible" with timeout 10000ms[22m
+2026-04-28T17:27:17.1670243Z     [2m  - waiting for getByText(/كلميرون|Kalmeron/i).first()[22m
+2026-04-28T17:27:17.1670494Z 
+2026-04-28T17:27:17.1670512Z 
+2026-04-28T17:27:17.1670767Z       4 |   test('homepage shows hero, CTA, and 16-agent showcase', async ({ page }) => {
+2026-04-28T17:27:17.1671178Z       5 |     await page.goto('/');
+2026-04-28T17:27:17.1671640Z     > 6 |     await expect(page.getByText(/كلميرون|Kalmeron/i).first()).toBeVisible();
+2026-04-28T17:27:17.1672084Z         |                                                               ^
+2026-04-28T17:27:17.1672446Z       7 |     // Should have a clear primary CTA above the fold.
+2026-04-28T17:27:17.1673374Z       8 |     const cta = page.getByRole('link', { name: /ابدأ مجاناً|ابدأ الآن|انضم|Sign up/i }).first();
+2026-04-28T17:27:17.1673866Z       9 |     await expect(cta).toBeVisible();
+2026-04-28T17:27:17.1674282Z         at /home/runner/work/Kalmeron-Two/Kalmeron-Two/e2e/landing.spec.ts:6:63
+2026-04-28T17:27:17.1674568Z 
+2026-04-28T17:27:17.1674964Z     attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+2026-04-28T17:27:17.1675713Z     test-results/landing-Landing-SEO-homepa-9615b-o-CTA-and-16-agent-showcase-chromium-retry2/test-failed-1.png
+2026-04-28T17:27:17.1676652Z     ────────────────────────────────────────────────────────────────────────────────────────────────
+2026-04-28T17:27:17.1676926Z 
+2026-04-28T17:27:17.1677285Z     attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+2026-04-28T17:27:17.1677987Z     test-results/landing-Landing-SEO-homepa-9615b-o-CTA-and-16-agent-showcase-chromium-retry2/video.webm
+2026-04-28T17:27:17.1678747Z     ────────────────────────────────────────────────────────────────────────────────────────────────
+2026-04-28T17:27:17.1679007Z 
+2026-04-28T17:27:17.1679486Z     Error Context: test-results/landing-Landing-SEO-homepa-9615b-o-CTA-and-16-agent-showcase-chromium-retry2/error-context.md
+2026-04-28T17:27:17.1680002Z 
+2026-04-28T17:27:17.1680406Z   2) [chromium] › e2e/onboarding.spec.ts:4:7 › تدفق التسجيل وإكمال الملف الشخصي › صفحة التسجيل تظهر بشكل صحيح 
+2026-04-28T17:27:17.1680765Z 
+2026-04-28T17:27:17.1681106Z     Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+2026-04-28T17:27:17.1681538Z 
+2026-04-28T17:27:17.1681939Z     Locator: getByText('انضم إلى كلميرون تو')
+2026-04-28T17:27:17.1682207Z     Expected: visible
+2026-04-28T17:27:17.1682409Z     Timeout: 10000ms
+2026-04-28T17:27:17.1682670Z     Error: element(s) not found
+2026-04-28T17:27:17.1682819Z 
+2026-04-28T17:27:17.1683081Z     Call log:
+2026-04-28T17:27:17.1683608Z     [2m  - Expect "toBeVisible" with timeout 10000ms[22m
+2026-04-28T17:27:17.1684416Z     [2m  - waiting for getByText('انضم إلى كلميرون تو')[22m
+2026-04-28T17:27:17.1684649Z 
+2026-04-28T17:27:17.1684657Z 
+2026-04-28T17:27:17.1684894Z       4 |   test('صفحة التسجيل تظهر بشكل صحيح', async ({ page }) => {
+2026-04-28T17:27:17.1685258Z       5 |     await page.goto('/auth/signup');
+2026-04-28T17:27:17.1685750Z     > 6 |     await expect(page.getByText('انضم إلى كلميرون تو')).toBeVisible();
+2026-04-28T17:27:17.1686328Z         |                                                         ^
+2026-04-28T17:27:17.1686934Z       7 |     await expect(page.getByRole('button', { name: /التسجيل باستخدام Google/i })).toBeVisible();
+2026-04-28T17:27:17.1687355Z       8 |   });
+2026-04-28T17:27:17.1687530Z       9 |
+2026-04-28T17:27:17.1687875Z         at /home/runner/work/Kalmeron-Two/Kalmeron-Two/e2e/onboarding.spec.ts:6:57
+2026-04-28T17:27:17.1688172Z 
+2026-04-28T17:27:17.1688551Z     attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+2026-04-28T17:27:17.1689450Z     test-results/onboarding-تدفق-التسجيل-وإ-1c4d0-صفحة-التسجيل-تظهر-بشكل-صحيح-chromium/test-failed-1.png
+2026-04-28T17:27:17.1690157Z     ────────────────────────────────────────────────────────────────────────────────────────────────
+2026-04-28T17:27:17.1690430Z 
+2026-04-28T17:27:17.1690793Z     attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+2026-04-28T17:27:17.1691473Z     test-results/onboarding-تدفق-التسجيل-وإ-1c4d0-صفحة-التسجيل-تظهر-بشكل-صحيح-chromium/video.webm
+2026-04-28T17:27:17.1692306Z     ────────────────────────────────────────────────────────────────────────────────────────────────
+2026-04-28T17:27:17.1692570Z 
+2026-04-28T17:27:17.1693369Z     Error Context: test-results/onboarding-تدفق-التسجيل-وإ-1c4d0-صفحة-التسجيل-تظهر-بشكل-صحيح-chromium/error-context.md
+2026-04-28T17:27:17.1693838Z 
+2026-04-28T17:27:17.1694203Z     Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+2026-04-28T17:27:17.1694516Z 
+2026-04-28T17:27:17.1694855Z     Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+2026-04-28T17:27:17.1695177Z 
+2026-04-28T17:27:17.1695345Z     Locator: getByText('انضم إلى كلميرون تو')
+2026-04-28T17:27:17.1695607Z     Expected: visible
+2026-04-28T17:27:17.1695804Z     Timeout: 10000ms
+2026-04-28T17:27:17.1696019Z     Error: element(s) not found
+2026-04-28T17:27:17.1696175Z 
+2026-04-28T17:27:17.1696259Z     Call log:
+2026-04-28T17:27:17.1696566Z     [2m  - Expect "toBeVisible" with timeout 10000ms[22m
+2026-04-28T17:27:17.1696989Z     [2m  - waiting for getByText('انضم إلى كلميرون تو')[22m
+2026-04-28T17:27:17.1697198Z 
+2026-04-28T17:27:17.1697204Z 
+2026-04-28T17:27:17.1697431Z       4 |   test('صفحة التسجيل تظهر بشكل صحيح', async ({ page }) => {
+2026-04-28T17:27:17.1697778Z       5 |     await page.goto('/auth/signup');
+2026-04-28T17:27:17.1698230Z     > 6 |     await expect(page.getByText('انضم إلى كلميرون تو')).toBeVisible();
+2026-04-28T17:27:17.1698804Z         |                                                         ^
+2026-04-28T17:27:17.1699382Z       7 |     await expect(page.getByRole('button', { name: /التسجيل باستخدام Google/i })).toBeVisible();
+2026-04-28T17:27:17.1699795Z       8 |   });
+2026-04-28T17:27:17.1699964Z       9 |
+2026-04-28T17:27:17.1700309Z         at /home/runner/work/Kalmeron-Two/Kalmeron-Two/e2e/onboarding.spec.ts:6:57
+2026-04-28T17:27:17.1700613Z 
+2026-04-28T17:27:17.1701002Z     attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+2026-04-28T17:27:17.1701750Z     test-results/onboarding-تدفق-التسجيل-وإ-1c4d0-صفحة-التسجيل-تظهر-بشكل-صحيح-chromium-retry1/test-failed-1.png
+2026-04-28T17:27:17.1702443Z     ────────────────────────────────────────────────────────────────────────────────────────────────
+2026-04-28T17:27:17.1702704Z 
+2026-04-28T17:27:17.1703224Z     attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+2026-04-28T17:27:17.1703930Z     test-results/onboarding-تدفق-التسجيل-وإ-1c4d0-صفحة-التسجيل-تظهر-بشكل-صحيح-chromium-retry1/video.webm
+2026-04-28T17:27:17.1704591Z     ────────────────────────────────────────────────────────────────────────────────────────────────
+2026-04-28T17:27:17.1704853Z 
+2026-04-28T17:27:17.1705321Z     Error Context: test-results/onboarding-تدفق-التسجيل-وإ-1c4d0-صفحة-التسجيل-تظهر-بشكل-صحيح-chromium-retry1/error-context.md
+2026-04-28T17:27:17.1705891Z 
+2026-04-28T17:27:17.1706271Z     attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+2026-04-28T17:27:17.1706979Z     test-results/onboarding-تدفق-التسجيل-وإ-1c4d0-صفحة-التسجيل-تظهر-بشكل-صحيح-chromium-retry1/trace.zip
+2026-04-28T17:27:17.1707394Z     Usage:
+2026-04-28T17:27:17.1707491Z 
+2026-04-28T17:27:17.1708017Z         npx playwright show-trace test-results/onboarding-تدفق-التسجيل-وإ-1c4d0-صفحة-التسجيل-تظهر-بشكل-صحيح-chromium-retry1/trace.zip
+2026-04-28T17:27:17.1708461Z 
+2026-04-28T17:27:17.1708802Z     ────────────────────────────────────────────────────────────────────────────────────────────────
+2026-04-28T17:27:17.1709070Z 
+2026-04-28T17:27:17.1709402Z     Retry #2 ───────────────────────────────────────────────────────────────────────────────────────
+2026-04-28T17:27:17.1709678Z 
+2026-04-28T17:27:17.1710010Z     Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+2026-04-28T17:27:17.1710326Z 
+2026-04-28T17:27:17.1710505Z     Locator: getByText('انضم إلى كلميرون تو')
+2026-04-28T17:27:17.1710764Z     Expected: visible
+2026-04-28T17:27:17.1710959Z     Timeout: 10000ms
+2026-04-28T17:27:17.1711175Z     Error: element(s) not found
+2026-04-28T17:27:17.1711327Z 
+2026-04-28T17:27:17.1711396Z     Call log:
+2026-04-28T17:27:17.1711700Z     [2m  - Expect "toBeVisible" with timeout 10000ms[22m
+2026-04-28T17:27:17.1712122Z     [2m  - waiting for getByText('انضم إلى كلميرون تو')[22m
+2026-04-28T17:27:17.1712331Z 
+2026-04-28T17:27:17.1712336Z 
+2026-04-28T17:27:17.1712707Z       4 |   test('صفحة التسجيل تظهر بشكل صحيح', async ({ page }) => {
+2026-04-28T17:27:17.1713182Z       5 |     await page.goto('/auth/signup');
+2026-04-28T17:27:17.1713650Z     > 6 |     await expect(page.getByText('انضم إلى كلميرون تو')).toBeVisible();
+2026-04-28T17:27:17.1714061Z         |                                                         ^
+2026-04-28T17:27:17.1714628Z       7 |     await expect(page.getByRole('button', { name: /التسجيل باستخدام Google/i })).toBeVisible();
+2026-04-28T17:27:17.1715048Z       8 |   });
+2026-04-28T17:27:17.1715213Z       9 |
+2026-04-28T17:27:17.1715550Z         at /home/runner/work/Kalmeron-Two/Kalmeron-Two/e2e/onboarding.spec.ts:6:57
+2026-04-28T17:27:17.1715851Z 
+2026-04-28T17:27:17.1716223Z     attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+2026-04-28T17:27:17.1716961Z     test-results/onboarding-تدفق-التسجيل-وإ-1c4d0-صفحة-التسجيل-تظهر-بشكل-صحيح-chromium-retry2/test-failed-1.png
+2026-04-28T17:27:17.1717664Z     ────────────────────────────────────────────────────────────────────────────────────────────────
+2026-04-28T17:27:17.1717924Z 
+2026-04-28T17:27:17.1718305Z     attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+2026-04-28T17:27:17.1718981Z     test-results/onboarding-تدفق-التسجيل-وإ-1c4d0-صفحة-التسجيل-تظهر-بشكل-صحيح-chromium-retry2/video.webm
+2026-04-28T17:27:17.1719645Z     ────────────────────────────────────────────────────────────────────────────────────────────────
+2026-04-28T17:27:17.1720061Z 
+2026-04-28T17:27:17.1720535Z     Error Context: test-results/onboarding-تدفق-التسجيل-وإ-1c4d0-صفحة-التسجيل-تظهر-بشكل-صحيح-chromium-retry2/error-context.md
+2026-04-28T17:27:17.1720949Z 
+2026-04-28T17:27:17.1721390Z   3) [chromium] › e2e/onboarding.spec.ts:28:7 › تدفق التسجيل وإكمال الملف الشخصي › نقطة الصحة تستجيب بـ 200 
+2026-04-28T17:27:17.1721727Z 
+2026-04-28T17:27:17.1722163Z     Error: [2mexpect([22m[31mreceived[39m[2m).[22mtoBe[2m([22m[32mexpected[39m[2m) // Object.is equality[22m
+2026-04-28T17:27:17.1722569Z 
+2026-04-28T17:27:17.1722683Z     Expected: [32m200[39m
+2026-04-28T17:27:17.1723053Z     Received: [31m429[39m
+2026-04-28T17:27:17.1723194Z 
+2026-04-28T17:27:17.1723434Z       28 |   test('نقطة الصحة تستجيب بـ 200', async ({ request }) => {
+2026-04-28T17:27:17.1723837Z       29 |     const response = await request.get('/api/health');
+2026-04-28T17:27:17.1724200Z     > 30 |     expect(response.status()).toBe(200);
+2026-04-28T17:27:17.1724501Z          |                               ^
+2026-04-28T17:27:17.1724793Z       31 |     const body = await response.json();
+2026-04-28T17:27:17.1725172Z       32 |     expect(['healthy', 'degraded']).toContain(body.status);
+2026-04-28T17:27:17.1725479Z       33 |   });
+2026-04-28T17:27:17.1725831Z         at /home/runner/work/Kalmeron-Two/Kalmeron-Two/e2e/onboarding.spec.ts:30:31
+2026-04-28T17:27:17.1726140Z 
+2026-04-28T17:27:17.1726607Z     Error Context: test-results/onboarding-تدفق-التسجيل-وإ-547e1-صي-نقطة-الصحة-تستجيب-بـ-200-chromium/error-context.md
+2026-04-28T17:27:17.1727150Z 
+2026-04-28T17:27:17.1727490Z     Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+2026-04-28T17:27:17.1727770Z 
+2026-04-28T17:27:17.1728200Z     Error: [2mexpect([22m[31mreceived[39m[2m).[22mtoBe[2m([22m[32mexpected[39m[2m) // Object.is equality[22m
+2026-04-28T17:27:17.1728586Z 
+2026-04-28T17:27:17.1728700Z     Expected: [32m200[39m
+2026-04-28T17:27:17.1728960Z     Received: [31m429[39m
+2026-04-28T17:27:17.1729091Z 
+2026-04-28T17:27:17.1729320Z       28 |   test('نقطة الصحة تستجيب بـ 200', async ({ request }) => {
+2026-04-28T17:27:17.1729710Z       29 |     const response = await request.get('/api/health');
+2026-04-28T17:27:17.1730069Z     > 30 |     expect(response.status()).toBe(200);
+2026-04-28T17:27:17.1730365Z          |                               ^
+2026-04-28T17:27:17.1730656Z       31 |     const body = await response.json();
+2026-04-28T17:27:17.1731024Z       32 |     expect(['healthy', 'degraded']).toContain(body.status);
+2026-04-28T17:27:17.1731336Z       33 |   });
+2026-04-28T17:27:17.1731688Z         at /home/runner/work/Kalmeron-Two/Kalmeron-Two/e2e/onboarding.spec.ts:30:31
+2026-04-28T17:27:17.1731987Z 
+2026-04-28T17:27:17.1732472Z     Error Context: test-results/onboarding-تدفق-التسجيل-وإ-547e1-صي-نقطة-الصحة-تستجيب-بـ-200-chromium-retry1/error-context.md
+2026-04-28T17:27:17.1733012Z 
+2026-04-28T17:27:17.1733541Z     attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+2026-04-28T17:27:17.1734613Z     test-results/onboarding-تدفق-التسجيل-وإ-547e1-صي-نقطة-الصحة-تستجيب-بـ-200-chromium-retry1/trace.zip
+2026-04-28T17:27:17.1735339Z     Usage:
+2026-04-28T17:27:17.1735465Z 
+2026-04-28T17:27:17.1736021Z         npx playwright show-trace test-results/onboarding-تدفق-التسجيل-وإ-547e1-صي-نقطة-الصحة-تستجيب-بـ-200-chromium-retry1/trace.zip
+2026-04-28T17:27:17.1736482Z 
+2026-04-28T17:27:17.1736820Z     ────────────────────────────────────────────────────────────────────────────────────────────────
+2026-04-28T17:27:17.1737109Z 
+2026-04-28T17:27:17.1737444Z     Retry #2 ───────────────────────────────────────────────────────────────────────────────────────
+2026-04-28T17:27:17.1737723Z 
+2026-04-28T17:27:17.1738166Z     Error: [2mexpect([22m[31mreceived[39m[2m).[22mtoBe[2m([22m[32mexpected[39m[2m) // Object.is equality[22m
+2026-04-28T17:27:17.1738551Z 
+2026-04-28T17:27:17.1738671Z     Expected: [32m200[39m
+2026-04-28T17:27:17.1738936Z     Received: [31m429[39m
+2026-04-28T17:27:17.1739068Z 
+2026-04-28T17:27:17.1739298Z       28 |   test('نقطة الصحة تستجيب بـ 200', async ({ request }) => {
+2026-04-28T17:27:17.1739703Z       29 |     const response = await request.get('/api/health');
+2026-04-28T17:27:17.1740064Z     > 30 |     expect(response.status()).toBe(200);
+2026-04-28T17:27:17.1740361Z          |                               ^
+2026-04-28T17:27:17.1740651Z       31 |     const body = await response.json();
+2026-04-28T17:27:17.1741196Z       32 |     expect(['healthy', 'degraded']).toContain(body.status);
+2026-04-28T17:27:17.1741502Z       33 |   });
+2026-04-28T17:27:17.1741860Z         at /home/runner/work/Kalmeron-Two/Kalmeron-Two/e2e/onboarding.spec.ts:30:31
+2026-04-28T17:27:17.1742164Z 
+2026-04-28T17:27:17.1742663Z     Error Context: test-results/onboarding-تدفق-التسجيل-وإ-547e1-صي-نقطة-الصحة-تستجيب-بـ-200-chromium-retry2/error-context.md
+2026-04-28T17:27:17.1743246Z 
+2026-04-28T17:27:17.1743710Z   4) [chromium] › e2e/landing.spec.ts:14:7 › Landing & SEO › homepage emits a valid <title> and meta description 
+2026-04-28T17:27:17.1744103Z 
+2026-04-28T17:27:17.1744496Z     Error: [2mexpect([22m[31mpage[39m[2m).[22mtoHaveTitle[2m([22m[32mexpected[39m[2m)[22m failed
+2026-04-28T17:27:17.1744844Z 
+2026-04-28T17:27:17.1745029Z     Expected pattern: [32m/Kalmeron|كلميرون/[39m
+2026-04-28T17:27:17.1745371Z     Received string:  [31m""[39m
+2026-04-28T17:27:17.1745604Z     Timeout: 10000ms
+2026-04-28T17:27:17.1745738Z 
+2026-04-28T17:27:17.1745812Z     Call log:
+2026-04-28T17:27:17.1746118Z     [2m  - Expect "toHaveTitle" with timeout 10000ms[22m
+2026-04-28T17:27:17.1746473Z     [2m    14 × unexpected value ""[22m
+2026-04-28T17:27:17.1746648Z 
+2026-04-28T17:27:17.1746654Z 
+2026-04-28T17:27:17.1746930Z       14 |   test('homepage emits a valid <title> and meta description', async ({ page }) => {
+2026-04-28T17:27:17.1747358Z       15 |     await page.goto('/');
+2026-04-28T17:27:17.1747757Z     > 16 |     await expect(page).toHaveTitle(/Kalmeron|كلميرون/);
+2026-04-28T17:27:17.1748081Z          |                        ^
+2026-04-28T17:27:17.1748544Z       17 |     const description = await page.locator('meta[name="description"]').getAttribute('content');
+2026-04-28T17:27:17.1749087Z       18 |     expect((description ?? '').length).toBeGreaterThan(40);
+2026-04-28T17:27:17.1749397Z       19 |   });
+2026-04-28T17:27:17.1749738Z         at /home/runner/work/Kalmeron-Two/Kalmeron-Two/e2e/landing.spec.ts:16:24
+2026-04-28T17:27:17.1750034Z 
+2026-04-28T17:27:17.1750416Z     attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+2026-04-28T17:27:17.1751140Z     test-results/landing-Landing-SEO-homepa-c00d7--title-and-meta-description-chromium/test-failed-1.png
+2026-04-28T17:27:17.1751914Z     ────────────────────────────────────────────────────────────────────────────────────────────────
+2026-04-28T17:27:17.1752183Z 
+2026-04-28T17:27:17.1752546Z     attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+2026-04-28T17:27:17.1753544Z     test-results/landing-Landing-SEO-homepa-c00d7--title-and-meta-description-chromium/video.webm
+2026-04-28T17:27:17.1754289Z     ────────────────────────────────────────────────────────────────────────────────────────────────
+2026-04-28T17:27:17.1754551Z 
+2026-04-28T17:27:17.1755007Z     Error Context: test-results/landing-Landing-SEO-homepa-c00d7--title-and-meta-description-chromium/error-context.md
+2026-04-28T17:27:17.1755621Z 
+2026-04-28T17:27:17.1756055Z   5) [chromium] › e2e/onboarding.spec.ts:35:7 › تدفق التسجيل وإكمال الملف الشخصي › صفحة الخصوصية تحتوي على بيانات PDPL 
+2026-04-28T17:27:17.1756418Z 
+2026-04-28T17:27:17.1756757Z     Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+2026-04-28T17:27:17.1757071Z 
+2026-04-28T17:27:17.1757319Z     Locator: getByText(/PDPL|قانون.*151|حماية البيانات/i).first()
+2026-04-28T17:27:17.1757640Z     Expected: visible
+2026-04-28T17:27:17.1757856Z     Timeout: 10000ms
+2026-04-28T17:27:17.1758077Z     Error: element(s) not found
+2026-04-28T17:27:17.1758227Z 
+2026-04-28T17:27:17.1758297Z     Call log:
+2026-04-28T17:27:17.1758607Z     [2m  - Expect "toBeVisible" with timeout 10000ms[22m
+2026-04-28T17:27:17.1759103Z     [2m  - waiting for getByText(/PDPL|قانون.*151|حماية البيانات/i).first()[22m
+2026-04-28T17:27:17.1759385Z 
+2026-04-28T17:27:17.1759391Z 
+2026-04-28T17:27:17.1759640Z       35 |   test('صفحة الخصوصية تحتوي على بيانات PDPL', async ({ page }) => {
+2026-04-28T17:27:17.1760018Z       36 |     await page.goto('/privacy');
+2026-04-28T17:27:17.1760567Z     > 37 |     await expect(page.getByText(/PDPL|قانون.*151|حماية البيانات/i).first()).toBeVisible();
+2026-04-28T17:27:17.1761064Z          |                                                                             ^
+2026-04-28T17:27:17.1761354Z       38 |   });
+2026-04-28T17:27:17.1761528Z       39 |
+2026-04-28T17:27:17.1761872Z       40 |   test('صفحة الشروط تحتوي على محتوى الاستخدام', async ({ page }) => {
+2026-04-28T17:27:17.1762373Z         at /home/runner/work/Kalmeron-Two/Kalmeron-Two/e2e/onboarding.spec.ts:37:77
+2026-04-28T17:27:17.1762682Z 
+2026-04-28T17:27:17.1763188Z     attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+2026-04-28T17:27:17.1763926Z     test-results/onboarding-تدفق-التسجيل-وإ-1fdcb-صوصية-تحتوي-على-بيانات-PDPL-chromium/test-failed-1.png
+2026-04-28T17:27:17.1764638Z     ────────────────────────────────────────────────────────────────────────────────────────────────
+2026-04-28T17:27:17.1764959Z 
+2026-04-28T17:27:17.1765323Z     attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+2026-04-28T17:27:17.1766012Z     test-results/onboarding-تدفق-التسجيل-وإ-1fdcb-صوصية-تحتوي-على-بيانات-PDPL-chromium/video.webm
+2026-04-28T17:27:17.1766677Z     ────────────────────────────────────────────────────────────────────────────────────────────────
+2026-04-28T17:27:17.1767086Z 
+2026-04-28T17:27:17.1767548Z     Error Context: test-results/onboarding-تدفق-التسجيل-وإ-1fdcb-صوصية-تحتوي-على-بيانات-PDPL-chromium/error-context.md
+2026-04-28T17:27:17.1767966Z 
+2026-04-28T17:27:17.1768296Z     Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+2026-04-28T17:27:17.1768572Z 
+2026-04-28T17:27:17.1768908Z     Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+2026-04-28T17:27:17.1769231Z 
+2026-04-28T17:27:17.1769471Z     Locator: getByText(/PDPL|قانون.*151|حماية البيانات/i).first()
+2026-04-28T17:27:17.1769913Z     Expected: visible
+2026-04-28T17:27:17.1770112Z     Timeout: 10000ms
+2026-04-28T17:27:17.1770330Z     Error: element(s) not found
+2026-04-28T17:27:17.1770486Z 
+2026-04-28T17:27:17.1770555Z     Call log:
+2026-04-28T17:27:17.1770866Z     [2m  - Expect "toBeVisible" with timeout 10000ms[22m
+2026-04-28T17:27:17.1771511Z     [2m  - waiting for getByText(/PDPL|قانون.*151|حماية البيانات/i).first()[22m
+2026-04-28T17:27:17.1771804Z 
+2026-04-28T17:27:17.1771809Z 
+2026-04-28T17:27:17.1772065Z       35 |   test('صفحة الخصوصية تحتوي على بيانات PDPL', async ({ page }) => {
+2026-04-28T17:27:17.1772425Z       36 |     await page.goto('/privacy');
+2026-04-28T17:27:17.1773105Z     > 37 |     await expect(page.getByText(/PDPL|قانون.*151|حماية البيانات/i).first()).toBeVisible();
+2026-04-28T17:27:17.1773707Z          |                                                                             ^
+2026-04-28T17:27:17.1774000Z       38 |   });
+2026-04-28T17:27:17.1774186Z       39 |
+2026-04-28T17:27:17.1774536Z       40 |   test('صفحة الشروط تحتوي على محتوى الاستخدام', async ({ page }) => {
+2026-04-28T17:27:17.1775028Z         at /home/runner/work/Kalmeron-Two/Kalmeron-Two/e2e/onboarding.spec.ts:37:77
+2026-04-28T17:27:17.1775335Z 
+2026-04-28T17:27:17.1775711Z     attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+2026-04-28T17:27:17.1776467Z     test-results/onboarding-تدفق-التسجيل-وإ-1fdcb-صوصية-تحتوي-على-بيانات-PDPL-chromium-retry1/test-failed-1.png
+2026-04-28T17:27:17.1777187Z     ────────────────────────────────────────────────────────────────────────────────────────────────
+2026-04-28T17:27:17.1777448Z 
+2026-04-28T17:27:17.1777812Z     attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+2026-04-28T17:27:17.1778506Z     test-results/onboarding-تدفق-التسجيل-وإ-1fdcb-صوصية-تحتوي-على-بيانات-PDPL-chromium-retry1/video.webm
+2026-04-28T17:27:17.1779184Z     ────────────────────────────────────────────────────────────────────────────────────────────────
+2026-04-28T17:27:17.1779462Z 
+2026-04-28T17:27:17.1779934Z     Error Context: test-results/onboarding-تدفق-التسجيل-وإ-1fdcb-صوصية-تحتوي-على-بيانات-PDPL-chromium-retry1/error-context.md
+2026-04-28T17:27:17.1780360Z 
+2026-04-28T17:27:17.1780733Z     attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+2026-04-28T17:27:17.1781445Z     test-results/onboarding-تدفق-التسجيل-وإ-1fdcb-صوصية-تحتوي-على-بيانات-PDPL-chromium-retry1/trace.zip
+2026-04-28T17:27:17.1782022Z     Usage:
+2026-04-28T17:27:17.1782117Z 
+2026-04-28T17:27:17.1782683Z         npx playwright show-trace test-results/onboarding-تدفق-التسجيل-وإ-1fdcb-صوصية-تحتوي-على-بيانات-PDPL-chromium-retry1/trace.zip
+2026-04-28T17:27:17.1783274Z 
+2026-04-28T17:27:17.1783602Z     ────────────────────────────────────────────────────────────────────────────────────────────────
+2026-04-28T17:27:17.1783870Z 
+2026-04-28T17:27:17.1784087Z   3 failed
+2026-04-28T17:27:17.1784590Z     [chromium] › e2e/landing.spec.ts:4:7 › Landing & SEO › homepage shows hero, CTA, and 16-agent showcase 
+2026-04-28T17:27:17.1785342Z     [chromium] › e2e/onboarding.spec.ts:4:7 › تدفق التسجيل وإكمال الملف الشخصي › صفحة التسجيل تظهر بشكل صحيح 
+2026-04-28T17:27:17.1786050Z     [chromium] › e2e/onboarding.spec.ts:28:7 › تدفق التسجيل وإكمال الملف الشخصي › نقطة الصحة تستجيب بـ 200 
+2026-04-28T17:27:17.1786445Z   2 flaky
+2026-04-28T17:27:17.1786966Z     [chromium] › e2e/landing.spec.ts:14:7 › Landing & SEO › homepage emits a valid <title> and meta description 
+2026-04-28T17:27:17.1787746Z     [chromium] › e2e/onboarding.spec.ts:35:7 › تدفق التسجيل وإكمال الملف الشخصي › صفحة الخصوصية تحتوي على بيانات PDPL 
+2026-04-28T17:27:17.1788180Z   22 passed (2.3m)
+2026-04-28T17:27:17.2396486Z ##[error]Process completed with exit code 1.
