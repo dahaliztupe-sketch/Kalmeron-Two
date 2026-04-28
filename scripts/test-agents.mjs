@@ -142,19 +142,15 @@ async function runScenario(s) {
       let parsed;
       try { parsed = JSON.parse(data); } catch { parsed = data; }
 
-      if (event === 'phase' || event === 'thought') {
-        if (parsed?.node) phases.push(parsed.node);
-        if (parsed?.intent) routedIntent = parsed.intent;
-      } else if (event === 'intent') {
-        routedIntent = parsed?.intent || parsed;
-      } else if (event === 'token' || event === 'chunk' || event === 'message') {
+      if (event === 'phase') {
+        if (parsed?.id) phases.push(parsed.id);
+      } else if (event === 'delta') {
         if (firstTokenAt === null) firstTokenAt = Date.now();
-        const t = typeof parsed === 'string' ? parsed : (parsed?.text ?? parsed?.content ?? '');
+        const t = typeof parsed === 'string' ? parsed : (parsed?.text ?? '');
         finalText += t;
         chunks++;
-      } else if (event === 'final' || event === 'done' || event === 'complete') {
-        const t = typeof parsed === 'string' ? parsed : (parsed?.text ?? parsed?.content ?? '');
-        if (t && !finalText.includes(t)) finalText += t;
+      } else if (event === 'done') {
+        if (parsed?.intent) routedIntent = parsed.intent;
       } else if (event === 'error') {
         errorEvent = parsed;
       }
@@ -184,14 +180,26 @@ async function runScenario(s) {
   };
 }
 
+const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+
 async function main() {
-  console.log(`\nTesting agents at ${BASE}\n`);
+  const delayMs = parseInt(process.env.DELAY_MS || '8000', 10);
+  const onlyIds = (process.env.ONLY || '').split(',').map(s => s.trim()).filter(Boolean);
+  const list = onlyIds.length ? SCENARIOS.filter(s => onlyIds.includes(s.id)) : SCENARIOS;
+  console.log(`\nTesting agents at ${BASE} (sequential, ${delayMs}ms between)  [${list.map(s=>s.id).join(',')}]\n`);
   console.log(pad('Agent', 22), pad('OK', 4), pad('Intent', 22), pad('TTFT', 8), pad('Total', 8), pad('Words', 7), pad('AR%', 5));
   console.log('-'.repeat(90));
   const results = [];
-  for (const s of SCENARIOS) {
+  for (let i = 0; i < list.length; i++) {
+    const s = list[i];
+    if (i > 0) await sleep(delayMs);
     const r = await runScenario(s);
     results.push({ scenario: s, result: r });
+    // incremental persist
+    try {
+      const fsx = await import('fs');
+      fsx.writeFileSync('/tmp/agent-test-report.json', JSON.stringify(results, null, 2));
+    } catch {}
     const intentCell = r.routedIntent ? `${r.routedIntent}${r.intentCorrect ? '✓' : '✗'}` : '—';
     console.log(
       pad(s.label, 22),
