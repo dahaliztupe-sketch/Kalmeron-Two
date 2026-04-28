@@ -3,6 +3,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { motion, useScroll, useTransform, AnimatePresence, useReducedMotion } from "motion/react";
 import {
   ArrowLeft, Sparkles, LogIn, Menu, X,
@@ -13,22 +14,13 @@ import { BrandLogo } from "@/components/brand/BrandLogo";
 import { AnimatedBrandMark } from "@/components/brand/AnimatedBrandMark";
 import { useAuth } from "@/contexts/AuthContext";
 
-// Lazy-load everything below the fold. Reduces initial JS by ~70%.
 const HomeBelowFold = dynamic(() => import("@/components/landing/HomeBelowFold"), {
   ssr: false,
   loading: () => <div className="h-32" aria-hidden />,
 });
 
-const SUGGESTIONS = [
-  "حلل فكرة منصة تعليمية للمستقلين",
-  "ابني خطة عمل لمتجري الإلكتروني",
-  "ما الفرص في قطاع الصحة الرقمية؟",
-  "احسب التكاليف المبدئية لمطعم سحابي",
-];
+const SUGGESTION_KEYS = ["platform", "ecommerce", "healthtech", "cloudKitchen"] as const;
 
-// ─── Optimized Particle Field ──────────────────────────────────────────
-// Was: 60 particles + O(N²) line connections every frame (huge CPU drain).
-// Now: 30 particles, no line connections, paused when off-screen, skipped on mobile or reduced-motion.
 function ParticleField() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const reduce = useReducedMotion();
@@ -37,7 +29,7 @@ function ParticleField() {
     if (reduce) return;
     if (typeof window === "undefined") return;
     const isMobile = window.matchMedia("(max-width: 767px)").matches;
-    if (isMobile) return; // skip entirely on mobile — saves CPU/battery
+    if (isMobile) return;
 
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -109,6 +101,8 @@ function ParticleField() {
 }
 
 function TopNav() {
+  const t = useTranslations("Landing.topNav");
+  const tCommon = useTranslations("Common");
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const { user } = useAuth();
@@ -120,10 +114,10 @@ function TopNav() {
   }, []);
 
   const links = [
-    { href: "#departments", label: "الأقسام" },
-    { href: "#demo", label: "تجربة حية" },
-    { href: "#compare", label: "لماذا كلميرون؟" },
-    { href: "/pricing", label: "الأسعار" },
+    { href: "#departments", label: t("links.departments") },
+    { href: "#demo", label: t("links.demo") },
+    { href: "#compare", label: t("links.compare") },
+    { href: "/pricing", label: t("links.pricing") },
   ];
 
   return (
@@ -140,20 +134,20 @@ function TopNav() {
         <div className="hidden md:flex items-center gap-2">
           {user ? (
             <Link href="/dashboard" className="btn-primary text-sm font-bold px-5 py-2.5 rounded-full flex items-center gap-2">
-              <Rocket className="w-4 h-4" /> لوحة التحكم
+              <Rocket className="w-4 h-4" /> {t("openDashboard")}
             </Link>
           ) : (
             <>
               <Link href="/auth/login" className="text-sm text-neutral-300 hover:text-white px-4 py-2 rounded-full transition-colors flex items-center gap-2">
-                <LogIn className="w-4 h-4" /> دخول
+                <LogIn className="w-4 h-4" /> {t("login")}
               </Link>
               <Link href="/auth/signup" prefetch className="text-sm font-bold text-white btn-primary px-5 py-2.5 rounded-full flex items-center gap-2">
-                ابدأ مجاناً <ArrowLeft className="w-4 h-4" />
+                {t("signupFree")} <ArrowLeft className="w-4 h-4" />
               </Link>
             </>
           )}
         </div>
-        <button onClick={() => setOpen(true)} className="md:hidden p-2 rounded-xl bg-white/5 border border-white/10 active:scale-95" aria-label="فتح القائمة">
+        <button onClick={() => setOpen(true)} className="md:hidden p-2 rounded-xl bg-white/5 border border-white/10 active:scale-95" aria-label={tCommon("openMenu")}>
           <Menu className="w-5 h-5 text-white" />
         </button>
       </div>
@@ -180,8 +174,8 @@ function TopNav() {
                 ))}
               </nav>
               <div className="flex flex-col gap-2 pt-4 border-t border-white/10">
-                <Link href="/auth/login" prefetch className="text-center text-base text-white px-5 py-3 rounded-xl border border-white/10 hover:bg-white/5">تسجيل الدخول</Link>
-                <Link href="/auth/signup" prefetch className="btn-primary text-center text-base font-bold px-5 py-3 rounded-xl">ابدأ مجاناً</Link>
+                <Link href="/auth/login" prefetch className="text-center text-base text-white px-5 py-3 rounded-xl border border-white/10 hover:bg-white/5">{t("loginCta")}</Link>
+                <Link href="/auth/signup" prefetch className="btn-primary text-center text-base font-bold px-5 py-3 rounded-xl">{t("signupFree")}</Link>
               </div>
             </motion.div>
           </motion.div>
@@ -192,6 +186,10 @@ function TopNav() {
 }
 
 function Hero() {
+  const t = useTranslations("Landing.hero");
+  const tBadges = useTranslations("Landing.trustBadges");
+  const tSugg = useTranslations("Landing.suggestions");
+  const tCommon = useTranslations("Common");
   const [query, setQuery] = useState("");
   const router = useRouter();
   const reduce = useReducedMotion();
@@ -200,8 +198,8 @@ function Hero() {
   const [suggestionIdx, setSuggestionIdx] = useState(0);
 
   useEffect(() => {
-    const t = setInterval(() => setSuggestionIdx((i) => (i + 1) % SUGGESTIONS.length), 4000);
-    return () => clearInterval(t);
+    const id = setInterval(() => setSuggestionIdx((i) => (i + 1) % SUGGESTION_KEYS.length), 4000);
+    return () => clearInterval(id);
   }, []);
 
   const submit = (e: React.FormEvent) => {
@@ -231,44 +229,37 @@ function Hero() {
           className="inline-flex max-w-full items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 rounded-full border border-cyan-400/25 bg-cyan-500/10 text-[10px] sm:text-[11px] md:text-xs font-semibold uppercase tracking-[0.12em] sm:tracking-[0.18em] text-cyan-200 mb-5 sm:mb-6"
         >
           <Sparkles className="w-3 h-3 text-cyan-300 shrink-0" />
-          <span className="truncate">كلميرون · مقرّ عمليات شركتك الذكي</span>
+          <span className="truncate">{t("eyebrow")}</span>
         </motion.div>
 
         <motion.h1 initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}
           className="font-display font-extrabold tracking-tight leading-[1.1] mb-4 sm:mb-5 break-words [text-wrap:balance]"
           style={{ fontSize: "clamp(1.6rem, 1rem + 4.2vw, 5rem)" }}
         >
-          <span className="block text-white">فريقك المؤسس</span>
-          <span className="block brand-gradient-text pb-2">يعمل ٢٤/٧ لصالحك</span>
+          <span className="block text-white">{t("titleLine1")}</span>
+          <span className="block brand-gradient-text pb-2">{t("titleLine2")}</span>
         </motion.h1>
 
         <motion.p initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}
           className="text-sm sm:text-[17px] md:text-lg text-neutral-300 max-w-2xl mx-auto mb-6 leading-[1.8] sm:leading-[1.85] px-4 sm:px-2 break-words [overflow-wrap:anywhere] [word-break:normal] [text-wrap:pretty]"
         >
-          {/*
-            On narrow Arabic viewports, an em-dash + LTR digits + bold span used
-            to form a single bidi-isolated run that the browser refused to break,
-            spilling past the viewport edge. We split into two short sentences,
-            wrap the digit run in <bdi> for clean bidi handling, and let each
-            piece wrap independently.
-          */}
-          بدل ما تدفع آلاف الجنيهات لمستشار مالي ومحامي ومحلل سوق.
+          {t("subtitleLead")}
           {" "}
-          <bdi className="text-white font-bold">١٦ مساعداً ذكياً</bdi>
+          <bdi className="text-white font-bold">{t("subtitleHighlight")}</bdi>
           {" "}
-          يعملون كفريقك كاملاً، بالعربية الأصيلة.
+          {t("subtitleTail")}
         </motion.p>
 
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}
           className="flex flex-wrap items-center justify-center gap-x-2.5 gap-y-2 sm:gap-x-5 text-[11px] sm:text-[12px] font-medium text-neutral-400 mb-7 sm:mb-8 px-2"
         >
-          <span className="flex items-center gap-1.5 whitespace-nowrap"><ShieldCheck className="w-3.5 h-3.5 text-emerald-400 shrink-0" /> متوافق مع قانون ١٥١</span>
+          <span className="flex items-center gap-1.5 whitespace-nowrap"><ShieldCheck className="w-3.5 h-3.5 text-emerald-400 shrink-0" /> {tBadges("lawCompliant")}</span>
           <span className="hidden sm:inline-block w-1 h-1 rounded-full bg-white/15" />
-          <span className="flex items-center gap-1.5 whitespace-nowrap"><Globe2 className="w-3.5 h-3.5 text-cyan-400 shrink-0" /> عربي مصري أصيل</span>
+          <span className="flex items-center gap-1.5 whitespace-nowrap"><Globe2 className="w-3.5 h-3.5 text-cyan-400 shrink-0" /> {tBadges("arabicNative")}</span>
           <span className="hidden sm:inline-block w-1 h-1 rounded-full bg-white/15" />
-          <span className="flex items-center gap-1.5 whitespace-nowrap"><TrendingUp className="w-3.5 h-3.5 text-fuchsia-400 shrink-0" /> +١٠٠٠ رائد أعمال</span>
+          <span className="flex items-center gap-1.5 whitespace-nowrap"><TrendingUp className="w-3.5 h-3.5 text-fuchsia-400 shrink-0" /> {tBadges("founderCount")}</span>
           <span className="hidden sm:inline-block w-1 h-1 rounded-full bg-white/15" />
-          <span className="flex items-center gap-1.5 whitespace-nowrap"><Zap className="w-3.5 h-3.5 text-amber-400 shrink-0" /> مجاناً للبداية</span>
+          <span className="flex items-center gap-1.5 whitespace-nowrap"><Zap className="w-3.5 h-3.5 text-amber-400 shrink-0" /> {tBadges("freeStart")}</span>
         </motion.div>
 
         <motion.form initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35, ease: "easeOut" }}
@@ -278,14 +269,14 @@ function Hero() {
           <div className="relative flex items-center bg-[#0B1020]/90 backdrop-blur-xl border border-white/10 rounded-3xl p-2 shadow-2xl focus-within:border-white/25 transition-colors">
             <input
               value={query} onChange={(e) => setQuery(e.target.value)}
-              placeholder="بم تفكر اليوم؟ احكي فكرتك بالعامية…"
+              placeholder={t("inputPlaceholder")}
               className="flex-1 bg-transparent border-none outline-none text-white px-5 py-4 text-base md:text-lg placeholder:text-neutral-500"
-              aria-label="فكرتك"
+              aria-label={tCommon("yourIdea")}
             />
             <button type="submit" disabled={!query.trim()}
               className="shrink-0 btn-primary rounded-2xl px-5 py-3.5 md:px-7 md:py-4 disabled:opacity-40 text-sm font-bold flex items-center gap-2"
             >
-              <span className="hidden sm:inline">ابدأ الآن</span>
+              <span className="hidden sm:inline">{t("submitLabel")}</span>
               <ArrowLeft className="w-5 h-5" />
             </button>
           </div>
@@ -294,23 +285,26 @@ function Hero() {
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.45 }}
           className="flex flex-wrap items-center justify-center gap-2 max-w-3xl mx-auto"
         >
-          {SUGGESTIONS.map((t, i) => (
-            <button key={t} onClick={() => setQuery(t)}
-              className={`text-xs md:text-sm border text-neutral-200 px-3.5 py-2 rounded-full transition-colors ${i === suggestionIdx ? "bg-indigo-500/20 border-indigo-400/40 text-white" : "bg-white/5 border-white/10 hover:bg-white/10"}`}
-            >
-              {t}
-            </button>
-          ))}
+          {SUGGESTION_KEYS.map((key, i) => {
+            const text = tSugg(key);
+            return (
+              <button key={key} type="button" onClick={() => router.push(`/chat?q=${encodeURIComponent(text)}`)}
+                className={`text-xs md:text-sm border text-neutral-200 px-3.5 py-2 rounded-full transition-colors ${i === suggestionIdx ? "bg-indigo-500/20 border-indigo-400/40 text-white" : "bg-white/5 border-white/10 hover:bg-white/10"}`}
+              >
+                {text}
+              </button>
+            );
+          })}
         </motion.div>
 
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.55 }}
           className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 mt-8 max-w-md sm:max-w-none mx-auto"
         >
           <Link href="/auth/signup" prefetch className="btn-primary flex items-center justify-center gap-2 text-base font-bold px-6 sm:px-8 py-3.5 sm:py-4 rounded-full">
-            ابدأ مجاناً الآن <ArrowLeft className="w-5 h-5" />
+            {t("primaryCta")} <ArrowLeft className="w-5 h-5" />
           </Link>
           <a href="#demo" className="btn-ghost flex items-center justify-center gap-2 text-base px-6 sm:px-8 py-3.5 sm:py-4 rounded-full">
-            <Play className="w-4 h-4 text-cyan-400" /> شوف تجربة حية
+            <Play className="w-4 h-4 text-cyan-400" /> {t("secondaryCta")}
           </a>
         </motion.div>
 
@@ -318,7 +312,7 @@ function Hero() {
           className="flex justify-center mt-14"
         >
           <a href="#departments" className="flex flex-col items-center gap-2 text-neutral-500 text-xs hover:text-neutral-300 transition-colors">
-            <span>اكتشف المزيد</span>
+            <span>{t("scrollHint")}</span>
             <ChevronDown className="w-4 h-4 animate-bounce" />
           </a>
         </motion.div>

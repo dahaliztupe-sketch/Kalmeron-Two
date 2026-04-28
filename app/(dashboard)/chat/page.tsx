@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef, useCallback, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { AppShell } from "@/components/layout/AppShell";
 import { useAuth } from "@/contexts/AuthContext";
 import { db } from "@/src/lib/firebase";
@@ -24,23 +25,18 @@ import { motion, AnimatePresence } from "motion/react";
 import { ThoughtChain, type Phase } from "@/components/chat/ThoughtChain";
 import { VoiceInputButton } from "@/components/chat/VoiceInputButton";
 
-const AGENT_CHIPS = [
-  { label: "محلل الأفكار", icon: Brain, prompt: "هل يمكنك إجراء تحليل شامل وفني لفكرتي المستندة إلى السوق المصري؟", color: "cyan" },
-  { label: "خطة عمل", icon: FileText, prompt: "ساعدني في بناء خطة عمل احترافية موجهة للمستثمرين في مصر.", color: "indigo" },
-  { label: "حارس الأخطاء", icon: ShieldAlert, prompt: "ما هي الأخطاء القاتلة التي يجب أن أتجنبها عند التأسيس في السوق المحلي؟", color: "rose" },
-  { label: "رادار الفرص", icon: Radar, prompt: "أخبرني عن أحدث جولات التمويل، مسابقات ريادة الأعمال، والفعاليات القادمة في مصر.", color: "emerald" },
-  { label: "المدير المالي", icon: Briefcase, prompt: "احسب لي نموذج مالي أولي مع توقعات التدفق النقدي لمشروعي.", color: "amber" },
-  { label: "المرشد القانوني", icon: Scale, prompt: "ما الوثائق القانونية التي أحتاجها لتأسيس شركتي في مصر؟", color: "violet" },
-];
+const AGENT_CHIP_KEYS = [
+  { key: "ideaAnalyst", icon: Brain, color: "cyan" },
+  { key: "businessPlan", icon: FileText, color: "indigo" },
+  { key: "mistakeShield", icon: ShieldAlert, color: "rose" },
+  { key: "opportunityRadar", icon: Radar, color: "emerald" },
+  { key: "cfo", icon: Briefcase, color: "amber" },
+  { key: "legal", icon: Scale, color: "violet" },
+] as const;
 
-const EMPTY_STATE_SUGGESTIONS = [
-  "حلل فكرتي عن تطبيق توصيل من الصيدليات",
-  "ابني لي خطة تسويقية لمنتج غذائي جديد",
-  "ما هي متطلبات تأسيس شركة SaaS في مصر؟",
-  "احسب نقطة التعادل المالي لمطعم بتكلفة 300 ألف جنيه",
-  "اشرح لي الفرق بين شركة الأموال وشركة الأشخاص",
-  "هل فكرة subscription box للكتب في مصر ناجحة؟",
-];
+const EMPTY_STATE_KEYS = [
+  "pharmacy", "marketing", "saas", "breakeven", "company", "subscription",
+] as const;
 
 type Citation = {
   index: number;
@@ -69,6 +65,7 @@ type Conversation = {
 };
 
 function CopyButton({ text }: { text: string }) {
+  const t = useTranslations("Chat.actions");
   const [copied, setCopied] = useState(false);
   const handleCopy = async () => {
     await navigator.clipboard.writeText(text).catch(() => {});
@@ -78,7 +75,7 @@ function CopyButton({ text }: { text: string }) {
   return (
     <button onClick={handleCopy}
       className="p-1.5 rounded-lg hover:bg-white/10 text-neutral-500 hover:text-neutral-200 transition-all opacity-0 group-hover:opacity-100"
-      title="نسخ"
+      title={copied ? t("copied") : t("copy")}
     >
       {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
     </button>
@@ -86,7 +83,7 @@ function CopyButton({ text }: { text: string }) {
 }
 
 function ChatSidebar({
-  conversations, activeId, onSelect, onNew, onDelete, open, onToggle,
+  conversations, activeId, onSelect, onNew, onDelete, open,
 }: {
   conversations: Conversation[];
   activeId: string | null;
@@ -96,6 +93,7 @@ function ChatSidebar({
   open: boolean;
   onToggle: () => void;
 }) {
+  const t = useTranslations("Chat.sidebar");
   return (
     <>
       <AnimatePresence>
@@ -109,12 +107,12 @@ function ChatSidebar({
               <button onClick={onNew}
                 className="w-full flex items-center gap-2 bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/20 text-white text-sm font-medium px-4 py-2.5 rounded-xl transition-all"
               >
-                <Plus className="w-4 h-4 text-indigo-400" /> محادثة جديدة
+                <Plus className="w-4 h-4 text-indigo-400" /> {t("newConversation")}
               </button>
             </div>
             <div className="flex-1 overflow-y-auto p-2 space-y-1 scrollbar-thin">
               {conversations.length === 0 ? (
-                <div className="text-center text-xs text-neutral-600 py-8">لا توجد محادثات بعد</div>
+                <div className="text-center text-xs text-neutral-600 py-8">{t("noConversations")}</div>
               ) : (
                 conversations.map((conv) => (
                   <motion.button key={conv.id} whileTap={{ scale: 0.98 }} onClick={() => onSelect(conv.id)}
@@ -129,6 +127,7 @@ function ChatSidebar({
                       <div className="text-[10px] text-neutral-600 truncate mt-0.5">{conv.lastMessage}</div>
                     </div>
                     <button onClick={(e) => { e.stopPropagation(); onDelete(conv.id); }}
+                      title={t("deleteThread")}
                       className="shrink-0 p-1 rounded-lg opacity-0 group-hover:opacity-100 hover:bg-red-500/20 hover:text-red-400 text-neutral-600 transition-all"
                     >
                       <Trash2 className="w-3 h-3" />
@@ -138,7 +137,7 @@ function ChatSidebar({
               )}
             </div>
             <div className="p-3 border-t border-white/[0.06]">
-              <div className="text-[10px] text-neutral-600 text-center">تاريخ محادثاتك محفوظ وآمن</div>
+              <div className="text-[10px] text-neutral-600 text-center">{t("secureFooter")}</div>
             </div>
           </motion.aside>
         )}
@@ -148,6 +147,9 @@ function ChatSidebar({
 }
 
 function EmptyState({ onSuggestion }: { onSuggestion: (s: string) => void }) {
+  const t = useTranslations("Chat.emptyState");
+  const tSuggRaw = useTranslations("Chat.emptyState.suggestions");
+  const tSugg = tSuggRaw as unknown as (k: string) => string;
   return (
     <div className="flex flex-col items-center justify-center h-full py-8 text-center px-4" dir="rtl">
       <motion.div initial={{ opacity: 0, scale: 0.8, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} transition={{ duration: 0.5, ease: "circOut" }}
@@ -170,29 +172,33 @@ function EmptyState({ onSuggestion }: { onSuggestion: (s: string) => void }) {
       </motion.div>
 
       <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
-        <h3 className="text-xl md:text-2xl font-bold text-white mb-2">أهلاً! أنا كلميرون</h3>
+        <h3 className="text-xl md:text-2xl font-bold text-white mb-2">{t("greeting")}</h3>
         <p className="text-neutral-400 text-sm leading-relaxed max-w-md mb-8">
-          فريق من 16 مساعداً ذكياً عبر 7 أقسام تحت تصرفك. اسألني عن أي شيء — فكرتك، شركتك، سوقك، أو مستقبلك.
+          {t("description")}
         </p>
       </motion.div>
 
       <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}
         className="grid grid-cols-1 sm:grid-cols-2 gap-2 w-full max-w-2xl"
       >
-        {EMPTY_STATE_SUGGESTIONS.map((s, i) => (
-          <motion.button key={s} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 + i * 0.05 }}
-            onClick={() => onSuggestion(s)}
-            className="text-right text-sm bg-white/[0.04] border border-white/10 hover:bg-white/[0.08] hover:border-indigo-400/30 text-neutral-200 px-4 py-3 rounded-xl transition-all text-start leading-relaxed"
-          >
-            {s}
-          </motion.button>
-        ))}
+        {EMPTY_STATE_KEYS.map((key, i) => {
+          const text = tSugg(key);
+          return (
+            <motion.button key={key} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 + i * 0.05 }}
+              onClick={() => onSuggestion(text)}
+              className="text-right text-sm bg-white/[0.04] border border-white/10 hover:bg-white/[0.08] hover:border-indigo-400/30 text-neutral-200 px-4 py-3 rounded-xl transition-all text-start leading-relaxed"
+            >
+              {text}
+            </motion.button>
+          );
+        })}
       </motion.div>
     </div>
   );
 }
 
 function MessageBubble({ m, isStreaming, activePhases }: { m: ChatMessage; isStreaming: boolean; activePhases: Phase[] }) {
+  const tChat = useTranslations("Chat");
   const isUser = m.role === "user";
   return (
     <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
@@ -247,7 +253,7 @@ function MessageBubble({ m, isStreaming, activePhases }: { m: ChatMessage; isStr
 
         {m.role === "assistant" && m.citations && m.citations.length > 0 && (
           <div className="mt-3 pt-3 border-t border-white/10">
-            <p className="text-[11px] uppercase tracking-wider text-cyan-400/80 mb-2">مصادر من مستنداتك</p>
+            <p className="text-[11px] uppercase tracking-wider text-cyan-400/80 mb-2">{tChat("sources")}</p>
             <ol className="space-y-1.5 text-xs text-neutral-300">
               {m.citations.map((c) => (
                 <li key={`${c.documentId}-${c.chunkIndex}`} className="flex gap-2">
@@ -273,6 +279,14 @@ function MessageBubble({ m, isStreaming, activePhases }: { m: ChatMessage; isStr
 }
 
 function ChatPageContent() {
+  const tChat = useTranslations("Chat");
+  const tToasts = useTranslations("Chat.toasts");
+  const tChipsRaw = useTranslations("Chat.agentChips");
+  const tChips = tChipsRaw as unknown as (k: string) => string;
+  const tInput = useTranslations("Chat.input");
+  const tCommon = useTranslations("Common");
+  const tDash = useTranslations("Dashboard");
+
   const searchParams = useSearchParams();
   const { user } = useAuth();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -301,7 +315,7 @@ function ChatPageContent() {
         const lastMsg = msgs[msgs.length - 1];
         convs.push({
           id: docSnap.id,
-          title: data.title || (msgs[0]?.content?.slice(0, 40) || "محادثة جديدة"),
+          title: data.title || (msgs[0]?.content?.slice(0, 40) || tDash("newConversation")),
           lastMessage: lastMsg?.content?.slice(0, 50) || "",
           updatedAt: data.updated_at?.toDate?.() || new Date(),
           messageCount: msgs.length,
@@ -309,7 +323,7 @@ function ChatPageContent() {
       });
       setConversations(convs);
     } catch {}
-  }, [user]);
+  }, [user, tDash]);
 
   const loadChat = useCallback(async (convId: string) => {
     if (!user) return;
@@ -352,7 +366,7 @@ function ChatPageContent() {
     const chatRef = doc(db, "users", user.uid, "chat_history", activeConvId);
     const chatSnap = await getDoc(chatRef);
     const firstUserMsg = updatedMessages.find((m) => m.role === "user");
-    const title = firstUserMsg?.content?.slice(0, 40) || "محادثة جديدة";
+    const title = firstUserMsg?.content?.slice(0, 40) || tDash("newConversation");
     const payload = {
       userId: user.uid,
       title,
@@ -365,7 +379,7 @@ function ChatPageContent() {
     if (chatSnap.exists()) await updateDoc(chatRef, payload);
     else await setDoc(chatRef, { ...payload, created_at: serverTimestamp() });
     loadConversations();
-  }, [user, activeConvId, loadConversations]);
+  }, [user, activeConvId, loadConversations, tDash]);
 
   const sendMessage = async (content: string) => {
     const userMsg: ChatMessage = { id: `u-${Date.now()}`, role: "user", content, timestamp: new Date() };
@@ -418,7 +432,7 @@ function ChatPageContent() {
             return next;
           });
         } else if (event === "error") {
-          toast.error(data.message || "حدث خطأ.");
+          toast.error(data.message || tToasts("genericError"));
         }
       };
 
@@ -443,8 +457,8 @@ function ChatPageContent() {
       }
     } catch (err: unknown) {
       if (!(err instanceof Error) || err.name !== "AbortError") {
-        toast.error("حدث خطأ أثناء التواصل مع كلميرون.");
-        setMessages((prev) => prev.map((m) => m.id === assistantId ? { ...m, content: "عذراً، كلميرون يواجه مشكلة فنية حالياً. حاول مرة أخرى." } : m));
+        toast.error(tToasts("connectionLost"));
+        setMessages((prev) => prev.map((m) => m.id === assistantId ? { ...m, content: tToasts("genericError") } : m));
       }
     } finally {
       setIsLoading(false);
@@ -456,8 +470,8 @@ function ChatPageContent() {
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    if (file.type !== "application/pdf") { toast.error("يرجى تحميل ملف PDF فقط."); return; }
-    if (!user) { toast.error("الجلسة غير صالحة. الرجاء تسجيل الدخول."); return; }
+    if (file.type !== "application/pdf") { toast.error(tToasts("fileError")); return; }
+    if (!user) { toast.error(tChat("toasts.genericError")); return; }
     setIsUploading(true);
     const formData = new FormData();
     formData.append("file", file);
@@ -469,9 +483,9 @@ function ChatPageContent() {
         body: formData,
       });
       const data = await res.json();
-      if (data.text) { setPdfContext(data.text); toast.success("تم استخراج البيانات من الملف."); }
+      if (data.text) { setPdfContext(data.text); toast.success(tToasts("fileExtracted")); }
       else throw new Error(data.error);
-    } catch { toast.error("فشل استخراج النصوص."); }
+    } catch { toast.error(tToasts("fileError")); }
     finally { setIsUploading(false); if (fileInputRef.current) fileInputRef.current.value = ""; }
   };
 
@@ -481,7 +495,6 @@ function ChatPageContent() {
     setIsLoading(false);
     setActivePhases([]);
     setMessages((prev) => { void saveChatToFirestore(prev); return prev; });
-    toast.message("تم إيقاف التوليد.");
   }, [saveChatToFirestore]);
 
   const startNewConversation = () => {
@@ -496,15 +509,14 @@ function ChatPageContent() {
       await deleteDoc(doc(db, "users", user.uid, "chat_history", id));
       loadConversations();
       if (activeConvId === id) startNewConversation();
-      toast.success("تم حذف المحادثة.");
-    } catch { toast.error("فشل حذف المحادثة."); }
+    } catch { toast.error(tToasts("genericError")); }
   };
 
   const onFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (isLoading) return;
     if (!input.trim() && !pdfContext) return;
-    const messageContent = pdfContext ? `[سياق من ملف PDF]: ${pdfContext}\n\n[رسالة المستخدم]: ${input}` : input;
+    const messageContent = pdfContext ? `[PDF context]: ${pdfContext}\n\n[user]: ${input}` : input;
     void sendMessage(messageContent);
     setInput("");
     setPdfContext(null);
@@ -516,7 +528,7 @@ function ChatPageContent() {
       e.preventDefault();
       if (isLoading) return;
       if (!input.trim() && !pdfContext) return;
-      const messageContent = pdfContext ? `[سياق من ملف PDF]: ${pdfContext}\n\n[رسالة المستخدم]: ${input}` : input;
+      const messageContent = pdfContext ? `[PDF context]: ${pdfContext}\n\n[user]: ${input}` : input;
       void sendMessage(messageContent);
       setInput("");
       setPdfContext(null);
@@ -524,13 +536,6 @@ function ChatPageContent() {
     }
   };
 
-  // Auto-send the `?q=` query once when the user is loaded.
-  // Lives after `sendMessage` is declared so the React Compiler doesn't
-  // flag a TDZ access from the effect closure.
-  // We capture `sendMessage` in a ref so the effect only re-runs when `user`
-  // or `searchParams` change — not on every render when `sendMessage` is
-  // recreated. This is the canonical pattern for "fire once" effects that
-  // need to call an unstable callback.
   const autoSentRef = useRef(false);
   const sendMessageRef = useRef(sendMessage);
   useEffect(() => { sendMessageRef.current = sendMessage; });
@@ -560,7 +565,7 @@ function ChatPageContent() {
           <div className="flex items-center gap-3 px-4 py-3 border-b border-white/[0.06] bg-black/20 backdrop-blur-md shrink-0">
             <button onClick={() => setSidebarOpen(!sidebarOpen)}
               className="hidden md:flex p-2 rounded-xl hover:bg-white/10 text-neutral-400 hover:text-white transition-all"
-              title={sidebarOpen ? "إخفاء الشريط الجانبي" : "إظهار الشريط الجانبي"}
+              title={sidebarOpen ? tCommon("close") : tCommon("open")}
             >
               {sidebarOpen ? <PanelLeftClose className="w-4 h-4" /> : <PanelLeftOpen className="w-4 h-4" />}
             </button>
@@ -579,8 +584,8 @@ function ChatPageContent() {
                 </div>
               </Avatar>
               <div>
-                <h2 className="font-bold text-sm text-white leading-tight">كلميرون</h2>
-                <span className="text-[10px] text-neutral-400">المستشار الذكي الخاص بك</span>
+                <h2 className="font-bold text-sm text-white leading-tight">{tCommon("appName")}</h2>
+                <span className="text-[10px] text-neutral-400">{tDash("subtitle")}</span>
               </div>
             </div>
 
@@ -589,13 +594,13 @@ function ChatPageContent() {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-60" />
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400" />
               </span>
-              متصل
+              {tCommon("live")}
             </div>
 
             <button onClick={startNewConversation}
               className="flex items-center gap-1.5 text-xs text-neutral-400 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 px-3 py-1.5 rounded-xl transition-all"
             >
-              <Plus className="w-3.5 h-3.5" /> جديد
+              <Plus className="w-3.5 h-3.5" /> {tCommon("new")}
             </button>
           </div>
 
@@ -616,10 +621,12 @@ function ChatPageContent() {
 
           <div className="shrink-0 border-t border-white/[0.06] bg-black/30 backdrop-blur-md p-3">
             <div className="flex flex-wrap gap-1.5 mb-3 justify-center">
-              {AGENT_CHIPS.map((chip) => {
+              {AGENT_CHIP_KEYS.map((chip) => {
                 const Icon = chip.icon;
+                const label = tChips(`${chip.key}.label`);
+                const prompt = tChips(`${chip.key}.prompt`);
                 return (
-                  <button key={chip.label} type="button" onClick={() => setInput(chip.prompt)}
+                  <button key={chip.key} type="button" onClick={() => setInput(prompt)}
                     className={cn(
                       "flex items-center gap-1.5 text-[11px] px-3 py-1.5 rounded-full border transition-all",
                       chip.color === "cyan" ? "bg-cyan-500/5 border-cyan-500/20 text-cyan-300 hover:bg-cyan-500/15" :
@@ -631,7 +638,7 @@ function ChatPageContent() {
                     )}
                   >
                     <Icon className="w-3 h-3" />
-                    {chip.label}
+                    {label}
                   </button>
                 );
               })}
@@ -640,8 +647,8 @@ function ChatPageContent() {
             {pdfContext && (
               <div className="mb-2 px-3 py-2 bg-blue-500/10 border border-blue-500/20 rounded-xl flex items-center gap-2 text-xs text-blue-300">
                 <Paperclip className="h-3 w-3 shrink-0" />
-                <span className="flex-1">ملف PDF مرفق</span>
-                <Button variant="ghost" size="icon" className="h-5 w-5" onClick={() => setPdfContext(null)}>
+                <span className="flex-1">PDF</span>
+                <Button variant="ghost" size="icon" className="h-5 w-5" onClick={() => setPdfContext(null)} title={tChat("actions.removeAttachment")}>
                   <X className="h-3 w-3" />
                 </Button>
               </div>
@@ -655,6 +662,7 @@ function ChatPageContent() {
               <Button type="button" variant="ghost" size="icon" disabled={isUploading || isLoading}
                 className="shrink-0 h-9 w-9 rounded-xl text-neutral-500 hover:text-white hover:bg-white/10"
                 onClick={() => fileInputRef.current?.click()}
+                title={tChat("actions.attach")}
               >
                 {isUploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Paperclip className="h-4 w-4" />}
               </Button>
@@ -662,7 +670,7 @@ function ChatPageContent() {
               <textarea
                 ref={textareaRef}
                 value={input}
-                placeholder="صف فكرتك أو اطرح سؤالك… (Enter للإرسال، Shift+Enter لسطر جديد)"
+                placeholder={tInput("placeholder")}
                 onChange={(e) => { setInput(e.target.value); autoResize(); }}
                 onKeyDown={handleKeyDown}
                 rows={1}
@@ -678,22 +686,20 @@ function ChatPageContent() {
 
               {isLoading ? (
                 <Button type="button" onClick={stopGenerating}
+                  title={tChat("actions.stop")}
                   className="h-9 w-9 rounded-xl bg-red-500/80 hover:bg-red-500 text-white shrink-0 border-none"
                 >
                   <Square className="h-3.5 w-3.5 fill-current" />
                 </Button>
               ) : (
                 <Button type="submit" disabled={!input.trim() && !pdfContext}
+                  title={tChat("actions.send")}
                   className="h-9 w-9 rounded-xl bg-gradient-to-br from-indigo-500 to-cyan-500 text-white hover:opacity-90 shrink-0 border-none disabled:opacity-40"
                 >
                   <Send className="h-3.5 w-3.5" />
                 </Button>
               )}
             </form>
-
-            <div className="mt-2 text-[10px] text-center text-neutral-600">
-              كلميرون قد يخطئ أحياناً — استشر متخصصاً قبل القرارات المصيرية
-            </div>
           </div>
         </div>
       </div>

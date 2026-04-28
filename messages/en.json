@@ -29,7 +29,10 @@
     "signOut": "Sign out",
     "comingSoon": "Coming soon",
     "beta": "Beta",
-    "new": "New"
+    "new": "New",
+    "openMenu": "Open menu",
+    "yourIdea": "Your idea",
+    "live": "Live"
   },
   "Nav": {
     "primary": "Primary",
@@ -71,18 +74,133 @@
     "privateData": "Your data is yours alone",
     "gdprReady": "GDPR-ready"
   },
+  "Landing": {
+    "topNav": {
+      "openDashboard": "Dashboard",
+      "login": "Sign in",
+      "signupFree": "Start free",
+      "loginCta": "Sign in",
+      "links": {
+        "departments": "Departments",
+        "demo": "Live demo",
+        "compare": "Why Kalmeron?",
+        "pricing": "Pricing"
+      }
+    },
+    "hero": {
+      "eyebrow": "Kalmeron · Your smart operations HQ",
+      "titleLine1": "Your founding team",
+      "titleLine2": "works 24/7 for you",
+      "subtitleLead": "Instead of spending thousands on a financial advisor, lawyer, and market analyst,",
+      "subtitleHighlight": "16 AI assistants",
+      "subtitleTail": "work as your full team — in native Arabic.",
+      "inputPlaceholder": "What's on your mind today? Write your idea freely…",
+      "submitLabel": "Start now",
+      "primaryCta": "Start free now",
+      "secondaryCta": "Watch a live demo",
+      "scrollHint": "Discover more"
+    },
+    "trustBadges": {
+      "lawCompliant": "Egypt Law 151 compliant",
+      "arabicNative": "Native Arabic, no translation",
+      "founderCount": "1,000+ founders",
+      "freeStart": "Free to start"
+    },
+    "suggestions": {
+      "platform": "Analyze a learning platform for freelancers",
+      "ecommerce": "Build a business plan for my online store",
+      "healthtech": "What are the opportunities in digital health?",
+      "cloudKitchen": "Estimate startup costs for a cloud kitchen"
+    },
+    "socialProof": {
+      "rating": "4.9/5",
+      "founderCount": "1,200+ Egyptian and Gulf founders",
+      "noCard": "No card required"
+    }
+  },
+  "Chat": {
+    "sidebar": {
+      "newConversation": "New conversation",
+      "noConversations": "No conversations yet",
+      "secureFooter": "Your chat history is saved and secure",
+      "deleteThread": "Delete conversation"
+    },
+    "agentChips": {
+      "ideaAnalyst": {
+        "label": "Idea Analyst",
+        "prompt": "Can you do a comprehensive technical analysis of my idea, with the Egyptian market in mind?"
+      },
+      "businessPlan": {
+        "label": "Business Plan",
+        "prompt": "Help me build a professional, investor-ready business plan for the Egyptian market."
+      },
+      "mistakeShield": {
+        "label": "Mistake Shield",
+        "prompt": "What are the fatal mistakes I should avoid when founding in the local market?"
+      },
+      "opportunityRadar": {
+        "label": "Opportunity Radar",
+        "prompt": "Tell me about the latest funding rounds, startup competitions, and upcoming events in Egypt."
+      },
+      "cfo": {
+        "label": "AI CFO",
+        "prompt": "Run a preliminary financial model with cash-flow projections for my project."
+      },
+      "legal": {
+        "label": "Legal Guide",
+        "prompt": "What legal documents do I need to incorporate my company in Egypt?"
+      }
+    },
+    "emptyState": {
+      "greeting": "Hi, I'm Kalmeron",
+      "description": "A team of 16 specialised AI assistants across 7 departments, at your service. Ask me anything — your idea, company, market, or future.",
+      "suggestions": {
+        "pharmacy": "Analyse my pharmacy-delivery app idea",
+        "marketing": "Build a marketing plan for a new food product",
+        "saas": "What are the requirements to set up a SaaS company in Egypt?",
+        "breakeven": "Calculate the break-even point for a 300k EGP restaurant",
+        "company": "Explain the difference between a capital and a partnership company",
+        "subscription": "Would a book Subscription Box succeed in Egypt?"
+      }
+    },
+    "sources": "Sources from your documents",
+    "actions": {
+      "copy": "Copy",
+      "copied": "Copied",
+      "send": "Send",
+      "stop": "Stop",
+      "attach": "Attach file",
+      "removeAttachment": "Remove attachment"
+    },
+    "input": {
+      "placeholder": "Type your message…",
+      "voicePrompt": "Press to talk"
+    },
+    "toasts": {
+      "fileExtracted": "Content extracted from the file.",
+      "fileTooLarge": "File exceeds the allowed size.",
+      "fileError": "Could not process the file. Try again.",
+      "connectionLost": "Connection lost. Reconnecting…",
+      "messageTooLong": "Message is too long. Please shorten it.",
+      "genericError": "An unexpected error occurred. Try again."
+    }
+  },
   "Dashboard": {
     "header": "Command Center",
+    "headerEyebrow": "Command center",
     "greeting": "Welcome, {name}",
+    "defaultName": "founder",
     "subtitle": "Your AI team is ready and working for you.",
     "stage": "Your current stage",
     "dailyCost": "Today's cost",
     "activeAgents": "Active agents",
+    "activeAgentsShort": "Active assistant",
     "quickActions": "Quick actions",
     "teamActivity": "Team activity",
     "viewRoadmap": "View roadmap",
     "noActivity": "No activity yet.",
     "startConversation": "Start a conversation",
+    "newConversation": "New conversation",
     "pending": "Awaiting your approval",
     "noPending": "No tasks awaiting decision.",
     "alerts": "Alerts",
@@ -90,14 +208,70 @@
     "consumption": "Usage curve (last 7 days)",
     "consumptionFootnote": "Daily cost history starts accumulating today.",
     "opportunityRadar": "Opportunity radar",
-    "noOpportunity": "No opportunities saved. Open the radar to discover the latest.",
+    "opportunityOrganizer": "Organiser",
+    "opportunityDeadline": "Deadline",
+    "opportunityDetails": "Details",
+    "noOpportunity": "No saved opportunities. Open the radar to discover the latest.",
     "openRadar": "Open opportunity radar",
     "loadError": "Could not load data.",
+    "noData": "No data available.",
     "loading": "Loading your company data…",
+    "discoverMore": "Discover more",
+    "stages": {
+      "idea": "Idea",
+      "validation": "Market validation",
+      "foundation": "Foundation",
+      "growth": "Growth",
+      "scaling": "Scaling"
+    },
     "status": {
       "completed": "Completed",
       "inProgress": "In progress",
       "pending": "Pending"
+    },
+    "quickActionItems": {
+      "ideaAnalyst": {
+        "label": "Idea Analyst",
+        "desc": "Analyse your new idea"
+      },
+      "cfo": {
+        "label": "AI CFO",
+        "desc": "Instant financial modelling"
+      },
+      "legal": {
+        "label": "Legal Guide",
+        "desc": "Contracts and incorporation"
+      },
+      "marketLab": {
+        "label": "Market Lab",
+        "desc": "Test your idea with customers"
+      },
+      "mistakeShield": {
+        "label": "Mistake Shield",
+        "desc": "Risk check for your project"
+      },
+      "opportunityRadar": {
+        "label": "Opportunity Radar",
+        "desc": "Funding and event opportunities"
+      }
+    },
+    "discover": {
+      "templates": {
+        "title": "Template Library",
+        "desc": "25+ ready-to-use templates"
+      },
+      "trendingTools": {
+        "title": "Trending AI Tools",
+        "desc": "Top 16 tools for founders in 2025"
+      },
+      "brandVoice": {
+        "title": "Brand Voice",
+        "desc": "Define your identity once, apply it everywhere"
+      }
+    },
+    "welcomeCard": {
+      "greeting": "Welcome back, {name}",
+      "stageMessage": "Your '{company}' company stage is progressing nicely."
     }
   },
   "CommandPalette": {
@@ -150,6 +324,79 @@
       "extracted": "Extracted",
       "merged": "Merged",
       "refined": "Refined"
+    }
+  },
+  "ComingSoon": {
+    "badge": "Coming soon",
+    "betaQ3": "Beta — Q3 2026",
+    "earlyAccessTitle": "Request early access",
+    "earlyAccessDescription": "Leave your email and company name and we'll notify you the moment this feature ships.",
+    "companyName": "Company name",
+    "useCase": "Use case",
+    "submit": "Notify me on launch",
+    "submitted": "You're on the list. Thanks for your trust."
+  },
+  "ApiKeys": {
+    "title": "API Keys",
+    "intro": "Connect Kalmeron to your external systems via secure API keys. Create a key, scope its permissions, and use it from your app.",
+    "exampleKey": "kal_sk_...",
+    "exampleLabel": "Example key shape",
+    "scopesTitle": "What you'll be able to do",
+    "scopes": {
+      "chat": "Send chat messages programmatically",
+      "agents": "Run assistants on your data",
+      "documents": "Upload and index documents",
+      "webhooks": "Subscribe to real-time events"
+    }
+  },
+  "Webhooks": {
+    "title": "Webhooks",
+    "intro": "Receive real-time notifications when an important event occurs in your account. Power automations, integrations, and dashboards.",
+    "eventsTitle": "Planned event support",
+    "events": {
+      "agentActionExecuted": "An assistant executed an action",
+      "subscriptionRenewed": "Your subscription renewed",
+      "creditDepleted": "Credit balance depleted",
+      "documentIndexed": "A document finished indexing",
+      "approvalRequested": "A new approval was requested"
+    }
+  },
+  "CashRunway": {
+    "title": "Cash Runway Calculator",
+    "subtitle": "Find out in seconds how many months you have before your cash runs out — and plan with confidence.",
+    "monthlyIncome": "Monthly income (EGP)",
+    "monthlyBurn": "Monthly burn (EGP)",
+    "currentCash": "Current bank balance (EGP)",
+    "calculate": "Calculate",
+    "result": "You have {months} months left",
+    "warning": "Warning: less than 6 months — review your financial model.",
+    "healthy": "Healthy state — keep growing.",
+    "infinite": "Your cash is growing — you are in a stable position.",
+    "noBurn": "Enter a valid burn value to compute the runway."
+  },
+  "Wellbeing": {
+    "title": "Founder Energy Quotient (MEQ)",
+    "subtitle": "Five minutes to gauge your mental health as a founder. No one sees your answers.",
+    "questionLabel": "Question {current} of {total}",
+    "next": "Next",
+    "previous": "Previous",
+    "submit": "See my result",
+    "questions": {
+      "sleep": "How was your sleep quality this past week?",
+      "energy": "What's your daily energy level when starting work?",
+      "focus": "Can you focus for two consecutive hours on one task?",
+      "support": "Do you have someone you trust to talk to about company stress?",
+      "purpose": "Are you still excited about the company's vision in 5 years?"
+    },
+    "scale": {
+      "low": "Low",
+      "mid": "Medium",
+      "high": "Excellent"
+    },
+    "results": {
+      "thrive": "You're thriving — keep your routine.",
+      "stable": "Stable — there's room to improve rest and support.",
+      "atRisk": "At risk — take a day off and talk to someone you trust."
     }
   }
 }

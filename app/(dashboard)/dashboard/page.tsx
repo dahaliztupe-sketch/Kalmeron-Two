@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { AppShell } from "@/components/layout/AppShell";
 import { useAuth } from "@/contexts/AuthContext";
 import { motion, useReducedMotion } from "motion/react";
@@ -17,12 +18,12 @@ import { KalmeronAreaChart } from "@/src/components/charts";
 import Link from "next/link";
 import { cn } from "@/src/lib/utils";
 
-const STAGE_LABELS: Record<string, string> = {
-  idea: "فكرة",
-  validation: "تحقق من السوق",
-  foundation: "تأسيس",
-  growth: "نمو",
-  scaling: "توسع",
+const STAGE_KEY_MAP: Record<string, string> = {
+  idea: "idea",
+  validation: "validation",
+  foundation: "foundation",
+  growth: "growth",
+  scaling: "scaling",
 };
 
 interface DashboardData {
@@ -45,7 +46,6 @@ const containerV: Variants = {
   hidden: { opacity: 0 },
   show: { opacity: 1, transition: { staggerChildren: 0.06 } },
 };
-// Reduced-motion fallback — fade only, no transform, no stagger.
 const itemVReduced: Variants = {
   hidden: { opacity: 0 },
   show: { opacity: 1, transition: { duration: 0 } },
@@ -55,16 +55,23 @@ const containerVReduced: Variants = {
   show: { opacity: 1, transition: { duration: 0 } },
 };
 
-const QUICK_ACTIONS = [
-  { icon: Brain, label: "محلل الأفكار", desc: "حلّل فكرتك الجديدة", href: "/chat?q=حلل فكرتي الجديدة", color: "from-cyan-500 to-indigo-500", bg: "bg-cyan-500/5 border-cyan-500/20 hover:border-cyan-400/40" },
-  { icon: Briefcase, label: "المدير المالي", desc: "نمذجة مالية فورية", href: "/chat?q=احسب لي نموذج مالي أولي", color: "from-emerald-500 to-cyan-500", bg: "bg-emerald-500/5 border-emerald-500/20 hover:border-emerald-400/40" },
-  { icon: Scale, label: "المرشد القانوني", desc: "عقود وتأسيس قانوني", href: "/chat?q=ما الوثائق القانونية اللازمة للتأسيس؟", color: "from-amber-500 to-orange-500", bg: "bg-amber-500/5 border-amber-500/20 hover:border-amber-400/40" },
-  { icon: FlaskConical, label: "مختبر السوق", desc: "اختبر فكرتك مع عملاء", href: "/market-lab", color: "from-fuchsia-500 to-pink-500", bg: "bg-fuchsia-500/5 border-fuchsia-500/20 hover:border-fuchsia-400/40" },
-  { icon: Shield, label: "حارس الأخطاء", desc: "فحص مخاطر مشروعك", href: "/chat?q=ما الأخطاء القاتلة التي يجب تجنبها؟", color: "from-rose-500 to-red-500", bg: "bg-rose-500/5 border-rose-500/20 hover:border-rose-400/40" },
-  { icon: Radar, label: "رادار الفرص", desc: "فرص التمويل والفعاليات", href: "/opportunities", color: "from-violet-500 to-purple-500", bg: "bg-violet-500/5 border-violet-500/20 hover:border-violet-400/40" },
-];
+const QUICK_ACTION_KEYS = [
+  { key: "ideaAnalyst", icon: Brain, href: "/chat?q=" + encodeURIComponent("حلل فكرتي الجديدة"), color: "from-cyan-500 to-indigo-500", bg: "bg-cyan-500/5 border-cyan-500/20 hover:border-cyan-400/40" },
+  { key: "cfo", icon: Briefcase, href: "/chat?q=" + encodeURIComponent("احسب لي نموذج مالي أولي"), color: "from-emerald-500 to-cyan-500", bg: "bg-emerald-500/5 border-emerald-500/20 hover:border-emerald-400/40" },
+  { key: "legal", icon: Scale, href: "/chat?q=" + encodeURIComponent("ما الوثائق القانونية اللازمة للتأسيس؟"), color: "from-amber-500 to-orange-500", bg: "bg-amber-500/5 border-amber-500/20 hover:border-amber-400/40" },
+  { key: "marketLab", icon: FlaskConical, href: "/market-lab", color: "from-fuchsia-500 to-pink-500", bg: "bg-fuchsia-500/5 border-fuchsia-500/20 hover:border-fuchsia-400/40" },
+  { key: "mistakeShield", icon: Shield, href: "/chat?q=" + encodeURIComponent("ما الأخطاء القاتلة التي يجب تجنبها؟"), color: "from-rose-500 to-red-500", bg: "bg-rose-500/5 border-rose-500/20 hover:border-rose-400/40" },
+  { key: "opportunityRadar", icon: Radar, href: "/opportunities", color: "from-violet-500 to-purple-500", bg: "bg-violet-500/5 border-violet-500/20 hover:border-violet-400/40" },
+] as const;
 
 export default function DashboardPage() {
+  const t = useTranslations("Dashboard");
+  const tStagesRaw = useTranslations("Dashboard.stages");
+  const tStages = tStagesRaw as unknown as (k: string) => string;
+  const tStatus = useTranslations("Dashboard.status");
+  const tQuickRaw = useTranslations("Dashboard.quickActionItems");
+  const tQuick = tQuickRaw as unknown as (k: string) => string;
+  const tDiscover = useTranslations("Dashboard.discover");
   const { user, dbUser } = useAuth();
   const [data, setData] = useState<DashboardData | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -83,14 +90,13 @@ export default function DashboardPage() {
         if (!r.ok) throw new Error(String(r.status));
         const j = await r.json();
         if (!cancel) { setData(j); setError(null); }
-      } catch (e: unknown) {
-        if (!cancel) setError("تعذّر تحميل البيانات.");
+      } catch {
+        if (!cancel) setError(t("loadError"));
       } finally {
         if (!cancel) setLoading(false);
       }
     };
     load();
-    // Poll every 30s, but skip while tab is hidden — saves battery + Firestore reads.
     const id = setInterval(() => {
       if (typeof document !== "undefined" && document.visibilityState === "hidden") return;
       load();
@@ -102,52 +108,60 @@ export default function DashboardPage() {
       clearInterval(id);
       if (typeof document !== "undefined") document.removeEventListener("visibilitychange", onVis);
     };
-  }, [user]);
+  }, [user, t]);
 
   const stageIndex = data ? Math.max(0, data.progress.stages.indexOf(data.progress.stage)) : 0;
   const stageProgressPct = data ? ((stageIndex + 1) / data.progress.stages.length) * 100 : 0;
-  const userName = dbUser?.name || user?.displayName || "صديقي المؤسس";
+  const userName = dbUser?.name || user?.displayName || t("defaultName");
   const firstName = userName.split(" ")[0];
+
+  const stageLabel = (raw: string): string => {
+    const key = STAGE_KEY_MAP[raw];
+    if (!key) return raw;
+    try {
+      return tStages(key);
+    } catch {
+      return raw;
+    }
+  };
 
   return (
     <AppShell>
       <div dir="rtl" className="max-w-7xl mx-auto">
-        {/* Page Header */}
         <div className="flex items-center justify-between mb-6">
           <div>
             <div className="flex items-center gap-2 mb-1">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span className="text-xs text-emerald-400 font-medium uppercase tracking-wide">مركز القيادة</span>
+              <span className="text-xs text-emerald-400 font-medium uppercase tracking-wide">{t("headerEyebrow")}</span>
             </div>
             <h1 className="font-display text-3xl md:text-4xl font-extrabold text-white">
-              أهلاً، <span className="brand-gradient-text">{firstName}</span> 👋
+              {t.rich("greeting", {
+                name: () => <span className="brand-gradient-text">{firstName}</span>,
+              })}
             </h1>
-            <p className="text-text-secondary text-sm mt-1">فريقك الذكي جاهز ويعمل من أجلك.</p>
+            <p className="text-text-secondary text-sm mt-1">{t("subtitle")}</p>
           </div>
           <Link href="/chat"
             className="hidden md:flex btn-primary items-center gap-2 text-sm font-bold px-5 py-2.5 rounded-xl"
           >
-            <MessageSquare className="w-4 h-4" /> محادثة جديدة
+            <MessageSquare className="w-4 h-4" /> {t("newConversation")}
           </Link>
         </div>
 
-        {/* Notification Banner */}
         <NotificationPermissionBanner userId={user?.uid} className="mb-5" />
 
-        {/* Smart Hub — unified center of latest capabilities */}
         <SmartHubSection />
 
         {loading ? (
           <div className="flex flex-col items-center justify-center py-24 gap-3">
             <Loader2 className="w-8 h-8 animate-spin text-indigo-400" />
-            <p className="text-text-secondary text-sm">جاري تحميل بيانات شركتك…</p>
+            <p className="text-text-secondary text-sm">{t("loading")}</p>
           </div>
         ) : error || !data ? (
-          <div className="glass-panel p-6 rounded-2xl text-rose-300 text-sm">{error || "لا توجد بيانات."}</div>
+          <div className="glass-panel p-6 rounded-2xl text-rose-300 text-sm">{error || t("noData")}</div>
         ) : (
           <motion.div variants={reduce ? containerVReduced : containerV} initial="hidden" animate="show" className="space-y-4 md:space-y-5">
 
-            {/* Welcome + Progress */}
             <motion.div variants={reduce ? itemVReduced : itemV} className="glass-panel rounded-3xl p-6 relative overflow-hidden">
               <div className="absolute -top-24 -left-24 w-72 h-72 rounded-full bg-indigo-600/10 blur-3xl pointer-events-none" />
               <div className="absolute -bottom-20 -right-20 w-64 h-64 rounded-full bg-cyan-600/8 blur-3xl pointer-events-none" />
@@ -155,11 +169,11 @@ export default function DashboardPage() {
                 <div>
                   <p className="text-text-secondary text-sm mb-1 flex items-center gap-1.5">
                     <MapPin className="w-3.5 h-3.5 text-brand-cyan" />
-                    مرحلة شركتك الحالية
+                    {t("stage")}
                   </p>
                   <div className="flex items-baseline gap-2 mb-4">
                     <span className="font-display text-2xl font-extrabold brand-gradient-text">
-                      {STAGE_LABELS[data.welcome.stage] || data.welcome.stage}
+                      {stageLabel(data.welcome.stage)}
                     </span>
                     {data.welcome.companyName && (
                       <span className="text-sm text-neutral-400">· {data.welcome.companyName}</span>
@@ -175,7 +189,7 @@ export default function DashboardPage() {
                   <div className="flex justify-between text-[10px] text-text-secondary uppercase tracking-wider">
                     {data.progress.stages.map((s, i) => (
                       <span key={s} className={cn(i <= stageIndex && "text-brand-cyan font-semibold")}>
-                        {STAGE_LABELS[s]}
+                        {stageLabel(s)}
                       </span>
                     ))}
                   </div>
@@ -185,27 +199,28 @@ export default function DashboardPage() {
                   <div className="rounded-2xl bg-white/[0.04] border border-white/[0.06] p-4 text-center">
                     <DollarSign className="w-4 h-4 text-emerald-400 mx-auto mb-1.5" />
                     <div className="text-2xl font-extrabold text-white">${data.metrics.dailyCostUsd.toFixed(2)}</div>
-                    <div className="text-[11px] text-text-secondary mt-0.5">تكلفة اليوم</div>
+                    <div className="text-[11px] text-text-secondary mt-0.5">{t("dailyCost")}</div>
                   </div>
                   <div className="rounded-2xl bg-white/[0.04] border border-white/[0.06] p-4 text-center">
                     <Bot className="w-4 h-4 text-brand-cyan mx-auto mb-1.5" />
                     <div className="text-2xl font-extrabold text-white">{data.metrics.agentCount}</div>
-                    <div className="text-[11px] text-text-secondary mt-0.5">مساعد نشط</div>
+                    <div className="text-[11px] text-text-secondary mt-0.5">{t("activeAgentsShort")}</div>
                   </div>
                 </div>
               </div>
             </motion.div>
 
-            {/* Quick Actions */}
             <motion.div variants={reduce ? itemVReduced : itemV}>
               <h2 className="text-sm font-semibold text-neutral-400 mb-3 flex items-center gap-2">
-                <Zap className="w-4 h-4 text-amber-400" /> إجراءات سريعة
+                <Zap className="w-4 h-4 text-amber-400" /> {t("quickActions")}
               </h2>
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2 md:gap-3">
-                {QUICK_ACTIONS.map((action) => {
+                {QUICK_ACTION_KEYS.map((action) => {
                   const Icon = action.icon;
+                  const label = tQuick(`${action.key}.label`);
+                  const desc = tQuick(`${action.key}.desc`);
                   return (
-                    <Link key={action.label} href={action.href}
+                    <Link key={action.key} href={action.href}
                       className={cn(
                         "group rounded-2xl border p-3 md:p-4 text-center transition-all card-lift",
                         action.bg
@@ -214,25 +229,23 @@ export default function DashboardPage() {
                       <div className={`w-9 h-9 md:w-10 md:h-10 rounded-xl bg-gradient-to-br ${action.color} flex items-center justify-center mx-auto mb-2.5 shadow-lg group-hover:scale-110 transition-transform`}>
                         <Icon className="w-4 h-4 md:w-5 md:h-5 text-white" />
                       </div>
-                      <div className="font-bold text-white text-xs md:text-sm leading-tight">{action.label}</div>
-                      <div className="text-[10px] text-neutral-500 mt-0.5 leading-tight hidden md:block">{action.desc}</div>
+                      <div className="font-bold text-white text-xs md:text-sm leading-tight">{label}</div>
+                      <div className="text-[10px] text-neutral-500 mt-0.5 leading-tight hidden md:block">{desc}</div>
                     </Link>
                   );
                 })}
               </div>
             </motion.div>
 
-            {/* Main Content Grid */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-5">
-              {/* Team Activity */}
               <motion.div variants={reduce ? itemVReduced : itemV} className="glass-panel rounded-3xl p-6 md:col-span-2">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-2">
                     <Activity className="w-4 h-4 text-brand-blue" />
-                    <h3 className="text-base font-bold text-white">نشاط الفريق</h3>
+                    <h3 className="text-base font-bold text-white">{t("teamActivity")}</h3>
                   </div>
                   <Link href="/roadmap" className="text-xs text-brand-cyan flex items-center gap-1 hover:gap-2 transition-all">
-                    عرض المخطط <ArrowLeft className="w-3 h-3" />
+                    {t("viewRoadmap")} <ArrowLeft className="w-3 h-3" />
                   </Link>
                 </div>
                 {data.teamActivity.length === 0 ? (
@@ -240,27 +253,27 @@ export default function DashboardPage() {
                     <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center mb-3">
                       <Sparkles className="w-5 h-5 text-indigo-400" />
                     </div>
-                    <p className="text-text-secondary text-sm">لا توجد إجراءات بعد.</p>
-                    <Link href="/chat" className="text-xs text-brand-cyan mt-2 hover:underline">ابدأ محادثة مع الفريق</Link>
+                    <p className="text-text-secondary text-sm">{t("noActivity")}</p>
+                    <Link href="/chat" className="text-xs text-brand-cyan mt-2 hover:underline">{t("startConversation")}</Link>
                   </div>
                 ) : (
                   <ul className="space-y-3">
-                    {data.teamActivity.slice(0, 4).map((t) => (
-                      <li key={t.taskId} className="flex items-start gap-3 text-sm group">
+                    {data.teamActivity.slice(0, 4).map((task) => (
+                      <li key={task.taskId} className="flex items-start gap-3 text-sm group">
                         <div className={cn(
                           "w-2 h-2 rounded-full mt-2 shrink-0 transition-transform group-hover:scale-125",
-                          t.status === "completed" ? "bg-emerald-400" :
-                          t.status === "in_progress" ? "bg-brand-blue animate-pulse" :
-                          t.status === "failed" ? "bg-rose-400" : "bg-text-secondary/40"
+                          task.status === "completed" ? "bg-emerald-400" :
+                          task.status === "in_progress" ? "bg-brand-blue animate-pulse" :
+                          task.status === "failed" ? "bg-rose-400" : "bg-text-secondary/40"
                         )} />
-                        <span className="text-text-secondary leading-relaxed flex-1">{t.description}</span>
+                        <span className="text-text-secondary leading-relaxed flex-1">{task.description}</span>
                         <span className={cn(
                           "text-[10px] px-2 py-0.5 rounded-full shrink-0",
-                          t.status === "completed" ? "bg-emerald-400/10 text-emerald-400" :
-                          t.status === "in_progress" ? "bg-blue-400/10 text-blue-400" :
+                          task.status === "completed" ? "bg-emerald-400/10 text-emerald-400" :
+                          task.status === "in_progress" ? "bg-blue-400/10 text-blue-400" :
                           "bg-white/5 text-neutral-500"
                         )}>
-                          {t.status === "completed" ? "مكتمل" : t.status === "in_progress" ? "جارٍ" : "منتظر"}
+                          {task.status === "completed" ? tStatus("completed") : task.status === "in_progress" ? tStatus("inProgress") : tStatus("pending")}
                         </span>
                       </li>
                     ))}
@@ -268,40 +281,37 @@ export default function DashboardPage() {
                 )}
               </motion.div>
 
-              {/* Alerts + Pending */}
               <motion.div variants={reduce ? itemVReduced : itemV} className="space-y-4">
-                {/* Pending Tasks */}
                 <div className="glass-panel rounded-3xl p-5">
                   <div className="flex items-center gap-2 mb-3">
                     <Hourglass className="w-4 h-4 text-amber-400" />
-                    <h3 className="text-sm font-bold text-white">بانتظار موافقتك</h3>
+                    <h3 className="text-sm font-bold text-white">{t("pending")}</h3>
                   </div>
                   {data.pendingTasks.length === 0 ? (
                     <div className="flex items-center gap-2 text-text-secondary text-xs">
                       <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                      لا توجد مهام تنتظر قراراً.
+                      {t("noPending")}
                     </div>
                   ) : (
                     <ul className="space-y-2">
-                      {data.pendingTasks.slice(0, 3).map((t) => (
-                        <li key={t.taskId} className="text-xs text-text-secondary leading-relaxed border-r-2 border-amber-400/60 pr-3">
-                          {t.description}
+                      {data.pendingTasks.slice(0, 3).map((task) => (
+                        <li key={task.taskId} className="text-xs text-text-secondary leading-relaxed border-r-2 border-amber-400/60 pr-3">
+                          {task.description}
                         </li>
                       ))}
                     </ul>
                   )}
                 </div>
 
-                {/* Alerts */}
                 <div className="glass-panel rounded-3xl p-5">
                   <div className="flex items-center gap-2 mb-3">
                     <AlertTriangle className="w-4 h-4 text-amber-400" />
-                    <h3 className="text-sm font-bold text-white">التنبيهات</h3>
+                    <h3 className="text-sm font-bold text-white">{t("alerts")}</h3>
                   </div>
                   {data.alerts.length === 0 ? (
                     <div className="flex items-center gap-2 text-text-secondary text-xs">
                       <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                      كل الأنظمة سليمة ✓
+                      {t("allClear")}
                     </div>
                   ) : (
                     <ul className="space-y-2">
@@ -317,13 +327,11 @@ export default function DashboardPage() {
               </motion.div>
             </div>
 
-            {/* Bottom Row: Chart + Opportunity */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
-              {/* Cost Chart */}
               <motion.div variants={reduce ? itemVReduced : itemV} className="glass-panel rounded-3xl p-6">
                 <div className="flex items-center gap-2 mb-4">
                   <LineChart className="w-4 h-4 text-emerald-400" />
-                  <h3 className="text-base font-bold text-white">منحنى الاستهلاك (آخر 7 أيام)</h3>
+                  <h3 className="text-base font-bold text-white">{t("consumption")}</h3>
                 </div>
                 <KalmeronAreaChart
                   height={160}
@@ -336,43 +344,38 @@ export default function DashboardPage() {
                     return days.map((d, i) => ({ day: d, cost: i === days.length - 1 ? today : 0 }));
                   })()}
                 />
-                <p className="text-[10px] text-text-secondary/60 mt-2">تاريخ التكلفة اليومية يبدأ بالتراكم من اليوم.</p>
+                <p className="text-[10px] text-text-secondary/60 mt-2">{t("consumptionFootnote")}</p>
               </motion.div>
 
-              {/* Opportunity */}
               <motion.div variants={reduce ? itemVReduced : itemV} className="glass-panel rounded-3xl p-6 relative overflow-hidden">
                 <div className="absolute -bottom-10 -right-10 w-48 h-48 rounded-full bg-brand-blue/10 blur-3xl pointer-events-none" />
                 <div className="relative">
                   <div className="flex items-center gap-2 mb-3">
                     <Target className="w-4 h-4 text-brand-blue" />
-                    <h3 className="text-base font-bold text-white">رادار الفرص</h3>
-                    <div className="mr-auto flex items-center gap-1 text-[10px] text-emerald-400 bg-emerald-400/10 px-2 py-0.5 rounded-full">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                      مباشر
-                    </div>
+                    <h3 className="text-base font-bold text-white">{t("opportunityRadar")}</h3>
                   </div>
                   {data.opportunity ? (
                     <>
                       <h4 className="text-white font-bold mb-2 leading-snug">{data.opportunity.title}</h4>
                       <div className="text-xs text-text-secondary mb-3 space-y-1">
                         {data.opportunity.organizer && (
-                          <div>الجهة: <span className="text-white/80">{data.opportunity.organizer}</span></div>
+                          <div>{t("opportunityOrganizer")}: <span className="text-white/80">{data.opportunity.organizer}</span></div>
                         )}
                         {data.opportunity.deadline && (
-                          <div>الموعد النهائي: <span className="text-amber-400 font-medium">{data.opportunity.deadline}</span></div>
+                          <div>{t("opportunityDeadline")}: <span className="text-amber-400 font-medium">{data.opportunity.deadline}</span></div>
                         )}
                       </div>
                       <Link href={data.opportunity.link || "/opportunities"} className="inline-flex items-center gap-2 text-brand-cyan text-sm font-bold hover:gap-3 transition-all">
-                        التفاصيل <ArrowLeft className="w-4 h-4" />
+                        {t("opportunityDetails")} <ArrowLeft className="w-4 h-4" />
                       </Link>
                     </>
                   ) : (
                     <>
                       <p className="text-text-secondary text-sm mb-4 leading-relaxed">
-                        لا توجد فرص محفوظة حالياً. افتح الرادار لاكتشاف أحدث الفرص.
+                        {t("noOpportunity")}
                       </p>
                       <Link href="/opportunities" className="inline-flex items-center gap-2 text-brand-cyan text-sm font-bold hover:gap-3 transition-all">
-                        افتح رادار الفرص <ArrowLeft className="w-4 h-4" />
+                        {t("openRadar")} <ArrowLeft className="w-4 h-4" />
                       </Link>
                     </>
                   )}
@@ -380,10 +383,9 @@ export default function DashboardPage() {
               </motion.div>
             </div>
 
-            {/* Discover Row */}
             <motion.div variants={reduce ? itemVReduced : itemV}>
               <h2 className="text-sm font-semibold text-neutral-400 mb-3 flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-fuchsia-400" /> اكتشف المزيد
+                <Sparkles className="w-4 h-4 text-fuchsia-400" /> {t("discoverMore")}
               </h2>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <Link href="/templates" className="group glass-panel rounded-2xl p-5 hover:border-amber-500/30 transition-all flex items-center gap-4">
@@ -391,8 +393,8 @@ export default function DashboardPage() {
                     <LayoutTemplate className="w-5 h-5 text-amber-400" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="text-sm font-bold text-white">مكتبة القوالب</div>
-                    <div className="text-xs text-neutral-500 mt-0.5">25+ قالب جاهز للاستخدام الفوري</div>
+                    <div className="text-sm font-bold text-white">{tDiscover("templates.title")}</div>
+                    <div className="text-xs text-neutral-500 mt-0.5">{tDiscover("templates.desc")}</div>
                   </div>
                   <ArrowLeft className="w-4 h-4 text-neutral-600 group-hover:text-white transition-colors flex-shrink-0" />
                 </Link>
@@ -401,8 +403,8 @@ export default function DashboardPage() {
                     <Flame className="w-5 h-5 text-rose-400" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="text-sm font-bold text-white">أدوات AI الرائجة</div>
-                    <div className="text-xs text-neutral-500 mt-0.5">أفضل 16 أداة للمؤسسين في 2025</div>
+                    <div className="text-sm font-bold text-white">{tDiscover("trendingTools.title")}</div>
+                    <div className="text-xs text-neutral-500 mt-0.5">{tDiscover("trendingTools.desc")}</div>
                   </div>
                   <ArrowLeft className="w-4 h-4 text-neutral-600 group-hover:text-white transition-colors flex-shrink-0" />
                 </Link>
@@ -411,8 +413,8 @@ export default function DashboardPage() {
                     <Mic className="w-5 h-5 text-pink-400" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="text-sm font-bold text-white">صوت العلامة التجارية</div>
-                    <div className="text-xs text-neutral-500 mt-0.5">عرّف هويتك مرة وطبّقها في كل مكان</div>
+                    <div className="text-sm font-bold text-white">{tDiscover("brandVoice.title")}</div>
+                    <div className="text-xs text-neutral-500 mt-0.5">{tDiscover("brandVoice.desc")}</div>
                   </div>
                   <ArrowLeft className="w-4 h-4 text-neutral-600 group-hover:text-white transition-colors flex-shrink-0" />
                 </Link>
