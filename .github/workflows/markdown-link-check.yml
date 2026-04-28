@@ -1,0 +1,29 @@
+name: Markdown Link Check
+
+# Verifies that links in *.md files actually resolve. Catches broken
+# documentation links before they ship. No external account needed.
+
+on:
+  pull_request:
+    paths:
+      - "**/*.md"
+  schedule:
+    - cron: "0 8 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: Check markdown links
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: gaurav-nelson/github-action-markdown-link-check@v1
+        with:
+          use-quiet-mode: "yes"
+          use-verbose-mode: "yes"
+          config-file: .github/markdown-link-check.json
+          folder-path: "docs"
+          file-path: "./README.md, ./CONTRIBUTING.md, ./CHANGELOG.md"

@@ -1,0 +1,34 @@
+name: Lockfile Lint
+
+# Defends against supply-chain attacks via package-lock.json
+# tampering: enforces https resolved URLs, integrity hashes, and
+# the official npm registry. Runs only when the lockfile changes.
+
+on:
+  pull_request:
+    paths:
+      - "package-lock.json"
+      - "package.json"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    name: Validate package-lock.json
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "20"
+      - name: Run lockfile-lint
+        run: |
+          npx --yes lockfile-lint@^4 \
+            --path package-lock.json \
+            --type npm \
+            --validate-https \
+            --validate-integrity \
+            --allowed-hosts npm \
+            --allowed-schemes "https:"

@@ -1,0 +1,43 @@
+name: OpenSSF Scorecard
+
+# Audits the repo's security posture (branch protection, signed
+# releases, pinned actions, dangerous workflows, etc.) and uploads
+# results to GitHub Security. Run by the OpenSSF.
+
+on:
+  branch_protection_rule:
+  schedule:
+    - cron: "45 3 * * 1"
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions: read-all
+
+jobs:
+  analysis:
+    name: Scorecard analysis
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+      id-token: write
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: ossf/scorecard-action@v2.4.0
+        with:
+          results_file: results.sarif
+          results_format: sarif
+          publish_results: true
+      - uses: actions/upload-artifact@v5
+        with:
+          name: scorecard-results
+          path: results.sarif
+          retention-days: 7
+      - uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: results.sarif
+          category: scorecard

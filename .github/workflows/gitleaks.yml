@@ -1,0 +1,28 @@
+name: Gitleaks Secret Scan
+
+# Scans the repo (and PR diffs) for committed secrets — API keys,
+# tokens, private keys, etc. Free for public repos and personal
+# accounts; no token required for that tier.
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  schedule:
+    - cron: "0 6 * * 2"
+
+permissions:
+  contents: read
+
+jobs:
+  scan:
+    name: Find leaked secrets
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

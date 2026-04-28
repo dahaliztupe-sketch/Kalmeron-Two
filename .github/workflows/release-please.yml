@@ -1,0 +1,27 @@
+name: Release Please
+
+# Generates release PRs and tags from Conventional Commits on main.
+# When the release PR is merged, a GitHub release is created and the
+# CHANGELOG is updated automatically.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: release-please-${{ github.ref }}
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: googleapis/release-please-action@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          config-file: .github/release-please-config.json
+          manifest-file: .github/.release-please-manifest.json

@@ -1,0 +1,37 @@
+name: OSV Scanner
+
+# Google's open-source vulnerability scanner. Reads npm/pip/etc.
+# manifests, queries the OSV.dev database, and uploads SARIF results
+# to GitHub Security. Free, no account required.
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  schedule:
+    - cron: "30 4 * * 1"
+
+permissions:
+  contents: read
+  security-events: write
+  actions: read
+
+jobs:
+  scan-pr:
+    if: ${{ github.event_name == 'pull_request' }}
+    uses: "google/osv-scanner-action/.github/workflows/osv-scanner-reusable-pr.yml@v2.2.4"
+    with:
+      scan-args: |-
+        --recursive
+        --skip-git
+        ./
+
+  scan-scheduled:
+    if: ${{ github.event_name != 'pull_request' }}
+    uses: "google/osv-scanner-action/.github/workflows/osv-scanner-reusable.yml@v2.2.4"
+    with:
+      scan-args: |-
+        --recursive
+        --skip-git
+        ./

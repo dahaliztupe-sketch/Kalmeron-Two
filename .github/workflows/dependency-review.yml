@@ -1,0 +1,25 @@
+name: Dependency Review
+
+# Blocks pull requests that introduce vulnerable dependencies or
+# disallowed licenses. Uses GitHub's native action — no external
+# account or token required.
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  review:
+    name: Review new dependencies
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/dependency-review-action@v4
+        with:
+          fail-on-severity: high
+          comment-summary-in-pr: on-failure
+          deny-licenses: GPL-3.0, AGPL-3.0

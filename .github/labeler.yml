@@ -1,0 +1,71 @@
+area/frontend:
+  - changed-files:
+      - any-glob-to-any-file:
+          - app/**
+          - components/**
+          - hooks/**
+          - contexts/**
+          - public/**
+          - i18n/**
+          - messages/**
+          - "**/*.tsx"
+          - "**/*.css"
+
+area/backend:
+  - changed-files:
+      - any-glob-to-any-file:
+          - src/**
+          - services/**
+          - proxy.ts
+          - main.py
+
+area/ai:
+  - changed-files:
+      - any-glob-to-any-file:
+          - src/ai/**
+          - src/lib/llm/**
+          - services/llm-judge/**
+          - services/embeddings-worker/**
+          - test/eval/**
+
+area/security:
+  - changed-files:
+      - any-glob-to-any-file:
+          - src/lib/security/**
+          - firestore.rules
+          - .github/workflows/security.yml
+          - .github/workflows/codeql.yml
+
+area/infra:
+  - changed-files:
+      - any-glob-to-any-file:
+          - .github/**
+          - scripts/**
+          - vercel.json
+          - next.config.ts
+          - Dockerfile
+          - "**/Dockerfile"
+
+area/docs:
+  - changed-files:
+      - any-glob-to-any-file:
+          - docs/**
+          - "**/*.md"
+
+area/tests:
+  - changed-files:
+      - any-glob-to-any-file:
+          - test/**
+          - e2e/**
+          - qa/**
+          - "**/*.test.ts"
+          - "**/*.test.tsx"
+          - "**/*.spec.ts"
+
+area/dependencies:
+  - changed-files:
+      - any-glob-to-any-file:
+          - package.json
+          - package-lock.json
+          - "**/requirements.txt"
+          - "**/pyproject.toml"

@@ -1,0 +1,39 @@
+name: Trivy Filesystem Scan
+
+# Aqua Security's Trivy scans the repo for vulnerable dependencies,
+# misconfigured Dockerfiles / IaC, and exposed secrets. Open-source,
+# no account or token required. Results land in GitHub Security.
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  schedule:
+    - cron: "15 5 * * 1"
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  scan:
+    name: Filesystem + config + secrets
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Run Trivy
+        uses: aquasecurity/trivy-action@0.30.0
+        with:
+          scan-type: "fs"
+          scan-ref: "."
+          format: "sarif"
+          output: "trivy.sarif"
+          severity: "CRITICAL,HIGH"
+          ignore-unfixed: true
+          scanners: "vuln,misconfig,secret"
+      - uses: github/codeql-action/upload-sarif@v4
+        if: always()
+        with:
+          sarif_file: trivy.sarif
+          category: trivy
