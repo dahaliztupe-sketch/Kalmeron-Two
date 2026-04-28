@@ -21,6 +21,7 @@ import {
   type PanelDomain,
 } from './types';
 import { routePanel, buildPanelRoster } from './router';
+import { routePanelHybrid } from './router-cache';
 import { ALL_EXPERTS } from './experts';
 
 export interface CouncilInput {
@@ -110,7 +111,7 @@ export async function runCouncil(input: CouncilInput): Promise<CouncilResult> {
     routeExperts = ['context-engineer', 'critical-analyst', 'quality-auditor', 'ethics-reviewer'];
     roster = FAST_MODE_ROSTER;
   } else {
-    const route = await routePanel(input.agentName, input.userMessage, input.uiContext);
+    const route = await routePanelHybrid(input.agentName, input.userMessage, input.uiContext);
     routeDomain = route.domain;
     routeRationale = route.rationale;
     routeExperts = route.experts;
@@ -135,6 +136,10 @@ export async function runCouncil(input: CouncilInput): Promise<CouncilResult> {
       system,
       prompt,
       schema: CouncilOutputSchema,
+      // Fail fast on capacity errors so the gateway's PRO→FLASH→LITE cascade
+      // can take over without burning seconds on the AI-SDK's internal
+      // retry/back-off (which compounds 429s during quota exhaustion).
+      maxRetries: 0,
     },
     {
       agent: `${input.agentName}:council:${mode}`,

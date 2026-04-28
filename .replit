@@ -75,13 +75,13 @@ outputType = "console"
 name = "Egypt Calc"
 author = "agent"
 
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "cd services/egypt-calc && uvicorn main:app --host 0.0.0.0 --port 8008 --log-level info"
-waitForPort = 8008
-
 [workflows.workflow.metadata]
 outputType = "console"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "cd services/egypt-calc && [ ! -d .venv ] && uv venv .venv >/dev/null 2>&1 && source .venv/bin/activate && uv pip install -q -r requirements.txt >/dev/null 2>&1; source .venv/bin/activate && uvicorn main:app --host 0.0.0.0 --port 8008 --log-level info"
+waitForPort = 8008
 
 [[workflows.workflow]]
 name = "LLM Judge"
@@ -145,8 +145,8 @@ NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET = "kalmeron-two.firebasestorage.app"
 NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID = "686711690176"
 NEXT_PUBLIC_FIREBASE_APP_ID = "1:686711690176:web:aef254de2ec4ea357ee25"
 NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID = "G-GLX7PM8VCE"
-MODEL_PRO = "gemini-2.5-flash"
-KALMERON_COUNCIL = "off"
+MODEL_PRO = "gemini-2.5-pro"
+KALMERON_COUNCIL = "on"
 
 [deployment]
 deploymentTarget = "autoscale"

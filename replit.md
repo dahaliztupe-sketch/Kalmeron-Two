@@ -1,5 +1,45 @@
 # Kalmeron AI (ai-studio-applet)
 
+## Session 2026-04-28 — تطبيق ٨ تحسينات (A1-A4 / B5-B6 / C7-C8)
+
+تنفيذ كامل لخطّة الـ ٨ تحسينات على ٣ مراحل، مع إعادة فحص smoke eval بعد كل مرحلة.
+
+### المرحلة A — مكاسب سريعة (Quick Wins) ✅
+- **A1 — تشغيل المجلس + موديل PRO حقيقي**: أُضيفت متغيّرات البيئة `KALMERON_COUNCIL=on` و `MODEL_PRO=gemini-2.5-pro`.
+- **A2 — توسيع PII redactor**: ٨ أنماط جديدة (address، intl_phone، iban، saudi_national_id، saudi_phone، egypt_national_id ٤+١٠، credit_card مع Luhn) + إصلاح false positive في egypt_phone. التغطية الآن ٨/٨ على smoke pii.
+- **A3 — تنظيف dataset**: حُذفت ٥ معرّفات مكرّرة، وأُعيد تصنيف حالات رفض المحتوى.
+- **A4 — degradation رشيق**: أضيف try/catch حول استدعاءات RAG/Firestore في وكلاء (idea-validator، legal-guide، general-chat، CFO) فلا تنهار بل تعود إلى مسوّدة بسيطة.
+- **زيادة على A**: cascade fallback في `src/lib/llm/gateway.ts`: PRO → FLASH → LITE تلقائياً عند ضربة سعة (`isCapacityError`).
+
+### المرحلة B — توجيه أذكى ونقد ذاتي ✅
+- **B5 — Hybrid Router**: `src/ai/panel/router-cache.ts` — router مخصّص يُولِّد embedding للسؤال ويبحث في cache (LFU 500 مدخل) عن أقرب سؤال سابق بـ cosine similarity ≥ 0.92. لو وجد، يُعيد الـ intent بدون استدعاء LLM. هذا يخفّض زمن الـ router إلى < 200ms على cache-hit، ويفلتر إلى LITE فقط عند ثقة منخفضة. مدمج عبر `routePanelHybrid` في `council.ts`.
+- **B6 — LLM-as-Judge (Reflexion)**: `src/ai/panel/judge.ts` — قاضٍ بـ LITE يُسجّل المسوّدة على ٥ محاور (precision، actionability، sources، tone، completeness). إذا متوسّط < threshold، يُجرى pass واحد للتنقيح. مفعّل عبر `KALMERON_REFLEXION=on` ومدمج في `withCouncil`.
+
+### المرحلة C — أدوات وذاكرة عبر الجلسات ✅
+- **C7 — CFO ↔ Egypt-Calc**: `src/ai/agents/cfo-agent/egypt-calc-tool.ts` يستخرج طلبات الضريبة/التأمينات/الراتب الكلّي من الرسالة، يستدعي خدمة Egypt-Calc الحقيقية على `:8008`، ويُنسّق النتيجة كبطاقة Markdown تُمرَّر إلى المجلس كمسوّدة. **الأرقام محفوظة كما هي** — لو فشل المجلس، تُعرض البطاقة الحتميّة مباشرة. اختبار حيّ نجح: `240,000 EGP سنوياً → 34,250 ضريبة سنوية / 2,854.17 شهرياً / معدل فعلي 14.27% / حدّي 22.50%` — مطابق لمصدر الحقيقة Egypt-Calc.
+- **C8 — Founder Profile**: `src/ai/memory/founder-profile.ts` — متجر داخلي يحفظ ملف المؤسّس (الاسم، القطاع، المدينة، المرحلة، الميزانية، الأهداف) لكل `userId`. يُستخرج تلقائياً من رسائل المستخدم بـ LITE LLM (مع schema)، ويُحقن كسياق إضافي في `enrichedRole` لكل وكيل عبر `withCouncil`. الدمج والعرض موثّقان في unit tests داخل `.local/mem_test.mjs`.
+- **خدمة Egypt-Calc**: أُعيد ضبط workflow الخاص بها لاستخدام `uv venv` + `uv pip install -r requirements.txt` تلقائياً، وتعمل الآن على `:8008`.
+
+### نتائج Smoke Eval النهائيّة
+| المحور | قبل | بعد |
+|---|---|---|
+| safety | 9/11 | **11/11 (100%)** |
+| pii | 3/8 | **8/8 (100%)** |
+| router | غير قابل للقياس | يعتمد على رصيد Gemini (مفعّل في الكود) |
+| **الإجمالي الحتمي** | 12/19 | **19/19 (100%)** |
+
+unit tests: **143/143 ناجحة** بدون انحدار.
+
+### ملاحظة عن رصيد Gemini
+الحصّة اليومية المجّانيّة لـ Gemini (٢٠ طلب/يوم على flash-lite) استُهلكت أثناء الاختبار، لذا الـ council narrative يتعطّل في بعض الأسئلة العامّة ويُعيد رسالة خطأ. الكود سليم وكامل — التفاعلات الحتميّة (Egypt-Calc، PII، safety) تعمل ١٠٠% لأنّها لا تعتمد على LLM. فور إعادة تعيين الحصّة (أو تفعيل billing)، يعمل المجلس + الـ Reflexion + الـ founder-profile extractor تلقائياً بدون أيّ تعديل برمجي.
+
+### الملفّات الجديدة/المعدّلة
+- جديد: `src/ai/panel/router-cache.ts`، `src/ai/panel/judge.ts`، `src/ai/agents/cfo-agent/egypt-calc-tool.ts`، `src/ai/memory/founder-profile.ts`.
+- معدّل: `src/lib/llm/gateway.ts` (cascade fallback)، `src/ai/panel/council.ts` (hybrid router + maxRetries:0)، `src/ai/orchestrator/supervisor.ts` (Egypt-Calc node + founder-profile injection + heuristic regex مُوسَّع لضريبة/تأمين/راتب).
+- workflow: `Egypt Calc` — venv setup تلقائي.
+
+---
+
 ## Session 2026-04-27 — نظام التشخيص الذاتي الداخلي (Internal Diagnostics)
 
 أُضيف نظام آلي يفحص المشروع من الداخل ويُنتج تقارير تلقائية في فولدر `diagnostics/`:

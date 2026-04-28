@@ -24,6 +24,41 @@ import type { z } from 'zod';
 import { sanitizeInput, validatePromptIntegrity } from '@/src/lib/security/prompt-guard';
 import { redactPII } from '@/src/lib/compliance/pii-redactor';
 import { instrumentAgent } from '@/src/lib/observability/agent-instrumentation';
+import { google, MODEL_IDS } from '@/src/lib/gemini';
+
+/**
+ * Heuristic detection of "upstream out of capacity" errors that warrant a
+ * model-tier fallback (PRO → FLASH). We deliberately match on common Gemini /
+ * Vertex / Google Generative AI error shapes so the council & similar
+ * latency-sensitive callers degrade gracefully instead of bubbling a 500 to
+ * the chat UI.
+ */
+function isCapacityError(err: unknown): boolean {
+  if (!err) return false;
+  const e = err as { status?: number; statusCode?: number; code?: string | number; message?: string; cause?: unknown };
+  const status = e.status ?? e.statusCode ?? (typeof e.code === 'number' ? e.code : undefined);
+  if (status === 429 || status === 503 || status === 500) return true;
+  const msg = String(e.message || '').toLowerCase();
+  if (/quota|rate.?limit|resource.?exhausted|overload|unavailable|capacity|too many requests/.test(msg)) return true;
+  if (e.cause && e.cause !== err) return isCapacityError(e.cause);
+  return false;
+}
+
+/**
+ * If the call targeted PRO and the failure is a capacity / quota error,
+ * downshift to FLASH so the user gets a slightly less polished but real
+ * answer instead of a hard error. Returns `null` when no fallback applies.
+ */
+function fallbackModelFor(modelId: string, err: unknown): { model: ReturnType<typeof google>; modelId: string } | null {
+  if (!isCapacityError(err)) return null;
+  if (modelId.includes('pro')) {
+    return { model: google(MODEL_IDS.FLASH), modelId: MODEL_IDS.FLASH };
+  }
+  if (modelId === MODEL_IDS.FLASH) {
+    return { model: google(MODEL_IDS.LITE), modelId: MODEL_IDS.LITE };
+  }
+  return null;
+}
 
 export interface GatewayContext {
   agent: string;
@@ -275,12 +310,28 @@ export async function safeGenerateText<TOOLS extends ToolSet = ToolSet>(
   }
 
   const t0 = Date.now();
-  const modelId = extractModelId(args.model);
-  const result = await instrumentAgent<GenerateTextResult<TOOLS, never>>(
-    ctx.agent,
-    () => generateText<TOOLS>(withDefaultTimeout(applyPromptOverride(args, promptToSend), ctx)),
-    { model: modelId, input: { hash: promptHash }, toolsUsed: [] },
-  );
+  let modelId = extractModelId(args.model);
+  let currentArgs = applyPromptOverride(args, promptToSend);
+  let result: GenerateTextResult<TOOLS, never> | undefined;
+  let lastErr: unknown;
+  for (let attempt = 0; attempt < 3; attempt++) {
+    try {
+      result = await instrumentAgent<GenerateTextResult<TOOLS, never>>(
+        attempt === 0 ? ctx.agent : `${ctx.agent}:fallback`,
+        () => generateText<TOOLS>(withDefaultTimeout(currentArgs, ctx)),
+        { model: modelId, input: { hash: promptHash }, toolsUsed: [] },
+      );
+      break;
+    } catch (err) {
+      lastErr = err;
+      const fb = fallbackModelFor(modelId, err);
+      if (!fb) throw err;
+      console.warn(`[llm-gateway] ${ctx.agent} ${modelId} → fallback ${fb.modelId} (${(err as Error)?.message?.slice(0, 120)})`);
+      currentArgs = { ...currentArgs, model: fb.model } as typeof args;
+      modelId = fb.modelId;
+    }
+  }
+  if (!result) throw lastErr;
   const durationMs = Date.now() - t0;
 
   const outLen = typeof result.text === 'string' ? result.text.length : 0;
@@ -326,8 +377,24 @@ export async function safeGenerateObject<SCHEMA extends z.ZodType>(
   }
 
   const t0 = Date.now();
-  const modelId = extractModelId(args.model);
-  const result = await generateObject<SCHEMA>(withDefaultTimeout(applyPromptOverride(args, promptToSend), ctx));
+  let modelId = extractModelId(args.model);
+  let currentArgs = applyPromptOverride(args, promptToSend);
+  let result: GenerateObjectResult<z.infer<SCHEMA>> | undefined;
+  let lastErr: unknown;
+  for (let attempt = 0; attempt < 3; attempt++) {
+    try {
+      result = await generateObject<SCHEMA>(withDefaultTimeout(currentArgs, ctx));
+      break;
+    } catch (err) {
+      lastErr = err;
+      const fb = fallbackModelFor(modelId, err);
+      if (!fb) throw err;
+      console.warn(`[llm-gateway] ${ctx.agent} ${modelId} → fallback ${fb.modelId} (${(err as Error)?.message?.slice(0, 120)})`);
+      currentArgs = { ...currentArgs, model: fb.model } as typeof args;
+      modelId = fb.modelId;
+    }
+  }
+  if (!result) throw lastErr;
   const durationMs = Date.now() - t0;
 
   const outLen = JSON.stringify(result.object ?? {}).length;

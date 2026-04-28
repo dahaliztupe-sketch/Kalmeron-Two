@@ -12,6 +12,20 @@ import { legalGuideAction } from '@/src/ai/agents/legal-guide/agent';
 import { safeGenerateText, PromptInjectionBlockedError } from '@/src/lib/llm/gateway';
 import { rateLimitAgent } from '@/src/lib/security/rate-limit';
 import { runCouncilSafe } from '@/src/ai/panel';
+import { judgeDraft, judgeOverall, REFLEXION_ENABLED } from '@/src/ai/panel/judge';
+import {
+  extractFinanceQuery,
+  calcIncomeTax,
+  calcSocialInsurance,
+  calcTotalCost,
+  formatFinanceResultMarkdown,
+} from '@/src/ai/agents/cfo-agent/egypt-calc-tool';
+import {
+  getFounderProfile,
+  mergeFounderProfile,
+  renderProfileContext,
+  extractProfilePatchLLM,
+} from '@/src/ai/memory/founder-profile';
 
 /**
  * مفتاح تشغيل "مجلس الإدارة الافتراضي" (Panel of Experts) لكل وكيل.
@@ -33,11 +47,30 @@ async function withCouncil(opts: {
   draft?: string;
   fallback: string;
 }): Promise<string> {
+  // Phase C8 — inject founder-profile context into the agent role so the
+  // council "remembers" prior sessions. Costs ~50-150 tokens but unlocks
+  // continuity. Profile is captured in fire-and-forget below after the
+  // user's message has been seen.
+  const profile = getFounderProfile(opts.userId);
+  const profileBlock = renderProfileContext(profile);
+  const enrichedRole = profileBlock ? `${opts.agentRoleAr}${profileBlock}` : opts.agentRoleAr;
+
+  // Fire-and-forget memory capture from the *user* message so the next turn
+  // benefits from the new fact. Never blocks the response.
+  if (opts.userId) {
+    Promise.resolve()
+      .then(async () => {
+        const patch = await extractProfilePatchLLM(opts.userMessage);
+        if (patch) mergeFounderProfile(opts.userId!, patch);
+      })
+      .catch(() => undefined);
+  }
+
   if (!COUNCIL_ENABLED) return opts.fallback || opts.draft || '';
   const { markdown, result, error } = await runCouncilSafe({
     agentName: opts.agentName,
     agentDisplayNameAr: opts.agentDisplayNameAr,
-    agentRoleAr: opts.agentRoleAr,
+    agentRoleAr: enrichedRole,
     userMessage: opts.userMessage,
     uiContext: opts.uiContext,
     userId: opts.userId,
@@ -47,6 +80,37 @@ async function withCouncil(opts: {
     // eslint-disable-next-line no-console
     console.error(`[withCouncil] council failed for ${opts.agentName}:`, error);
     return opts.draft || markdown || opts.fallback;
+  }
+
+  // Phase B6 — Reflexion: opt-in single-pass refinement when judge says so.
+  if (REFLEXION_ENABLED) {
+    try {
+      const score = await judgeDraft({
+        agentName: opts.agentName,
+        userMessage: opts.userMessage,
+        draftMarkdown: markdown,
+        userId: opts.userId,
+      });
+      if (score?.shouldRefine) {
+        const { markdown: refined, result: refinedResult } = await runCouncilSafe({
+          agentName: opts.agentName,
+          agentDisplayNameAr: opts.agentDisplayNameAr,
+          agentRoleAr: enrichedRole,
+          userMessage: opts.userMessage,
+          uiContext: opts.uiContext,
+          userId: opts.userId,
+          draft: markdown, // hand the prior draft + critique back as the new draft
+          mode: 'fast', // refinement is fine on a smaller roster
+        });
+        if (refinedResult) {
+          // eslint-disable-next-line no-console
+          console.log(`[reflexion] ${opts.agentName} refined (score ${judgeOverall(score)} → re-rendered)`);
+          return refined;
+        }
+      }
+    } catch {
+      // Reflexion is best-effort; never let it break the response.
+    }
   }
   return markdown;
 }
@@ -81,7 +145,7 @@ const INTENT_CLASSIFIER_PROMPT = `أنت المنسق الذكي لمنصة كل
  */
 function heuristicIntent(message: string): string {
   const m = (message || '').toLowerCase();
-  if (/(مال(ي|ية)?|cash[\s-]?flow|تدفق نقدي|توقعات\s+مالية|breakeven|نقطة\s+التعادل|cfo|الفلوس|إيرادات|تكاليف)/i.test(m)) return 'CFO_AGENT';
+  if (/(مال(ي|ية)?|cash[\s-]?flow|تدفق نقدي|توقعات\s+مالية|breakeven|نقطة\s+التعادل|cfo|الفلوس|إيرادات|تكاليف|ضريب|ضراي?ب|tax|تأمين(ات)?|insurance|راتب|اجر|مرتب|payroll|صافي|اجمالي\s*تكلفة)/i.test(m)) return 'CFO_AGENT';
   if (/(قانون|عقد|تأسيس|شركة|تشريع|legal|محام)/i.test(m)) return 'LEGAL_GUIDE';
   if (/(عقار|إيجار|شقة|أرض|roi|عائد\s+الاستثمار|real\s*estate)/i.test(m)) return 'REAL_ESTATE';
   if (/(منحة|مسابقة|تمويل|هاكاثون|grant|funding)/i.test(m)) return 'OPPORTUNITY_RADAR';
@@ -308,14 +372,51 @@ ${opp.description}
 async function cfoAgentNode(state: typeof SupervisorState.State) {
   const lastMessage = state.messages[state.messages.length - 1]?.content as string;
   let draft = '';
+  let toolCard = '';
+
+  // Phase C7 — deterministic Egypt-Calc tool use. If the user's question
+  // contains a tax/insurance/total-cost query with a number, hit the
+  // Egypt-Calc service. The resulting Markdown card is returned to the user
+  // *verbatim* (numbers must not be rewritten by the LLM); the council then
+  // layers narrative + recommendations *around* it.
   try {
-    draft = await cfoAgentAction({
-      task: 'analyze-scenario',
-      parameters: { description: lastMessage },
-    });
+    const fq = extractFinanceQuery(lastMessage);
+    if (fq) {
+      if (fq.kind === 'income-tax') {
+        const r = await calcIncomeTax(fq.amount);
+        toolCard = formatFinanceResultMarkdown(fq, r);
+      } else if (fq.kind === 'social-insurance') {
+        const r = await calcSocialInsurance(fq.amount);
+        toolCard = formatFinanceResultMarkdown(fq, r);
+      } else if (fq.kind === 'total-cost') {
+        const r = await calcTotalCost(fq.amount, fq.months || 12);
+        toolCard = formatFinanceResultMarkdown(fq, r);
+      }
+      if (toolCard) draft = toolCard;
+    }
   } catch (e) {
-    draft = '';
+    // Egypt-Calc unreachable → fall through to LLM-based reasoning.
+    // eslint-disable-next-line no-console
+    console.warn('[cfo-agent] egypt-calc tool failed:', (e as Error)?.message);
   }
+
+  if (!draft) {
+    try {
+      draft = await cfoAgentAction({
+        task: 'analyze-scenario',
+        parameters: { description: lastMessage },
+      });
+    } catch (e) {
+      draft = '';
+    }
+  }
+
+  // When we have authoritative tool output, prepend it verbatim to the
+  // council answer so the user *always* sees the deterministic figures even
+  // if the council narrative drifts. We also short-circuit to the tool card
+  // alone when the council itself fails (quota / outage), so finance
+  // questions degrade gracefully into "numbers without prose" rather than
+  // an error message.
   const text = await withCouncil({
     agentName: 'cfo-agent',
     agentDisplayNameAr: 'المدير المالي',
@@ -326,14 +427,22 @@ async function cfoAgentNode(state: typeof SupervisorState.State) {
     draft,
     fallback: draft || 'حدث خطأ في وكيل المدير المالي. يرجى المحاولة مجدداً.',
   });
-  return { messages: [new AIMessage(text)] };
+  // If we have a deterministic Egypt-Calc card, prepend it so the user *always*
+  // sees the authoritative numbers — even if the council narrative drifts or
+  // entirely fails. This preserves the C7 acceptance: a tax-bracket question
+  // is answered with deterministic numbers from Egypt-Calc.
+  const finalText =
+    toolCard && !text.includes(toolCard)
+      ? `${toolCard}\n\n---\n\n${text}`
+      : text;
+  return { messages: [new AIMessage(finalText)] };
 }
 
 async function legalGuideNode(state: typeof SupervisorState.State) {
   const lastMessage = state.messages[state.messages.length - 1]?.content as string;
   let draft = '';
   try {
-    draft = await legalGuideAction({ query: lastMessage });
+    draft = await legalGuideAction(lastMessage);
   } catch (e) {
     draft = '';
   }

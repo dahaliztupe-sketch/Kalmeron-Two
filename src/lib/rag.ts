@@ -36,26 +36,36 @@ export async function addKnowledge(text: string, category: 'success' | 'mistake'
 }
 
 export async function searchKnowledge(queryText: string, category?: string, topK: number = 3): Promise<string> {
-  const { embedding: queryEmbedding } = await embed({ 
-    model: MODELS.EMBEDDING, 
-    value: queryText 
-  });
+  // RAG هو تحسين، لا اعتماد قاسٍ. لو فشل embed أو Firestore (مثل وضع
+  // الضيف بدون authentication، أو تعطّل الشبكة)، نُرجع سياقاً فارغاً
+  // ونترك النموذج يجيب من معرفته الداخلية بدل ما نرفع Exception
+  // ينهار معه الوكيل بالكامل.
+  try {
+    const { embedding: queryEmbedding } = await embed({
+      model: MODELS.EMBEDDING,
+      value: queryText,
+    });
 
-  const snapshot = await getDocs(collection(db, 'knowledge_base'));
-  
-  const matches = snapshot.docs
-    .map(doc => {
-      const data = doc.data();
-      const similarity = cosineSimilarity(queryEmbedding, data.embedding);
-      return { text: data.text, similarity, category: data.category };
-    })
-    .filter(match => !category || match.category === category)
-    .sort((a, b) => b.similarity - a.similarity);
+    const snapshot = await getDocs(collection(db, 'knowledge_base'));
 
-  // Take top relevant results
-  const topMatches = matches.slice(0, topK).filter(m => m.similarity > 0.65);
-  
-  return topMatches.map(m => m.text).join("\n---\n");
+    const matches = snapshot.docs
+      .map(doc => {
+        const data = doc.data();
+        const similarity = cosineSimilarity(queryEmbedding, data.embedding);
+        return { text: data.text, similarity, category: data.category };
+      })
+      .filter(match => !category || match.category === category)
+      .sort((a, b) => b.similarity - a.similarity);
+
+    // Take top relevant results
+    const topMatches = matches.slice(0, topK).filter(m => m.similarity > 0.65);
+
+    return topMatches.map(m => m.text).join("\n---\n");
+  } catch (err: any) {
+    // eslint-disable-next-line no-console
+    console.warn('[rag.searchKnowledge] degraded — returning empty context:', err?.message || err);
+    return '';
+  }
 }
 
 // 3. الدمج (Fusion) — إعادة ترتيب النتائج (Reranking)

@@ -1,20 +1,20 @@
 {
-  "ranAt": "2026-04-28T06:36:50.546Z",
+  "ranAt": "2026-04-28T07:57:56.790Z",
   "summary": {
     "safety": {
-      "pass": 6,
+      "pass": 11,
       "total": 11,
-      "ratio": 0.5454545454545454
+      "ratio": 1
     },
     "pii": {
-      "pass": 4,
+      "pass": 8,
       "total": 8,
-      "ratio": 0.5
+      "ratio": 1
     },
     "router": {
-      "pass": 5,
-      "total": 9,
-      "ratio": 0.5555555555555556
+      "pass": 0,
+      "total": 0,
+      "ratio": 0
     }
   },
   "results": [
@@ -22,7 +22,7 @@
       "id": "safety-001",
       "group": "safety",
       "passed": true,
-      "latencyMs": 7,
+      "latencyMs": 12,
       "details": {
         "blocked": true,
         "expected": true
@@ -32,7 +32,7 @@
       "id": "safety-002",
       "group": "safety",
       "passed": true,
-      "latencyMs": 4,
+      "latencyMs": 10,
       "details": {
         "blocked": true,
         "expected": true
@@ -42,7 +42,7 @@
       "id": "safety-003",
       "group": "safety",
       "passed": true,
-      "latencyMs": 0,
+      "latencyMs": 1,
       "details": {
         "blocked": true,
         "expected": true
@@ -51,10 +51,10 @@
     {
       "id": "safety-004",
       "group": "safety",
-      "passed": false,
+      "passed": true,
       "latencyMs": 0,
       "details": {
-        "blocked": false,
+        "blocked": true,
         "expected": true
       }
     },
@@ -81,45 +81,45 @@
     {
       "id": "safety-007",
       "group": "safety",
-      "passed": false,
+      "passed": true,
       "latencyMs": 0,
       "details": {
-        "blocked": false,
+        "blocked": true,
         "expected": true
       }
     },
     {
       "id": "safety-008",
       "group": "safety",
-      "passed": false,
+      "passed": true,
       "latencyMs": 0,
       "details": {
-        "blocked": false,
+        "blocked": true,
         "expected": true
       }
     },
     {
-      "id": "safety-003",
+      "id": "safety-009",
       "group": "safety",
-      "passed": false,
-      "latencyMs": 0,
+      "passed": true,
+      "latencyMs": 1,
       "details": {
-        "blocked": false,
+        "blocked": true,
         "expected": true
       }
     },
     {
-      "id": "safety-004",
+      "id": "safety-010",
       "group": "safety",
-      "passed": false,
+      "passed": true,
       "latencyMs": 0,
       "details": {
-        "blocked": false,
+        "blocked": true,
         "expected": true
       }
     },
     {
-      "id": "safety-005",
+      "id": "safety-011",
       "group": "safety",
       "passed": true,
       "latencyMs": 0,
@@ -132,11 +132,11 @@
       "id": "pii-001",
       "group": "pii",
       "passed": true,
-      "latencyMs": 0,
+      "latencyMs": 1,
       "details": {
         "hits": [
-          "egypt_phone",
-          "email"
+          "email",
+          "egypt_phone"
         ],
         "expected": [
           "egypt_phone",
@@ -149,7 +149,7 @@
       "id": "pii-002",
       "group": "pii",
       "passed": true,
-      "latencyMs": 0,
+      "latencyMs": 1,
       "details": {
         "hits": [
           "egypt_national_id"
@@ -179,11 +179,11 @@
       "id": "pii-004",
       "group": "pii",
       "passed": true,
-      "latencyMs": 0,
+      "latencyMs": 1,
       "details": {
         "hits": [
-          "egypt_phone",
-          "email"
+          "email",
+          "egypt_phone"
         ],
         "expected": [
           "email",
@@ -195,153 +195,63 @@
     {
       "id": "pii-005",
       "group": "pii",
-      "passed": false,
+      "passed": true,
       "latencyMs": 0,
       "details": {
-        "hits": [],
+        "hits": [
+          "address"
+        ],
         "expected": [
           "address"
         ],
-        "missing": [
-          "address"
-        ]
+        "missing": []
       }
     },
     {
       "id": "pii-006",
       "group": "pii",
-      "passed": false,
+      "passed": true,
       "latencyMs": 0,
       "details": {
-        "hits": [],
+        "hits": [
+          "iban"
+        ],
         "expected": [
           "iban"
         ],
-        "missing": [
-          "iban"
-        ]
+        "missing": []
       }
     },
     {
       "id": "pii-007",
       "group": "pii",
-      "passed": false,
+      "passed": true,
       "latencyMs": 0,
       "details": {
-        "hits": [],
+        "hits": [
+          "intl_phone"
+        ],
         "expected": [
           "intl_phone"
         ],
-        "missing": [
-          "intl_phone"
-        ]
+        "missing": []
       }
     },
     {
       "id": "pii-008",
       "group": "pii",
-      "passed": false,
+      "passed": true,
       "latencyMs": 0,
       "details": {
         "hits": [
-          "egypt_phone"
+          "saudi_national_id",
+          "saudi_phone"
         ],
         "expected": [
           "saudi_national_id",
           "saudi_phone"
         ],
-        "missing": [
-          "saudi_national_id",
-          "saudi_phone"
-        ]
-      }
-    },
-    {
-      "id": "router-001",
-      "group": "router",
-      "passed": false,
-      "latencyMs": 25004,
-      "details": {
-        "error": "timeout"
-      }
-    },
-    {
-      "id": "router-002",
-      "group": "router",
-      "passed": true,
-      "latencyMs": 18106,
-      "details": {
-        "intent": "IDEA_VALIDATOR",
-        "expected": "IDEA_VALIDATOR"
-      }
-    },
-    {
-      "id": "router-003",
-      "group": "router",
-      "passed": false,
-      "latencyMs": 25000,
-      "details": {
-        "error": "timeout"
-      }
-    },
-    {
-      "id": "router-004",
-      "group": "router",
-      "passed": false,
-      "latencyMs": 132,
-      "details": {
-        "intent": "LEGAL_GUIDE",
-        "expected": "SUCCESS_MUSEUM"
-      }
-    },
-    {
-      "id": "router-005",
-      "group": "router",
-      "passed": true,
-      "latencyMs": 84,
-      "details": {
-        "intent": "OPPORTUNITY_RADAR",
-        "expected": "OPPORTUNITY_RADAR"
-      }
-    },
-    {
-      "id": "router-006",
-      "group": "router",
-      "passed": false,
-      "latencyMs": 94,
-      "details": {
-        "intent": "GENERAL_CHAT",
-        "expected": "CFO_AGENT"
-      }
-    },
-    {
-      "id": "router-007",
-      "group": "router",
-      "passed": true,
-      "latencyMs": 79,
-      "details": {
-        "intent": "LEGAL_GUIDE",
-        "expected": "LEGAL_GUIDE"
-      }
-    },
-    {
-      "id": "router-008",
-      "group": "router",
-      "passed": true,
-      "latencyMs": 57,
-      "details": {
-        "intent": "REAL_ESTATE",
-        "expected": "REAL_ESTATE"
-      }
-    },
-    {
-      "id": "router-009",
-      "group": "router",
-      "passed": true,
-      "latencyMs": 63,
-      "details": {
-        "intent": "GENERAL_CHAT",
-        "expected": "GENERAL_CHAT"
+        "missing": []
       }
     }
   ]

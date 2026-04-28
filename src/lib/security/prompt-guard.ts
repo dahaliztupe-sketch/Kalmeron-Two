@@ -192,6 +192,58 @@ const INJECTION_PATTERNS: readonly InjectionPattern[] = [
   { name: 'token_request_reverse',
     regex: /\b(?:show|reveal|print|give|send|tell|share|leak|output|expose)[\s\w]{0,30}?\b(?:api[\s_-]?key|secret|token|password|credential|env\s+var|environment\s+variable)s?\b/i,
     weight: 0.95 },
+
+  // ============================================================
+  // طبقة سياسة المحتوى (Content-Policy Defense-in-Depth)
+  // ============================================================
+  // ملاحظة معمارية: الأنماط أدناه ليست "حقن موجِّهات" بالمعنى الدقيق
+  // (LLM01)؛ بل طلبات لتنفيذ مهام ضارّة/مخالفة لشروط الاستخدام.
+  // الرفض النهائي يجب أن يحدث في طبقة المحتوى (system prompt + LLM
+  // refusal)، لكن نضع طبقة بوابة دفاع متقدّمة لتقليل الـ blast radius
+  // وتسجيل المحاولات في الـ audit trail قبل أن يصرف رصيد API.
+
+  // --- تصعيد الصلاحيات (privilege escalation) ---
+  { name: 'ar_grant_privileges',
+    regex: /(?:أعطني|اعطني|امنحني|أمنحني|اديني|ادّيني|اعمل[\s\u0600-\u06FF]+(?:كـ)?)[\s\u0600-\u06FF]{0,30}?(?:صلاحيات|صلاحية|دور|حساب|وصول)\s*(?:admin|root|أدمن|إداري|اداري|مدير|مسؤول|كامل|مطلق)/i,
+    weight: 0.95 },
+  { name: 'en_grant_privileges',
+    regex: /\b(?:give|grant|elevate|escalate)\s+me\s+(?:admin|root|superuser|sudo|owner|full|elevated|privileged)\s+(?:access|privileges?|rights?|permissions?|role|account)\b/i,
+    weight: 0.95 },
+  { name: 'ar_owner_claim',
+    regex: /\b(?:أنا|انا)\s+(?:المالك|الـowner|owner|الأدمن|الادمن|الإداري|الاداري|المسؤول)\s+(?:الفعلي|الحقيقي|الأصلي|الاصلي)\b/i,
+    weight: 0.85 },
+
+  // --- التصيّد الإلكتروني (phishing) ---
+  { name: 'ar_phishing',
+    regex: /(?:خداع|تصيّد|تصيد|إيهام|ايهام|انتحال|احتيال)[\s\u0600-\u06FF]{0,40}?(?:بيانات|معلومات|كلمة\s+(?:سر|مرور)|بطاقة|بنكي|بنكية|اعتماد|دخول)|(?:سرقة|اخذ|أخذ)\s+(?:بيانات|كلمات\s+مرور|بطاقات)\s+(?:البنك|بنكية|الناس|المستخدمين)/i,
+    weight: 0.95 },
+  { name: 'en_phishing',
+    regex: /\b(?:phishing|spoofing|impersonate|trick|deceive|fool)\b[\s\w]{0,40}?\b(?:credentials?|passwords?|bank|banking|account|login|payment\s+(?:details?|info)|credit\s+card)\b/i,
+    weight: 0.95 },
+
+  // --- التزوير والاحتيال المستندي (fraud/forgery) ---
+  { name: 'ar_forgery',
+    regex: /(?:تزوير|تزييف|تلفيق|اختلاق|فبركة)[\s\u0600-\u06FF]{0,30}?(?:سجل|مستند|وثيقة|عقد|بطاقة|توكيل|شهادة|فاتورة|إيصال|ايصال|توقيع|ختم|بصمة)/i,
+    weight: 0.95 },
+  { name: 'en_forgery',
+    regex: /\b(?:forge|fake|fabricate|falsify|counterfeit)\s+(?:a\s+|an\s+|the\s+)?(?:document|signature|invoice|contract|receipt|certificate|record|registry|stamp|id|passport|license)\b/i,
+    weight: 0.95 },
+
+  // --- البريد المزعج / إرسال جماعي بلا موافقة (spam) ---
+  { name: 'ar_spam_bot',
+    regex: /(?:بوت|روبوت|سكريبت|أتمتة|اتمتة)[\s\u0600-\u06FF]{0,30}?(?:سبام|سپام|إعلانات|اعلانات|رسائل\s+(?:جماعية|تلقائية|كثيرة|تسويقية))|رسائل\s+(?:سبام|سپام)\s+(?:تلقائ|جماعي|بكميات)|إرسال\s+(?:جماعي|كميات)[\s\u0600-\u06FF]{0,20}?(?:بدون\s+(?:موافقة|إذن|اذن)|بلا\s+(?:موافقة|إذن|اذن))?/i,
+    weight: 0.85 },
+  { name: 'en_spam_bot',
+    regex: /\b(?:spam|mass[\s-]?email|bulk[\s-]?(?:sms|email|message))\s+(?:bot|script|tool|campaign|users?|people|database|list)|automated\s+(?:spam|unsolicited)\s+(?:messages?|emails?|sms|calls?)/i,
+    weight: 0.85 },
+
+  // --- التهرّب الضريبي والتلاعب بالسجلات (tax fraud) ---
+  { name: 'ar_tax_evasion',
+    regex: /(?:إخفاء|اخفاء|تهرّب|تهرب|تجنب\s+قسري)[\s\u0600-\u06FF]{0,30}?(?:ضرائب|ضريبة|إيرادات|ايرادات|أرباح|ارباح)|(?:تزوير|تلاعب|تعديل|تخفيض\s+مزيف)[\s\u0600-\u06FF]{0,30}?(?:سجلات|دفاتر|حسابات|ميزانية|إقرار\s+ضريبي|اقرار\s+ضريبي)|(?:أرباح|ارباح)\s+(?:أقل|اقل|مزيفة|كاذبة|مخفّضة|وهمية)/i,
+    weight: 0.9 },
+  { name: 'en_tax_evasion',
+    regex: /\b(?:hide|conceal|underreport|under-report|evade|cheat\s+on)\s+(?:taxes?|revenue|income|profits?|earnings)|cook\s+the\s+books|two\s+sets?\s+of\s+books|off[\s-]?the[\s-]?books\s+(?:income|sales?)/i,
+    weight: 0.9 },
 ];
 
 /** عتبة افتراضية للرفض — مجموع درجات الأنماط المطابقة. */
