@@ -14,11 +14,15 @@ test.describe('تدفق التسجيل وإكمال الملف الشخصي', ()
 
   test('الداشبورد يُعيد التوجيه للتسجيل إذا لم يكن هناك جلسة', async ({ page }) => {
     await page.goto('/dashboard');
-    await page.waitForURL((url) =>
-      url.pathname.includes('/auth/signup') || url.pathname.includes('/onboarding')
-    , { timeout: 10000 });
+    // AuthGuard sends unauthenticated users to /auth/login; brand-new
+    // users without a completed profile are forwarded to /onboarding;
+    // /auth/signup is also acceptable as some entry points use it.
+    await page.waitForURL(
+      (url) => /\/(auth\/login|auth\/signup|onboarding)/.test(url.pathname),
+      { timeout: 10_000 },
+    );
     const pathname = new URL(page.url()).pathname;
-    expect(['/auth/signup', '/onboarding'].some(p => pathname.includes(p))).toBeTruthy();
+    expect(/\/(auth\/login|auth\/signup|onboarding)/.test(pathname)).toBeTruthy();
   });
 
   test('نقطة الصحة تستجيب بـ 200', async ({ request }) => {

@@ -72,12 +72,15 @@ export async function POST(req: NextRequest) {
   const rl = rateLimit(req, { limit: 600, windowMs: 60_000 });
   if (!rl.success) return rateLimitResponse();
 
+  // Always reject unsigned payloads first, regardless of server config.
+  // This guarantees the endpoint never accepts an unauthenticated body
+  // (and matches the contract asserted by `e2e/billing.spec.ts`).
+  const sig = req.headers.get('stripe-signature');
+  if (!sig) return new Response('Missing signature', { status: 400 });
+
   if (!stripe || !webhookSecret) {
     return new Response('Stripe webhook not configured', { status: 503 });
   }
-
-  const sig = req.headers.get('stripe-signature');
-  if (!sig) return new Response('Missing signature', { status: 400 });
 
   const rawBody = await req.text();
 

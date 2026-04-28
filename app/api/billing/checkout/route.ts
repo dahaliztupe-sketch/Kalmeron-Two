@@ -26,16 +26,18 @@ export async function POST(req: NextRequest) {
   const rl = rateLimit(req, { limit: 10, windowMs: 60_000 });
   if (!rl.success) return rateLimitResponse();
 
+  // Authenticate first — an unauthenticated caller must always see 401,
+  // never 503 for missing Stripe config (asserted by e2e/billing.spec.ts).
+  const authHeader = req.headers.get('Authorization');
+  if (!authHeader?.startsWith('Bearer ')) {
+    return Response.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
   if (!stripe) {
     return Response.json(
       { error: 'Stripe not configured', message: 'الفوترة عبر Stripe غير مفعّلة بعد. تواصل مع المبيعات.' },
       { status: 503 },
     );
-  }
-
-  const authHeader = req.headers.get('Authorization');
-  if (!authHeader?.startsWith('Bearer ')) {
-    return Response.json({ error: 'Unauthorized' }, { status: 401 });
   }
   const token = authHeader.split(' ')[1];
   let userId: string;

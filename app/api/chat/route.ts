@@ -72,8 +72,20 @@ export async function POST(req: NextRequest) {
       const decoded = await adminAuth.verifyIdToken(token!);
       userId = decoded.uid;
     } catch {
-      log.warn({ msg: 'Invalid token, defaulting to guest' });
+      log.warn({ msg: 'Invalid token, rejecting request' });
+      return new Response(
+        JSON.stringify({ error: 'Invalid or expired token' }),
+        { status: 401, headers: { 'Content-Type': 'application/json' } },
+      );
     }
+  } else if (!isGuest) {
+    // No Authorization header AND no explicit guest opt-in → reject.
+    // Public guest sessions must set `isGuest: true` so that anonymous
+    // traffic is intentional, not an accidental fallback.
+    return new Response(
+      JSON.stringify({ error: 'Authentication required' }),
+      { status: 401, headers: { 'Content-Type': 'application/json' } },
+    );
   }
 
   const userScopedRl = rateLimitAgent(userId, 'chat', { limit: 30, windowMs: 60_000 });

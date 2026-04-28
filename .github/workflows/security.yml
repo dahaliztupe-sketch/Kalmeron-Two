@@ -23,6 +23,14 @@ jobs:
         with:
           node-version: "20"
           cache: "npm"
+      # Harden npm against transient registry hiccups (ECONNRESET, aborted
+      # downloads). Without these the job sporadically fails on the npmjs CDN.
+      - name: Configure npm retries
+        run: |
+          npm config set fetch-retries 5
+          npm config set fetch-retry-mintimeout 20000
+          npm config set fetch-retry-maxtimeout 120000
+          npm config set fetch-timeout 600000
       - run: npm ci --ignore-scripts
       - name: Audit production dependencies (fail on high or critical, with allowlist)
         # The `xlsx` package ships two high-severity advisories
@@ -87,6 +95,12 @@ jobs:
         with:
           node-version: "20"
           cache: "npm"
+      - name: Configure npm retries
+        run: |
+          npm config set fetch-retries 5
+          npm config set fetch-retry-mintimeout 20000
+          npm config set fetch-retry-maxtimeout 120000
+          npm config set fetch-timeout 600000
       - run: npm ci --ignore-scripts
       - name: Run lexicon lint (strict)
         run: npm run lint:lexicon

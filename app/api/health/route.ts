@@ -79,6 +79,14 @@ export async function GET() {
       checks,
       meta,
     },
-    { status: 200 }
+    {
+      status: 200,
+      // Health snapshot is per-request and must never be cached by
+      // intermediaries (CDNs, browsers, monitoring proxies).
+      headers: {
+        'Cache-Control': 'no-store, no-cache, must-revalidate',
+        Pragma: 'no-cache',
+      },
+    }
   );
 }

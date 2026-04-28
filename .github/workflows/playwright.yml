@@ -34,6 +34,12 @@ jobs:
         with:
           node-version: "20"
           cache: "npm"
+      - name: Configure npm retries
+        run: |
+          npm config set fetch-retries 5
+          npm config set fetch-retry-mintimeout 20000
+          npm config set fetch-retry-maxtimeout 120000
+          npm config set fetch-timeout 600000
       - run: npm ci --no-audit --no-fund
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium

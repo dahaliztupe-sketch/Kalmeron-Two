@@ -1,0 +1,107 @@
+Skip to content
+Kalmeron-Two
+Repository navigation
+Code
+Issues
+Pull requests
+Agents
+Actions
+Projects
+Wiki
+Security and quality
+90
+ (90)
+Insights
+Settings
+Playwright E2E
+Implement lazy initialization for Firebase client SDK #6
+All jobs
+Run details
+Annotations
+1 error and 1 warning
+Run end-to-end tests
+failed 2 minutes ago in 6m 27s
+Search logs
+1s
+1s
+1s
+1m 17s
+24s
+37s
+4m 3s
+      navigated to "http://localhost:5000/auth/login?next=%2Fdashboard"
+    ============================================================
+
+      15 |   test('الداشبورد يُعيد التوجيه للتسجيل إذا لم يكن هناك جلسة', async ({ page }) => {
+      16 |     await page.goto('/dashboard');
+    > 17 |     await page.waitForURL((url) =>
+         |                ^
+      18 |       url.pathname.includes('/auth/signup') || url.pathname.includes('/onboarding')
+      19 |     , { timeout: 10000 });
+      20 |     const pathname = new URL(page.url()).pathname;
+        at /home/runner/work/Kalmeron-Two/Kalmeron-Two/e2e/onboarding.spec.ts:17:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/onboarding-تدفق-التسجيل-وإ-27034-لتسجيل-إذا-لم-يكن-هناك-جلسة-chromium-retry1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/onboarding-تدفق-التسجيل-وإ-27034-لتسجيل-إذا-لم-يكن-هناك-جلسة-chromium-retry1/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/onboarding-تدفق-التسجيل-وإ-27034-لتسجيل-إذا-لم-يكن-هناك-جلسة-chromium-retry1/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/onboarding-تدفق-التسجيل-وإ-27034-لتسجيل-إذا-لم-يكن-هناك-جلسة-chromium-retry1/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/onboarding-تدفق-التسجيل-وإ-27034-لتسجيل-إذا-لم-يكن-هناك-جلسة-chromium-retry1/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Retry #2 ───────────────────────────────────────────────────────────────────────────────────────
+
+    TimeoutError: page.waitForURL: Timeout 10000ms exceeded.
+    =========================== logs ===========================
+    waiting for navigation until "load"
+      navigated to "http://localhost:5000/auth/login?next=%2Fdashboard"
+    ============================================================
+
+      15 |   test('الداشبورد يُعيد التوجيه للتسجيل إذا لم يكن هناك جلسة', async ({ page }) => {
+      16 |     await page.goto('/dashboard');
+    > 17 |     await page.waitForURL((url) =>
+         |                ^
+      18 |       url.pathname.includes('/auth/signup') || url.pathname.includes('/onboarding')
+      19 |     , { timeout: 10000 });
+      20 |     const pathname = new URL(page.url()).pathname;
+        at /home/runner/work/Kalmeron-Two/Kalmeron-Two/e2e/onboarding.spec.ts:17:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/onboarding-تدفق-التسجيل-وإ-27034-لتسجيل-إذا-لم-يكن-هناك-جلسة-chromium-retry2/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/onboarding-تدفق-التسجيل-وإ-27034-لتسجيل-إذا-لم-يكن-هناك-جلسة-chromium-retry2/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/onboarding-تدفق-التسجيل-وإ-27034-لتسجيل-إذا-لم-يكن-هناك-جلسة-chromium-retry2/error-context.md
+
+  11 failed
+    [chromium] › e2e/api-docs.spec.ts:17:7 › Public API surface › health endpoint declines caching ─
+    [chromium] › e2e/auth.spec.ts:4:7 › Auth flows › signup page renders with Google OAuth and email form 
+    [chromium] › e2e/auth.spec.ts:25:7 › Auth flows › logout endpoint clears session cookie ────────
+    [chromium] › e2e/billing.spec.ts:4:7 › Billing & quotas › pricing page renders 3 tiers ─────────
+    [chromium] › e2e/billing.spec.ts:11:7 › Billing & quotas › Stripe webhook endpoint rejects unsigned payload 
+    [chromium] › e2e/billing.spec.ts:19:7 › Billing & quotas › checkout endpoint requires auth ─────
+    [chromium] › e2e/chat.spec.ts:9:7 › Chat (unauthenticated guards) › POST /api/chat without token returns 401 
+    [chromium] › e2e/landing.spec.ts:4:7 › Landing & SEO › homepage shows hero, CTA, and 16-agent showcase 
+    [chromium] › e2e/onboarding.spec.ts:4:7 › تدفق التسجيل وإكمال الملف الشخصي › صفحة التسجيل تظهر بشكل صحيح 
+    [chromium] › e2e/onboarding.spec.ts:10:7 › تدفق التسجيل وإكمال الملف الشخصي › الصفحة الرئيسية تعرض محتوى التسويق للزوار 
+    [chromium] › e2e/onboarding.spec.ts:15:7 › تدفق التسجيل وإكمال الملف الشخصي › الداشبورد يُعيد التوجيه للتسجيل إذا لم يكن هناك جلسة 
+  16 passed (4.0m)
+Error: Process completed with exit code 1.
+1s
+0s
+0s
+0s
+Implement lazy initialization for Firebase client SDK · dahaliztupe-sketch/Kalmeron-Two@1362375
