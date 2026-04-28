@@ -392,7 +392,7 @@ function DepartmentsSection() {
             فريق متكامل في <span className="brand-gradient-text">منصة واحدة</span>
           </h2>
           <p className="text-neutral-400 max-w-2xl mx-auto text-sm md:text-lg">
-            من تحليل الفكرة وحتى التوسع. لكل قسم مساعدين متخصصون يعملون معاً تلقائياً.
+            استراتيجية · تمويل · قانوني · تسويق · وأكثر. لكل قسم مساعدين متخصصون يعملون معاً تلقائياً.
           </p>
         </motion.div>
 

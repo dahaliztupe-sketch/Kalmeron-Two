@@ -46,11 +46,9 @@ export default async function globalSetup(config: FullConfig) {
       // 2xx-3xx = compiled successfully, 4xx still means the route exists and
       // compiled (e.g. /api/health may return 503 if degraded — both are fine).
       if (res.status >= 500) {
-        // eslint-disable-next-line no-console
         console.warn(`[playwright:warmup] ${path} -> ${res.status}`);
       }
     } catch (err) {
-      // eslint-disable-next-line no-console
       console.warn(
         `[playwright:warmup] ${path} failed:`,
         err instanceof Error ? err.message : String(err),
