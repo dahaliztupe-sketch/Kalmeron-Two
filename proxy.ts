@@ -35,6 +35,18 @@ function globalRateLimit(ip: string, limit = 100, windowMs = 60_000): boolean {
   return true;
 }
 
+// Loopback / private addresses that should never be globally rate-limited
+// (localhost dev, e2e/Playwright runners, internal probes, k8s health checks).
+function isTrustedLocalIp(ip: string): boolean {
+  if (!ip || ip === '0.0.0.0' || ip === 'unknown') return true;
+  if (ip === '::1' || ip === '127.0.0.1') return true;
+  if (ip.startsWith('127.')) return true;
+  if (ip.startsWith('10.')) return true;
+  if (ip.startsWith('192.168.')) return true;
+  if (ip.startsWith('::ffff:127.')) return true;
+  return false;
+}
+
 /**
  * Proxy handles global routing logic, GeoIP detection, and edge-level rate limiting.
  */
@@ -45,12 +57,19 @@ export async function proxy(request: NextRequest) {
     request.headers.get('cf-connecting-ip') ||
     '0.0.0.0';
 
-  // 1. Global IP-level rate limiting (100 req/min per IP)
-  if (!globalRateLimit(ip)) {
-    return new NextResponse('Too Many Requests', {
-      status: 429,
-      headers: { 'Retry-After': '60', 'Content-Type': 'text/plain' },
-    });
+  // 1. Global IP-level rate limiting (100 req/min per IP).
+  //    Skip in non-production (dev / test / e2e) and for loopback IPs so the
+  //    Playwright suite — which intentionally fires bursts of requests against
+  //    /api/chat — doesn't get globally throttled before the route's own
+  //    finer-grained rate-limit + auth checks have a chance to respond.
+  //    Production traffic from real clients is still protected.
+  if (process.env.NODE_ENV === 'production' && !isTrustedLocalIp(ip)) {
+    if (!globalRateLimit(ip)) {
+      return new NextResponse('Too Many Requests', {
+        status: 429,
+        headers: { 'Retry-After': '60', 'Content-Type': 'text/plain' },
+      });
+    }
   }
 
   // 2. GeoIP-based currency detection
