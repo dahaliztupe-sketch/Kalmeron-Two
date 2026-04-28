@@ -144,7 +144,7 @@ const INJECTION_PATTERNS: readonly InjectionPattern[] = [
 
   // --- إنجليزي: حقن غير مباشر (شائع في PDF/web/email) ---
   { name: 'en_assistant_says',
-    regex: /\b(?:assistant|ai|model|system)\s*(?::|says?|reply|responded?)\s*["']?(?:sure|certainly|of\s+course|here\s+is|here['']?s|i\s+(?:will|can|shall))/i,
+    regex: /\b(?:assistant|ai|model|system)\s*(?::|says?|reply|responded?)\s*["']?(?:sure|certainly|of\s+course|here\s+is|here[']?s|i\s+(?:will|can|shall))/i,
     weight: 0.7 },
   { name: 'en_user_intent_flip',
     regex: /\b(?:the\s+user\s+(?:actually|really|secretly)\s+wants?|the\s+real\s+(?:question|task|goal|intent)\s+is|user['']?s\s+true\s+(?:goal|intent))/i,
