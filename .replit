@@ -56,20 +56,20 @@ outputType = "console"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "cd services/pdf-worker && uvicorn main:app --host 0.0.0.0 --port 8000 --log-level info"
+args = "cd services/pdf-worker && ([ ! -d .venv ] && uv venv .venv >/dev/null 2>&1 && source .venv/bin/activate && uv pip install -q -r requirements.txt >/dev/null 2>&1; source .venv/bin/activate && uvicorn main:app --host 0.0.0.0 --port 8000 --log-level info)"
 waitForPort = 8000
 
 [[workflows.workflow]]
 name = "Embeddings Worker"
 author = "agent"
 
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "cd services/embeddings-worker && uvicorn main:app --host 0.0.0.0 --port 8099 --log-level info"
-waitForPort = 8099
-
 [workflows.workflow.metadata]
 outputType = "console"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "cd services/embeddings-worker && ([ ! -d .venv ] && uv venv .venv >/dev/null 2>&1 && source .venv/bin/activate && uv pip install -q -r requirements.txt >/dev/null 2>&1; source .venv/bin/activate && uvicorn main:app --host 0.0.0.0 --port 8099 --log-level info)"
+waitForPort = 8099
 
 [[workflows.workflow]]
 name = "Egypt Calc"
@@ -87,13 +87,13 @@ waitForPort = 8008
 name = "LLM Judge"
 author = "agent"
 
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "cd services/llm-judge && uvicorn main:app --host 0.0.0.0 --port 8080 --log-level info"
-waitForPort = 8080
-
 [workflows.workflow.metadata]
 outputType = "console"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "cd services/llm-judge && ([ ! -d .venv ] && uv venv .venv >/dev/null 2>&1 && source .venv/bin/activate && uv pip install -q -r requirements.txt >/dev/null 2>&1; source .venv/bin/activate && uvicorn main:app --host 0.0.0.0 --port 8080 --log-level info)"
+waitForPort = 8080
 
 [[ports]]
 localPort = 5000
@@ -124,16 +124,8 @@ localPort = 8000
 externalPort = 8000
 
 [[ports]]
-localPort = 8008
-externalPort = 8008
-
-[[ports]]
 localPort = 8080
 externalPort = 8080
-
-[[ports]]
-localPort = 8099
-externalPort = 8099
 
 [userenv]
 
