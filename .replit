@@ -1,4 +1,4 @@
-modules = ["nodejs-20", "python-3.12", "web"]
+modules = ["python-3.12", "web", "nodejs-22"]
 [agent]
 expertMode = true
 stack = "GAMESTACK_JS"
@@ -151,6 +151,15 @@ NEXT_PUBLIC_FIREBASE_APP_ID = "1:686711690176:web:aef254de2ec4ea357ee25"
 NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID = "G-GLX7PM8VCE"
 MODEL_PRO = "gemini-2.5-pro"
 KALMERON_COUNCIL = "on"
+NEXT_PUBLIC_APP_URL = "https://9f4f35d0-aaee-4af8-8bc2-a6daf631182d-00-2107uyt6lwvy8.janeway.replit.dev"
+NEXT_PUBLIC_BASE_URL = "https://9f4f35d0-aaee-4af8-8bc2-a6daf631182d-00-2107uyt6lwvy8.janeway.replit.dev"
+PDF_WORKER_URL = "http://localhost:8000"
+EGYPT_CALC_URL = "http://localhost:8008"
+LLM_JUDGE_URL = "http://localhost:8080"
+EMBEDDINGS_WORKER_URL = "http://localhost:8099"
+EMBEDDINGS_MODEL = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
+FAWRY_BASE_URL = "https://atfawry.fawrystaging.com"
+JUDGE_MODEL = "gemini-2.5-flash-lite"
 
 [deployment]
 deploymentTarget = "autoscale"
