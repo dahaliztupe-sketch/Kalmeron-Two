@@ -122,8 +122,15 @@ describe('Panel of Experts — output schema & formatter', () => {
   });
 
   it('rejects malformed outputs (e.g., wrong option count)', () => {
-    const bad = { ...sample, options: sample.options.slice(0, 2) };
-    expect(CouncilOutputSchema.safeParse(bad).success).toBe(false);
+    // المخطط يسمح بـ 2-4 خيارات، لذا خيار واحد أو 5+ يُعتبر مخالفة.
+    const tooFew = { ...sample, options: sample.options.slice(0, 1) };
+    expect(CouncilOutputSchema.safeParse(tooFew).success).toBe(false);
+
+    const tooMany = {
+      ...sample,
+      options: [...sample.options, ...sample.options, ...sample.options],
+    };
+    expect(CouncilOutputSchema.safeParse(tooMany).success).toBe(false);
   });
 
   it('clamps confidence to 0-100', () => {
