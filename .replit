@@ -150,7 +150,7 @@ KALMERON_COUNCIL = "off"
 
 [deployment]
 deploymentTarget = "autoscale"
-run = ["npm", "start"]
+run = ["node", "./dist/index.cjs"]
 build = ["npm", "run", "build"]
 
 [postMerge]
