@@ -74,6 +74,24 @@ const INTENT_CLASSIFIER_PROMPT = `أنت المنسق الذكي لمنصة كل
 - ADMIN: عندما يسأل عن مراقبة النظام، سجلات، أو لوحة الإدارة.
 - GENERAL_CHAT: لأي سؤال عام أو دردشة لا تقع تحت التخصصات أعلاه.`;
 
+/**
+ * Fallback heuristic لتصنيف النية محلياً عند فشل استدعاء الـ Router الرئيسي
+ * (مثل تجاوز حصة Gemini أو انقطاع الشبكة). كلمات مفتاحية بسيطة بدل الإخفاق
+ * الكامل للمحادثة. يُرجَع دائماً اسم نية صالح.
+ */
+function heuristicIntent(message: string): string {
+  const m = (message || '').toLowerCase();
+  if (/(مال(ي|ية)?|cash[\s-]?flow|تدفق نقدي|توقعات\s+مالية|breakeven|نقطة\s+التعادل|cfo|الفلوس|إيرادات|تكاليف)/i.test(m)) return 'CFO_AGENT';
+  if (/(قانون|عقد|تأسيس|شركة|تشريع|legal|محام)/i.test(m)) return 'LEGAL_GUIDE';
+  if (/(عقار|إيجار|شقة|أرض|roi|عائد\s+الاستثمار|real\s*estate)/i.test(m)) return 'REAL_ESTATE';
+  if (/(منحة|مسابقة|تمويل|هاكاثون|grant|funding)/i.test(m)) return 'OPPORTUNITY_RADAR';
+  if (/(قصة\s+نجاح|كيف\s+نجحت|success|case\s+study|متحف)/i.test(m)) return 'SUCCESS_MUSEUM';
+  if (/(خطأ|أخطاء|تحذير|مخاطر|risk|warning)/i.test(m)) return 'MISTAKE_SHIELD';
+  if (/(خطة|business\s*plan|plan|خطوات\s+تنفيذ|roadmap)/i.test(m)) return 'PLAN_BUILDER';
+  if (/(فكرة|swot|جدوى|تقييم\s+فكرة|validate)/i.test(m)) return 'IDEA_VALIDATOR';
+  return 'GENERAL_CHAT';
+}
+
 async function routerNode(state: typeof SupervisorState.State) {
   const lastMessage = state.messages[state.messages.length - 1]?.content as string;
 
@@ -92,6 +110,10 @@ async function routerNode(state: typeof SupervisorState.State) {
         system: INTENT_CLASSIFIER_PROMPT,
         prompt: `سياق الواجهة: ${JSON.stringify(state.uiContext || {})}
 رسالة المستخدم: ${lastMessage}`,
+        // الراوتر هو أكثر استدعاء يستهلك من الحصة. retries هنا تُضاعف
+        // مشكلة الـ 429 وتُفرغ الـ bucket المجاني بسرعة. نُلغي الـ retries
+        // ونعتمد على fallback heuristic أدناه عند فشل النداء.
+        maxRetries: 0,
       },
       { agent: 'router', userId: state.userId, softCostBudgetUsd: 0.005 },
     );
@@ -104,7 +126,10 @@ async function routerNode(state: typeof SupervisorState.State) {
         messages: [new AIMessage('تم رفض الطلب: اكتُشفت محاولة حقن أوامر في الرسالة. يرجى إعادة الصياغة.')],
       };
     }
-    throw e;
+    // Fallback ذكي عند فشل الـ Router (quota، شبكة، ...): نصنّف النية
+    // محلياً عبر كلمات مفتاحية حتى لا نُفشل المحادثة بالكامل.
+    intent = heuristicIntent(lastMessage);
+    console.warn('[router] LLM classification failed, used heuristic →', intent, '·', (e as Error)?.message?.slice(0, 200));
   }
 
   const cleaned = intent.trim().toUpperCase();

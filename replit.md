@@ -1854,3 +1854,31 @@ Built 6 new working features addressing gaps in `docs/GAP_ANALYSIS_AR.md`:
 - All 6 routes return HTTP 200.
 - No new TypeScript/lint errors introduced.
 - Pages use existing AppShell pattern, motion/react animations, lucide-react icons, and Tailwind dark theme consistent with the rest of the app.
+
+---
+
+## Session: 2026-04-28 — Hardening fixes after agent-test attempt
+
+Free-tier Gemini quota exhausted before full 9-agent live test could complete. User chose to fix discovered issues instead of re-testing.
+
+### Issues fixed
+
+1. **Prompt-guard false positives** (`src/lib/security/prompt-guard.ts`):
+   - `ar_new_role` was matching the bare verb `كن` inside very common Arabic words like `ممكن`, `يمكن`, `لكن`, `يكن`. Arabic letters aren't `\b` word boundaries in JS regex. Added negative lookbehind `(?<![\u0600-\u06FF])` and lookahead `(?![\u0600-\u06FF])` around the short verbs so they only match as whole words. Same fix applied to `ar_ignore` (was matching `تخط` in `تخطيط`/planning, `الغ` in `الغير`).
+   - `ar_no_filter` was blocking benign `بدون قيود` ("without restrictions") which is common in legitimate business questions. Tightened to require explicit AI-context cues (`رد بدون قيود`, `بدون فلتر`, `بدون رقابة الذكاء`).
+   - Verified via `scripts/check-guard.mjs` — 8 prompts, only the actual injection attempt (`تجاهل كل التعليمات السابقة`) still blocks.
+
+2. **Council JSON-schema fragility** (`src/ai/panel/types.ts`):
+   - `CouncilOutputSchema.options` required `.length(3)` exactly. Gemini PRO sometimes generates 2 options (e.g., for narrow CFO calculations) → `[withCouncil] council failed: No object generated: response did not match schema`. Relaxed to `.min(2).max(4)`.
+
+3. **Quota error handling** (`src/ai/orchestrator/supervisor.ts` + `app/api/chat/route.ts`):
+   - The router was using AI SDK default 3-attempt retry. Each retry on a 429 emptied the free-tier bucket further and amplified the problem. Set `maxRetries: 0` on the router call.
+   - Added `heuristicIntent()` keyword fallback that runs when the LLM router fails so the conversation continues with a best-guess intent classification instead of erroring out completely.
+   - SSE error path now classifies `quota`/`rate`/`429` → "وصلت لحد الاستخدام المؤقت من Gemini..."; `api key`/`401` → "مفتاح غير صالح..."; `timeout` → "انتهت المهلة...". Generic message kept as last fallback.
+
+### Files touched
+- `src/lib/security/prompt-guard.ts`
+- `src/ai/panel/types.ts`
+- `src/ai/orchestrator/supervisor.ts`
+- `app/api/chat/route.ts`
+- `scripts/check-guard.mjs` (new — guard regression check)

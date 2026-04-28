@@ -34,7 +34,10 @@ export const CouncilOptionSchema = z.object({
 
 export const CouncilOutputSchema = z.object({
   diagnosis: z.string().min(20).max(2500),
-  options: z.array(CouncilOptionSchema).length(3),
+  // ملاحظة: كنا نطلب exactly 3 خيارات وكان هذا يُسقط استجابات Gemini
+  // الصحيحة عندما لا يكون للسؤال 3 خيارات استراتيجية طبيعية (مثل أسئلة
+  // CFO الحسابية المحدّدة). من 2 إلى 4 يبقي جودة المقارنة دون كسر الـ schema.
+  options: z.array(CouncilOptionSchema).min(2).max(4),
   recommendation: z.string().min(20).max(1500),
   confidence: z.number().int().min(0).max(100),
   implementationSteps: z.array(z.string().min(1).max(400)).min(3).max(10),

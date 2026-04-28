@@ -314,7 +314,20 @@ export async function POST(req: NextRequest) {
       } catch (error: unknown) {
         const details = toErrorDetails(error);
         log.error({ msg: 'Chat SSE error', error: details.message, stack: details.stack });
-        send('error', { message: 'عذراً، كالميرون بيواجه مشكلة فنية حالياً.' });
+        // تصنيف الأخطاء الشائعة لرسالة عربية أوضح للمستخدم.
+        const lowered = (details.message || '').toLowerCase();
+        let userMessage = 'عذراً، كالميرون بيواجه مشكلة فنية حالياً.';
+        if (lowered.includes('quota') || lowered.includes('rate') || lowered.includes('429') || lowered.includes('resource_exhausted')) {
+          userMessage =
+            'الخدمة وصلت لحد الاستخدام المؤقت من Gemini. حاول تاني بعد دقيقة، أو رقّي مفتاح الـ API لباقة مدفوعة لاستخدام مكثف.';
+        } else if (lowered.includes('api key') || lowered.includes('unauthorized') || lowered.includes('401') || lowered.includes('permission')) {
+          userMessage =
+            'مفتاح Gemini غير صالح أو غير مفعّل. يرجى مراجعة إعدادات الـ API في لوحة الإدارة.';
+        } else if (lowered.includes('timeout') || lowered.includes('aborted')) {
+          userMessage =
+            'انتهت مهلة الاتصال بالنموذج قبل اكتمال الرد. حاول مرة أخرى بسؤال أقصر.';
+        }
+        send('error', { message: userMessage });
       } finally {
         controller.close();
       }
