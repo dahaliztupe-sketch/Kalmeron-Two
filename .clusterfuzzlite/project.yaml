@@ -1,0 +1,6 @@
+language: javascript
+fuzzing_engines:
+  - libfuzzer
+sanitizers:
+  - none
+main_repo: https://github.com/kalmeron/kalmeron-two

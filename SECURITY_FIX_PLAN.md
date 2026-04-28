@@ -146,3 +146,40 @@ USER app
 4. **Fuzzing (Scorecard):** نتجاهلها، أم نضيف ClusterFuzzLite (مجهود أعلى)؟
 
 أعطني إجاباتك وأبدأ التنفيذ بترتيب الأمواج (Waves) المُقترَح.
+
+---
+
+## ✅ سجل التنفيذ — 28 أبريل 2026
+
+### Wave 1 — فشل CI
+- [x] **1.1 Trivy:** أُضيف `.trivyignore` (فارغ بالقواعد) + `severity: CRITICAL,HIGH` + `ignore-unfixed: true` + `scanners: vuln,misconfig,secret`.
+- [x] **1.2 Playwright:** أُعيد تصميم `playwright.config.ts` ليبدأ خادم Next تلقائياً عبر `webServer`. خطوة `npm run build` أُضيفت قبل التشغيل في الـ workflow.
+- [x] **1.3 Semgrep:** أُضيف `.semgrepignore` لاستثناء المُولّد (`.next/`, `node_modules/`, `dist/`, `coverage/`, `e2e/fixtures/`).
+- [x] **1.5 Release Please:** أُنشئ `.github/release-please-config.json` + `.github/.release-please-manifest.json` (إصدار أوّلي `0.1.0`).
+
+### Wave 2 — تنبيهات الكود
+- [x] **2.3 Duplicate char-class** في `prompt-guard.ts` (سطر 147، 150) — صحّحت `'']` → `']`.
+- [x] **2.3 Incomplete sanitization (`<!--...-->`)** — حلقة fixed-point موجودة بالفعل (سطر 56-66).
+- [x] **2.4 Insecure tmp** في `scan-errors.mjs` — مراجعة أكدت أن `/tmp/logs` للقراءة فقط؛ لا يُكتب فيها شيء (آمن).
+- [x] **2.6 `dangerouslySetInnerHTML`** — كل الاستعمالات تمرّر عبر `safeJsonLd()` من `src/lib/security/safe-json-ld.ts` (يستعمل Unicode escape).
+
+### Wave 3 — Workflows / Infra
+- [x] **3.1 Pin actions to SHA** — سكربت `scripts/security/pin-actions.mjs` ثبّت ٦١ مرجع `uses:`.
+- [x] **3.2 Permissions** — كل workflow لديه `permissions:` صريح على المستوى الأعلى.
+- [x] **3.3 USER directive** — كل الـ ٤ Dockerfiles (egypt-calc, embeddings-worker, llm-judge, pdf-worker) تستعمل مستخدم غير-root `app` (UID 1001) مع `--chown` للملفات.
+
+### Wave 4 — Repo policy
+- [x] **LICENSE** — Apache-2.0 (نص كامل).
+- [x] **SECURITY.md** — سياسة إفصاح + نقاط اتصال.
+- [x] **Fuzzing (ClusterFuzzLite):**
+  - `.clusterfuzzlite/Dockerfile` + `build.sh` + `project.yaml`
+  - `.github/workflows/cflite-pr.yml` (PR fuzzing 5 دقائق)
+  - `.github/workflows/cflite-batch.yml` (batch ساعة، يومياً)
+  - أهداف: `tests/fuzz/fuzz_prompt_guard.js` + `tests/fuzz/fuzz_sanitize_log.js`
+
+### يحتاج تدخّل مالك المستودع (ليس كوداً)
+- [ ] **Branch Protection** على `main` (require PR + status checks + signed commits).
+- [ ] **CII Best-Practices Badge** — تسجيل المشروع على bestpractices.coreinfrastructure.org.
+- [ ] **Dependabot** — موجود بالفعل (`.github/dependabot.yml`).
+- [ ] قبول/دمج أوّل PR من Release Please لإنشاء أوّل tag.
+

@@ -1,28 +1,29 @@
 {
   "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
   "release-type": "node",
-  "include-v-in-tag": true,
   "include-component-in-tag": false,
+  "include-v-in-tag": true,
   "bump-minor-pre-major": true,
-  "bump-patch-for-minor-pre-major": false,
+  "bump-patch-for-minor-pre-major": true,
   "draft": false,
   "prerelease": false,
   "changelog-sections": [
-    { "type": "feat", "section": "Features", "hidden": false },
-    { "type": "fix", "section": "Bug Fixes", "hidden": false },
-    { "type": "perf", "section": "Performance", "hidden": false },
-    { "type": "revert", "section": "Reverts", "hidden": false },
-    { "type": "refactor", "section": "Refactor", "hidden": false },
+    { "type": "feat", "section": "Features" },
+    { "type": "fix", "section": "Bug Fixes" },
+    { "type": "perf", "section": "Performance" },
+    { "type": "deps", "section": "Dependencies" },
+    { "type": "revert", "section": "Reverts" },
     { "type": "docs", "section": "Documentation", "hidden": false },
-    { "type": "build", "section": "Build", "hidden": true },
-    { "type": "ci", "section": "CI", "hidden": true },
-    { "type": "chore", "section": "Chore", "hidden": true },
+    { "type": "style", "section": "Styles", "hidden": true },
+    { "type": "chore", "section": "Miscellaneous Chores", "hidden": true },
+    { "type": "refactor", "section": "Code Refactoring", "hidden": true },
     { "type": "test", "section": "Tests", "hidden": true },
-    { "type": "style", "section": "Style", "hidden": true }
+    { "type": "build", "section": "Build System", "hidden": true },
+    { "type": "ci", "section": "Continuous Integration", "hidden": true }
   ],
   "packages": {
     ".": {
-      "package-name": "ai-studio-applet",
+      "package-name": "kalmeron-two",
       "changelog-path": "CHANGELOG.md"
     }
   }

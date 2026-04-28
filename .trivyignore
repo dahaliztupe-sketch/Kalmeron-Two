@@ -1,0 +1,7 @@
+# Trivy ignore file
+# Format: CVE-YYYY-NNNN  (one per line, comments with #)
+#
+# Each entry MUST include the date it was added and a short rationale.
+# Re-evaluate every quarter. Remove the entry when fixed upstream.
+
+# (no entries yet)
