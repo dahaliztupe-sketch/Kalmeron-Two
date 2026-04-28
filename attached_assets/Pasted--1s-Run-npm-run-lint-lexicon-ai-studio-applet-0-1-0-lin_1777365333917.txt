@@ -1,0 +1,110 @@
+
+1s
+Run npm run lint:lexicon
+
+> ai-studio-applet@0.1.0 lint:lexicon
+> tsx scripts/lexicon-lint.ts
+
+lexicon-lint: FAIL — 20 forbidden alias(es) found:
+
+  app/(dashboard)/investor/guide/page.tsx:35
+    alias    : "وكلاء"
+    canonical: "مساعدوك الأذكياء"
+    preview  : <li>• نموذج LLM واحد لا يكفي — نحتاج وكلاء متخصّصين مع حسابات حتمية ومراجع قانونية محلّية.</li>
+
+  app/(dashboard)/investor/guide/page.tsx:65
+    alias    : "وكيل"
+    canonical: "مساعد ذكي"
+    preview  : <li>• Audit Log لكل قرار وكيل (يمكن مراجعته ومساءلته).</li>
+
+  app/(dashboard)/investor/guide/page.tsx:156
+    alias    : "وكلاء"
+    canonical: "مساعدوك الأذكياء"
+    preview  : لا تشرح كل الـ 16 وكيلًا — اعرض المسار الموصى به (6 وكلاء) من{" "}
+
+  app/(dashboard)/investor/guide/page.tsx:160
+    alias    : "وكيل"
+    canonical: "مساعد ذكي"
+    preview  : {" "}بترتيبه. كلّ وكيل إضافي تشرحه يقلّل من تركيز المستثمر، لا يزيده.
+
+  app/(dashboard)/investor/page.tsx:133
+    alias    : "وكلاء"
+    canonical: "مساعدوك الأذكياء"
+    preview  : label="وكلاء جاهزون للعرض"
+
+  app/(dashboard)/investor/page.tsx:135
+    alias    : "وكيل"
+    canonical: "مساعد ذكي"
+    preview  : sub={`من إجمالي ${data.platform.totalAgentsRegistered} وكيل`}
+
+  app/cash-runway/page.tsx:45
+    alias    : "Cash Runway"
+    canonical: "مدّة سيولتك"
+    preview  : <span className="text-xs text-amber-400 font-medium uppercase tracking-wide">Cash Runway Alarm</span>
+
+  app/crews/page.tsx:9
+    alias    : "وكلاء"
+    canonical: "مساعدوك الأذكياء"
+    preview  : "فِرق متخصصة من وكلاء كلميرون الأذكياء، جاهزة للعمل كقسم كامل في شركتك مقابل اشتراك شهري واحد.",
+
+  app/crews/page.tsx:20
+    alias    : "وكلاء"
+    canonical: "مساعدوك الأذكياء"
+    preview  : "خمسة وكلاء ماليين متخصصين (CFO، FP&A، ضرائب، Cap Table، حزمة المستثمر) يعملون كفريقك المالي الافتراضي.",
+
+  app/crews/page.tsx:65
+    alias    : "وكلاء"
+    canonical: "مساعدوك الأذكياء"
+    preview  : كلّ فريق يحتوي على عدّة وكلاء متخصّصين يتعاونون كفريق حقيقي — أرخص من راتب موظّف واحد، وأسرع من توظيف بشري.
+
+  app/founder-agreement/page.tsx:82
+    alias    : "Founder"
+    canonical: "مؤسّس"
+    preview  : <span className="text-xs text-violet-400 font-medium uppercase tracking-wide">Founder Agreement Wizard</span>
+
+  app/investors/page.tsx:22
+    alias    : "وكيل"
+    canonical: "مساعد ذكي"
+    preview  : "سوق +15 مليار دولار، 16 وكيل AI، تقنية متقدمة، متوافق قانونياً.",
+
+  app/investors/page.tsx:46
+    alias    : "وكيل"
+    canonical: "مساعد ذكي"
+    preview  : { quarter: "Q2 2026", title: "إطلاق MVP", body: "16 وكيل + Stripe + Fawry" },
+
+  app/investors/page.tsx:205
+    alias    : "وكيل"
+    canonical: "مساعد ذكي"
+    preview  : <Stat value="16" label="وكيل AI" />
+
+  app/operations/page.tsx:98
+    alias    : "وكيل"
+    canonical: "مساعد ذكي"
+    preview  : if (actionId === "send_email") return "وكيل المراسلات · إيميل";
+
+  app/operations/page.tsx:99
+    alias    : "وكيل"
+    canonical: "مساعد ذكي"
+    preview  : if (actionId === "send_whatsapp") return "وكيل المراسلات · واتساب";
+
+  app/operations/page.tsx:102
+    alias    : "وكيل"
+    canonical: "مساعد ذكي"
+    preview  : return requestedBy || "وكيل";
+
+  app/value-proposition/page.tsx:138
+    alias    : "وكيل"
+    canonical: "مساعد ذكي"
+    preview  : placeholder="مثال: ١٦ وكيل AI يقوم بمهمّات الفريق بـ ١٠٪ من التكلفة"
+
+  app/wellbeing/page.tsx:33
+    alias    : "Founder"
+    canonical: "مؤسّس"
+    preview  : <span className="text-xs text-rose-400 font-medium uppercase tracking-wide">Founder Wellbeing Coach · الوكيل ١٧</span>
+
+  app/wellbeing/page.tsx:105
+    alias    : "insights"
+    canonical: "استنتاجات"
+    preview  : {result.insights.map((ins, i) => (
+
+Error: Process completed with exit code 1.
