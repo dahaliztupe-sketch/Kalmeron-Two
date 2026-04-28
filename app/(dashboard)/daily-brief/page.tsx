@@ -184,6 +184,7 @@ interface DailyBriefPrefs {
 interface DailyBriefSendResult {
   ok?: boolean;
   error?: string;
+  hint?: string;
   results?: Record<string, { ok?: boolean; error?: string; preview?: string }>;
 }
 

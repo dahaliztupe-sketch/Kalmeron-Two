@@ -342,7 +342,7 @@ export async function safeGenerateText<TOOLS extends ToolSet = ToolSet>(
         // recursive overload inference (see SafeGenerateObjectArgs note).
         () => generateText(
           withDefaultTimeout(currentArgs, ctx) as Parameters<typeof generateText>[0],
-        ) as Promise<GenerateTextResult<TOOLS, never>>,
+        ) as unknown as Promise<GenerateTextResult<TOOLS, never>>,
         { model: modelId, input: { hash: promptHash }, toolsUsed: [] },
       );
       break;
@@ -507,5 +507,5 @@ export async function safeStreamText<TOOLS extends ToolSet = ToolSet>(
   // overload inference (see SafeGenerateTextArgs note).
   return streamText(
     withDefaultTimeout(applyPromptOverride(args, promptToSend), ctx) as Parameters<typeof streamText>[0],
-  ) as StreamTextResult<TOOLS, never>;
+  ) as unknown as StreamTextResult<TOOLS, never>;
 }

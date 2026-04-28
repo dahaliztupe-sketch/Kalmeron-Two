@@ -14,9 +14,31 @@ const headers = {
   ...(TOKEN ? { Authorization: `Bearer ${TOKEN}` } : {}),
 };
 
+// Allowlist: only api.github.com (https) is permitted. Mitigates CodeQL
+// "Network data written to file" / "File data in outbound network request"
+// by ensuring URLs cannot be redirected to arbitrary hosts/protocols.
+const ALLOWED_HOSTS = new Set(["api.github.com"]);
+
+function assertSafeUrl(rawUrl) {
+  let u;
+  try {
+    u = new URL(rawUrl);
+  } catch {
+    throw new Error(`pin-actions: invalid URL: ${rawUrl}`);
+  }
+  if (u.protocol !== "https:") {
+    throw new Error(`pin-actions: refusing non-https URL: ${rawUrl}`);
+  }
+  if (!ALLOWED_HOSTS.has(u.hostname)) {
+    throw new Error(`pin-actions: host not allowlisted: ${u.hostname}`);
+  }
+  return u.toString();
+}
+
 async function gh(url) {
-  const res = await fetch(url, { headers });
-  if (!res.ok) throw new Error(`${res.status} ${res.statusText} for ${url}`);
+  const safeUrl = assertSafeUrl(url);
+  const res = await fetch(safeUrl, { headers, redirect: "error" });
+  if (!res.ok) throw new Error(`${res.status} ${res.statusText} for ${safeUrl}`);
   return res.json();
 }
 
