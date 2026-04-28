@@ -2,11 +2,16 @@ import { NextRequest, NextResponse } from "next/server";
 import { getMessaging } from "firebase-admin/messaging";
 import { adminApp, adminAuth, adminDb } from "@/src/lib/firebase-admin";
 import { toErrorMessage } from "@/src/lib/errors/to-message";
+import { rateLimit, rateLimitResponse } from "@/src/lib/security/rate-limit";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest) {
+  // Push-notification fan-out is a spam vector — keep cap tight per IP/user.
+  const rl = rateLimit(req, { limit: 30, windowMs: 60_000 });
+  if (!rl.success) return rateLimitResponse();
+
   try {
     // 1) Authenticate FIRST. Previously a missing Authorization header
     //    bypassed the auth check entirely, letting any anonymous caller

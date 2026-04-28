@@ -16,6 +16,7 @@ import { Timestamp } from 'firebase-admin/firestore';
 import { getPlan, planFromStripePriceId, type PlanId } from '@/src/lib/billing/plans';
 import { rewardReferrerOnUpgrade } from '@/src/lib/referrals/manager';
 import { toErrorMessage } from '@/src/lib/errors/to-message';
+import { rateLimit, rateLimitResponse } from '@/src/lib/security/rate-limit';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -66,6 +67,11 @@ async function applyPlanToUser(userId: string, planId: PlanId) {
 }
 
 export async function POST(req: NextRequest) {
+  // Stripe verifies the signature inside; this cap is purely a DoS shield
+  // (legitimate webhook traffic is bursty but well under this rate).
+  const rl = rateLimit(req, { limit: 600, windowMs: 60_000 });
+  if (!rl.success) return rateLimitResponse();
+
   if (!stripe || !webhookSecret) {
     return new Response('Stripe webhook not configured', { status: 503 });
   }

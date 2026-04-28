@@ -1,6 +1,7 @@
 // @ts-nocheck
 import { NextRequest, NextResponse } from 'next/server';
 import { adminAuth, adminDb } from '@/src/lib/firebase-admin';
+import { rateLimit, rateLimitResponse } from '@/src/lib/security/rate-limit';
 
 export const runtime = 'nodejs';
 
@@ -18,6 +19,10 @@ async function authedUserId(req: NextRequest): Promise<string | null> {
 }
 
 export async function GET(req: NextRequest) {
+  // Per-user run history — generous because the dashboard polls it on focus.
+  const rl = rateLimit(req, { limit: 60, windowMs: 60_000 });
+  if (!rl.success) return rateLimitResponse();
+
   const userId = await authedUserId(req);
   if (!userId) return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
   if (!adminDb?.collection) return NextResponse.json({ runs: [] });

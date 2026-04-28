@@ -183,3 +183,46 @@ USER app
 - [ ] **Dependabot** — موجود بالفعل (`.github/dependabot.yml`).
 - [ ] قبول/دمج أوّل PR من Release Please لإنشاء أوّل tag.
 
+
+---
+
+## ✅ Wave 5 — Rate-limiting audit (post-hoc) — 28 أبريل 2026
+
+**الفحص:** ٩٠ مساراً تحت `app/api/`. ٢٦ مساراً كان لديه `rateLimit()` صريح، و١٨ مساراً يستعمل `guardedRoute()` (يعطي rate-limit افتراضي ٣٠/دقيقة). **٤٦ مساراً** كان بلا أي حد.
+
+**أُضيف rateLimit يدوياً إلى ٢٠ مساراً عالي الأثر:**
+
+| المسار | الحد (طلب/دقيقة) | المبرر |
+|---|---|---|
+| `user/credits` GET | 60 | استعلام رصيد المحفظة (poll on focus) |
+| `user/plan` POST | 5 | منح خطة admin-only — تشديد |
+| `user/delete` POST | 3 | حذف نهائي للمستخدم |
+| `user/delete-request` POST | 5 | طلب حذف |
+| `notifications/send` POST | 30 | بوابة spam push |
+| `notifications/subscribe` POST | 10 | تسجيل token جديد |
+| `recipes/run` POST | 20 | الأغلى (multi-step LLM) |
+| `recipes/list` GET | 60 | catalog |
+| `recipes/instances` GET | 60 | تاريخ التشغيل |
+| `billing/status` GET | 30 | فحص علني |
+| `billing/fawry/webhook` POST | 600 | DoS shield (signature مُتحقَّقة) |
+| `webhooks/stripe` POST | 600 | DoS shield |
+| `webhooks/telegram` POST | 600 | DoS shield |
+| `webhooks/whatsapp` POST | 600 | DoS shield |
+| `dashboard` GET | 30 | لوحة رئيسية |
+| `learned-skills` GET/PATCH/POST | 30/20/10 | اختلاف بحسب التكلفة |
+| `okr` GET/POST | 30/10 | POST يستدعي LLM |
+| `operations/feed` GET | 60 | feed مباشر (poll) |
+| `team-os` GET/POST | 30/15 | aggregator ثقيل |
+| `workspaces` GET/POST | 30/15 | إدارة الأعضاء |
+| `rag/documents` GET/DELETE | 30/20 | عمليات على الوثائق |
+| `actions/inbox` GET/POST | 60/30 | صندوق الإجراءات |
+
+**اختبار مباشر:** ٣٥ طلباً متتالياً على `billing/status` → ٢٩ ناجح + ٦ مرفوض بـ 429 ✅ (الحد ٣٠/دقيقة).
+
+**باقٍ بلا rate-limit عمداً:**
+- `health` — يجب أن يبقى مفتوحاً للـ load balancer.
+- `cron/*` — محمي بـ `CRON_SECRET` ويعمل بإيقاع ثابت.
+- `admin/*` — محمي بـ `isPlatformAdmin()`.
+- `auth/passkey/*` — stubs (501).
+- `investor/*` — مسارات داخلية.
+

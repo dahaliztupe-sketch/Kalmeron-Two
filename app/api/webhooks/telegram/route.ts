@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { receptionistHandleChannelMessage } from '@/src/ai/receptionist/agent';
 import { toErrorMessage } from '@/src/lib/errors/to-message';
+import { rateLimit, rateLimitResponse } from '@/src/lib/security/rate-limit';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -10,6 +11,10 @@ export const dynamic = 'force-dynamic';
  *   curl "https://api.telegram.org/bot<TOKEN>/setWebhook?url=<APP>/api/webhooks/telegram&secret_token=<SECRET>"
  */
 export async function POST(req: NextRequest) {
+  // Telegram secret token is verified below; this cap is a DoS shield.
+  const rl = rateLimit(req, { limit: 600, windowMs: 60_000 });
+  if (!rl.success) return rateLimitResponse();
+
   const expected = process.env.TELEGRAM_WEBHOOK_SECRET;
   if (!expected) {
     // In production a secret must be configured; otherwise anyone can spam the bot.

@@ -2,6 +2,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { adminAuth } from '@/src/lib/firebase-admin';
 import { listUserDocuments, deleteUserDocument } from '@/src/lib/rag/user-rag';
+import { rateLimit, rateLimitResponse } from '@/src/lib/security/rate-limit';
 
 export const runtime = 'nodejs';
 
@@ -15,6 +16,9 @@ async function authedUserId(req: NextRequest): Promise<string | null> {
 }
 
 export async function GET(req: NextRequest) {
+  const rl = rateLimit(req, { limit: 30, windowMs: 60_000 });
+  if (!rl.success) return rateLimitResponse();
+
   const userId = await authedUserId(req);
   if (!userId) return NextResponse.json({ error: 'auth_required' }, { status: 401 });
   const documents = await listUserDocuments(userId);
@@ -22,6 +26,9 @@ export async function GET(req: NextRequest) {
 }
 
 export async function DELETE(req: NextRequest) {
+  const rl = rateLimit(req, { limit: 20, windowMs: 60_000 });
+  if (!rl.success) return rateLimitResponse();
+
   const userId = await authedUserId(req);
   if (!userId) return NextResponse.json({ error: 'auth_required' }, { status: 401 });
   const documentId = new URL(req.url).searchParams.get('documentId');

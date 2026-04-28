@@ -3,6 +3,7 @@ import { adminAuth, adminDb } from '@/src/lib/firebase-admin';
 import { getMetricsSnapshot, getAlerts } from '@/src/ai/organization/compliance/monitor';
 import { listTasksForUser } from '@/src/ai/organization/tasks/task-manager';
 import { getTwin } from '@/src/lib/memory/shared-memory';
+import { rateLimit, rateLimitResponse } from '@/src/lib/security/rate-limit';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -30,6 +31,9 @@ async function getLatestOpportunity() {
 }
 
 export async function GET(req: NextRequest) {
+  const rl = rateLimit(req, { limit: 30, windowMs: 60_000 });
+  if (!rl.success) return rateLimitResponse();
+
   let userId = 'guest';
   const auth = req.headers.get('Authorization');
   if (auth?.startsWith('Bearer ')) {

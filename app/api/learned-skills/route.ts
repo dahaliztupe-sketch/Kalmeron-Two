@@ -15,6 +15,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { adminAuth } from '@/src/lib/firebase-admin';
 import { getMemberRole, type WorkspaceRole } from '@/src/lib/workspaces/workspaces';
+import { rateLimit, rateLimitResponse } from '@/src/lib/security/rate-limit';
 import {
   listSkills,
   setSkillEnabled,
@@ -69,6 +70,9 @@ function tsToMs(ts: unknown): number | null {
 }
 
 export async function GET(req: NextRequest): Promise<NextResponse> {
+  const rl = rateLimit(req, { limit: 30, windowMs: 60_000 });
+  if (!rl.success) return rateLimitResponse();
+
   const guard = await authenticate(req);
   if (!guard.ok) return guard.res;
 
@@ -100,6 +104,9 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
 }
 
 export async function PATCH(req: NextRequest): Promise<NextResponse> {
+  const rl = rateLimit(req, { limit: 20, windowMs: 60_000 });
+  if (!rl.success) return rateLimitResponse();
+
   const guard = await authenticate(req);
   if (!guard.ok) return guard.res;
 
@@ -125,6 +132,9 @@ export async function PATCH(req: NextRequest): Promise<NextResponse> {
 }
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
+  const rl = rateLimit(req, { limit: 10, windowMs: 60_000 });
+  if (!rl.success) return rateLimitResponse();
+
   const guard = await authenticate(req);
   if (!guard.ok) return guard.res;
 

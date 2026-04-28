@@ -13,6 +13,7 @@ import { NextRequest } from 'next/server';
 import { adminDb } from '@/src/lib/firebase-admin';
 import { buildCallbackSignature, getFawryConfig } from '@/src/lib/billing/fawry/client';
 import { rewardReferrerOnUpgrade } from '@/src/lib/referrals/manager';
+import { rateLimit, rateLimitResponse } from '@/src/lib/security/rate-limit';
 
 export const runtime = 'nodejs';
 
@@ -36,6 +37,10 @@ interface FawryCallback {
 }
 
 export async function POST(req: NextRequest) {
+  // Fawry callback signature is verified below; this cap is a DoS shield.
+  const rl = rateLimit(req, { limit: 600, windowMs: 60_000 });
+  if (!rl.success) return rateLimitResponse();
+
   const cfg = getFawryConfig();
   if (!cfg.secureKey) {
     return Response.json({ error: 'Fawry not configured' }, { status: 503 });

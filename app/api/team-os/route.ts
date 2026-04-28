@@ -6,11 +6,15 @@ import { adminAuth } from '@/src/lib/firebase-admin';
 import { listCurrentWeekOKRs, listOKRs } from '@/src/lib/okr/okr-store';
 import { getProjectOverview, isKnowledgeGraphEnabled } from '@/src/lib/memory/knowledge-graph';
 import { getMetricsSnapshot } from '@/src/ai/organization/compliance/monitor';
+import { rateLimit, rateLimitResponse } from '@/src/lib/security/rate-limit';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 export async function GET(req: NextRequest) {
+  const rl = rateLimit(req, { limit: 30, windowMs: 60_000 });
+  if (!rl.success) return rateLimitResponse();
+
   let userId = 'guest';
   const auth = req.headers.get('Authorization');
   if (auth?.startsWith('Bearer ')) {
@@ -39,6 +43,9 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
+  const rl = rateLimit(req, { limit: 15, windowMs: 60_000 });
+  if (!rl.success) return rateLimitResponse();
+
   let userId = 'guest';
   const authH = req.headers.get('Authorization');
   if (authH?.startsWith('Bearer ')) {

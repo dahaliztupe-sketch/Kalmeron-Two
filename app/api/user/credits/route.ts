@@ -2,10 +2,15 @@ import { NextRequest } from 'next/server';
 import { adminAuth, adminDb } from '@/src/lib/firebase-admin';
 import { getPlan, type PlanId } from '@/src/lib/billing/plans';
 import { toErrorMessage } from '@/src/lib/errors/to-message';
+import { rateLimit, rateLimitResponse } from '@/src/lib/security/rate-limit';
 
 export const runtime = 'nodejs';
 
 export async function GET(req: NextRequest) {
+  // Per-IP/user wallet poll — generous (clients refresh on tab focus + websocket fallback).
+  const rl = rateLimit(req, { limit: 60, windowMs: 60_000 });
+  if (!rl.success) return rateLimitResponse();
+
   const authHeader = req.headers.get('Authorization');
   if (!authHeader?.startsWith('Bearer ')) {
     return new Response(JSON.stringify({ error: 'Unauthorized' }), {

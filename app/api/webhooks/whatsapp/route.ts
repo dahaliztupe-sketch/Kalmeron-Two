@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'node:crypto';
 import { receptionistHandleChannelMessage } from '@/src/ai/receptionist/agent';
 import { toErrorMessage } from '@/src/lib/errors/to-message';
+import { rateLimit, rateLimitResponse } from '@/src/lib/security/rate-limit';
 
 interface WhatsAppMessage {
   from?: string;
@@ -61,6 +62,10 @@ function verifyMetaSignature(rawBody: string, signatureHeader: string | null): b
  * inject arbitrary `receptionistHandleChannelMessage` calls.
  */
 export async function POST(req: NextRequest) {
+  // Meta signature is verified below; this cap is a DoS shield.
+  const rl = rateLimit(req, { limit: 600, windowMs: 60_000 });
+  if (!rl.success) return rateLimitResponse();
+
   try {
     const rawBody = await req.text();
 

@@ -3,6 +3,7 @@ import { adminAuth, adminDb } from '@/src/lib/firebase-admin';
 import { PLANS, type PlanId, getPlan } from '@/src/lib/billing/plans';
 import { Timestamp } from 'firebase-admin/firestore';
 import { toErrorMessage } from '@/src/lib/errors/to-message';
+import { rateLimit, rateLimitResponse } from '@/src/lib/security/rate-limit';
 
 export const runtime = 'nodejs';
 
@@ -15,6 +16,10 @@ export const runtime = 'nodejs';
  *         gated by the `admin: true` custom claim.
  */
 export async function POST(req: NextRequest) {
+  // Admin-only plan grant — strict cap to deflect credential-stuffing into the admin lane.
+  const rl = rateLimit(req, { limit: 5, windowMs: 60_000 });
+  if (!rl.success) return rateLimitResponse();
+
   const authHeader = req.headers.get('Authorization');
   if (!authHeader?.startsWith('Bearer ')) {
     return new Response(JSON.stringify({ error: 'Unauthorized' }), {

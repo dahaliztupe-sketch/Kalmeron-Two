@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { adminAuth } from '@/src/lib/firebase-admin';
 import { runRecipe } from '@/src/ai/recipes/runner';
 import { RecipeRunSchema } from '@/src/ai/recipes/registry';
+import { rateLimit, rateLimitResponse } from '@/src/lib/security/rate-limit';
 
 export const runtime = 'nodejs';
 
@@ -20,6 +21,11 @@ async function authedUserId(req: NextRequest): Promise<string | null> {
 }
 
 export async function POST(req: NextRequest) {
+  // Recipe execution is the most expensive endpoint (multi-step LLM calls).
+  // Cap aggressively per IP/user to protect downstream cost + token quota.
+  const rl = rateLimit(req, { limit: 20, windowMs: 60_000 });
+  if (!rl.success) return rateLimitResponse();
+
   const userId = await authedUserId(req);
   if (!userId) return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
 

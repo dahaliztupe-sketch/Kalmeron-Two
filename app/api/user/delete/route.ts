@@ -2,6 +2,7 @@ import { db } from "@/src/lib/firebase";
 import { adminAuth } from "@/src/lib/firebase-admin";
 import { doc, collection, getDocs, writeBatch } from "firebase/firestore";
 import { NextRequest, NextResponse } from "next/server";
+import { rateLimit, rateLimitResponse } from "@/src/lib/security/rate-limit";
 
 export const runtime = "nodejs";
 
@@ -14,6 +15,10 @@ export const runtime = "nodejs";
  * delete arbitrary users by passing a foreign userId.
  */
 export async function POST(req: NextRequest) {
+  // Right-to-erasure is destructive and irreversible — keep the cap very low.
+  const rl = rateLimit(req, { limit: 3, windowMs: 60_000 });
+  if (!rl.success) return rateLimitResponse();
+
   // Authenticate caller
   const authHeader = req.headers.get("Authorization");
   if (!authHeader?.startsWith("Bearer ")) {

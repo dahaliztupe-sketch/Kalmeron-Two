@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/src/lib/firebase';
 import { adminAuth } from '@/src/lib/firebase-admin';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { rateLimit, rateLimitResponse } from '@/src/lib/security/rate-limit';
 
 export const runtime = 'nodejs';
 
@@ -11,6 +12,10 @@ export const runtime = 'nodejs';
  * the client.
  */
 export async function POST(req: NextRequest) {
+  // Pre-deletion grace flow — allow a small flurry but block scripted abuse.
+  const rl = rateLimit(req, { limit: 5, windowMs: 60_000 });
+  if (!rl.success) return rateLimitResponse();
+
   const authHeader = req.headers.get('Authorization');
   if (!authHeader?.startsWith('Bearer ')) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

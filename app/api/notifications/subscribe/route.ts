@@ -1,11 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import { adminAuth, adminDb } from "@/src/lib/firebase-admin";
 import { toErrorMessage } from "@/src/lib/errors/to-message";
+import { rateLimit, rateLimitResponse } from "@/src/lib/security/rate-limit";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest) {
+  // Subscription writes — token churn implies abuse, cap modestly.
+  const rl = rateLimit(req, { limit: 10, windowMs: 60_000 });
+  if (!rl.success) return rateLimitResponse();
+
   try {
     // 1) Authenticate FIRST — never trust user-controlled body shape as a
     //    pre-auth gate. This avoids the "user-controlled bypass" pattern

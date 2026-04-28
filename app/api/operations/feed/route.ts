@@ -13,6 +13,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { adminAuth, adminDb } from '@/src/lib/firebase-admin';
 import { metaIntegrationStatus, integrationsStatus } from '@/src/ai/actions/registry';
+import { rateLimit, rateLimitResponse } from '@/src/lib/security/rate-limit';
 
 export const runtime = 'nodejs';
 
@@ -35,6 +36,10 @@ function toMillis(ts: unknown): number | null {
 }
 
 export async function GET(req: NextRequest) {
+  // Live activity feed — clients poll on focus + websocket fallback.
+  const rl = rateLimit(req, { limit: 60, windowMs: 60_000 });
+  if (!rl.success) return rateLimitResponse();
+
   const userId = await authedUserId(req);
   if (!userId) return NextResponse.json({ error: 'auth_required' }, { status: 401 });
 
