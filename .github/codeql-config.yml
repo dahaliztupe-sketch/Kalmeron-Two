@@ -1,0 +1,30 @@
+name: "Kalmeron CodeQL Config"
+
+# Use the security-and-quality query suite (matches the GitHub UI default for
+# this repo). Defining it explicitly means future changes to GitHub defaults
+# do not silently change what we scan for.
+queries:
+  - uses: security-and-quality
+
+# Reduce noise + scan time by skipping files that are not first-party source.
+# The CodeQL alerts dashboard had become unmanageable because attached_assets
+# (chat-uploaded screenshots / pasted text) and generated artifacts were being
+# included. Restricting paths-ignore to true non-source dirs keeps real
+# findings actionable without hiding any application code.
+paths-ignore:
+  - node_modules
+  - .next
+  - dist
+  - build
+  - coverage
+  - .venv
+  - .cache
+  - attached_assets
+  - public/textures
+  - "**/*.min.js"
+  - "**/*.bundle.js"
+  - "**/*.snap"
+  - diagnostics/history
+  - diagnostics/reports
+  - test/__fixtures__
+  - e2e/fixtures

@@ -7,19 +7,27 @@ export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest) {
   try {
-    const { token } = await req.json();
-    if (!token || typeof token !== "string") {
-      return NextResponse.json({ error: "token required" }, { status: 400 });
-    }
-
+    // 1) Authenticate FIRST — never trust user-controlled body shape as a
+    //    pre-auth gate. This avoids the "user-controlled bypass" pattern
+    //    where a malformed body short-circuits the auth check.
     const authHeader = req.headers.get("authorization") ?? "";
     const idToken = authHeader.replace("Bearer ", "").trim();
     if (!idToken) {
       return NextResponse.json({ error: "unauthorized" }, { status: 401 });
     }
-
-    const decoded = await adminAuth.verifyIdToken(idToken);
+    const decoded = await adminAuth.verifyIdToken(idToken).catch(() => null);
+    if (!decoded?.uid) {
+      return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+    }
     const uid = decoded.uid;
+
+    // 2) Then validate input. Use a strict, narrowed local instead of
+    //    relying on user-controlled values for any subsequent decision.
+    const raw = (await req.json().catch(() => ({}))) as { token?: unknown };
+    const token = typeof raw.token === "string" ? raw.token.trim() : "";
+    if (!token || token.length < 20 || token.length > 4096) {
+      return NextResponse.json({ error: "token required" }, { status: 400 });
+    }
 
     await adminDb.collection("users").doc(uid).collection("fcm_tokens").doc(token.slice(-20)).set({
       token,

@@ -189,6 +189,15 @@ async function main() {
   console.log(`\nTesting agents at ${BASE} (sequential, ${delayMs}ms between)  [${list.map(s=>s.id).join(',')}]\n`);
   console.log(pad('Agent', 22), pad('OK', 4), pad('Intent', 22), pad('TTFT', 8), pad('Total', 8), pad('Words', 7), pad('AR%', 5));
   console.log('-'.repeat(90));
+  // Use a per-process tmp directory with secure (0700) permissions instead
+  // of a hard-coded, world-writable /tmp/agent-test-report.json path. This
+  // avoids symlink races and other untrusted-location issues flagged by
+  // CodeQL js/insecure-temporary-file.
+  const fsMod = await import('fs');
+  const osMod = await import('os');
+  const pathMod = await import('path');
+  const reportDir = fsMod.mkdtempSync(pathMod.join(osMod.tmpdir(), 'kalmeron-agent-test-'));
+  const reportPath = pathMod.join(reportDir, 'agent-test-report.json');
   const results = [];
   for (let i = 0; i < list.length; i++) {
     const s = list[i];
@@ -197,8 +206,7 @@ async function main() {
     results.push({ scenario: s, result: r });
     // incremental persist
     try {
-      const fsx = await import('fs');
-      fsx.writeFileSync('/tmp/agent-test-report.json', JSON.stringify(results, null, 2));
+      fsMod.writeFileSync(reportPath, JSON.stringify(results, null, 2), { mode: 0o600 });
     } catch {}
     const intentCell = r.routedIntent ? `${r.routedIntent}${r.intentCorrect ? '✓' : '✗'}` : '—';
     console.log(
@@ -223,10 +231,9 @@ async function main() {
   const avgTotal = results.filter(r => r.result.totalMs).reduce((a, r) => a + r.result.totalMs, 0) / Math.max(1, results.filter(r => r.result.totalMs).length);
   console.log(`Avg TTFT: ${avgTtft.toFixed(0)}ms   Avg total: ${avgTotal.toFixed(0)}ms`);
 
-  // Save full report
-  const fs = await import('fs');
-  fs.writeFileSync('/tmp/agent-test-report.json', JSON.stringify(results, null, 2));
-  console.log('\nFull report → /tmp/agent-test-report.json');
+  // Save full report into the per-process secure tmp dir created above.
+  fsMod.writeFileSync(reportPath, JSON.stringify(results, null, 2), { mode: 0o600 });
+  console.log(`\nFull report → ${reportPath}`);
 }
 
 main().catch(e => { console.error(e); process.exit(1); });

@@ -8,20 +8,36 @@ export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
-    const { targetUid, title, body: msgBody, url, icon } = body;
+    // 1) Authenticate FIRST. Previously a missing Authorization header
+    //    bypassed the auth check entirely, letting any anonymous caller
+    //    push a notification to any uid. We now require a valid token
+    //    before reading the body.
+    const authHeader = req.headers.get("authorization") ?? "";
+    const idToken = authHeader.replace("Bearer ", "").trim();
+    if (!idToken) {
+      return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+    }
+    const decoded = await adminAuth.verifyIdToken(idToken).catch(() => null);
+    if (!decoded?.uid) {
+      return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+    }
+
+    // 2) Parse + validate input into local, narrowed values. Never use
+    //    raw user-controlled fields for security decisions.
+    const raw = (await req.json().catch(() => ({}))) as Record<string, unknown>;
+    const targetUid = typeof raw.targetUid === "string" ? raw.targetUid.trim() : "";
+    const title = typeof raw.title === "string" ? raw.title.trim() : "";
+    const msgBody = typeof raw.body === "string" ? raw.body : "";
+    const url = typeof raw.url === "string" ? raw.url : undefined;
+    const icon = typeof raw.icon === "string" ? raw.icon : undefined;
 
     if (!targetUid || !title) {
       return NextResponse.json({ error: "targetUid and title required" }, { status: 400 });
     }
 
-    const authHeader = req.headers.get("authorization") ?? "";
-    const idToken = authHeader.replace("Bearer ", "").trim();
-    if (idToken) {
-      const decoded = await adminAuth.verifyIdToken(idToken).catch(() => null);
-      if (!decoded || (decoded.uid !== targetUid && !(decoded as { admin?: boolean }).admin)) {
-        return NextResponse.json({ error: "unauthorized" }, { status: 403 });
-      }
+    // 3) Enforce ownership/admin AFTER auth + input validation.
+    if (decoded.uid !== targetUid && !(decoded as { admin?: boolean }).admin) {
+      return NextResponse.json({ error: "forbidden" }, { status: 403 });
     }
 
     const tokensSnap = await adminDb

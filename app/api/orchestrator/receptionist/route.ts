@@ -24,13 +24,19 @@ import { NextRequest, NextResponse } from 'next/server';
         return NextResponse.json({ error: 'message is required' }, { status: 400 });
       }
 
+      // Resolve user id from a verified Bearer token, else fall back to guest.
+      // We slice past "Bearer " (7 chars) and trim, instead of split()[1]!,
+      // to avoid a non-null assertion on user-controlled input.
       let userId = 'guest';
-      const auth = req.headers.get('Authorization');
-      if (auth?.startsWith('Bearer ')) {
-        try {
-          const dec = await adminAuth.verifyIdToken(auth.split(' ')[1]!);
-          userId = dec.uid;
-        } catch { /* guest fallback */ }
+      const auth = req.headers.get('Authorization') ?? '';
+      if (auth.startsWith('Bearer ')) {
+        const token = auth.slice(7).trim();
+        if (token) {
+          try {
+            const dec = await adminAuth.verifyIdToken(token);
+            if (dec?.uid) userId = dec.uid;
+          } catch { /* guest fallback */ }
+        }
       }
 
       const clean = xss(message);

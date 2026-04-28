@@ -213,21 +213,30 @@ function scanRecentLogs() {
   ];
   const errRe = /\b(ERROR|FATAL|UnhandledPromiseRejection|TypeError|ReferenceError|EADDRINUSE|ECONNREFUSED|MODULE_NOT_FOUND|Cannot find module|Failed to compile)\b/;
   for (const dir of candidates) {
-    if (!fs.existsSync(dir)) continue;
     let entries;
     try {
       entries = fs.readdirSync(dir);
     } catch { continue; }
     for (const name of entries) {
       const file = path.join(dir, name);
-      let stat;
-      try { stat = fs.statSync(file); } catch { continue; }
-      if (!stat.isFile()) continue;
-      if (Date.now() - stat.mtimeMs > 24 * 60 * 60 * 1000) continue;
+      // Avoid the TOCTOU race between fs.statSync and fs.readFileSync by
+      // opening the file once with a file descriptor, then deriving both
+      // mtime and contents from that same handle. If anything fails
+      // (file vanished, permission denied, not a regular file), skip.
+      let fd;
       let content;
+      let mtimeMs;
+      let isFile;
       try {
-        content = fs.readFileSync(file, 'utf8');
-      } catch { continue; }
+        fd = fs.openSync(file, 'r');
+        const stat = fs.fstatSync(fd);
+        isFile = stat.isFile();
+        mtimeMs = stat.mtimeMs;
+        if (isFile) content = fs.readFileSync(fd, 'utf8');
+      } catch { /* skip */ }
+      finally { if (fd !== undefined) { try { fs.closeSync(fd); } catch { /* ignore */ } } }
+      if (!isFile || content === undefined) continue;
+      if (Date.now() - mtimeMs > 24 * 60 * 60 * 1000) continue;
       const lines = content.split('\n');
       for (let i = 0; i < lines.length; i++) {
         const line = lines[i];
