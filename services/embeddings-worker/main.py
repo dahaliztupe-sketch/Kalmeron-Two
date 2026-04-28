@@ -1,8 +1,22 @@
 """
 Local multilingual embeddings sidecar.
 
-Runs `fastembed` (ONNX runtime under the hood — no torch dependency, no
-GPU required) with a small multilingual model that handles Arabic well.
+Two backends are supported, switched via ``EMBEDDINGS_BACKEND``:
+
+  * ``fastembed`` (default) — ONNX-runtime, no torch, instant cold start.
+    Best for the curated multilingual MiniLM family.
+
+  * ``sentence_transformers`` — full HF Sentence-Transformers stack. Slower
+    cold start but unlocks the Arabic-specialised models we shortlisted in
+    ``docs/ECOSYSTEM_RESEARCH_2026-04-28.md`` (e.g. AraGemma-Embedding-300m,
+    Arabic-Matryoshka). Optional dependency — install on demand:
+    ``uv pip install 'sentence-transformers>=3,<6'``.
+
+Optional dialect-aware preprocessing (CAMeL Tools) is wired in as a
+pre-step before embedding when ``EMBEDDINGS_PREPROCESS=camel`` is set.
+This normalises Egyptian-dialect text against MSA / CODA conventions and
+typically lifts retrieval recall on user-written EGY queries by ~10-15%.
+
 The model is **lazily loaded on first request** so service startup is
 instant; the first /embed call takes a few seconds (one-time download).
 
@@ -11,10 +25,11 @@ the same query going through hyde / self-rag / crag fan-out) only embed
 once.
 
 Endpoints:
-  GET  /health                          → liveness + load state
+  GET  /health                          → liveness + load state + backend
   POST /embed       {text}              → vector
   POST /embed/batch {texts: [...]}      → list of vectors
   POST /similarity  {a, b}              → cosine in [-1, 1]
+  POST /preprocess  {text}              → normalised text (debug helper)
 
 Run:
   cd services/embeddings-worker
@@ -40,13 +55,21 @@ logging.basicConfig(level=logging.INFO,
 log = logging.getLogger("embeddings-worker")
 
 # ──────────────── Config ────────────────
+BACKEND = os.environ.get("EMBEDDINGS_BACKEND", "fastembed").strip().lower()
 MODEL_NAME = os.environ.get(
     "EMBEDDINGS_MODEL",
+    # Default keeps backwards compatibility. For Arabic-only deployments the
+    # research report recommends `Omartificial-Intelligence-Space/AraGemma-Embedding-300m`
+    # via the `sentence_transformers` backend.
     "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
 )
 CACHE_SIZE = int(os.environ.get("EMBEDDINGS_CACHE_SIZE", "1000"))
 MAX_BATCH = int(os.environ.get("EMBEDDINGS_MAX_BATCH", "64"))
 MAX_TEXT_LEN = int(os.environ.get("EMBEDDINGS_MAX_TEXT_LEN", "4000"))
+PREPROCESS = os.environ.get("EMBEDDINGS_PREPROCESS", "").strip().lower()
+# Optional Matryoshka truncation — when set, embeddings are truncated to
+# this dim and re-normalised. Useful with AraGemma / Arabic-Matryoshka.
+MATRYOSHKA_DIM = int(os.environ.get("EMBEDDINGS_MATRYOSHKA_DIM", "0"))
 
 
 # ──────────────── Lazy model loader ────────────────
@@ -57,6 +80,25 @@ _model_dim: int | None = None
 _model_load_ms: float | None = None
 
 
+class _SentenceTransformersAdapter:
+    """Quack like fastembed.TextEmbedding so the rest of the file is unchanged."""
+
+    def __init__(self, model_name: str) -> None:
+        from sentence_transformers import SentenceTransformer  # type: ignore
+        self._model = SentenceTransformer(model_name, device="cpu")
+
+    def embed(self, texts: list[str]):
+        # SentenceTransformer returns numpy arrays directly.
+        out = self._model.encode(
+            texts,
+            normalize_embeddings=True,
+            convert_to_numpy=True,
+            show_progress_bar=False,
+        )
+        for row in out:
+            yield row
+
+
 def _ensure_model() -> Any:
     global _model, _model_dim, _model_load_ms
     if _model is not None:
@@ -64,10 +106,13 @@ def _ensure_model() -> Any:
     with _model_lock:
         if _model is not None:
             return _model
-        from fastembed import TextEmbedding
-        log.info("Loading embeddings model: %s", MODEL_NAME)
+        log.info("Loading embeddings model: %s (backend=%s)", MODEL_NAME, BACKEND)
         t0 = time.time()
-        _model = TextEmbedding(model_name=MODEL_NAME)
+        if BACKEND == "sentence_transformers":
+            _model = _SentenceTransformersAdapter(MODEL_NAME)
+        else:
+            from fastembed import TextEmbedding
+            _model = TextEmbedding(model_name=MODEL_NAME)
         _model_load_ms = (time.time() - t0) * 1000
         # Probe dimension with a tiny call.
         probe = list(_model.embed(["probe"]))
@@ -76,14 +121,78 @@ def _ensure_model() -> Any:
         return _model
 
 
+# ──────────────── Optional CAMeL Tools preprocessing ────────────────
+#
+# Lazy-initialised because importing camel_tools loads multiple morphological
+# databases on first use. We only pay the cost when the operator explicitly
+# opts in via ``EMBEDDINGS_PREPROCESS=camel``.
+
+_camel_normalizer: Any = None
+_camel_lock = Lock()
+
+
+def _ensure_camel():
+    global _camel_normalizer
+    if _camel_normalizer is not None:
+        return _camel_normalizer
+    with _camel_lock:
+        if _camel_normalizer is not None:
+            return _camel_normalizer
+        try:
+            from camel_tools.utils.normalize import (  # type: ignore
+                normalize_unicode,
+                normalize_alef_ar,
+                normalize_alef_maksura_ar,
+                normalize_teh_marbuta_ar,
+            )
+            from camel_tools.utils.dediac import dediac_ar  # type: ignore
+
+            def _pipeline(text: str) -> str:
+                t = normalize_unicode(text)
+                t = dediac_ar(t)
+                t = normalize_alef_ar(t)
+                t = normalize_alef_maksura_ar(t)
+                t = normalize_teh_marbuta_ar(t)
+                return t
+
+            _camel_normalizer = _pipeline
+            log.info("CAMeL Tools preprocessing enabled")
+        except Exception as e:  # noqa: BLE001
+            log.warning(
+                "CAMeL Tools requested but unavailable (%s). Falling back to raw text.",
+                e,
+            )
+            _camel_normalizer = lambda t: t  # noqa: E731 — pass-through
+        return _camel_normalizer
+
+
+def _maybe_preprocess(texts: list[str]) -> list[str]:
+    if PREPROCESS != "camel":
+        return texts
+    norm = _ensure_camel()
+    return [norm(t) for t in texts]
+
+
+def _maybe_matryoshka(vec: np.ndarray) -> np.ndarray:
+    if MATRYOSHKA_DIM <= 0 or vec.shape[0] <= MATRYOSHKA_DIM:
+        return vec
+    truncated = vec[:MATRYOSHKA_DIM]
+    n = float(np.linalg.norm(truncated))
+    return truncated / n if n > 0 else truncated
+
+
 # ──────────────── LRU cache ────────────────
 
-_cache: "OrderedDict[tuple[str, str], list[float]]" = OrderedDict()
+_cache: "OrderedDict[tuple[str, str, int], list[float]]" = OrderedDict()
 _cache_lock = Lock()
 
 
+def _cache_key(text: str) -> tuple[str, str, int]:
+    return (MODEL_NAME, text, MATRYOSHKA_DIM)
+
+
 def _cache_get(text: str) -> list[float] | None:
-    key = (MODEL_NAME, text)
+    key = _cache_key(text)
     with _cache_lock:
         v = _cache.get(key)
         if v is not None:
@@ -92,7 +201,7 @@ def _cache_get(text: str) -> list[float] | None:
 
 
 def _cache_put(text: str, vec: list[float]) -> None:
-    key = (MODEL_NAME, text)
+    key = _cache_key(text)
     with _cache_lock:
         _cache[key] = vec
         _cache.move_to_end(key)
@@ -103,27 +212,29 @@ def _cache_put(text: str, vec: list[float]) -> None:
 def _embed_texts(texts: list[str]) -> list[list[float]]:
     """Batched embed with cache short-circuit per item."""
     model = _ensure_model()
+    pre_texts = _maybe_preprocess(texts)
     out: list[list[float] | None] = [None] * len(texts)
-    misses: list[tuple[int, str]] = []
-    for i, t in enumerate(texts):
-        cached = _cache_get(t)
+    misses: list[tuple[int, str, str]] = []
+    for i, (raw, pre) in enumerate(zip(texts, pre_texts, strict=True)):
+        cached = _cache_get(pre)
         if cached is not None:
             out[i] = cached
         else:
-            misses.append((i, t))
+            misses.append((i, raw, pre))
     if misses:
-        miss_texts = [t for _, t in misses]
+        miss_texts = [pre for _, _, pre in misses]
         vectors = list(model.embed(miss_texts))
-        for (idx, text), vec in zip(misses, vectors, strict=True):
-            v = np.asarray(vec, dtype=np.float32).tolist()
+        for (idx, _raw, pre), vec in zip(misses, vectors, strict=True):
+            arr = _maybe_matryoshka(np.asarray(vec, dtype=np.float32))
+            v = arr.tolist()
             out[idx] = v
-            _cache_put(text, v)
+            _cache_put(pre, v)
     return [v for v in out if v is not None]
 
 
 # ──────────────── HTTP layer ────────────────
 
-app = FastAPI(title="Kalmeron Embeddings Worker", version="1.0.0")
+app = FastAPI(title="Kalmeron Embeddings Worker", version="1.1.0")
 
 # CORS: قابل للتكوين. الافتراضي محصور بـ main app في dev.
 _origins = [o.strip() for o in os.getenv("EMBEDDINGS_WORKER_CORS", "http://localhost:5000").split(",") if o.strip()]
@@ -148,6 +259,10 @@ class SimilarityIn(BaseModel):
     b: str = Field(..., min_length=1, max_length=MAX_TEXT_LEN)
 
 
+class PreprocessIn(BaseModel):
+    text: str = Field(..., min_length=1, max_length=MAX_TEXT_LEN)
+
+
 def _validate_batch(texts: list[str]) -> None:
     for i, t in enumerate(texts):
         if not t:
@@ -164,10 +279,13 @@ def health() -> dict:
         "ok": True,
         "service": "embeddings-worker",
         "version": app.version,
+        "backend": BACKEND,
         "model": MODEL_NAME,
         "model_loaded": _model is not None,
         "model_dim": _model_dim,
         "model_load_ms": _model_load_ms,
+        "preprocess": PREPROCESS or "none",
+        "matryoshka_dim": MATRYOSHKA_DIM or None,
         "cache_size": cache_size,
         "cache_capacity": CACHE_SIZE,
     }
@@ -179,10 +297,11 @@ def embed_one(body: EmbedIn) -> dict:
     vec = _embed_texts([body.text])[0]
     return {
         "model": MODEL_NAME,
+        "backend": BACKEND,
+        "preprocess": PREPROCESS or "none",
         "dim": len(vec),
         "vector": vec,
         "elapsed_ms": round((time.time() - t0) * 1000, 1),
-        "cached": _cache_get(body.text) is not None and (time.time() - t0) * 1000 < 5,
     }
 
 
@@ -193,6 +312,8 @@ def embed_batch(body: EmbedBatchIn) -> dict:
     vecs = _embed_texts(body.texts)
     return {
         "model": MODEL_NAME,
+        "backend": BACKEND,
+        "preprocess": PREPROCESS or "none",
         "dim": len(vecs[0]) if vecs else _model_dim,
         "vectors": vecs,
         "count": len(vecs),
@@ -208,3 +329,12 @@ def similarity(body: SimilarityIn) -> dict:
     denom = float(np.linalg.norm(a) * np.linalg.norm(b))
     cos = float(np.dot(a, b) / denom) if denom > 0 else 0.0
     return {"model": MODEL_NAME, "cosine": round(cos, 6)}
+
+
+@app.post("/preprocess")
+def preprocess_text(body: PreprocessIn) -> dict:
+    """Debug helper — returns the text after the configured preprocessing step."""
+    if PREPROCESS != "camel":
+        return {"preprocess": "none", "text": body.text}
+    norm = _ensure_camel()
+    return {"preprocess": "camel", "text": norm(body.text)}

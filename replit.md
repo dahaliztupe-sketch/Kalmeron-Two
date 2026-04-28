@@ -1,5 +1,41 @@
 # Kalmeron AI (ai-studio-applet)
 
+## Session 2026-04-28 (لاحق) — تنفيذ تقرير `docs/ECOSYSTEM_RESEARCH_2026-04-28.md`
+
+البنود السبعة كلّها صارت داخل الكود، كلّها **opt-in** عبر متغيّرات بيئة لكي لا يتغيّر السلوك الافتراضي للتطبيق:
+
+| # | البند | الموقع | التفعيل |
+|---|---|---|---|
+| 1 | AraGemma + sentence-transformers backend | `services/embeddings-worker/main.py` (v1.1.0) | `EMBEDDINGS_BACKEND=sentence_transformers` + `EMBEDDINGS_MODEL=Omartificial-Intelligence-Space/AraGemma-Embedding-300m` |
+| 2 | CAMeL Tools dialect preprocessing | `services/embeddings-worker/main.py` | `EMBEDDINGS_PREPROCESS=camel` (يحتاج `pip install camel-tools`) |
+| 3 | OpenLLMetry auto-instrumentation | `instrumentation.ts` + `src/lib/observability/openllmetry.ts` | `OTEL_LLM_TRACING=on` (الـ SDK مثبّت بالفعل) |
+| 4 | EasyOCR fallback للـ PDF الممسوح | `services/pdf-worker/ocr.py` + `main.py` (v1.1.0) | `PDF_WORKER_OCR_FALLBACK=easyocr` (يحتاج `pip install easyocr`) |
+| 5 | Promptfoo pilot لـ Egypt Calc | `test/eval/promptfoo/promptfooconfig.yaml` | `npm run eval:promptfoo` |
+| 6 | KITAB-Bench OCR regression | `scripts/qa/run_kitab_bench.py` | `npm run qa:kitab` بعد تنزيل الـ dataset |
+| 7 | Egyptian legal corpus seeder | `scripts/data/fetch_egypt_legal_corpus.py` | `npm run data:egypt-legal` |
+
+### تفاصيل تقنيّة
+- **Embeddings worker** أُعيد تنظيمه ليدعم backend abstraction، optional Matryoshka truncation (`EMBEDDINGS_MATRYOSHKA_DIM`)، وendpoint جديد `POST /preprocess` للـ debugging. الافتراضي ما زال fastembed + MiniLM (ما في حاجة torch). تأكّد عبر `/health` يطلع `version: "1.1.0"` و `dim: 384` على /embed.
+- **PDF worker** صار يميز بين native و OCR extraction عبر حقل جديد `extractionPath` في الردّ. يلجأ تلقائياً للـ OCR إذا الـ pypdf رجّع أقل من `PDF_WORKER_OCR_THRESHOLD` حرف (افتراضي 200) **و** الـ OCR backend مفعّل.
+- **OpenLLMetry**: `@traceloop/node-server-sdk` مُثبَّت كـ dep جديد (187 packages). الـ init بيتم في `src/lib/observability/openllmetry.ts` مع PII guard افتراضياً مغلق (`traceContent: false`)، يُفتح يدوياً بـ `OTEL_LLM_TRACE_CONTENT=on`.
+- **Promptfoo** بيستخدم `npx promptfoo@latest` بدون top-level dep، عشان CI و developers يقدروا يشغّلوه بدون install. الاختبارات بتدقّ على `localhost:8008/calc` مباشرةً.
+- **KITAB-Bench**: dataset ضخم (CC-BY)، مُستثنى من الـ git في `.gitignore` تحت `data/kitab-bench/`. الـ runner بيرجع exit-code 1 إذا متوسّط CER > 0.20.
+- **Egypt legal corpus**: نفس النمط — `data/egypt-legal/` في .gitignore، الـ script بيستعمل HF `datasets` streaming لتفادي memory blow-up.
+
+### npm scripts الجديدة
+```
+eval:promptfoo    → تشغيل promptfoo على Egypt Calc
+qa:kitab          → تشغيل KITAB-Bench regression
+data:egypt-legal  → سحب الـ legal corpus من Hugging Face
+```
+
+### ملفّات جديدة/معدّلة
+- جديد: `src/lib/observability/openllmetry.ts`، `services/pdf-worker/ocr.py`، `test/eval/promptfoo/{promptfooconfig.yaml,README.md}`، `scripts/data/fetch_egypt_legal_corpus.py`، `scripts/qa/run_kitab_bench.py`.
+- معدّل: `services/embeddings-worker/{main.py,requirements.txt}` (v1.1.0)، `services/pdf-worker/{main.py,requirements.txt}` (v1.1.0)، `instrumentation.ts`، `package.json`، `.gitignore`.
+- بدون كسر: كل التغييرات backwards-compatible — tests + workflows + smoke كلّهم لسه شغّالين (Next.js 200 / Egypt Calc 200 / LLM Judge 200 / Embeddings 200 / PDF Worker 200).
+
+---
+
 ## Session 2026-04-28 — تطبيق ٨ تحسينات (A1-A4 / B5-B6 / C7-C8)
 
 تنفيذ كامل لخطّة الـ ٨ تحسينات على ٣ مراحل، مع إعادة فحص smoke eval بعد كل مرحلة.

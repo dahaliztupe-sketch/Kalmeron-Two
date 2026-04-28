@@ -3,3 +3,14 @@ uvicorn[standard]>=0.27,<1
 pydantic>=2.5,<3
 fastembed>=0.4,<1
 numpy>=1.26,<3
+
+# ── Optional extras ─────────────────────────────────────────────────────
+# Uncomment the relevant block after editing your environment to opt in.
+#
+# Sentence-Transformers backend (Arabic-specialised models such as
+# Omartificial-Intelligence-Space/AraGemma-Embedding-300m). Pulls torch.
+#   sentence-transformers>=3,<6
+#
+# CAMeL Tools dialect-aware preprocessing (EGY-friendly normalisation).
+# Set EMBEDDINGS_PREPROCESS=camel to activate.
+#   camel-tools>=1.5,<2

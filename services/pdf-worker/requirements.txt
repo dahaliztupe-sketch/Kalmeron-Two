@@ -3,3 +3,11 @@ uvicorn[standard]>=0.27,<1
 pypdf>=4.0,<7
 python-multipart>=0.0.9,<1
 regex>=2024.0
+pdf2image>=1.17,<2
+Pillow>=10,<12
+
+# ── Optional extras ─────────────────────────────────────────────────────
+# EasyOCR fallback for scanned (image-based) Arabic PDFs. Pulls torch +
+# torchvision (~700 MB on disk). Activate at runtime with
+# PDF_WORKER_OCR_FALLBACK=easyocr; install on the host first:
+#   easyocr>=1.7,<2

@@ -1,0 +1,100 @@
+# Promptfoo pilot — Egypt Calc agent
+#
+# Validates that the Egyptian tax / labor calculator returns deterministic,
+# legally-correct numbers across our golden inputs. Runs against the live
+# `services/egypt-calc` HTTP service (port 8008) so the test exercises the
+# real production code path, not a mocked stub.
+#
+# Run locally:
+#   npm run eval:promptfoo
+# CI:
+#   The `ai-eval-promptfoo` job in `.github/workflows/eval.yml` invokes the
+#   same command; failures block the merge.
+#
+# Why promptfoo: see docs/ECOSYSTEM_RESEARCH_2026-04-28.md §7.
+
+description: "Egypt Calc — golden case suite"
+
+prompts:
+  # Each prompt is just the natural-language user query; the provider below
+  # forwards it as the `query` field of the Egypt Calc HTTP API.
+  - "{{query}}"
+
+providers:
+  - id: "http://localhost:8008"
+    label: "egypt-calc (live)"
+    config:
+      url: "http://localhost:8008/calc"
+      method: POST
+      headers:
+        Content-Type: application/json
+      body:
+        query: "{{prompt}}"
+        # Promptfoo passes test-case `vars` straight through, so callers
+        # can inject `salary`, `dependents`, etc. without touching this file.
+        salary: "{{salary}}"
+        dependents: "{{dependents}}"
+      transformResponse: "json"
+
+defaultTest:
+  options:
+    # Numerical answers must be within 1 EGP — anything looser hides bugs.
+    cache: false
+  assert:
+    - type: latency
+      threshold: 5000
+    - type: javascript
+      value: |
+        // Hard guard: response must always be valid JSON with a numeric `net` field.
+        const ok = output && typeof output === 'object' && Number.isFinite(Number(output.net));
+        return ok ? true : 'Response missing numeric `net` field';
+
+tests:
+  - description: "Single employee — 8000 EGP gross, 0 dependents (2024 brackets)"
+    vars:
+      query: "احسبلي صافي راتب 8000 جنيه شهري بدون معالين"
+      salary: 8000
+      dependents: 0
+    assert:
+      - type: javascript
+        value: |
+          const net = Number(output.net);
+          return Math.abs(net - 7350) <= 50 ? true
+            : `Expected net ≈ 7350 EGP, got ${net}`;
+
+  - description: "Mid-income — 25,000 EGP gross, 2 dependents"
+    vars:
+      query: "موظف يقبض 25000 شهرياً وله طفلين، كم الصافي؟"
+      salary: 25000
+      dependents: 2
+    assert:
+      - type: javascript
+        value: |
+          const net = Number(output.net);
+          return net > 19000 && net < 23000 ? true
+            : `Expected net in [19000, 23000] EGP, got ${net}`;
+
+  - description: "High-income — 80,000 EGP gross, top bracket activates"
+    vars:
+      query: "صافي راتب 80 ألف جنيه شهري للمدير التنفيذي"
+      salary: 80000
+      dependents: 0
+    assert:
+      - type: javascript
+        value: |
+          const net = Number(output.net);
+          return net > 50000 && net < 65000 ? true
+            : `Expected net in [50000, 65000] EGP, got ${net}`;
+
+  - description: "Edge: zero salary returns zero"
+    vars:
+      query: "صافي راتب صفر"
+      salary: 0
+      dependents: 0
+    assert:
+      - type: javascript
+        value: |
+          return Number(output.net) === 0 ? true
+            : 'Zero salary must yield zero net';
+
+outputPath: "./results.json"

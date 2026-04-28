@@ -61,3 +61,11 @@ diagnostics/history/
 qa/reports/*
 !qa/reports/.gitkeep
 
+# Promptfoo eval outputs (regenerated each run)
+test/eval/promptfoo/results.json
+test/eval/promptfoo/.cache/
+
+# Bulk research data — pulled on demand by scripts/data/, never committed
+data/egypt-legal/
+data/kitab-bench/
+
