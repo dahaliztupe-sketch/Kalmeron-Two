@@ -41,7 +41,12 @@ export default function DecisionJournalPage() {
   const [showForm, setShowForm] = useState(false);
   const [reviewing, setReviewing] = useState<string | null>(null);
 
-  useEffect(() => { setDecisions(loadDecisions()); }, []);
+  useEffect(() => {
+    // Defer setState off the effect body to satisfy
+    // react-hooks/set-state-in-effect; localStorage requires the client.
+    const id = setTimeout(() => setDecisions(loadDecisions()), 0);
+    return () => clearTimeout(id);
+  }, []);
 
   const persist = (d: Decision[]) => { setDecisions(d); saveDecisions(d); };
 

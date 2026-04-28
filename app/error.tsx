@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
+import Link from 'next/link';
 import * as Sentry from '@sentry/nextjs';
 
 export default function GlobalRouteError({
@@ -33,12 +34,12 @@ export default function GlobalRouteError({
           >
             حاول مرّة أخرى
           </button>
-          <a
+          <Link
             href="/"
             className="px-4 py-2 rounded-lg border border-white/10 hover:bg-white/5 text-white text-sm font-medium transition"
           >
             العودة للرئيسيّة
-          </a>
+          </Link>
         </div>
       </div>
     </div>

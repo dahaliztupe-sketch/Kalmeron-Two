@@ -124,7 +124,17 @@ export default function SetupEgyptPage() {
   const [done, setDone] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
-    try { setDone(JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}")); } catch {}
+    // Defer setState off the effect body to satisfy
+    // react-hooks/set-state-in-effect; localStorage is only available
+    // client-side so we cannot use a lazy initializer in useState.
+    const id = setTimeout(() => {
+      try {
+        setDone(JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}"));
+      } catch {
+        /* ignore malformed storage payload */
+      }
+    }, 0);
+    return () => clearTimeout(id);
   }, []);
 
   const toggle = (id: string) => {

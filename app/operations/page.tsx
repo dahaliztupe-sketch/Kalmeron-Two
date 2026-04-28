@@ -126,9 +126,21 @@ export default function OperationsRoomPage() {
   };
 
   useEffect(() => {
-    refresh();
-    const t = setInterval(refresh, 15000);
-    return () => clearInterval(t);
+    if (!user) return;
+    let cancelled = false;
+    const tick = () => {
+      if (cancelled) return;
+      void refresh();
+    };
+    // Defer the initial call so setState is not invoked synchronously
+    // inside the effect body (react-hooks/set-state-in-effect).
+    const initial = setTimeout(tick, 0);
+    const interval = setInterval(tick, 15000);
+    return () => {
+      cancelled = true;
+      clearTimeout(initial);
+      clearInterval(interval);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
