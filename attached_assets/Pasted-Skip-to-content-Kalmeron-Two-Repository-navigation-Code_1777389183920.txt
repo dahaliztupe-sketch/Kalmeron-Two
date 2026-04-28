@@ -1,0 +1,140 @@
+Skip to content
+Kalmeron-Two
+Repository navigation
+Code
+Issues
+Pull requests
+Agents
+Actions
+Projects
+Wiki
+Security and quality
+91
+ (91)
+Insights
+Settings
+Release Please
+Add security validations and fix TypeScript errors #4
+All jobs
+Run details
+Annotations
+1 error and 1 warning
+release-please
+failed 7 minutes ago in 1m 49s
+Search logs
+1s
+1m 45s
+❯ error message: Error: unexpected token ' ' at 1:7, valid tokens [(, !, :]
+❯ commit could not be parsed: 8a8b65bced547929bafc1ecf0c9c3d940daafbd3 Add advanced OCR, LLM tracing, and evaluation tools to the platform
+❯ error message: Error: unexpected token ' ' at 1:4, valid tokens [(, !, :]
+❯ commit could not be parsed: dbf716ee70e318d3c401f1efc483539159c628d2 Add detailed research on open-source AI projects for Arabic language
+❯ error message: Error: unexpected token ' ' at 1:4, valid tokens [(, !, :]
+❯ commit could not be parsed: b779d86182b4343ccd43fcf8ee8c68d93e9984cf Add new automated workflows for code quality and security scanning
+❯ error message: Error: unexpected token ' ' at 1:4, valid tokens [(, !, :]
+❯ commit could not be parsed: 484c608df3a2d75a8137b12925e1a55cd8c48ffe Add a screenshot of the running application
+❯ error message: Error: unexpected token ' ' at 1:4, valid tokens [(, !, :]
+❯ commit could not be parsed: 93926592846adb55fa5612b9e9b5879b524b22b6 Improve security by fixing vulnerabilities and refining code scanning
+❯ error message: Error: unexpected token ' ' at 1:8, valid tokens [(, !, :]
+❯ commit could not be parsed: f1908e3226b47b564d7974a62015f3eb761b3626 Update terminology and fix internal property name for lexicon compliance
+❯ error message: Error: unexpected token ' ' at 1:7, valid tokens [(, !, :]
+❯ commit could not be parsed: 264e62e643027b005560fe4db831b9ae9eeb9fb7 Saved your changes before starting work
+❯ error message: Error: unexpected token ' ' at 1:6, valid tokens [(, !, :]
+❯ commit could not be parsed: 3e667bb3dac874315489f3b14de1d2c2ae71dbc8 Integrate real market data into opportunity suggestions
+❯ error message: Error: unexpected token ' ' at 1:10, valid tokens [(, !, :]
+❯ commit could not be parsed: f2a415d8d5f0edf73962985484a0df355781f85b Improve financial and personal data handling and enhance agent reasoning capabilities
+❯ error message: Error: unexpected token ' ' at 1:8, valid tokens [(, !, :]
+❯ commit could not be parsed: 925a5ee79915979fe4ca35af5bfae8b53e70e997 Update testing scripts to evaluate safety and PII redaction accuracy
+❯ error message: Error: unexpected token ' ' at 1:7, valid tokens [(, !, :]
+❯ commit could not be parsed: 168f39196161700470ed8f2327b3d051843ef02c Improve prompt injection detection and validate panel options accurately
+❯ error message: Error: unexpected token ' ' at 1:8, valid tokens [(, !, :]
+❯ commit could not be parsed: 3866f9b407f9fc1fd85abbd0a27cb91a4b0db0c7 Saved progress at the end of the loop
+❯ error message: Error: unexpected token ' ' at 1:6, valid tokens [(, !, :]
+❯ commit could not be parsed: 6f0d60a38440ef255116076bb7f6e2a7622ecd93 Set default retry attempts for LLM calls to one
+❯ error message: Error: unexpected token ' ' at 1:4, valid tokens [(, !, :]
+❯ commit could not be parsed: 9d096ad83b27ad8b63903bae65aa306d7c48dd86 Improve error handling and prompt security for better user experience
+❯ error message: Error: unexpected token ' ' at 1:8, valid tokens [(, !, :]
+❯ commit could not be parsed: 59a4f9ee064720e5328c655f15aff16b1e11de1c Adjust agent testing to allow for sequential execution with delays
+❯ error message: Error: unexpected token ' ' at 1:7, valid tokens [(, !, :]
+❯ commit could not be parsed: d922255aa68548527000a81ffba3df4e5c040c67 Add script to test all agents with Arabic prompts
+❯ error message: Error: unexpected token ' ' at 1:4, valid tokens [(, !, :]
+❯ commit could not be parsed: 6b012d5d7f4210c8db0a5069523a302a99c110dc Saved progress at the end of the loop
+❯ error message: Error: unexpected token ' ' at 1:6, valid tokens [(, !, :]
+❯ commit could not be parsed: 6be32da59754e9c28a62d1eefb73fd781daee84e Remove defunct affiliate pages and improve AI agent error handling
+❯ error message: Error: unexpected token ' ' at 1:7, valid tokens [(, !, :]
+❯ commit could not be parsed: 22ff62886e53b8016459f06f5d373a9d34b40151 Add new pages for investors, about, and affiliate programs
+❯ error message: Error: unexpected token ' ' at 1:4, valid tokens [(, !, :]
+❯ commit could not be parsed: 80c81282111a5e5afb765565abc1b2b6ed0ddbfe Saved your changes before starting work
+❯ error message: Error: unexpected token ' ' at 1:6, valid tokens [(, !, :]
+❯ commit could not be parsed: 0375e3ffe7b4dd711c9c2acc118e76d48e42f357 Saved progress at the end of the loop
+❯ error message: Error: unexpected token ' ' at 1:6, valid tokens [(, !, :]
+❯ commit could not be parsed: 8fb9790267039ec2812602a89e725f2a682931e9 Saved your changes before starting work
+❯ error message: Error: unexpected token ' ' at 1:6, valid tokens [(, !, :]
+❯ commit could not be parsed: 2236fb923523b5c0c5d7ddab6487b8f22e3184b2 Add comprehensive project documentation for external AI analysis
+❯ error message: Error: unexpected token ' ' at 1:4, valid tokens [(, !, :]
+❯ commit could not be parsed: 34d62c8f87d99a6d4b66ab99788c62f1584be868 Merge pull request #11 from dahaliztupe-sketch/dependabot/npm_and_yarn/production-minor-and-patch-00d7a9b797
+❯ error message: Error: unexpected token ' ' at 1:6, valid tokens [(, !, :]
+❯ commit could not be parsed: 08af3fcf7283e3393932c69145cc81bff03d7a64 Merge pull request #12 from dahaliztupe-sketch/dependabot/npm_and_yarn/development-minor-and-patch-2809fc5bb6
+❯ error message: Error: unexpected token ' ' at 1:6, valid tokens [(, !, :]
+❯ commit could not be parsed: 51f28122f1e0d6c5d2053abcbe8f7628799bbe41 Merge pull request #13 from dahaliztupe-sketch/dependabot/npm_and_yarn/types/node-25.6.0
+❯ error message: Error: unexpected token ' ' at 1:6, valid tokens [(, !, :]
+❯ commit could not be parsed: beb0ec2cc548c2c3541c19faa9e8ffe110604bfe Remove affiliate program functionality and improve quality assurance checks
+❯ error message: Error: unexpected token ' ' at 1:7, valid tokens [(, !, :]
+❯ commit could not be parsed: 2ccebb604c01ede81f416087789e11f5c5652877 Bump @types/node from 22.19.17 to 25.6.0
+❯ error message: Error: unexpected token ' ' at 1:5, valid tokens [(, !, :]
+❯ commit could not be parsed: a2c162926f28c3bdc4ae0605974f654bc994537f Bump typescript in the development-minor-and-patch group
+❯ error message: Error: unexpected token ' ' at 1:5, valid tokens [(, !, :]
+❯ commit could not be parsed: f59c075266a557f104e050ce1711597e428284cd Bump the production-minor-and-patch group with 5 updates
+❯ error message: Error: unexpected token ' ' at 1:5, valid tokens [(, !, :]
+❯ commit could not be parsed: 6d55d91f0f647ef14e885169c435249e53c8a47b Secure application access and improve page rendering
+❯ error message: Error: unexpected token ' ' at 1:7, valid tokens [(, !, :]
+❯ commit could not be parsed: 21510c3aa4fb629ce09a32256a11305e241020ff Saved progress at the end of the loop
+❯ error message: Error: unexpected token ' ' at 1:6, valid tokens [(, !, :]
+❯ commit could not be parsed: 3dbca68cdae991f3a5f4351d62ef9053ed61617f إضافة تقرير ضمان الجودة النهائي
+❯ error message: Error: unexpected token ' ' at 1:6, valid tokens [(, !, :]
+❯ commit could not be parsed: 9e9e46b5bbb42a8e98e03f9888fec7ef889488b7 Update
+❯ error message: Error: unexpected token EOF at 1:7, valid tokens [(, !, :]
+❯ commit could not be parsed: fff395daf290064754ad3993a63a0dfaeb30b88b Improve QA test logging and stability by flushing output and adjusting timeouts
+❯ error message: Error: unexpected token ' ' at 1:8, valid tokens [(, !, :]
+❯ commit could not be parsed: d10a74f42ebc5c7f4ce17db7845928ddd92cdfea Implement comprehensive website quality assurance system
+❯ error message: Error: unexpected token ' ' at 1:10, valid tokens [(, !, :]
+❯ commit could not be parsed: a37135024dce4098cdcefa19a8954d699de1ee75 Add comprehensive automated quality assurance system to the project
+❯ error message: Error: unexpected token ' ' at 1:4, valid tokens [(, !, :]
+❯ commit could not be parsed: 5fa55c59a91a8b32f04b1d8c30eb17b22b27183b Saved your changes before starting work
+❯ error message: Error: unexpected token ' ' at 1:6, valid tokens [(, !, :]
+❯ commit could not be parsed: 18fd9a4d400c7568d7379ddcd7f5558476763632 Improve application health score and fix various issues
+❯ error message: Error: unexpected token ' ' at 1:8, valid tokens [(, !, :]
+❯ commit could not be parsed: dc23a1de4831b7f21544e68bee006a059b3955e4 Add automated system to detect and report project errors and gaps
+❯ error message: Error: unexpected token ' ' at 1:4, valid tokens [(, !, :]
+❯ commit could not be parsed: b2efef1d7a9cc9e1c8e980b90a052807a35a57f2 Add daily briefing delivery and a unified smart hub dashboard
+❯ error message: Error: unexpected token ' ' at 1:4, valid tokens [(, !, :]
+❯ commit could not be parsed: 7222bedd0ebe8aed2bdc3afb2f6753d5a2581c69 Add smart tools and business recipes to enhance agent capabilities
+❯ error message: Error: unexpected token ' ' at 1:4, valid tokens [(, !, :]
+❯ commit could not be parsed: bcc86c00dcbfbb0ee9969b57188aaf4e225d3d72 Enable all departments to execute tasks with new integrated tools
+❯ error message: Error: unexpected token ' ' at 1:7, valid tokens [(, !, :]
+❯ commit could not be parsed: e4477662dd877f1360080c3f8d0489d8ac82fc26 Add Meta marketing actions and operations room for real-world task execution
+❯ error message: Error: unexpected token ' ' at 1:4, valid tokens [(, !, :]
+❯ commit could not be parsed: 9cf779bb0c60c747088e94968ace5738bc3c6e95 Add six new founder tools to improve business operations and wellbeing
+❯ error message: Error: unexpected token ' ' at 1:4, valid tokens [(, !, :]
+❯ commit could not be parsed: 8feef447b005858ef6990439c62a3e0ccc6e0fa5 Add comprehensive gap analysis for entrepreneurial challenges
+❯ error message: Error: unexpected token ' ' at 1:4, valid tokens [(, !, :]
+❯ commit could not be parsed: 1a1256e6b1fdf3f225ab1a4b3509a19cb755fd42 Add a comprehensive Arabic investor briefing document to the platform
+❯ error message: Error: unexpected token ' ' at 1:4, valid tokens [(, !, :]
+❯ commit could not be parsed: dcdf6c26d48389456395ed5704149dee01fb49f4 Update type references for application routing
+❯ error message: Error: unexpected token ' ' at 1:7, valid tokens [(, !, :]
+❯ commit could not be parsed: 4f81b2b5d855a3ec048eac7101aae35043ddd8b0 Add a contact page and update site policies for external services
+❯ error message: Error: unexpected token ' ' at 1:4, valid tokens [(, !, :]
+❯ commit could not be parsed: 59773006b6b915cdf07534a3e841b55442012492 Add instructions for performing a UX audit and creating a bug report
+0s
+Footer
+© 2026 GitHub, Inc.
+Footer navigation
+Terms
+Privacy
+Security
+Status
+Community
+Docs
+Contact
+Manage cookies
+Do not share my personal information
+dahaliztupe-sketch/Kalmeron-Two: .
