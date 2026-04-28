@@ -5,6 +5,11 @@
 # `services/egypt-calc` HTTP service (port 8008) so the test exercises the
 # real production code path, not a mocked stub.
 #
+# Three providers, one per public endpoint:
+#   * egypt-calc-income-tax       → POST /income-tax       {annual_gross}
+#   * egypt-calc-social-insurance → POST /social-insurance {monthly_wage}
+#   * egypt-calc-total-cost       → POST /total-cost       {monthly_gross, months}
+#
 # Run locally:
 #   npm run eval:promptfoo
 # CI:
@@ -16,85 +21,171 @@
 description: "Egypt Calc — golden case suite"
 
 prompts:
-  # Each prompt is just the natural-language user query; the provider below
-  # forwards it as the `query` field of the Egypt Calc HTTP API.
-  - "{{query}}"
+  # The HTTP body templates below use `{{prompt}}` only as a passthrough so
+  # we can keep promptfoo's prompt/test machinery wired even though our real
+  # inputs are structured (numbers, not text).
+  - "{{prompt}}"
 
 providers:
-  - id: "http://localhost:8008"
-    label: "egypt-calc (live)"
+  - id: egypt-calc-income-tax
+    label: "income-tax (live)"
     config:
-      url: "http://localhost:8008/calc"
+      url: "http://localhost:8008/income-tax"
       method: POST
       headers:
         Content-Type: application/json
       body:
-        query: "{{prompt}}"
-        # Promptfoo passes test-case `vars` straight through, so callers
-        # can inject `salary`, `dependents`, etc. without touching this file.
-        salary: "{{salary}}"
-        dependents: "{{dependents}}"
+        annual_gross: "{{annual_gross}}"
+      transformResponse: "json"
+
+  - id: egypt-calc-social-insurance
+    label: "social-insurance (live)"
+    config:
+      url: "http://localhost:8008/social-insurance"
+      method: POST
+      headers:
+        Content-Type: application/json
+      body:
+        monthly_wage: "{{monthly_wage}}"
+      transformResponse: "json"
+
+  - id: egypt-calc-total-cost
+    label: "total-cost (live)"
+    config:
+      url: "http://localhost:8008/total-cost"
+      method: POST
+      headers:
+        Content-Type: application/json
+      body:
+        monthly_gross: "{{monthly_gross}}"
+        months: "{{months}}"
       transformResponse: "json"
 
 defaultTest:
   options:
-    # Numerical answers must be within 1 EGP — anything looser hides bugs.
     cache: false
   assert:
     - type: latency
       threshold: 5000
-    - type: javascript
-      value: |
-        // Hard guard: response must always be valid JSON with a numeric `net` field.
-        const ok = output && typeof output === 'object' && Number.isFinite(Number(output.net));
-        return ok ? true : 'Response missing numeric `net` field';
 
 tests:
-  - description: "Single employee — 8000 EGP gross, 0 dependents (2024 brackets)"
+  # ── /income-tax ──────────────────────────────────────────────────────
+  - description: "Income tax — 96k annual (8k×12) → 4,950 EGP tax / year"
+    provider: egypt-calc-income-tax
     vars:
-      query: "احسبلي صافي راتب 8000 جنيه شهري بدون معالين"
-      salary: 8000
-      dependents: 0
+      prompt: "annual_gross=96000"
+      annual_gross: 96000
     assert:
       - type: javascript
         value: |
-          const net = Number(output.net);
-          return Math.abs(net - 7350) <= 50 ? true
-            : `Expected net ≈ 7350 EGP, got ${net}`;
+          const tax = Number(output.annual_tax);
+          return Math.abs(tax - 4950) <= 5
+            ? true
+            : `Expected annual_tax ≈ 4950, got ${tax}`;
+      - type: javascript
+        value: |
+          const er = Number(output.effective_rate);
+          return er > 0.04 && er < 0.07
+            ? true
+            : `Effective rate out of range: ${er}`;
 
-  - description: "Mid-income — 25,000 EGP gross, 2 dependents"
+  - description: "Income tax — 300k annual (25k×12) → 47,750 EGP / year"
+    provider: egypt-calc-income-tax
     vars:
-      query: "موظف يقبض 25000 شهرياً وله طفلين، كم الصافي؟"
-      salary: 25000
-      dependents: 2
+      prompt: "annual_gross=300000"
+      annual_gross: 300000
     assert:
       - type: javascript
         value: |
-          const net = Number(output.net);
-          return net > 19000 && net < 23000 ? true
-            : `Expected net in [19000, 23000] EGP, got ${net}`;
+          const tax = Number(output.annual_tax);
+          return Math.abs(tax - 47750) <= 10
+            ? true
+            : `Expected annual_tax ≈ 47750, got ${tax}`;
+      - type: javascript
+        value: |
+          return Number(output.marginal_rate) === 0.225
+            ? true
+            : `Expected marginal_rate=0.225, got ${output.marginal_rate}`;
 
-  - description: "High-income — 80,000 EGP gross, top bracket activates"
+  - description: "Income tax — 960k annual (80k×12) hits top bracket"
+    provider: egypt-calc-income-tax
     vars:
-      query: "صافي راتب 80 ألف جنيه شهري للمدير التنفيذي"
-      salary: 80000
-      dependents: 0
+      prompt: "annual_gross=960000"
+      annual_gross: 960000
     assert:
       - type: javascript
         value: |
-          const net = Number(output.net);
-          return net > 50000 && net < 65000 ? true
-            : `Expected net in [50000, 65000] EGP, got ${net}`;
+          const tax = Number(output.annual_tax);
+          return Math.abs(tax - 209750) <= 50
+            ? true
+            : `Expected annual_tax ≈ 209750, got ${tax}`;
+      - type: javascript
+        value: |
+          return Number(output.marginal_rate) >= 0.25
+            ? true
+            : `Expected top marginal ≥ 0.25, got ${output.marginal_rate}`;
 
-  - description: "Edge: zero salary returns zero"
+  - description: "Income tax — zero salary returns zero everywhere"
+    provider: egypt-calc-income-tax
     vars:
-      query: "صافي راتب صفر"
-      salary: 0
-      dependents: 0
+      prompt: "annual_gross=0"
+      annual_gross: 0
     assert:
       - type: javascript
         value: |
-          return Number(output.net) === 0 ? true
-            : 'Zero salary must yield zero net';
+          return Number(output.annual_tax) === 0 && Number(output.effective_rate) === 0
+            ? true
+            : `Zero salary must yield zero tax, got ${JSON.stringify(output)}`;
+
+  # ── /social-insurance ────────────────────────────────────────────────
+  - description: "SI — 8k monthly under cap → employee=880 / employer=1500"
+    provider: egypt-calc-social-insurance
+    vars:
+      prompt: "monthly_wage=8000"
+      monthly_wage: 8000
+    assert:
+      - type: javascript
+        value: |
+          return Math.abs(Number(output.employee_contribution) - 880) <= 1
+            ? true
+            : `Expected employee_contribution=880, got ${output.employee_contribution}`;
+      - type: javascript
+        value: |
+          return Number(output.insurable_wage) === 8000
+            ? true
+            : `Insurable wage should equal monthly wage when under cap, got ${output.insurable_wage}`;
+
+  - description: "SI — 25k monthly above cap → insurable_wage capped at 14,500"
+    provider: egypt-calc-social-insurance
+    vars:
+      prompt: "monthly_wage=25000"
+      monthly_wage: 25000
+    assert:
+      - type: javascript
+        value: |
+          return Number(output.insurable_wage) === 14500
+            ? true
+            : `Insurable wage must cap at 14500 EGP, got ${output.insurable_wage}`;
+
+  # ── /total-cost ──────────────────────────────────────────────────────
+  - description: "Total cost — 25k×12 → ~19,426 EGP net / month"
+    provider: egypt-calc-total-cost
+    vars:
+      prompt: "monthly_gross=25000, months=12"
+      monthly_gross: 25000
+      months: 12
+    assert:
+      - type: javascript
+        value: |
+          const net = Number(output.monthly_net);
+          return Math.abs(net - 19425.83) <= 2
+            ? true
+            : `Expected monthly_net ≈ 19425.83, got ${net}`;
+      - type: javascript
+        value: |
+          const employer = Number(output.total_employer_annual);
+          return Math.abs(employer - 332625) <= 50
+            ? true
+            : `Expected total_employer_annual ≈ 332625, got ${employer}`;
 
 outputPath: "./results.json"
