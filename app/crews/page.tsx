@@ -6,7 +6,7 @@ import { PublicShell } from "@/components/layout/PublicShell";
 export const metadata: Metadata = {
   title: "الفِرق الذكية (Crews) — كلميرون",
   description:
-    "فِرق متخصصة من وكلاء كلميرون الأذكياء، جاهزة للعمل كقسم كامل في شركتك مقابل اشتراك شهري واحد.",
+    "فِرق متخصصة من مساعدي كلميرون الأذكياء، جاهزة للعمل كقسم كامل في شركتك مقابل اشتراك شهري واحد.",
   alternates: { canonical: "/crews" },
 };
 
@@ -17,7 +17,7 @@ const CREWS = [
     titleAr: "الفريق المالي",
     price: "499$ / شهرياً",
     blurb:
-      "خمسة وكلاء ماليين متخصصين (CFO، FP&A، ضرائب، Cap Table، حزمة المستثمر) يعملون كفريقك المالي الافتراضي.",
+      "خمسة مساعدين ماليين متخصصين (CFO، FP&A، ضرائب، Cap Table، حزمة المستثمر) يعملون كفريقك المالي الافتراضي.",
     available: true,
     icons: [Briefcase, Calculator, PieChart, FileText, TrendingUp],
   },
@@ -62,7 +62,7 @@ export default function CrewsIndexPage() {
             استأجر <span className="text-emerald-400">قسماً كاملاً</span> بدلاً من موظّف واحد
           </h1>
           <p className="text-lg text-neutral-400 max-w-2xl mx-auto leading-relaxed">
-            كلّ فريق يحتوي على عدّة وكلاء متخصّصين يتعاونون كفريق حقيقي — أرخص من راتب موظّف واحد، وأسرع من توظيف بشري.
+            كلّ فريق يحتوي على عدّة مساعدين متخصّصين يتعاونون كفريق حقيقي — أرخص من راتب موظّف واحد، وأسرع من توظيف بشري.
           </p>
         </header>
 

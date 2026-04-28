@@ -30,7 +30,7 @@ export default function WellbeingPage() {
         <div>
           <div className="flex items-center gap-2 mb-2">
             <Heart className="w-4 h-4 text-rose-400" />
-            <span className="text-xs text-rose-400 font-medium uppercase tracking-wide">Founder Wellbeing Coach · الوكيل ١٧</span>
+            <span className="text-xs text-rose-400 font-medium uppercase tracking-wide">مدرّب الصحّة النفسيّة للمؤسّس · المساعد ١٧</span>
           </div>
           <h1 className="font-display text-3xl md:text-4xl font-extrabold text-white mb-2">مدرّب الصحّة النفسيّة لرائد الأعمال</h1>
           <p className="text-text-secondary max-w-2xl">
@@ -102,7 +102,7 @@ export default function WellbeingPage() {
                   <div className="text-sm text-neutral-400 mt-2">المؤشّر العامّ: {result.pct.toFixed(0)}٪</div>
                 </div>
                 <div className="md:col-span-2 space-y-2">
-                  {result.insights.map((ins, i) => (
+                  {result.notes.map((ins, i) => (
                     <div key={i} className="text-sm text-neutral-200 leading-relaxed bg-black/20 rounded-lg p-3 border border-white/5">{ins}</div>
                   ))}
                 </div>

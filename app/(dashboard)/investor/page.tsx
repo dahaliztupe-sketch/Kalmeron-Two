@@ -130,9 +130,9 @@ export default function InvestorMetricsPage() {
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
               <StatCard
                 icon={Cpu}
-                label="وكلاء جاهزون للعرض"
+                label="مساعدون أذكياء جاهزون للعرض"
                 value={data.platform.demoReadyAgents}
-                sub={`من إجمالي ${data.platform.totalAgentsRegistered} وكيل`}
+                sub={`من إجمالي ${data.platform.totalAgentsRegistered} مساعد ذكي`}
                 accent="from-cyan-500 to-indigo-500"
               />
               <StatCard

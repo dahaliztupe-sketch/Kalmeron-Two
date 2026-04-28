@@ -19,7 +19,7 @@ export type WellbeingScore = {
   level: "burnout" | "stressed" | "okay" | "thriving";
   label: string;
   color: string;
-  insights: string[];
+  notes: string[];
   exercises: { title: string; body: string }[];
 };
 
@@ -48,7 +48,7 @@ export function scoreWellbeing(answers: Record<string, WellbeingAnswer>): Wellbe
     level,
     label,
     color,
-    insights: insightsFor(level, answers),
+    notes: insightsFor(level, answers),
     exercises: exercisesFor(level),
   };
 }

@@ -79,7 +79,7 @@ export default function FounderAgreementWizard() {
         <div>
           <div className="flex items-center gap-2 mb-2">
             <Scale className="w-4 h-4 text-violet-400" />
-            <span className="text-xs text-violet-400 font-medium uppercase tracking-wide">Founder Agreement Wizard</span>
+            <span className="text-xs text-violet-400 font-medium uppercase tracking-wide">معالج اتّفاقيّة المؤسّسين</span>
           </div>
           <h1 className="font-display text-3xl md:text-4xl font-extrabold text-white mb-2">معالج اتّفاقيّة المؤسّسين</h1>
           <p className="text-text-secondary max-w-2xl">

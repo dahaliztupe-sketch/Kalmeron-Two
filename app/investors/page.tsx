@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "كلميرون AI للمستثمرين",
     description:
-      "سوق +15 مليار دولار، 16 وكيل AI، تقنية متقدمة، متوافق قانونياً.",
+      "سوق +15 مليار دولار، 16 مساعد ذكي، تقنية متقدمة، متوافق قانونياً.",
     siteName: "كلميرون AI",
     locale: "ar_EG",
     type: "website",
@@ -43,7 +43,7 @@ const techHighlights = [
 ];
 
 const roadmap = [
-  { quarter: "Q2 2026", title: "إطلاق MVP", body: "16 وكيل + Stripe + Fawry" },
+  { quarter: "Q2 2026", title: "إطلاق MVP", body: "16 مساعد ذكي + Stripe + Fawry" },
   { quarter: "Q3 2026", title: "تطبيق موبايل + WhatsApp", body: "iOS, Android, واتساب أعمال" },
   { quarter: "Q4 2026", title: "Teams & Workspaces", body: "تعاون داخل الشركة + RBAC" },
   { quarter: "Q1 2027", title: "API للمطورين", body: "Webhooks + Marketplace" },
@@ -202,7 +202,7 @@ export default function InvestorsPage() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <Stat value="107" label="صفحة" />
             <Stat value="92" label="API route" />
-            <Stat value="16" label="وكيل AI" />
+            <Stat value="16" label="مساعد ذكي" />
             <Stat value="4" label="خدمة Python مستقلة" />
           </div>
         </div>

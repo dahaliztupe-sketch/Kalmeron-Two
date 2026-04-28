@@ -42,7 +42,7 @@ export default function CashRunwayPage() {
         <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
           <div className="flex items-center gap-2 mb-2">
             <ShieldCheck className="w-4 h-4 text-amber-400" />
-            <span className="text-xs text-amber-400 font-medium uppercase tracking-wide">Cash Runway Alarm</span>
+            <span className="text-xs text-amber-400 font-medium uppercase tracking-wide">تنبيه مدّة سيولتك</span>
           </div>
           <h1 className="font-display text-3xl md:text-4xl font-extrabold text-white mb-2">
             تنبيه نزيف النقد

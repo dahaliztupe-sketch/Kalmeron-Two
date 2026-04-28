@@ -32,7 +32,7 @@ const SECTIONS: Section[] = [
       <ul className="space-y-2 text-white/85">
         <li>• 60 مليون رائد أعمال محتمل في المنطقة العربية، 90% منهم لا يجدون مستشارًا يفهم لهجتهم وقوانين بلدهم.</li>
         <li>• الحلول الأمريكية (a16z, Y Combinator) لا تعرف ضرائب مصر، فوري، أو سيكولوجية المستهلك المحلّي.</li>
-        <li>• نموذج LLM واحد لا يكفي — نحتاج وكلاء متخصّصين مع حسابات حتمية ومراجع قانونية محلّية.</li>
+        <li>• نموذج LLM واحد لا يكفي — نحتاج مساعدين أذكياء متخصّصين مع حسابات حتمية ومراجع قانونية محلّية.</li>
       </ul>
     ),
   },
@@ -62,7 +62,7 @@ const SECTIONS: Section[] = [
     body: (
       <ul className="space-y-2 text-white/85">
         <li>• PII Redactor قبل أيّ استدعاء LLM.</li>
-        <li>• Audit Log لكل قرار وكيل (يمكن مراجعته ومساءلته).</li>
+        <li>• Audit Log لكل قرار مساعد ذكي (يمكن مراجعته ومساءلته).</li>
         <li>• Rate-limiting + Bearer auth على كل المسارات الحسّاسة.</li>
         <li>• مهلات تلقائية على استدعاءات LLM (60 ثانية افتراضي) لمنع Denial of Wallet.</li>
         <li>• Sentry + Langfuse + OpenMeter لمراقبة كاملة.</li>
@@ -153,11 +153,11 @@ export default function InvestorGuidePage() {
           <div className="text-sm text-amber-100/90">
             <p className="font-semibold mb-1">قاعدة ذهبية للعرض</p>
             <p>
-              لا تشرح كل الـ 16 وكيلًا — اعرض المسار الموصى به (6 وكلاء) من{" "}
+              لا تشرح كل الـ 16 مساعدًا — اعرض المسار الموصى به (6 مساعدين) من{" "}
               <Link href="/investor" className="underline hover:text-white">
                 نبضة المنصّة
               </Link>
-              {" "}بترتيبه. كلّ وكيل إضافي تشرحه يقلّل من تركيز المستثمر، لا يزيده.
+              {" "}بترتيبه. كلّ مساعد ذكي إضافي تشرحه يقلّل من تركيز المستثمر، لا يزيده.
             </p>
           </div>
         </div>

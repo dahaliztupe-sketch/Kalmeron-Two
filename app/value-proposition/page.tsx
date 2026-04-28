@@ -135,7 +135,7 @@ export default function ValuePropositionPage() {
               hint="كيف يحلّ منتجك الآلام التي ذكرتها؟ (لكل ألم، حلّ)"
               items={painRelievers}
               setItems={setPainRelievers}
-              placeholder="مثال: ١٦ وكيل AI يقوم بمهمّات الفريق بـ ١٠٪ من التكلفة"
+              placeholder="مثال: ١٦ مساعد ذكي يقوم بمهمّات الفريق بـ ١٠٪ من التكلفة"
               accent="amber"
             />
             <Section

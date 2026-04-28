@@ -95,11 +95,11 @@ function agentNameOf(actionId: string, requestedBy?: string): string {
   if (actionId.startsWith("legal_")) return "القانوني";
   if (actionId.startsWith("support_")) return "خدمة العملاء";
   if (actionId.startsWith("investor_")) return "علاقات المستثمرين";
-  if (actionId === "send_email") return "وكيل المراسلات · إيميل";
-  if (actionId === "send_whatsapp") return "وكيل المراسلات · واتساب";
+  if (actionId === "send_email") return "مساعد المراسلات · إيميل";
+  if (actionId === "send_whatsapp") return "مساعد المراسلات · واتساب";
   if (actionId === "create_invoice_draft") return "العمليات · فواتير";
   if (actionId === "schedule_meeting") return "العمليات · اجتماعات";
-  return requestedBy || "وكيل";
+  return requestedBy || "مساعد ذكي";
 }
 
 export default function OperationsRoomPage() {
