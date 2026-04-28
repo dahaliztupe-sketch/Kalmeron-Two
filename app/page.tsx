@@ -7,11 +7,10 @@ import { useTranslations } from "next-intl";
 import { motion, useScroll, useTransform, AnimatePresence, useReducedMotion } from "motion/react";
 import {
   ArrowLeft, Sparkles, LogIn, Menu, X,
-  ChevronDown, Play, ShieldCheck, Globe2, TrendingUp, Zap, Rocket,
+  ChevronDown, Search, ShieldCheck, Globe2, TrendingUp, Zap, Rocket,
 } from "lucide-react";
 import Link from "next/link";
 import { BrandLogo } from "@/components/brand/BrandLogo";
-import { AnimatedBrandMark } from "@/components/brand/AnimatedBrandMark";
 import { useAuth } from "@/contexts/AuthContext";
 
 const HomeBelowFold = dynamic(() => import("@/components/landing/HomeBelowFold"), {
@@ -195,12 +194,6 @@ function Hero() {
   const reduce = useReducedMotion();
   const { scrollY } = useScroll();
   const heroOpacity = useTransform(scrollY, [0, 500], reduce ? [1, 1] : [1, 0.4]);
-  const [suggestionIdx, setSuggestionIdx] = useState(0);
-
-  useEffect(() => {
-    const id = setInterval(() => setSuggestionIdx((i) => (i + 1) % SUGGESTION_KEYS.length), 4000);
-    return () => clearInterval(id);
-  }, []);
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -208,88 +201,79 @@ function Hero() {
   };
 
   return (
-    <motion.section style={{ opacity: heroOpacity }} className="relative min-h-screen flex flex-col justify-center pt-16">
+    <motion.section
+      style={{ opacity: heroOpacity }}
+      className="relative min-h-screen flex flex-col pt-16"
+      aria-label={t("eyebrow")}
+    >
+      {/* Background — luminous, restrained */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <ParticleField />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_-10%,rgba(79,70,229,0.22),transparent)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_40%_at_80%_60%,rgba(56,189,248,0.10),transparent)]" />
+        <div className="absolute top-[-10%] left-1/2 -translate-x-1/2 w-[800px] h-[800px] rounded-full bg-gradient-to-b from-indigo-500/20 via-fuchsia-500/10 to-transparent blur-[120px] opacity-70 mix-blend-screen" />
+        <div className="absolute top-[10%] left-1/2 -translate-x-1/2 w-[460px] h-[460px] rounded-full bg-gradient-to-b from-cyan-400/20 to-transparent blur-[80px] opacity-60 mix-blend-screen" />
       </div>
 
-      <div className="relative max-w-6xl mx-auto px-4 sm:px-6 pt-8 sm:pt-12 pb-16 sm:pb-20 text-center">
-        <motion.div initial={{ opacity: 0, scale: 0.85 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.7, ease: "circOut" }}
-          className="relative w-20 h-20 sm:w-24 sm:h-24 md:w-32 md:h-32 mx-auto mb-6 sm:mb-8"
-        >
-          <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-cyan-500/40 via-indigo-500/40 to-fuchsia-500/40 blur-2xl" />
-          <div className="relative w-full h-full rounded-3xl border border-white/10 shadow-2xl bg-[#070A18]/80 backdrop-blur-md flex items-center justify-center overflow-hidden">
-            <AnimatedBrandMark size={110} halo={false} glow />
-          </div>
-        </motion.div>
-
+      {/* Centered content */}
+      <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-4 sm:px-6 max-w-5xl mx-auto w-full text-center">
         <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
-          className="inline-flex max-w-full items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 rounded-full border border-cyan-400/25 bg-cyan-500/10 text-[10px] sm:text-[11px] md:text-xs font-semibold uppercase tracking-[0.12em] sm:tracking-[0.18em] text-cyan-200 mb-5 sm:mb-6"
+          className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 rounded-full border border-white/[0.08] bg-white/[0.03] backdrop-blur-md mb-6 sm:mb-8"
         >
-          <Sparkles className="w-3 h-3 text-cyan-300 shrink-0" />
-          <span className="truncate">{t("eyebrow")}</span>
+          <Sparkles className="w-3.5 h-3.5 text-indigo-300 shrink-0" />
+          <span className="text-[11px] sm:text-xs font-medium text-white/80 tracking-wide truncate">{t("eyebrow")}</span>
         </motion.div>
 
         <motion.h1 initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}
-          className="font-display font-extrabold tracking-tight leading-[1.1] mb-4 sm:mb-5 break-words [text-wrap:balance]"
-          style={{ fontSize: "clamp(1.6rem, 1rem + 4.2vw, 5rem)" }}
+          className="font-display font-bold tracking-tight leading-[1.08] mb-5 sm:mb-6 break-words [text-wrap:balance]"
+          style={{ fontSize: "clamp(2rem, 1rem + 6vw, 5.5rem)" }}
         >
           <span className="block text-white">{t("titleLine1")}</span>
           <span className="block brand-gradient-text pb-2">{t("titleLine2")}</span>
         </motion.h1>
 
         <motion.p initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}
-          className="text-sm sm:text-[17px] md:text-lg text-neutral-300 max-w-2xl mx-auto mb-6 leading-[1.8] sm:leading-[1.85] px-4 sm:px-2 break-words [overflow-wrap:anywhere] [word-break:normal] [text-wrap:pretty]"
+          className="text-base sm:text-lg md:text-xl text-white/55 max-w-3xl mx-auto mb-10 sm:mb-12 leading-[1.8] font-medium px-2 [text-wrap:pretty]"
         >
           {t("subtitleLead")}
           {" "}
-          <bdi className="text-white font-bold">{t("subtitleHighlight")}</bdi>
+          <bdi className="text-white/85 font-semibold">{t("subtitleHighlight")}</bdi>
           {" "}
           {t("subtitleTail")}
         </motion.p>
 
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}
-          className="flex flex-wrap items-center justify-center gap-x-2.5 gap-y-2 sm:gap-x-5 text-[11px] sm:text-[12px] font-medium text-neutral-400 mb-7 sm:mb-8 px-2"
-        >
-          <span className="flex items-center gap-1.5 whitespace-nowrap"><ShieldCheck className="w-3.5 h-3.5 text-emerald-400 shrink-0" /> {tBadges("lawCompliant")}</span>
-          <span className="hidden sm:inline-block w-1 h-1 rounded-full bg-white/15" />
-          <span className="flex items-center gap-1.5 whitespace-nowrap"><Globe2 className="w-3.5 h-3.5 text-cyan-400 shrink-0" /> {tBadges("arabicNative")}</span>
-          <span className="hidden sm:inline-block w-1 h-1 rounded-full bg-white/15" />
-          <span className="flex items-center gap-1.5 whitespace-nowrap"><TrendingUp className="w-3.5 h-3.5 text-fuchsia-400 shrink-0" /> {tBadges("founderCount")}</span>
-          <span className="hidden sm:inline-block w-1 h-1 rounded-full bg-white/15" />
-          <span className="flex items-center gap-1.5 whitespace-nowrap"><Zap className="w-3.5 h-3.5 text-amber-400 shrink-0" /> {tBadges("freeStart")}</span>
-        </motion.div>
-
+        {/* Single focal CTA — chat-style input */}
         <motion.form initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35, ease: "easeOut" }}
-          onSubmit={submit} className="relative max-w-2xl mx-auto group mb-5"
+          onSubmit={submit} className="relative w-full max-w-2xl group"
         >
-          <div className="absolute -inset-[1.5px] rounded-3xl bg-gradient-to-r from-cyan-500/60 via-indigo-500/60 to-fuchsia-500/60 opacity-0 group-focus-within:opacity-100 blur-lg transition-opacity duration-300" />
-          <div className="relative flex items-center bg-[#0B1020]/90 backdrop-blur-xl border border-white/10 rounded-3xl p-2 shadow-2xl focus-within:border-white/25 transition-colors">
+          <div className="absolute -inset-1 rounded-3xl bg-gradient-to-r from-cyan-500/25 via-indigo-500/25 to-fuchsia-500/25 opacity-0 group-focus-within:opacity-100 blur-xl transition-opacity duration-500" />
+          <div className="relative flex items-center bg-[#0A0D14]/85 backdrop-blur-xl border border-white/[0.08] rounded-3xl p-2 shadow-2xl focus-within:border-indigo-400/40 focus-within:bg-[#0A0D14] transition-all">
+            <div className="ps-3 pe-2 text-white/40 shrink-0">
+              <Search className="w-5 h-5" />
+            </div>
             <input
               value={query} onChange={(e) => setQuery(e.target.value)}
               placeholder={t("inputPlaceholder")}
-              className="flex-1 bg-transparent border-none outline-none text-white px-5 py-4 text-base md:text-lg placeholder:text-neutral-500"
+              className="flex-1 min-w-0 bg-transparent border-none outline-none text-white text-base md:text-lg py-3 placeholder:text-white/30"
               aria-label={tCommon("yourIdea")}
             />
             <button type="submit" disabled={!query.trim()}
-              className="shrink-0 btn-primary rounded-2xl px-5 py-3.5 md:px-7 md:py-4 disabled:opacity-40 text-sm font-bold flex items-center gap-2"
+              className="shrink-0 btn-primary rounded-2xl px-4 sm:px-6 py-3 sm:py-3.5 disabled:opacity-40 text-sm font-bold flex items-center gap-2"
             >
               <span className="hidden sm:inline">{t("submitLabel")}</span>
-              <ArrowLeft className="w-5 h-5" />
+              <ArrowLeft className="w-4 h-4" />
             </button>
           </div>
         </motion.form>
 
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.45 }}
-          className="flex flex-wrap items-center justify-center gap-2 max-w-3xl mx-auto"
+        {/* Suggestion chips — minimal pill outlines */}
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}
+          className="flex flex-wrap items-center justify-center gap-2 mt-6 max-w-3xl"
+          aria-label={t("eyebrow")}
         >
-          {SUGGESTION_KEYS.map((key, i) => {
+          {SUGGESTION_KEYS.map((key) => {
             const text = tSugg(key);
             return (
               <button key={key} type="button" onClick={() => router.push(`/chat?q=${encodeURIComponent(text)}`)}
-                className={`text-xs md:text-sm border text-neutral-200 px-3.5 py-2 rounded-full transition-colors ${i === suggestionIdx ? "bg-indigo-500/20 border-indigo-400/40 text-white" : "bg-white/5 border-white/10 hover:bg-white/10"}`}
+                className="text-xs md:text-sm border border-white/[0.08] text-white/55 px-3.5 py-2 rounded-full hover:text-white hover:border-white/20 hover:bg-white/[0.03] transition-colors"
               >
                 {text}
               </button>
@@ -297,26 +281,35 @@ function Hero() {
           })}
         </motion.div>
 
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.55 }}
-          className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 mt-8 max-w-md sm:max-w-none mx-auto"
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.9 }}
+          className="flex flex-col items-center gap-2 mt-12 sm:mt-16 text-white/35 text-xs"
         >
-          <Link href="/auth/signup" prefetch className="btn-primary flex items-center justify-center gap-2 text-base font-bold px-6 sm:px-8 py-3.5 sm:py-4 rounded-full">
-            {t("primaryCta")} <ArrowLeft className="w-5 h-5" />
-          </Link>
-          <a href="#demo" className="btn-ghost flex items-center justify-center gap-2 text-base px-6 sm:px-8 py-3.5 sm:py-4 rounded-full">
-            <Play className="w-4 h-4 text-cyan-400" /> {t("secondaryCta")}
-          </a>
-        </motion.div>
-
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1 }}
-          className="flex justify-center mt-14"
-        >
-          <a href="#departments" className="flex flex-col items-center gap-2 text-neutral-500 text-xs hover:text-neutral-300 transition-colors">
+          <a href="#departments" className="flex flex-col items-center gap-1.5 hover:text-white/70 transition-colors">
             <span>{t("scrollHint")}</span>
             <ChevronDown className="w-4 h-4 animate-bounce" />
           </a>
         </motion.div>
       </div>
+
+      {/* Trust badges — muted grayscale row at bottom */}
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.7 }}
+        className="relative z-10 w-full pb-8 sm:pb-10 pt-6 flex justify-center"
+      >
+        <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 sm:gap-x-10 px-4">
+          <span className="flex items-center gap-2 text-white/40 hover:text-white/75 transition-colors text-xs sm:text-sm font-medium">
+            <ShieldCheck className="w-4 h-4 shrink-0" /> {tBadges("lawCompliant")}
+          </span>
+          <span className="flex items-center gap-2 text-white/40 hover:text-white/75 transition-colors text-xs sm:text-sm font-medium">
+            <Globe2 className="w-4 h-4 shrink-0" /> {tBadges("arabicNative")}
+          </span>
+          <span className="flex items-center gap-2 text-white/40 hover:text-white/75 transition-colors text-xs sm:text-sm font-medium">
+            <TrendingUp className="w-4 h-4 shrink-0" /> {tBadges("founderCount")}
+          </span>
+          <span className="flex items-center gap-2 text-white/40 hover:text-white/75 transition-colors text-xs sm:text-sm font-medium">
+            <Zap className="w-4 h-4 shrink-0" /> {tBadges("freeStart")}
+          </span>
+        </div>
+      </motion.div>
     </motion.section>
   );
 }

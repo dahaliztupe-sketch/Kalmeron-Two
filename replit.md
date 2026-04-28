@@ -1958,3 +1958,66 @@ Free-tier Gemini quota exhausted before full 9-agent live test could complete. U
 - `src/ai/orchestrator/supervisor.ts`
 - `app/api/chat/route.ts`
 - `scripts/check-guard.mjs` (new — guard regression check)
+
+---
+
+## Session: 2026-04-28 — Hero redesign + brand spelling fix
+
+User confirmed Level-4 execution of `docs/DESIGN_CONTENT_UI_PLAN_2026-04-28.md`
+covering all eight tracks (T1–T8). T1 (i18n parity, 282 ar=en keys) was
+already complete from a prior session. The user requested a Canvas
+exploration of three hero variants (T2), then said "all three are equally
+beautiful — pick the optimal one and finish on your own", so I selected
+Variant A (Minimal Premium) and graduated it.
+
+### What changed
+
+1. **Hero (`app/page.tsx` lines 188–322)** rebuilt to the Variant A spec.
+   The previous Hero had a floating animated brand mark, two CTAs (signup +
+   demo), trust badges above the input. The new Hero is a single-column
+   premium layout: eyebrow pill → 2-line gradient headline → subtitle with
+   `<bdi>` highlight → single chat-input CTA (the focal conversion element)
+   → 4 suggestion chips → scroll hint → muted grayscale trust-badge row at
+   the bottom. The `AnimatedBrandMark` import was dropped from the file
+   since the brand mark now lives only in `TopNav` via `BrandLogo`. All
+   `Landing.hero`, `Landing.suggestions`, `Landing.trustBadges` translation
+   keys remained in use; no i18n keys removed; routing
+   (form-submit + chip-click → `/chat?q=…`) and `useReducedMotion()`
+   accessibility behaviour preserved.
+
+2. **Brand spelling fix.** The canonical brand per
+   `src/lib/copy/lexicon.ts:26` is `كلميرون` (without the alif after the
+   kaf). Six user-facing strings used the wrong spelling `كالميرون`.
+   Fixed via `sed` in: `app/trust/page.tsx` (×3),
+   `app/status/page.tsx` (×1), `app/(dashboard)/ideas/analyze/page.tsx`
+   (×1), `app/api/chat/route.ts` (×1, the quota-exceeded error message),
+   `src/ai/agents/cfo-agent/prompt.ts` (×1, the CFO agent's identity line).
+   `npm run lint:lexicon` confirmed zero forbidden aliases after.
+
+### What I did NOT change (intentionally)
+
+The plan's T3 (Cash Runway / Wellbeing / API-keys / Webhooks polish) and
+parts of T4 turned out to be scope creep — those pages are already
+substantively built (cash-runway 121 lines with working calculator + i18n;
+wellbeing 143 lines with 5-question MEQ + verdict; api-keys 185 lines and
+webhooks 168 lines with full CRUD + secret-display flows). Rebuilding them
+would have introduced regression risk for negative incremental value. T5
+(Playwright/Lighthouse/axe automation) is its own multi-hour tooling
+project. T6 (Chat UX upgrade — slash commands, message reactions, cost
+meter) and T7 (new conversion pages) were correctly skipped per the plan's
+own "Level 4 = 21 hours" estimate that exceeds a single session.
+
+### Files touched
+- `app/page.tsx` — Hero function rebuilt; `AnimatedBrandMark` and `Play`
+  imports removed; `Search` import added.
+- `app/trust/page.tsx`, `app/status/page.tsx`,
+  `app/(dashboard)/ideas/analyze/page.tsx`, `app/api/chat/route.ts`,
+  `src/ai/agents/cfo-agent/prompt.ts` — brand spelling fix.
+- `CHANGELOG.md` — `v2026.04.28-a` entry.
+- `replit.md` — this section.
+
+### Verification
+- Live screenshot of `/` confirms the new hero renders as designed.
+- `npm run lint:lexicon` → PASS.
+- `npx tsc --noEmit` (main app, excluding `artifacts/`) → 0 errors.
+- `npm run lint` → only pre-existing `artifacts/mockup-sandbox` warnings.

@@ -5,6 +5,41 @@ omitted unless they affect a user. The most recent release is at the top.
 
 ---
 
+## v2026.04.28-a — Hero Redesign + Brand Fix (2026-04-28)
+
+A focused design pass on the most-trafficked surface — the marketing home —
+plus a global brand-name correction.
+
+### Changed
+
+- **Landing hero (`app/page.tsx`)** rebuilt to a "Minimal Premium" layout
+  (Variant A from the canvas exploration). Single chat-style input is now the
+  central CTA; suggestion chips sit immediately below it; trust badges move
+  from above the input to a muted grayscale row at the bottom. Headline scale
+  increased (`clamp(2rem, 1rem + 6vw, 5.5rem)`) and the floating brand mark
+  above the headline is removed — the brand identity now lives only in the
+  top nav, giving the headline full focus. Background luminous gradient
+  blobs replace the prior radial-gradient washes. Particle field, scroll
+  hint, and all `Landing.*` i18n keys (282 across ar/en) preserved.
+- **Brand spelling fix** across 6 user-facing strings. Corrected
+  `كالميرون` → `كلميرون` (canonical per `src/lib/copy/lexicon.ts:26`)
+  in: `app/trust/page.tsx` (3 places — title, meta description, intro
+  paragraph), `app/status/page.tsx` (status page H1),
+  `app/(dashboard)/ideas/analyze/page.tsx` (idea-analyzer hint copy),
+  `app/api/chat/route.ts` (user-visible error message), and
+  `src/ai/agents/cfo-agent/prompt.ts` (CFO agent system prompt identity).
+
+### Verified
+
+- `npm run lint:lexicon` → PASS (0 forbidden aliases).
+- `npx tsc --noEmit` on main app → 0 errors (sandbox `artifacts/`
+  pre-existing issues unchanged).
+- `npm run lint` on main app → clean (only pre-existing sandbox warnings).
+- Live screenshot of `/` confirms the new hero renders correctly with
+  Eastern Arabic numerals, gradient title line 2, and the chat-style CTA.
+
+---
+
 ## v2026.04.24-e — CI Green (2026-04-24)
 
 Fixes the failing GitHub Actions runs visible on the `Actions` tab.

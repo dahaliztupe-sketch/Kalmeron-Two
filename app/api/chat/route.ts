@@ -337,7 +337,7 @@ export async function POST(req: NextRequest) {
         log.error({ msg: 'Chat SSE error', error: details.message, stack: details.stack });
         // تصنيف الأخطاء الشائعة لرسالة عربية أوضح للمستخدم.
         const lowered = (details.message || '').toLowerCase();
-        let userMessage = 'عذراً، كالميرون بيواجه مشكلة فنية حالياً.';
+        let userMessage = 'عذراً، كلميرون بيواجه مشكلة فنية حالياً.';
         if (lowered.includes('quota') || lowered.includes('rate') || lowered.includes('429') || lowered.includes('resource_exhausted')) {
           userMessage =
             'الخدمة وصلت لحد الاستخدام المؤقت من Gemini. حاول تاني بعد دقيقة، أو رقّي مفتاح الـ API لباقة مدفوعة لاستخدام مكثف.';

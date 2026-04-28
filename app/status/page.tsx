@@ -69,7 +69,7 @@ export default async function StatusPage() {
   return (
     <PublicShell>
       <div dir="rtl" className="max-w-3xl mx-auto p-8">
-        <h1 className="text-3xl font-bold mb-2">حالة منصّة كالميرون</h1>
+        <h1 className="text-3xl font-bold mb-2">حالة منصّة كلميرون</h1>
         <p className="text-neutral-400 mb-8">آخر تحديث: {updated}</p>
 
         <div className={`rounded-2xl border p-6 mb-8 ${pillColor(overall)}`}>

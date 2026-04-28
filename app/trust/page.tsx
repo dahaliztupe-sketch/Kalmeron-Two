@@ -15,8 +15,8 @@ import Link from 'next/link';
 import { PublicShell } from '@/components/layout/PublicShell';
 
 export const metadata = {
-  title: 'مركز الثقة — كالميرون',
-  description: 'الأمن، الخصوصية، والامتثال في منصّة كالميرون.',
+  title: 'مركز الثقة — كلميرون',
+  description: 'الأمن، الخصوصية، والامتثال في منصّة كلميرون.',
 };
 
 interface Control {
@@ -75,7 +75,7 @@ export default function TrustCenter() {
         <div className="mb-12">
           <h1 className="text-4xl font-bold mb-3">مركز الثقة</h1>
           <p className="text-neutral-400 max-w-2xl leading-8">
-            كالميرون نظام تشغيل عربي للمشاريع الناشئة، نتعامل مع بيانات حسّاسة لرواد الأعمال:
+            كلميرون نظام تشغيل عربي للمشاريع الناشئة، نتعامل مع بيانات حسّاسة لرواد الأعمال:
             خطط، عقود، تواصل عملاء. هذه الصفحة تشرح بإيجاز كيف نحمي تلك البيانات.
           </p>
         </div>
