@@ -20,7 +20,7 @@ import {
   type CouncilMeta,
   type PanelDomain,
 } from './types';
-import { routePanel, buildPanelRoster } from './router';
+import { buildPanelRoster } from './router';
 import { routePanelHybrid } from './router-cache';
 import { ALL_EXPERTS } from './experts';
 

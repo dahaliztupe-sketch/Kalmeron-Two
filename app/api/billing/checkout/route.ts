@@ -88,38 +88,47 @@ export async function POST(req: NextRequest) {
   }
 
   // Find or create Stripe Customer keyed by uid.
-  const userRef = adminDb.collection('users').doc(userId);
-  const userSnap = await userRef.get();
-  let customerId = (userSnap.data() as { stripeCustomerId?: string } | undefined)?.stripeCustomerId;
-  if (!customerId) {
-    const customer = await stripe.customers.create({
-      email: userEmail,
-      metadata: { firebaseUid: userId },
-    });
-    customerId = customer.id;
-    await userRef.set({ stripeCustomerId: customerId }, { merge: true });
-  }
+  // Wrapped in try/catch so any Stripe API or Firestore error is logged
+  // server-side and the client receives only an opaque error code
+  // (CodeQL js/stack-trace-exposure).
+  try {
+    const userRef = adminDb.collection('users').doc(userId);
+    const userSnap = await userRef.get();
+    let customerId = (userSnap.data() as { stripeCustomerId?: string } | undefined)?.stripeCustomerId;
+    if (!customerId) {
+      const customer = await stripe.customers.create({
+        email: userEmail,
+        metadata: { firebaseUid: userId },
+      });
+      customerId = customer.id;
+      await userRef.set({ stripeCustomerId: customerId }, { merge: true });
+    }
 
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://kalmeron.app';
-  const plan = getPlan(planId);
-  const session = await stripe.checkout.sessions.create({
-    mode: 'subscription',
-    customer: customerId,
-    line_items: [{ price: priceId, quantity: 1 }],
-    subscription_data: {
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://kalmeron.app';
+    const plan = getPlan(planId);
+    const session = await stripe.checkout.sessions.create({
+      mode: 'subscription',
+      customer: customerId,
+      line_items: [{ price: priceId, quantity: 1 }],
+      subscription_data: {
+        metadata: { firebaseUid: userId, planId, cycle },
+      },
       metadata: { firebaseUid: userId, planId, cycle },
-    },
-    metadata: { firebaseUid: userId, planId, cycle },
-    success_url: `${baseUrl}/billing/success?session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${baseUrl}/pricing?cancelled=1`,
-    allow_promotion_codes: true,
-    locale: 'auto',
-  });
+      success_url: `${baseUrl}/billing/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${baseUrl}/pricing?cancelled=1`,
+      allow_promotion_codes: true,
+      locale: 'auto',
+    });
 
-  return Response.json({
-    url: session.url,
-    sessionId: session.id,
-    plan: plan.id,
-    cycle,
-  });
+    return Response.json({
+      url: session.url,
+      sessionId: session.id,
+      plan: plan.id,
+      cycle,
+    });
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : 'unknown';
+    console.error('[checkout] failed', msg);
+    return Response.json({ error: 'checkout_failed' }, { status: 500 });
+  }
 }

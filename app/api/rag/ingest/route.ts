@@ -86,6 +86,8 @@ export async function POST(req: NextRequest) {
   } catch (e: unknown) {
     const { logger } = await import('@/src/lib/logger');
     logger.error({ err: e }, 'rag_ingest_failed');
-    return NextResponse.json({ error: e?.message || 'ingest_failed' }, { status: 500 });
+    // Never echo the underlying error message to the client (CodeQL
+    // js/stack-trace-exposure); the full error is captured server-side.
+    return NextResponse.json({ error: 'ingest_failed' }, { status: 500 });
   }
 }

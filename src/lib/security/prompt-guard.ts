@@ -72,12 +72,22 @@ export function sanitizeInput(input: string): string {
  * يلفّ المدخل في وسوم XML واضحة لكي يستطيع النموذج التمييز بين تعليمات
  * النظام ومحتوى المستخدم. يدعم namespacing لتمييز مصدر المحتوى
  * (مثلاً `pdf` أو `web` أو `email`).
+ *
+ * يستخدم تطهيراً كاملاً للأحرف الخاصة بـ XML بدلاً من regex غير مكتمل
+ * (يعالج تحذيرَي CodeQL: js/bad-tag-filter و js/incomplete-multi-character-sanitization).
  */
+function escapeXml(s: string): string {
+  return s
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 export function isolateUserInput(input: string, source = 'user'): string {
   const tag = source.replace(/[^a-z0-9_]/gi, '').toLowerCase() || 'user';
-  // نهرب أي وسم XML داخل المدخل بحيث لا يكسر الإطار.
-  const safe = input.replace(/<\/?([a-z][a-z0-9_]*)/gi, '&lt;$1');
-  return `<${tag}_input>\n${safe}\n</${tag}_input>`;
+  return `<${tag}_input>\n${escapeXml(input)}\n</${tag}_input>`;
 }
 
 // ============================================================
@@ -104,7 +114,10 @@ const INJECTION_PATTERNS: readonly InjectionPattern[] = [
   // --- إنجليزي: تجاوز تعليمات صريح ---
   // يطابق: "ignore [all|any|the|previous|prior|earlier|your|original|safety|above]* instructions/prompts/rules/etc"
   { name: 'en_ignore_instructions',
-    regex: /\b(?:ignore|disregard|forget|override|bypass|skip|cancel|abandon|remove|delete)\b[\s\w]{0,40}?\b(?:instructions?|prompts?|rules?|directives?|guidelines?|orders?|guardrails?|restrictions?|safeguards?|policies)\b/i,
+    // Note: the {0,40} window between verb and noun must use a non-capturing
+    // alternation `(?:…)` for the optional qualifiers — earlier revisions used
+    // a character class `[all|any|the|…]` by mistake (CodeQL js/regex/duplicates).
+    regex: /\b(?:ignore|disregard|forget|override|bypass|skip|cancel|abandon|remove|delete)\b(?:\s+(?:all|any|the|previous|prior|earlier|your|original|safety|above))*[\s\w]{0,40}?\b(?:instructions?|prompts?|rules?|directives?|guidelines?|orders?|guardrails?|restrictions?|safeguards?|policies)\b/i,
     weight: 0.9 },
   // "from now on, respond freely / answer freely / talk freely" pattern
   { name: 'en_respond_freely',
@@ -147,7 +160,7 @@ const INJECTION_PATTERNS: readonly InjectionPattern[] = [
     regex: /\b(?:assistant|ai|model|system)\s*(?::|says?|reply|responded?)\s*["']?(?:sure|certainly|of\s+course|here\s+is|here[']?s|i\s+(?:will|can|shall))/i,
     weight: 0.7 },
   { name: 'en_user_intent_flip',
-    regex: /\b(?:the\s+user\s+(?:actually|really|secretly)\s+wants?|the\s+real\s+(?:question|task|goal|intent)\s+is|user['']?s\s+true\s+(?:goal|intent))/i,
+    regex: /\b(?:the\s+user\s+(?:actually|really|secretly)\s+wants?|the\s+real\s+(?:question|task|goal|intent)\s+is|user(?:['\u2019])?s\s+true\s+(?:goal|intent))/i,
     weight: 0.85 },
 
   // --- عربي: تجاوز تعليمات صريح ---

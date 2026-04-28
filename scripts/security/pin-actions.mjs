@@ -64,7 +64,6 @@ async function resolveSha(owner, repo, ref) {
 
 async function main() {
   const files = (await fs.readdir(WF_DIR)).filter((f) => f.endsWith(".yml") || f.endsWith(".yaml"));
-  const usePattern = /(\s*(?:-\s+)?uses:\s*)(["']?)([^"'\s@]+)@([^"'\s#]+)(["']?)/g;
 
   const cache = new Map();
   let totalChanges = 0;

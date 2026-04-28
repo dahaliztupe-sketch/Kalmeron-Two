@@ -15,3 +15,9 @@ COPY . $SRC/kalmeron-two
 WORKDIR $SRC/kalmeron-two
 
 COPY .clusterfuzzlite/build.sh $SRC/build.sh
+
+# This image runs only inside the OSS-Fuzz / ClusterFuzzLite ephemeral CI
+# runner — there is no long-running service to probe and no externally
+# exposed port. An explicit NONE silences CKV_DOCKER_2 / Hadolint DL3057
+# without claiming a fake healthcheck. (CodeQL/Scorecard "No HEALTHCHECK".)
+HEALTHCHECK NONE

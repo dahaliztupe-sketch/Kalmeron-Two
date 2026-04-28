@@ -22,6 +22,9 @@ on:
 permissions:
   contents: read
 
+# Explicit top-level permissions block satisfies the OpenSSF Scorecard
+# "Token-Permissions" check. Per-job blocks below narrow these further.
+
 jobs:
   analyze:
     name: Analyze (${{ matrix.language }})

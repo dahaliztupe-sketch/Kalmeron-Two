@@ -139,7 +139,10 @@ export async function POST(req: NextRequest) {
       { headers: { 'Content-Type': 'application/json' } }
     );
   } catch (e: unknown) {
-    return new Response(JSON.stringify({ error: toErrorMessage(e, 'Failed') }), {
+    // Log full error server-side; expose only an opaque code to the client
+    // to avoid leaking implementation details (CodeQL js/stack-trace-exposure).
+    console.error('[user/plan] failed', toErrorMessage(e, 'unknown'));
+    return new Response(JSON.stringify({ error: 'internal_error' }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },
     });
