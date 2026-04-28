@@ -46,8 +46,6 @@ interface ChatPayload {
 export async function POST(req: NextRequest) {
   const requestId = req.headers.get('X-Request-ID') || crypto.randomUUID();
   const log = createRequestLogger(requestId);
-  const rl = rateLimit(req, { limit: 20, windowMs: 60_000 });
-  if (!rl.success) return rateLimitResponse();
 
   let payload: ChatPayload;
   try {
@@ -64,6 +62,12 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  // Auth check FIRST — before any rate-limit accounting. Unauthenticated
+  // requests must always get 401 deterministically and must NOT consume the
+  // shared per-IP rate-limit budget (otherwise a burst of bad-auth traffic
+  // would starve other concurrent requests and surface as 429s instead of
+  // 401s, which is both confusing for clients and breaks the e2e contract
+  // tests that assert auth precedence).
   const authHeader = req.headers.get('Authorization');
   let userId = 'guest-system';
   if (authHeader?.startsWith('Bearer ')) {
@@ -87,6 +91,11 @@ export async function POST(req: NextRequest) {
       { status: 401, headers: { 'Content-Type': 'application/json' } },
     );
   }
+
+  // Rate-limit AFTER auth — keyed by IP for both guests and authenticated
+  // users (the per-user agent limiter below adds a second tier).
+  const rl = rateLimit(req, { limit: 20, windowMs: 60_000 });
+  if (!rl.success) return rateLimitResponse();
 
   const userScopedRl = rateLimitAgent(userId, 'chat', { limit: 30, windowMs: 60_000 });
   if (!userScopedRl.allowed) {
