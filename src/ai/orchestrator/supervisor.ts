@@ -34,7 +34,7 @@ async function withCouncil(opts: {
   fallback: string;
 }): Promise<string> {
   if (!COUNCIL_ENABLED) return opts.fallback || opts.draft || '';
-  const { markdown, result } = await runCouncilSafe({
+  const { markdown, result, error } = await runCouncilSafe({
     agentName: opts.agentName,
     agentDisplayNameAr: opts.agentDisplayNameAr,
     agentRoleAr: opts.agentRoleAr,
@@ -43,7 +43,11 @@ async function withCouncil(opts: {
     userId: opts.userId,
     draft: opts.draft,
   });
-  if (!result) return opts.fallback || markdown;
+  if (!result) {
+    // eslint-disable-next-line no-console
+    console.error(`[withCouncil] council failed for ${opts.agentName}:`, error);
+    return opts.draft || markdown || opts.fallback;
+  }
   return markdown;
 }
 
