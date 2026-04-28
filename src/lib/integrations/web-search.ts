@@ -2,25 +2,39 @@
 /**
  * Web search with citations.
  * Primary: Gemini with built-in Google Search grounding (free with GEMINI_API_KEY).
- * Fallback: Tavily API if TAVILY_API_KEY is set.
+ * Fallback 1: Tavily API if TAVILY_API_KEY is set.
+ * Fallback 2: Serper.dev API if SERPER_API_KEY is set.
  * Last-resort: simple DuckDuckGo HTML scrape (no key needed) — best-effort.
  */
 import { GoogleGenAI } from '@google/genai';
 
 export interface WebSearchResult {
   ok: boolean;
-  source: 'gemini_grounded' | 'tavily' | 'duckduckgo' | 'none';
+  source: 'gemini_grounded' | 'tavily' | 'serper' | 'duckduckgo' | 'none';
   answer?: string;
   citations: { title?: string; url: string; snippet?: string }[];
   error?: string;
 }
 
-export async function webSearch(query: string, opts: { maxResults?: number } = {}): Promise<WebSearchResult> {
+export interface WebSearchOpts {
+  maxResults?: number;
+  /** Force a specific provider (skip the rest of the chain). */
+  provider?: 'gemini' | 'tavily' | 'serper' | 'duckduckgo';
+  /** Tavily-only: 'basic' | 'advanced'. */
+  searchDepth?: 'basic' | 'advanced';
+  /** Restrict to a country (Serper gl / Tavily country). */
+  country?: string;
+  /** Language hint (Serper hl / Tavily lang). */
+  language?: string;
+}
+
+export async function webSearch(query: string, opts: WebSearchOpts = {}): Promise<WebSearchResult> {
   const max = opts.maxResults || 5;
+  const provider = opts.provider;
 
   // 1) Gemini grounded search (preferred — free with the existing API key)
   const geminiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY;
-  if (geminiKey) {
+  if (geminiKey && (!provider || provider === 'gemini')) {
     try {
       const ai = new GoogleGenAI({ apiKey: geminiKey });
       const r = await ai.models.generateContent({
@@ -54,7 +68,7 @@ export async function webSearch(query: string, opts: { maxResults?: number } = {
   }
 
   // 2) Tavily fallback
-  if (process.env.TAVILY_API_KEY) {
+  if (process.env.TAVILY_API_KEY && (!provider || provider === 'tavily')) {
     try {
       const r = await fetch('https://api.tavily.com/search', {
         method: 'POST',
@@ -64,7 +78,8 @@ export async function webSearch(query: string, opts: { maxResults?: number } = {
           query,
           max_results: max,
           include_answer: true,
-          search_depth: 'basic',
+          search_depth: opts.searchDepth || 'basic',
+          country: opts.country,
         }),
       });
       const j = await r.json();
@@ -83,7 +98,41 @@ export async function webSearch(query: string, opts: { maxResults?: number } = {
     }
   }
 
-  // 3) DuckDuckGo HTML scrape (no key)
+  // 3) Serper.dev fallback (Google SERP API)
+  if (process.env.SERPER_API_KEY && (!provider || provider === 'serper')) {
+    try {
+      const r = await fetch('https://google.serper.dev/search', {
+        method: 'POST',
+        headers: {
+          'X-API-KEY': process.env.SERPER_API_KEY as string,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          q: query,
+          num: max,
+          gl: opts.country || 'eg',
+          hl: opts.language || 'ar',
+        }),
+      });
+      const j = await r.json();
+      const organic = Array.isArray(j.organic) ? j.organic : [];
+      const citations = organic.slice(0, max).map((it: { title: string; link: string; snippet?: string }) => ({
+        title: it.title,
+        url: it.link,
+        snippet: it.snippet,
+      }));
+      return {
+        ok: true,
+        source: 'serper',
+        answer: j.answerBox?.answer || j.answerBox?.snippet,
+        citations,
+      };
+    } catch (e: unknown) {
+      console.warn('[web-search] serper failed:', (e as Error)?.message);
+    }
+  }
+
+  // 4) DuckDuckGo HTML scrape (no key)
   try {
     const r = await fetch(`https://html.duckduckgo.com/html/?q=${encodeURIComponent(query)}`, {
       headers: { 'User-Agent': 'Mozilla/5.0 KalmeronBot/1.0' },
@@ -101,5 +150,42 @@ export async function webSearch(query: string, opts: { maxResults?: number } = {
 }
 
 export function webSearchConfigured(): boolean {
-  return Boolean(process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY || process.env.TAVILY_API_KEY);
+  return Boolean(
+    process.env.GEMINI_API_KEY ||
+      process.env.GOOGLE_API_KEY ||
+      process.env.TAVILY_API_KEY ||
+      process.env.SERPER_API_KEY,
+  );
+}
+
+/**
+ * Run several search queries in parallel and merge their citations,
+ * deduplicating by URL. Useful for fan-out searches (e.g. multiple
+ * opportunity categories at once).
+ */
+export async function webSearchMany(
+  queries: string[],
+  opts: WebSearchOpts = {},
+): Promise<WebSearchResult> {
+  const results = await Promise.all(queries.map((q) => webSearch(q, opts)));
+  const seen = new Set<string>();
+  const citations: WebSearchResult['citations'] = [];
+  let source: WebSearchResult['source'] = 'none';
+  const answers: string[] = [];
+  for (const r of results) {
+    if (!r.ok) continue;
+    if (source === 'none') source = r.source;
+    if (r.answer) answers.push(r.answer);
+    for (const c of r.citations) {
+      if (!c?.url || seen.has(c.url)) continue;
+      seen.add(c.url);
+      citations.push(c);
+    }
+  }
+  return {
+    ok: citations.length > 0 || answers.length > 0,
+    source,
+    answer: answers.join('\n\n') || undefined,
+    citations,
+  };
 }
