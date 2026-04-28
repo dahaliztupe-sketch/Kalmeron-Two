@@ -1,0 +1,79 @@
+{
+  "ranAt": "2026-04-28T06:37:42.158Z",
+  "pass": 1,
+  "total": 9,
+  "results": [
+    {
+      "id": "router-001",
+      "expected": "PLAN_BUILDER",
+      "intent": "IDEA_VALIDATOR",
+      "latencyMs": 528,
+      "error": null,
+      "raw": "IDEA_VALIDATOR"
+    },
+    {
+      "id": "router-002",
+      "expected": "IDEA_VALIDATOR",
+      "intent": "IDEA_VALIDATOR",
+      "latencyMs": 460,
+      "error": null,
+      "raw": "IDEA_VALIDATOR"
+    },
+    {
+      "id": "router-003",
+      "expected": "MISTAKE_SHIELD",
+      "intent": "__error__",
+      "latencyMs": 3065,
+      "error": "You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usa",
+      "raw": ""
+    },
+    {
+      "id": "router-004",
+      "expected": "SUCCESS_MUSEUM",
+      "intent": "__error__",
+      "latencyMs": 59,
+      "error": "You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usa",
+      "raw": ""
+    },
+    {
+      "id": "router-005",
+      "expected": "OPPORTUNITY_RADAR",
+      "intent": "__error__",
+      "latencyMs": 53,
+      "error": "You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usa",
+      "raw": ""
+    },
+    {
+      "id": "router-006",
+      "expected": "CFO_AGENT",
+      "intent": "__error__",
+      "latencyMs": 38,
+      "error": "You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usa",
+      "raw": ""
+    },
+    {
+      "id": "router-007",
+      "expected": "LEGAL_GUIDE",
+      "intent": "__error__",
+      "latencyMs": 52,
+      "error": "You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usa",
+      "raw": ""
+    },
+    {
+      "id": "router-008",
+      "expected": "REAL_ESTATE",
+      "intent": "__error__",
+      "latencyMs": 68,
+      "error": "You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usa",
+      "raw": ""
+    },
+    {
+      "id": "router-009",
+      "expected": "GENERAL_CHAT",
+      "intent": "__error__",
+      "latencyMs": 59,
+      "error": "You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usa",
+      "raw": ""
+    }
+  ]
+}
