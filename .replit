@@ -148,7 +148,7 @@ NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID = "G-GLX7PM8VCE"
 
 [deployment]
 deploymentTarget = "autoscale"
-run = ["node", "./dist/index.cjs"]
+run = ["npm", "start"]
 build = ["npm", "run", "build"]
 
 [postMerge]
