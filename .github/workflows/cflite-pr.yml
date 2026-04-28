@@ -17,6 +17,10 @@ permissions: read-all
 jobs:
   PR:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
+      security-events: write
     timeout-minutes: 30
     strategy:
       fail-fast: false

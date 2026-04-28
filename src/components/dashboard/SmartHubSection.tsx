@@ -18,7 +18,7 @@ interface Recipe {
   emoji: string;
   category: string;
   involves: string[];
-  steps: any[];
+  steps: unknown[];
 }
 interface Brief {
   generatedAt: string;
@@ -49,6 +49,7 @@ export function SmartHubSection() {
 
   useEffect(() => {
     if (!user) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional: triggers async fetch on user change
     setBriefLoading(true);
     user.getIdToken().then((token) => {
       fetch("/api/operations/feed?limit=8", { headers: { Authorization: `Bearer ${token}` } })

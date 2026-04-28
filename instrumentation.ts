@@ -23,7 +23,7 @@ export async function register() {
         await initOpenLLMetry();
       } catch (err) {
         // Never let observability bring the app down — log and continue.
-        // eslint-disable-next-line no-console
+         
         console.warn('[openllmetry] failed to initialise:', err);
       }
     }

@@ -6,6 +6,9 @@
 # Google rotates them frequently for security patches.
 # Reference: https://google.github.io/clusterfuzzlite/build-integration/javascript-lang/
 # trivy:ignore:DS002 — base image is the official ClusterFuzzLite builder
+# checkov:skip=CKV_DOCKER_3 — OSS-Fuzz base image requires root for libfuzzer
+#                            instrumentation; this container runs ONLY in CI
+#                            ephemeral runners, never deployed.
 FROM gcr.io/oss-fuzz-base/base-builder-javascript:v1
 
 COPY . $SRC/kalmeron-two

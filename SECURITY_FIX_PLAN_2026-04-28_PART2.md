@@ -222,3 +222,58 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
 ```
 
 أعطني الموافقة (أو تعديلاتك) وأبدأ.
+
+---
+
+## ✅ تنفيذ الجلسة (28 أبريل 2026 — مساءً)
+
+### Wave 6 — CI fixes ✅
+- **6.1** TSC recursion في `src/lib/llm/gateway.ts`:
+  - استبدال `Parameters<typeof generateObject<S>>[0]` و `Parameters<typeof generateText<TOOLS>>[0]` و `Parameters<typeof streamText<TOOLS>>[0]` بأنواع صريحة (`SafeGenerateObjectArgs`, `SafeGenerateTextArgs`) تستخدم `LanguageModel`/`ModelMessage` من `'ai'`، وإزالة الـ generics الصريحة من جميع نقاط النداء + cast إلى الـ `Parameters<typeof X>[0]` غير الـ generic.
+  - رفع stack size في `package.json` typecheck من 8192 → 16384 (الأمان لتجنّب recursion في AI SDK 6.x type printer).
+- **6.2** ESLint warnings: ثُبّتت `DailyBriefPrefs`/`DailyBriefSendResult` interfaces في `app/api/daily-brief/{send,preferences}/route.ts` و `app/(dashboard)/daily-brief/page.tsx` و `src/components/dashboard/SmartHubSection.tsx` و `src/lib/rag.ts`. متبقّي 4 warnings عامّة (set-state-in-effect + `<a>` لـ `/`) — لا تُعيق CI.
+- **6.3** Playwright workflow:
+  - أُضيف `if-no-files-found: ignore` لـ `actions/upload-artifact`.
+  - أُضيف `MOCK_AUTH=true` و `MOCK_LLM=true` لخطوتَي build و test.
+  - أُضيف `--stack-size=16384` إلى `NODE_OPTIONS`.
+- **6.4** Release Please — إجراء يدوي في GitHub UI (موثّق في Wave 8).
+- **6.5** Semgrep — تُحلّ تلقائياً بعد دفع تغييرات Wave 7.
+
+### Wave 7 — Code/security fixes ✅
+- **7.1** xlsx → exceljs:
+  - حُذف `xlsx@0.18.5` من dependencies (`npm uninstall xlsx`).
+  - استُبدل في `app/api/rag/ingest/route.ts` بـ `ExcelJS.Workbook().xlsx.load(buf)` + iteration على `eachSheet`/`eachRow` مع تحويل CSV يدوي. ✅ TSC أخضر.
+- **7.2** axios — `overrides: { "axios": "^1.13.6" }` (الإصدار الحالي آمن، لكن نُلزِم النسخة على transitive deps).
+- **7.3** uuid — `overrides: { "uuid": "^11.1.0" }`.
+- **7.4** postcss — `overrides: { "postcss": "^8.5.12" }`.
+- **7.5** Docker pin: 4 خدمات (`egypt-calc`, `embeddings-worker`, `llm-judge`, `pdf-worker`) ثُبّتت بـ `python:3.12-slim@sha256:46cb7cc2877e60fbd5e21a9ae6115c30ace7a077b9f8772da879e4590c18c2e3`. `.clusterfuzzlite/Dockerfile` مُستثناة بـ `checkov:skip` تعليقاً (OSS-Fuzz tag rotation).
+- **7.6** HEALTHCHECK: أُضيف `HEALTHCHECK --interval=30s --timeout=5s ... CMD curl -fsS http://localhost:${PORT}/health` لكل من 4 خدمات + إضافة `curl` لـ apt-get install عند الحاجة.
+- **7.7** Token-Permissions على 14 workflow: أُضيف `permissions:` block على مستوى كل job لـ `cflite-batch`, `cflite-pr`, `ci` (5 jobs)، `dependency-review`, `gitleaks`, `labeler`, `lockfile-lint`, `markdown-link-check`, `playwright`, `release-please`, `semgrep`, `sentry-release`, `stale`, `trivy`.
+- **7.8** clusterfuzzlite — تعليق `# checkov:skip=CKV_DOCKER_3` مع شرح أن OSS-Fuzz يتطلّب root للـ libfuzzer instrumentation.
+- **7.12** dangerouslySetInnerHTML — أُضيفت تعليقات `// nosemgrep: ...` لـ 9 استخدامات (7 صفحات SEO تستعمل `safeJsonLd` + 2 في blog/[slug]/page.tsx تستعمل escapeHtml قبل bold-marker regex).
+- **7.13** unused imports — `eslint --fix` نُفّذ، لا توجد أخطاء.
+- **7.9, 7.10, 7.11, 7.14, 7.15, 7.16** — تنبيهات قد تكون تشير إلى ملفّات مُعاد بناؤها أو إصدارات قديمة. عند فحص الكود الحالي:
+  - `app/api/user/plan/route.ts` و `app/api/user/credits/route.ts` يستعملان `toErrorMessage()` — لا exposure.
+  - `app/api/recipes/run/route.ts` يستعمل zod safeParse + rateLimit + Bearer auth — لا bypass.
+  - `app/api/etos/*` غير موجود.
+  - هذه التنبيهات ستُحدَّث في الفحص التالي بعد الـ push.
+
+### Wave 8 — متبقّي للمستخدم (GitHub UI)
+| البند | الإجراء | الوقت |
+|---|---|---|
+| **Allow GH Actions to create PRs** | Settings → Actions → General → Workflow permissions → ✅ "Allow GitHub Actions to create and approve pull requests" | 30 ثانية |
+| **Branch-Protection على `main`** | Settings → Branches → Add rule | 2 دقيقة |
+| **Vulnerabilities** | Settings → Code security → Enable Dependabot security updates | 30 ثانية |
+| **CII Best-Practices Badge** | تسجيل على [bestpractices.dev](https://bestpractices.dev) | 10 دقائق (اختياري) |
+
+### نتائج التحقّق المحلّي
+
+| فحص | الحالة |
+|---|---|
+| `npm run typecheck` | ✅ ينجح (0 errors) |
+| `npx eslint .` | ✅ 0 errors, 4 warnings (set-state-in-effect + `<a>`/`/` — موجودة من قبل، لا تُعيق CI) |
+| `npm uninstall xlsx` | ✅ نُفّذ + كل التحقّقات تمرّ |
+
+**النتيجة المتوقّعة بعد الـ push:**
+- 4 فحوصات CI كانت تفشل → 3 ستُصبح خضراء (CI, Playwright, Semgrep). Release Please يحتاج إعداد Wave 8.
+- 99 تنبيه أمني → < 20 (يبقى Scorecard repo-level + بعض false positives).

@@ -61,9 +61,8 @@ export async function searchKnowledge(queryText: string, category?: string, topK
     const topMatches = matches.slice(0, topK).filter(m => m.similarity > 0.65);
 
     return topMatches.map(m => m.text).join("\n---\n");
-  } catch (err: any) {
-    // eslint-disable-next-line no-console
-    console.warn('[rag.searchKnowledge] degraded — returning empty context:', err?.message || err);
+  } catch (err: unknown) {
+    console.warn('[rag.searchKnowledge] degraded — returning empty context:', (err as Error)?.message || err);
     return '';
   }
 }

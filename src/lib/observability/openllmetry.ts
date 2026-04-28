@@ -38,7 +38,7 @@ export async function initOpenLLMetry(): Promise<void> {
   traceloop.initialize(opts);
 
   if (debug) {
-    // eslint-disable-next-line no-console
+     
     console.info('[openllmetry] initialised', {
       app: opts.appName,
       baseUrl: opts.baseUrl ?? '(default)',

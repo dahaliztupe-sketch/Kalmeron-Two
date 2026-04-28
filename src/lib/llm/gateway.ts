@@ -19,6 +19,8 @@ import {
   type GenerateObjectResult,
   type StreamTextResult,
   type ToolSet,
+  type LanguageModel,
+  type ModelMessage,
 } from 'ai';
 import type { z } from 'zod';
 import { sanitizeInput, validatePromptIntegrity } from '@/src/lib/security/prompt-guard';
@@ -286,12 +288,30 @@ function approxCostUsd(model: string, inputLen: number, outputLen: number): numb
 // ============= Public API =============
 
 /**
+ * Argument shape for `safeGenerateText`. We mirror only the public surface we
+ * actually use — the AI SDK's full `Parameters<typeof generateText<TOOLS>>[0]`
+ * pulls in deeply-conditional generics that recurse and crash `tsc`.
+ */
+type SafeGenerateTextArgs<TOOLS extends ToolSet = ToolSet> = {
+  model: LanguageModel;
+  prompt?: string;
+  system?: string;
+  messages?: ModelMessage[];
+  tools?: TOOLS;
+  toolChoice?: 'auto' | 'none' | 'required' | { type: 'tool'; toolName: string };
+  maxRetries?: number;
+  abortSignal?: AbortSignal;
+  headers?: Record<string, string>;
+  experimental_telemetry?: { isEnabled?: boolean; functionId?: string; metadata?: Record<string, unknown> };
+} & Record<string, unknown>;
+
+/**
  * Wrapper around `generateText`. When the prompt is overridden by the
  * preflight (injection / redaction) the new value is passed explicitly so we
  * never forward un-sanitized text to the model.
  */
 export async function safeGenerateText<TOOLS extends ToolSet = ToolSet>(
-  args: Parameters<typeof generateText<TOOLS>>[0],
+  args: SafeGenerateTextArgs<TOOLS>,
   ctx: GatewayContext,
 ): Promise<{ result: GenerateTextResult<TOOLS, never>; meta: GatewayMeta }> {
   const userId = ctx.userId || 'guest';
@@ -318,7 +338,11 @@ export async function safeGenerateText<TOOLS extends ToolSet = ToolSet>(
     try {
       result = await instrumentAgent<GenerateTextResult<TOOLS, never>>(
         attempt === 0 ? ctx.agent : `${ctx.agent}:fallback`,
-        () => generateText<TOOLS>(withDefaultTimeout(currentArgs, ctx)),
+        // Cast to the non-generic Parameters shape to avoid the AI SDK's
+        // recursive overload inference (see SafeGenerateObjectArgs note).
+        () => generateText(
+          withDefaultTimeout(currentArgs, ctx) as Parameters<typeof generateText>[0],
+        ) as Promise<GenerateTextResult<TOOLS, never>>,
         { model: modelId, input: { hash: promptHash }, toolsUsed: [] },
       );
       break;
@@ -356,9 +380,36 @@ export async function safeGenerateText<TOOLS extends ToolSet = ToolSet>(
   return { result, meta: { agent: ctx.agent, userId, durationMs, piiHits, injectionBlocked: false } };
 }
 
+/**
+ * Argument shape for `safeGenerateObject`. We intentionally avoid
+ * `Parameters<typeof generateObject<SCHEMA>>[0]` here because the AI SDK 6.x
+ * overloads use deeply-conditional generics (`InferSchema<S> extends string ?
+ * "enum" : "object"`) that recurse into themselves and crash the TypeScript
+ * type-checker with a "Maximum call stack size exceeded" RangeError.
+ *
+ * Mirroring the public surface of `generateObject` with a minimal explicit
+ * shape keeps inference linear and lets us forward to the SDK without losing
+ * the caller's schema type.
+ */
+type SafeGenerateObjectArgs<SCHEMA extends z.ZodType> = {
+  model: LanguageModel;
+  schema: SCHEMA;
+  prompt?: string;
+  system?: string;
+  messages?: ModelMessage[];
+  output?: 'object' | 'array';
+  schemaName?: string;
+  schemaDescription?: string;
+  mode?: 'auto' | 'json' | 'tool';
+  maxRetries?: number;
+  abortSignal?: AbortSignal;
+  headers?: Record<string, string>;
+  experimental_telemetry?: { isEnabled?: boolean; functionId?: string; metadata?: Record<string, unknown> };
+} & Record<string, unknown>;
+
 /** Wrapper around `generateObject`. */
 export async function safeGenerateObject<SCHEMA extends z.ZodType>(
-  args: Parameters<typeof generateObject<SCHEMA>>[0],
+  args: SafeGenerateObjectArgs<SCHEMA>,
   ctx: GatewayContext,
 ): Promise<{ result: GenerateObjectResult<z.infer<SCHEMA>>; meta: GatewayMeta }> {
   const userId = ctx.userId || 'guest';
@@ -383,7 +434,12 @@ export async function safeGenerateObject<SCHEMA extends z.ZodType>(
   let lastErr: unknown;
   for (let attempt = 0; attempt < 3; attempt++) {
     try {
-      result = await generateObject<SCHEMA>(withDefaultTimeout(currentArgs, ctx));
+      // Cast to `Parameters<typeof generateObject>[0]` (non-generic) to bypass
+      // the AI SDK's recursive overload inference. The runtime payload is the
+      // same; we re-narrow the result type via the function's return contract.
+      result = (await generateObject(
+        withDefaultTimeout(currentArgs, ctx) as Parameters<typeof generateObject>[0],
+      )) as unknown as GenerateObjectResult<z.infer<SCHEMA>>;
       break;
     } catch (err) {
       lastErr = err;
@@ -417,7 +473,7 @@ export async function safeGenerateObject<SCHEMA extends z.ZodType>(
 
 /** Wrapper around `streamText` (preflight on inputs only). */
 export async function safeStreamText<TOOLS extends ToolSet = ToolSet>(
-  args: Parameters<typeof streamText<TOOLS>>[0],
+  args: SafeGenerateTextArgs<TOOLS>,
   ctx: GatewayContext,
 ): Promise<StreamTextResult<TOOLS, never>> {
   const userId = ctx.userId || 'guest';
@@ -447,5 +503,9 @@ export async function safeStreamText<TOOLS extends ToolSet = ToolSet>(
     outputLength: 0, piiHits, injectionBlocked: false, durationMs: 0,
   });
 
-  return streamText<TOOLS>(withDefaultTimeout(applyPromptOverride(args, promptToSend), ctx));
+  // Cast to non-generic Parameters shape to avoid the AI SDK's recursive
+  // overload inference (see SafeGenerateTextArgs note).
+  return streamText(
+    withDefaultTimeout(applyPromptOverride(args, promptToSend), ctx) as Parameters<typeof streamText>[0],
+  ) as StreamTextResult<TOOLS, never>;
 }

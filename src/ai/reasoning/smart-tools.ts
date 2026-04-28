@@ -60,7 +60,7 @@ export function smartTools() {
           return { ok: false, error: 'expression_contains_disallowed_characters' };
         }
         try {
-          // eslint-disable-next-line no-new-func
+           
           const v = Function('"use strict";return (' + expression.replace(/,/g, '') + ')')();
           if (typeof v !== 'number' || !Number.isFinite(v)) {
             return { ok: false, error: 'non_finite_result' };

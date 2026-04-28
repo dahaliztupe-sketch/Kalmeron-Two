@@ -54,6 +54,7 @@ function renderMarkdown(content: string) {
         {listBuffer.map((item, i) => (
           <li key={i} className="text-zinc-300 leading-relaxed flex gap-2">
             <span className="text-cyan-400 flex-shrink-0">·</span>
+            { /* nosemgrep: typescript.react.security.audit.react-dangerouslysetinnerhtml.react-dangerouslysetinnerhtml -- input is escapeHtml-encoded first, then a fixed bold-marker regex re-injects <strong> tags only. */ }
             <span dangerouslySetInnerHTML={{ __html: escapeHtml(item).replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>") }} />
           </li>
         ))}
@@ -90,6 +91,7 @@ function renderMarkdown(content: string) {
         <p
           key={out.length}
           className="text-zinc-300 leading-relaxed my-4"
+          // nosemgrep: typescript.react.security.audit.react-dangerouslysetinnerhtml.react-dangerouslysetinnerhtml -- input is escapeHtml-encoded first, then a fixed bold-marker regex re-injects <strong> tags only.
           dangerouslySetInnerHTML={{ __html: escapeHtml(line).replace(/\*\*(.+?)\*\*/g, "<strong class='text-white'>$1</strong>") }}
         />
       );
@@ -120,6 +122,7 @@ export default async function BlogPostPage({ params }: PageProps) {
 
   return (
     <>
+      { /* nosemgrep: typescript.react.security.audit.react-dangerouslysetinnerhtml.react-dangerouslysetinnerhtml -- safeJsonLd escapes </script and HTML entities; required for SEO JSON-LD. */ }
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }} />
       <SeoLandingShell
         eyebrow={post.category}

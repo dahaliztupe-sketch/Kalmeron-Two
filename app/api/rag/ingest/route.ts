@@ -4,7 +4,7 @@ import { adminAuth } from '@/src/lib/firebase-admin';
 import { ingestDocument } from '@/src/lib/rag/user-rag';
 import { rateLimit } from '@/src/lib/security/rate-limit';
 const pdf = require('pdf-parse');
-import * as XLSX from 'xlsx';
+import ExcelJS from 'exceljs';
 
 export const runtime = 'nodejs';
 export const maxDuration = 60;
@@ -28,12 +28,24 @@ async function extractText(file: File): Promise<{ text: string; source: 'pdf' | 
     return { text: r.text || '', source: 'pdf' };
   }
   if (name.endsWith('.xlsx') || name.endsWith('.xls')) {
-    const wb = XLSX.read(buf, { type: 'buffer' });
+    const wb = new ExcelJS.Workbook();
+    await wb.xlsx.load(buf);
     const parts: string[] = [];
-    for (const sn of wb.SheetNames) {
-      parts.push(`# ${sn}`);
-      parts.push(XLSX.utils.sheet_to_csv(wb.Sheets[sn]));
-    }
+    wb.eachSheet((sheet) => {
+      parts.push(`# ${sheet.name}`);
+      const rows: string[] = [];
+      sheet.eachRow({ includeEmpty: false }, (row) => {
+        const values = (row.values as unknown[]).slice(1).map((v) => {
+          if (v == null) return '';
+          if (typeof v === 'object' && v !== null && 'text' in (v as Record<string, unknown>)) {
+            return String((v as Record<string, unknown>).text ?? '');
+          }
+          return String(v);
+        });
+        rows.push(values.map((s) => (/[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s)).join(','));
+      });
+      parts.push(rows.join('\n'));
+    });
     return { text: parts.join('\n\n'), source: 'xlsx' };
   }
   if (name.endsWith('.csv')) {

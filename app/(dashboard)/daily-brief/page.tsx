@@ -172,12 +172,27 @@ export default function DailyBriefPage() {
   );
 }
 
+interface DailyBriefPrefs {
+  whatsapp?: boolean;
+  email?: boolean;
+  phoneE164?: string;
+  emailAddress?: string;
+  sendAtHour?: number;
+  timezone?: string;
+}
+
+interface DailyBriefSendResult {
+  ok?: boolean;
+  error?: string;
+  results?: Record<string, { ok?: boolean; error?: string; preview?: string }>;
+}
+
 function DeliveryPanel({ brief }: { brief: DailyBrief }) {
   const { user } = useAuth();
-  const [prefs, setPrefs] = useState<any>(null);
+  const [prefs, setPrefs] = useState<DailyBriefPrefs | null>(null);
   const [saving, setSaving] = useState(false);
   const [sending, setSending] = useState(false);
-  const [result, setResult] = useState<any>(null);
+  const [result, setResult] = useState<DailyBriefSendResult | null>(null);
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
@@ -187,7 +202,7 @@ function DeliveryPanel({ brief }: { brief: DailyBrief }) {
     ).then((r) => r.json()).then((j) => setPrefs(j.preferences || {})).catch(() => {});
   }, [user]);
 
-  async function save(next: any) {
+  async function save(next: Partial<DailyBriefPrefs>) {
     if (!user) return;
     setSaving(true);
     try {
@@ -207,7 +222,7 @@ function DeliveryPanel({ brief }: { brief: DailyBrief }) {
     setSending(true); setResult(null);
     try {
       const t = await user.getIdToken();
-      const body: any = {};
+      const body: { channels?: string[] } = {};
       if (channel) body.channels = [channel];
       const r = await fetch("/api/daily-brief/send", {
         method: "POST",
@@ -215,8 +230,8 @@ function DeliveryPanel({ brief }: { brief: DailyBrief }) {
         body: JSON.stringify(body),
       });
       setResult(await r.json());
-    } catch (e: any) {
-      setResult({ ok: false, error: e?.message });
+    } catch (e: unknown) {
+      setResult({ ok: false, error: (e as Error)?.message });
     } finally { setSending(false); }
   }
 

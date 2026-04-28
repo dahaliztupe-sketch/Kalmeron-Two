@@ -28,6 +28,8 @@ jobs:
   upload-sourcemaps:
     name: Build & upload source maps
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     timeout-minutes: 15
     if: ${{ github.event_name == 'workflow_dispatch' || vars.SENTRY_ENABLED == 'true' }}
 

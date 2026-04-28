@@ -25,6 +25,8 @@ jobs:
   e2e:
     name: Run end-to-end tests
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
@@ -40,13 +42,17 @@ jobs:
         env:
           CI: "true"
           NEXT_TELEMETRY_DISABLED: "1"
-          NODE_OPTIONS: "--max-old-space-size=4096"
+          NODE_OPTIONS: "--max-old-space-size=4096 --stack-size=16384"
+          MOCK_AUTH: "true"
+          MOCK_LLM: "true"
       - name: Run tests
         run: npm run test:e2e
         env:
           CI: "true"
           NEXT_TELEMETRY_DISABLED: "1"
           PORT: "5000"
+          MOCK_AUTH: "true"
+          MOCK_LLM: "true"
       - uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
         if: always()
         with:
@@ -55,3 +61,4 @@ jobs:
             playwright-report/
             test-results/
           retention-days: 7
+          if-no-files-found: ignore

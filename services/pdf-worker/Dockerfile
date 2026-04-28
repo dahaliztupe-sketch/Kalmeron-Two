@@ -1,7 +1,7 @@
-FROM python:3.12-slim
+FROM python:3.12-slim@sha256:46cb7cc2877e60fbd5e21a9ae6115c30ace7a077b9f8772da879e4590c18c2e3
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    fonts-noto-core fonts-noto-cjk fonts-noto-color-emoji \
+    fonts-noto-core fonts-noto-cjk fonts-noto-color-emoji curl \
  && rm -rf /var/lib/apt/lists/* \
  && groupadd --system --gid 1001 app \
  && useradd --system --uid 1001 --gid app --home-dir /app --shell /sbin/nologin app
@@ -17,5 +17,8 @@ ENV PORT=8000
 EXPOSE 8000
 
 USER app
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+  CMD curl -fsS "http://localhost:${PORT:-8000}/health" || exit 1
 
 CMD ["sh", "-c", "uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000} --workers 2"]

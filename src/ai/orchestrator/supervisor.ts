@@ -77,7 +77,7 @@ async function withCouncil(opts: {
     draft: opts.draft,
   });
   if (!result) {
-    // eslint-disable-next-line no-console
+     
     console.error(`[withCouncil] council failed for ${opts.agentName}:`, error);
     return opts.draft || markdown || opts.fallback;
   }
@@ -103,7 +103,7 @@ async function withCouncil(opts: {
           mode: 'fast', // refinement is fine on a smaller roster
         });
         if (refinedResult) {
-          // eslint-disable-next-line no-console
+           
           console.log(`[reflexion] ${opts.agentName} refined (score ${judgeOverall(score)} → re-rendered)`);
           return refined;
         }
@@ -396,7 +396,7 @@ async function cfoAgentNode(state: typeof SupervisorState.State) {
     }
   } catch (e) {
     // Egypt-Calc unreachable → fall through to LLM-based reasoning.
-    // eslint-disable-next-line no-console
+     
     console.warn('[cfo-agent] egypt-calc tool failed:', (e as Error)?.message);
   }
 

@@ -45,30 +45,30 @@ export async function PUT(req: NextRequest) {
   const uid = await authedUid(req);
   if (!uid) return NextResponse.json({ error: 'auth_required' }, { status: 401 });
 
-  let body: any = {};
+  let body: Record<string, unknown> = {};
   try { body = await req.json(); } catch { body = {}; }
 
-  const cleaned: Record<string, any> = {};
+  const cleaned: Record<string, unknown> = {};
   if (typeof body.whatsapp === 'boolean') cleaned.whatsapp = body.whatsapp;
   if (typeof body.email === 'boolean') cleaned.email = body.email;
   if (typeof body.phoneE164 === 'string') {
-    const p = body.phoneE164.replace(/[^\d+]/g, '').slice(0, 20);
+    const p = (body.phoneE164 as string).replace(/[^\d+]/g, '').slice(0, 20);
     cleaned.phoneE164 = p;
   }
   if (typeof body.emailAddress === 'string') {
-    cleaned.emailAddress = body.emailAddress.trim().slice(0, 200);
+    cleaned.emailAddress = (body.emailAddress as string).trim().slice(0, 200);
   }
   if (typeof body.sendAtHour === 'number' && body.sendAtHour >= 0 && body.sendAtHour <= 23) {
-    cleaned.sendAtHour = Math.floor(body.sendAtHour);
+    cleaned.sendAtHour = Math.floor(body.sendAtHour as number);
   }
-  if (typeof body.timezone === 'string') cleaned.timezone = body.timezone.slice(0, 64);
+  if (typeof body.timezone === 'string') cleaned.timezone = (body.timezone as string).slice(0, 64);
   cleaned.updatedAt = new Date();
 
   try {
     await adminDb.collection('users').doc(uid).collection('preferences').doc('daily_brief').set(cleaned, { merge: true });
     const snap = await adminDb.collection('users').doc(uid).collection('preferences').doc('daily_brief').get();
     return NextResponse.json({ ok: true, preferences: { ...DEFAULTS, ...(snap.data() || {}) } });
-  } catch (e: any) {
-    return NextResponse.json({ ok: false, error: e?.message || 'save_failed' }, { status: 500 });
+  } catch (e: unknown) {
+    return NextResponse.json({ ok: false, error: (e as Error)?.message || 'save_failed' }, { status: 500 });
   }
 }

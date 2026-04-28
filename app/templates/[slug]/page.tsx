@@ -67,6 +67,7 @@ export default async function TemplatePage({ params }: PageProps) {
     <>
       <script
         type="application/ld+json"
+        // nosemgrep: typescript.react.security.audit.react-dangerouslysetinnerhtml.react-dangerouslysetinnerhtml -- safeJsonLd escapes </script and HTML entities; required for SEO JSON-LD per schema.org guidelines
         dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}
       />
       <SeoLandingShell

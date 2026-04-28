@@ -33,10 +33,10 @@ export async function POST(req: NextRequest) {
   const userRl = rateLimitAgent(uid, 'daily_brief_send', { limit: 5, windowMs: 60_000 });
   if (!userRl.allowed) return new NextResponse('Too Many Requests', { status: 429 });
 
-  let body: any = {};
+  let body: { channels?: unknown; dryRun?: unknown } = {};
   try { body = await req.json(); } catch {}
   const requestedChannels: string[] = Array.isArray(body.channels) && body.channels.length > 0
-    ? body.channels
+    ? (body.channels as string[])
     : ['whatsapp', 'email'];
   const dryRun = !!body.dryRun;
 
@@ -44,7 +44,7 @@ export async function POST(req: NextRequest) {
   const prefs = prefSnap?.data() || {};
 
   const brief = await generateDailyBrief(uid);
-  const results: Record<string, any> = {};
+  const results: Record<string, { ok?: boolean; dryRun?: boolean; preview?: string; error?: string }> = {};
   const targets: Array<{ channel: 'whatsapp' | 'email'; recipient: string }> = [];
 
   if (requestedChannels.includes('whatsapp') && (prefs.whatsapp ?? false) && prefs.phoneE164) {
@@ -73,7 +73,7 @@ export async function POST(req: NextRequest) {
       t.channel,
       { subject: 'إيجاز كلميرون اليومي', text },
       t.recipient,
-    ).catch((e: any) => ({ ok: false, error: e?.message || String(e) }));
+    ).catch((e: unknown) => ({ ok: false, error: (e as Error)?.message || String(e) }));
     results[t.channel] = r;
   }
 
@@ -88,6 +88,6 @@ export async function POST(req: NextRequest) {
     });
   } catch {}
 
-  const anyOk = Object.values(results).some((r: any) => r?.ok);
+  const anyOk = Object.values(results).some((r) => r?.ok);
   return NextResponse.json({ ok: anyOk, results, brief });
 }

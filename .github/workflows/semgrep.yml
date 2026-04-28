@@ -20,6 +20,9 @@ jobs:
   semgrep:
     name: Scan
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
     container:
       image: semgrep/semgrep:latest
     if: (github.actor != 'dependabot[bot]')
