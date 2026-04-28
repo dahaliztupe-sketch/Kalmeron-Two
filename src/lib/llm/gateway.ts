@@ -53,18 +53,38 @@ const DEFAULT_LLM_TIMEOUT_MS = (() => {
 })();
 
 /**
- * Attach a default `AbortSignal.timeout` to the call args when the caller
- * has not provided one. Returns args unchanged when an abort signal is
- * already in place so caller-provided semantics always win.
+ * AI SDK default is 2 (= 3 attempts) which compounds 429/quota errors and
+ * drains free-tier buckets quickly. We cap to 1 by default; callers can
+ * override per-call (e.g. `maxRetries: 0` for the supervisor's router).
+ * Tunable via env `LLM_GATEWAY_MAX_RETRIES`.
  */
-function withDefaultTimeout<T extends { abortSignal?: AbortSignal }>(
+const DEFAULT_LLM_MAX_RETRIES = (() => {
+  const fromEnv = Number(process.env.LLM_GATEWAY_MAX_RETRIES);
+  return Number.isFinite(fromEnv) && fromEnv >= 0 ? Math.floor(fromEnv) : 1;
+})();
+
+/**
+ * Attach a default `AbortSignal.timeout` and `maxRetries` cap to the call
+ * args when the caller has not provided them. Caller-provided values always
+ * win so per-call overrides stay in effect.
+ */
+function withDefaults<T extends { abortSignal?: AbortSignal; maxRetries?: number }>(
   args: T,
   ctx: GatewayContext,
 ): T {
-  if (args.abortSignal) return args;
-  const ms = ctx.timeoutMs ?? DEFAULT_LLM_TIMEOUT_MS;
-  return { ...args, abortSignal: AbortSignal.timeout(ms) };
+  let next: T = args;
+  if (!next.abortSignal) {
+    const ms = ctx.timeoutMs ?? DEFAULT_LLM_TIMEOUT_MS;
+    next = { ...next, abortSignal: AbortSignal.timeout(ms) };
+  }
+  if (next.maxRetries === undefined) {
+    next = { ...next, maxRetries: DEFAULT_LLM_MAX_RETRIES };
+  }
+  return next;
 }
+
+// Backwards-compat alias used internally below.
+const withDefaultTimeout = withDefaults;
 
 export interface GatewayMeta {
   agent: string;
