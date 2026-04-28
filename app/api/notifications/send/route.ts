@@ -57,7 +57,7 @@ export async function POST(req: NextRequest) {
     }
 
     const tokens = tokensSnap.docs.map(d => d.data().token as string).filter(Boolean);
-    const messaging = getMessaging(adminApp);
+    const messaging = getMessaging(adminApp());
 
     const result = await messaging.sendEachForMulticast({
       tokens,

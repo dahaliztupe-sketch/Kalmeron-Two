@@ -50,7 +50,7 @@ jobs:
 
       - name: Build (with source maps)
         env:
-          NODE_OPTIONS: '--max-old-space-size=4096 --stack-size=8192'
+          NODE_OPTIONS: '--max-old-space-size=4096'
           NEXT_PUBLIC_SENTRY_RELEASE: ${{ github.sha }}
           SENTRY_RELEASE: ${{ github.sha }}
           GENERATE_SOURCEMAP: 'true'
