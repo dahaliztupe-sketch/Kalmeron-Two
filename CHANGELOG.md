@@ -5,6 +5,21 @@ omitted unless they affect a user. The most recent release is at the top.
 
 ---
 
+## [0.2.0](https://github.com/dahaliztupe-sketch/Kalmeron-Two/compare/v0.1.0...v0.2.0) (2026-04-28)
+
+
+### Features
+
+* **ai:** Add code interpreter agent ([1b5f657](https://github.com/dahaliztupe-sketch/Kalmeron-Two/commit/1b5f65738e2c241d3bdd1014105ae01ab6aa9e21))
+* Implement billing and credit system ([b629c71](https://github.com/dahaliztupe-sketch/Kalmeron-Two/commit/b629c71d683631458450ce100345fdf339ab0773))
+* Implement observability module placeholders ([db82dfa](https://github.com/dahaliztupe-sketch/Kalmeron-Two/commit/db82dfa0d0562dfdc4d57651a8ed89b86f2b0275))
+* Implement task management functionality ([e36a712](https://github.com/dahaliztupe-sketch/Kalmeron-Two/commit/e36a7122d1e519404fe311b79b7f51c193838722))
+* Initialize Kalmeron Two core application files ([3936dcd](https://github.com/dahaliztupe-sketch/Kalmeron-Two/commit/3936dcdfd05700c7180a389fd34e6589fb70cc76))
+* Integrate AI agents for supply chain management ([7d57cbc](https://github.com/dahaliztupe-sketch/Kalmeron-Two/commit/7d57cbcb50a9cfd4fa2c7bb9521daa37e03a396b))
+* Introduce agent OS and runtime governance ([8a2eba1](https://github.com/dahaliztupe-sketch/Kalmeron-Two/commit/8a2eba196f5dd1f55ef1e37cd452f0e16000e747))
+* **learning:** self-evolution loop with ambient context + tenant isolation ([5ffa842](https://github.com/dahaliztupe-sketch/Kalmeron-Two/commit/5ffa842dce9cc02d1a2a1c317d64eedeb4efdd5e))
+* Setup mobile app infrastructure and core components ([5e0c6f0](https://github.com/dahaliztupe-sketch/Kalmeron-Two/commit/5e0c6f03909b82f8b6b96605ce9d4c97cb89ea8b))
+
 ## v2026.04.24-e — CI Green (2026-04-24)
 
 Fixes the failing GitHub Actions runs visible on the `Actions` tab.
