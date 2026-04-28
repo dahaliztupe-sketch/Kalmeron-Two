@@ -97,3 +97,13 @@ jobs:
       - run: npm run build
         env:
           NEXT_TELEMETRY_DISABLED: "1"
+          MOCK_AUTH: "true"
+          MOCK_LLM: "true"
+          NEXT_PUBLIC_MOCK_AUTH: "true"
+          NEXT_PUBLIC_FIREBASE_API_KEY: "ci-dummy-key"
+          NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: "example.firebaseapp.com"
+          NEXT_PUBLIC_FIREBASE_PROJECT_ID: "ci-example"
+          NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: "example.appspot.com"
+          NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: "0"
+          NEXT_PUBLIC_FIREBASE_APP_ID: "1:0:web:0"
+          GEMINI_API_KEY: "ci-mock"

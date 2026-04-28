@@ -9,9 +9,15 @@ import {
   getRedirectResult,
   signOut as firebaseSignOut,
 } from "firebase/auth";
-import { auth, googleProvider, db } from "@/src/lib/firebase";
+import { auth, googleProvider, db, isFirebaseConfigured } from "@/src/lib/firebase";
 import { doc, getDoc, setDoc, serverTimestamp } from "firebase/firestore";
 import { toast } from "sonner";
+
+// Resolved once at module-load. When false (mock-auth or missing
+// NEXT_PUBLIC_FIREBASE_* env vars in CI / preview deploys), the provider
+// renders an inert auth state so client pages like /auth/login, /auth/signup
+// and /pricing don't crash into the global error boundary.
+const FIREBASE_READY = isFirebaseConfigured();
 
 interface DBUser {
   uid: string;
@@ -64,7 +70,10 @@ function shouldUseRedirect(): boolean {
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [dbUser, setDbUser] = useState<DBUser | null>(null);
-  const [loading, setLoading] = useState(true);
+  // When Firebase isn't configured we never go into a loading state — there
+  // is no auth listener to wait on, so the UI should immediately render the
+  // signed-out experience rather than flashing skeletons forever.
+  const [loading, setLoading] = useState(FIREBASE_READY);
   const [dbUserLoading, setDbUserLoading] = useState(false);
   // Tracks if mergeDBUser was called for the current uid. When true, we will
   // NOT overwrite local optimistic state with a stale Firestore re-fetch —
@@ -112,6 +121,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   useEffect(() => {
+    // No-op when Firebase isn't configured (mock-auth, missing env vars).
+    // We've already initialized loading=false in this branch so consumers
+    // see a stable signed-out state immediately.
+    if (!FIREBASE_READY) {
+      return;
+    }
     // Resolve any pending redirect-based sign-in BEFORE we wire up the listener
     // so the popup → redirect transition completes cleanly. Errors here are
     // surfaced as toasts but never block the rest of auth.
@@ -171,6 +186,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const signInWithGoogle = async () => {
+    if (!FIREBASE_READY) {
+      try {
+        toast.error("تسجيل الدخول معطّل في هذه البيئة (وضع تجريبي).");
+      } catch {}
+      return;
+    }
     try {
       if (shouldUseRedirect()) {
         // Redirect flow — page will reload and getRedirectResult above will
@@ -209,6 +230,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const signOut = async () => {
+    if (!FIREBASE_READY) {
+      setUser(null);
+      setDbUser(null);
+      return;
+    }
     try {
       await firebaseSignOut(auth);
     } catch (error) {
@@ -218,6 +244,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const refreshDBUser = async () => {
+    if (!FIREBASE_READY) return;
     if (user) {
       const userRef = doc(db, "users", user.uid);
       const snap = await getDoc(userRef);

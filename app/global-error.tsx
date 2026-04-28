@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import * as Sentry from "@sentry/nextjs";
 import { Button } from "@/components/ui/button";
 import { AlertOctagon } from "lucide-react";
 
@@ -12,7 +13,20 @@ export default function GlobalError({
   reset: () => void;
 }) {
   useEffect(() => {
-    console.error("Global error:", error);
+    // Log to console with digest for grep-ability across CI/server logs.
+    console.error(
+      `[global-error] digest=${error.digest ?? "n/a"} message=${error.message}`,
+      error,
+    );
+    // Forward to Sentry when configured so we can see *why* the boundary
+    // tripped, not just that it tripped.
+    try {
+      Sentry.captureException(error, {
+        tags: { boundary: "global-error", digest: error.digest ?? "n/a" },
+      });
+    } catch {
+      /* Sentry isn't configured in this env — best-effort only. */
+    }
   }, [error]);
 
   return (

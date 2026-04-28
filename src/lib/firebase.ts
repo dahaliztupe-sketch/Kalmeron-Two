@@ -29,6 +29,21 @@ const firestoreDatabaseId =
   process.env.NEXT_PUBLIC_FIREBASE_FIRESTORE_DATABASE_ID || undefined;
 
 /**
+ * Returns true only when the minimum Firebase client configuration is present.
+ * Other modules (AuthContext, FirebaseAdapter, …) MUST gate their calls on this
+ * to avoid `auth/invalid-api-key` exceptions in CI / mock-mode environments.
+ */
+export function isFirebaseConfigured(): boolean {
+  if (
+    process.env.NEXT_PUBLIC_MOCK_AUTH === 'true' ||
+    process.env.MOCK_AUTH === 'true'
+  ) {
+    return false;
+  }
+  return Boolean(firebaseConfig.apiKey && firebaseConfig.projectId);
+}
+
+/**
  * Lazy initialization for the Firebase **client** SDK.
  *
  * Why lazy?

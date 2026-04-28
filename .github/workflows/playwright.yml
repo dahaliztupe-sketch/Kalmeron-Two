@@ -51,6 +51,17 @@ jobs:
           NODE_OPTIONS: "--max-old-space-size=4096"
           MOCK_AUTH: "true"
           MOCK_LLM: "true"
+          NEXT_PUBLIC_MOCK_AUTH: "true"
+          # Firebase placeholders so any module that reads them at build time
+          # doesn't throw `auth/invalid-api-key`. Mock-auth is the real switch
+          # that disables Firebase calls — these are belt-and-braces.
+          NEXT_PUBLIC_FIREBASE_API_KEY: "ci-dummy-key"
+          NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: "example.firebaseapp.com"
+          NEXT_PUBLIC_FIREBASE_PROJECT_ID: "ci-example"
+          NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: "example.appspot.com"
+          NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: "0"
+          NEXT_PUBLIC_FIREBASE_APP_ID: "1:0:web:0"
+          GEMINI_API_KEY: "ci-mock"
       - name: Run tests
         run: npm run test:e2e
         env:
@@ -59,6 +70,14 @@ jobs:
           PORT: "5000"
           MOCK_AUTH: "true"
           MOCK_LLM: "true"
+          NEXT_PUBLIC_MOCK_AUTH: "true"
+          NEXT_PUBLIC_FIREBASE_API_KEY: "ci-dummy-key"
+          NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: "example.firebaseapp.com"
+          NEXT_PUBLIC_FIREBASE_PROJECT_ID: "ci-example"
+          NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: "example.appspot.com"
+          NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: "0"
+          NEXT_PUBLIC_FIREBASE_APP_ID: "1:0:web:0"
+          GEMINI_API_KEY: "ci-mock"
       - uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
         if: always()
         with:
