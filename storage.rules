@@ -1,0 +1,63 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    // ============================================================
+    // Global default — DENY everything not matched below
+    // ============================================================
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+
+    // Helpers
+    function isSignedIn()       { return request.auth != null; }
+    function isOwner(userId)    { return isSignedIn() && request.auth.uid == userId; }
+    function isImage()          { return request.resource.contentType.matches('image/.*'); }
+    function isPdf()            { return request.resource.contentType == 'application/pdf'; }
+    function isUnderSize(maxMB) { return request.resource.size < maxMB * 1024 * 1024; }
+
+    // ============================================================
+    // User avatars — public read, owner-only write
+    // Path: /users/{uid}/avatar/{filename}
+    // ============================================================
+    match /users/{userId}/avatar/{fileName} {
+      allow read:  if true;
+      allow write: if isOwner(userId) && isImage() && isUnderSize(5);
+      allow delete: if isOwner(userId);
+    }
+
+    // ============================================================
+    // User-uploaded documents (PDFs, knowledge base files, etc.)
+    // Path: /users/{uid}/uploads/{filename}
+    // Owner-only access; PDF or image, ≤ 20 MB.
+    // ============================================================
+    match /users/{userId}/uploads/{fileName} {
+      allow read:  if isOwner(userId);
+      allow write: if isOwner(userId)
+                   && (isPdf() || isImage())
+                   && isUnderSize(20);
+      allow delete: if isOwner(userId);
+    }
+
+    // ============================================================
+    // Generated artifacts (PDFs/Excels created by server jobs)
+    // Path: /users/{uid}/artifacts/{filename}
+    // Read-only for the owner; writes are server-side (Admin SDK).
+    // ============================================================
+    match /users/{userId}/artifacts/{fileName} {
+      allow read:  if isOwner(userId);
+      allow write: if false;
+    }
+
+    // ============================================================
+    // Workspace-scoped shared files (e.g. data room, contracts)
+    // Path: /workspaces/{wid}/{folder}/{filename}
+    // Reads only for workspace members; writes server-side.
+    // ============================================================
+    match /workspaces/{wid}/{folder}/{fileName} {
+      allow read:  if isSignedIn()
+                   && exists(/databases/(default)/documents/workspaces/$(wid)/members/$(request.auth.uid));
+      allow write: if false;
+    }
+  }
+}

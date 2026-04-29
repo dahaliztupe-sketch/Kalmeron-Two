@@ -2,20 +2,28 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Global Deny-All fallback
+    // ============================================================
+    // Global Deny-All fallback — matches ANY path not explicitly
+    // allowed below. Every collection used by clients must have an
+    // explicit `match` rule overriding this default.
+    // ============================================================
     match /{document=**} {
       allow read, write: if false;
     }
 
-    // --- Hardened Helpers ---
-    function isSignedIn() { return request.auth != null; }
-    function isOwner(userId) { return isSignedIn() && request.auth.uid == userId; }
-    function isValidId(id) { return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$'); }
-    function isVerified() { return request.auth.token.email_verified == true; }
-    function incoming() { return request.resource.data; }
-    function existing() { return resource.data; }
-    function isDocOwner() { return isSignedIn() && request.auth.uid == resource.data.userId; }
-    function isIncomingOwner() { return isSignedIn() && request.auth.uid == incoming().userId; }
+    // ============================================================
+    // Hardened Helpers
+    // ============================================================
+    function isSignedIn()           { return request.auth != null; }
+    function isOwner(userId)        { return isSignedIn() && request.auth.uid == userId; }
+    function isValidId(id)          { return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$'); }
+    function incoming()             { return request.resource.data; }
+    function existing()             { return resource.data; }
+    function isDocOwner()           { return isSignedIn() && request.auth.uid == resource.data.userId; }
+    function isIncomingOwner()      { return isSignedIn() && request.auth.uid == incoming().userId; }
+    function isWorkspaceMember(wid) {
+      return isSignedIn() && exists(/databases/$(database)/documents/workspaces/$(wid)/members/$(request.auth.uid));
+    }
 
     function isValidTask(data) {
       return data.keys().hasAll(['taskId', 'name', 'description', 'status', 'priority', 'createdBy', 'assignee', 'createdAt', 'updatedAt'])
@@ -27,16 +35,22 @@ service cloud.firestore {
           && data.assignee is string;
     }
 
-    // --- User Profile ---
+    // ============================================================
+    // User Profile + ALL user-owned subcollections
+    // The actual client code stores user data under /users/{uid}/...
+    // (see app/market-lab, app/(dashboard)/chat, ideas/analyze,
+    //  brand-voice, etc.). Owner-only access for everything below.
+    // ============================================================
     match /users/{userId} {
-      allow read: if isOwner(userId);
+      allow read:   if isOwner(userId);
       allow create: if isOwner(userId) && incoming().keys().hasAll(['email']);
       allow update: if isOwner(userId);
       allow delete: if false; // Deletions handled server-side only
 
+      // Strongly-typed task subcollection (server-issued IDs only).
       match /tasks/{taskId} {
-        allow list: if isOwner(userId) && resource.data.createdBy == request.auth.uid;
-        allow get:  if isOwner(userId) && resource.data.createdBy == request.auth.uid;
+        allow list:   if isOwner(userId) && resource.data.createdBy == request.auth.uid;
+        allow get:    if isOwner(userId) && resource.data.createdBy == request.auth.uid;
         allow create: if isOwner(userId) && isValidId(taskId) && isValidTask(incoming())
                       && incoming().createdBy == request.auth.uid;
         allow update: if isOwner(userId) && isValidTask(incoming())
@@ -44,138 +58,207 @@ service cloud.firestore {
                       && existing().status != 'completed';
         allow delete: if isOwner(userId);
       }
+
+      // Open-shape user-owned subcollections (client read/write).
+      // Each rule covers a path actively used by the app.
+      match /ideas/{docId}              { allow read, write: if isOwner(userId); }
+      match /chat_history/{docId}       { allow read, write: if isOwner(userId); }
+      match /threads/{threadId} {
+        allow read, write: if isOwner(userId);
+        match /messages/{messageId}     { allow read, write: if isOwner(userId); }
+      }
+      match /memories/{docId}           { allow read, write: if isOwner(userId); }
+      match /businessPlans/{docId}      { allow read, write: if isOwner(userId); }
+      match /market_experiments/{docId} { allow read, write: if isOwner(userId); }
+      match /personas/{docId}           { allow read, write: if isOwner(userId); }
+      match /saved_companies/{docId}    { allow read, write: if isOwner(userId); }
+      match /mistakes_viewed/{docId}    { allow read, write: if isOwner(userId); }
+      match /settings/{settingId}       { allow read, write: if isOwner(userId); }
+      match /preferences/{docId}        { allow read, write: if isOwner(userId); }
+
+      // FCM tokens — client may register/remove its own tokens.
+      match /fcm_tokens/{tokenId}       { allow read, write: if isOwner(userId); }
     }
 
-    // --- Billing (Immutable via client) ---
+    // ============================================================
+    // Billing — read-only for the owner; writes server-side only
+    // ============================================================
     match /user_credits/{userId} {
       allow read:  if isOwner(userId);
       allow write: if false;
     }
 
-    // --- User-Owned Business Data ---
+    // ============================================================
+    // Top-level user-owned business data (legacy shape: each doc
+    // carries a userId field). Kept for backward compatibility with
+    // older API routes that write to top-level collections.
+    // ============================================================
     match /ideas/{docId} {
       allow read, update, delete: if isSignedIn() && isDocOwner();
-      allow create: if isSignedIn() && isIncomingOwner();
+      allow create:               if isSignedIn() && isIncomingOwner();
     }
-
     match /business_plans/{docId} {
       allow read, update, delete: if isSignedIn() && isDocOwner();
-      allow create: if isSignedIn() && isIncomingOwner();
+      allow create:               if isSignedIn() && isIncomingOwner();
     }
-
     match /chat_history/{docId} {
       allow read, update, delete: if isSignedIn() && isDocOwner();
-      allow create: if isSignedIn() && isIncomingOwner();
+      allow create:               if isSignedIn() && isIncomingOwner();
     }
-
     match /user_memory/{docId} {
       allow read, update, delete: if isSignedIn() && isDocOwner();
-      allow create: if isSignedIn() && isIncomingOwner();
+      allow create:               if isSignedIn() && isIncomingOwner();
     }
-
     match /saved_companies/{docId} {
       allow read, update, delete: if isSignedIn() && isDocOwner();
-      allow create: if isSignedIn() && isIncomingOwner();
+      allow create:               if isSignedIn() && isIncomingOwner();
     }
-
     match /mistakes_viewed/{docId} {
       allow read, update, delete: if isSignedIn() && isDocOwner();
-      allow create: if isSignedIn() && isIncomingOwner();
+      allow create:               if isSignedIn() && isIncomingOwner();
     }
-
     match /personas/{docId} {
       allow read, update, delete: if isSignedIn() && isDocOwner();
-      allow create: if isSignedIn() && isIncomingOwner();
+      allow create:               if isSignedIn() && isIncomingOwner();
     }
-
     match /market_experiments/{docId} {
       allow read, update, delete: if isSignedIn() && isDocOwner();
-      allow create: if isSignedIn() && isIncomingOwner();
+      allow create:               if isSignedIn() && isIncomingOwner();
     }
 
-    // --- Learned Skills (Self-Evolution Learning Loop) ---
-    // Per-workspace tenant isolation:
-    //   - Reads: only users who are members of the skill's workspace.
-    //   - Writes: server-side only (Admin SDK bypasses these rules).
-    // Membership is checked via workspaces/{wid}/members/{uid} existence.
+    // ============================================================
+    // Account deletion requests — clients may file their own
+    // request; the server processes asynchronously.
+    // ============================================================
+    match /deletion_requests/{docId} {
+      allow read:   if isSignedIn() && isDocOwner();
+      allow create: if isSignedIn() && isIncomingOwner();
+      allow update, delete: if false;
+    }
+
+    // ============================================================
+    // Learned Skills — workspace-scoped reads, server-only writes
+    // ============================================================
     match /skills/{skillId} {
-      allow read: if isSignedIn()
-                  && resource.data.workspaceId is string
-                  && exists(/databases/$(database)/documents/workspaces/$(resource.data.workspaceId)/members/$(request.auth.uid));
+      allow read:  if isSignedIn()
+                   && resource.data.workspaceId is string
+                   && isWorkspaceMember(resource.data.workspaceId);
       allow write: if false;
     }
 
-    // --- Workspaces & Membership (privilege-escalation hardening) ---
-    // Closes EoP item in docs/THREAT_MODEL.md TB2:
-    //   "Member promotes themselves to owner".
-    //
-    // Rules:
-    //   - Workspace metadata: read by members; mutations server-side only.
-    //   - Membership records: ANY mutation (create/update/delete) must go
-    //     through Admin SDK in /api/workspace/members/*. Clients cannot
-    //     promote themselves to admin/owner, cannot add other users, and
-    //     cannot remove members. Reads are allowed only to existing members.
+    // ============================================================
+    // Workspaces & Membership (privilege-escalation hardening)
+    // - Reads: workspace members only
+    // - Writes: server-side only (Admin SDK in /api/workspace/*)
+    // Members CANNOT promote themselves or add/remove other users.
+    // ============================================================
     match /workspaces/{wid} {
-      allow read: if isSignedIn()
-                  && exists(/databases/$(database)/documents/workspaces/$(wid)/members/$(request.auth.uid));
+      allow read:                 if isWorkspaceMember(wid);
       allow create, update, delete: if false;
 
       match /members/{memberUid} {
-        allow read: if isSignedIn()
-                    && exists(/databases/$(database)/documents/workspaces/$(wid)/members/$(request.auth.uid));
-        // No client writes. EVER. setRole, addMember, removeMember are
-        // server-only mutations (audited in /api/workspace/members/*).
+        allow read:                 if isWorkspaceMember(wid);
         allow create, update, delete: if false;
       }
     }
 
-    // --- Public Read-Only Collections ---
-    match /opportunities/{doc} {
-      allow read: if true;
-      allow write: if false;
-    }
+    // ============================================================
+    // Public read-only collections
+    // ============================================================
+    match /opportunities/{doc}    { allow read: if true; allow write: if false; }
+    match /success_stories/{doc}  { allow read: if true; allow write: if false; }
 
-    match /success_stories/{doc} {
-      allow read: if true;
-      allow write: if false;
-    }
+    // ============================================================
+    // Server-only collections (Admin SDK bypasses rules).
+    // Explicit deny-all is defense-in-depth so a misconfigured
+    // client SDK can never read/write these even if the global
+    // fallback is later relaxed.
+    // ============================================================
+    match /_health/{doc}                { allow read, write: if false; }
+    match /analytics_events/{doc}       { allow read, write: if false; }
+    match /cost_events/{doc}            { allow read, write: if false; }
+    match /cost_rollups/{doc}           { allow read, write: if false; }
+    match /cost_rollups_daily/{doc}     { allow read, write: if false; }
+    match /account_deletions/{doc}      { allow read, write: if false; }
+    match /audit_log/{doc}              { allow read, write: if false; }
+    match /audit_logs/{doc}             { allow read, write: if false; }
+    match /audit_trail/{doc}            { allow read, write: if false; }
+    match /stripe_events/{doc}          { allow read, write: if false; }
+    match /fawry_orders/{doc}           { allow read, write: if false; }
+    match /webhooks/{doc}               { allow read, write: if false; }
+    match /api_keys/{doc}               { allow read, write: if false; }
+    match /backups/{doc}                { allow read, write: if false; }
+    match /firestore_backups/{doc}      { allow read, write: if false; }
+    match /restore_drills/{doc}         { allow read, write: if false; }
+    match /health_probe_runs/{doc}      { allow read, write: if false; }
+    match /cron_runs/{doc}              { allow read, write: if false; }
+    match /budget_alerts/{doc}          { allow read, write: if false; }
+    match /usage_daily/{doc}            { allow read, write: if false; }
+    match /usage_monthly/{doc}          { allow read, write: if false; }
+    match /credit_transactions/{doc}    { allow read, write: if false; }
+    match /payments/{doc}               { allow read, write: if false; }
+    match /invoices/{doc}               { allow read, write: if false; }
+    match /ai_usage_logs/{doc}          { allow read, write: if false; }
+    match /prompt_cache/{doc}           { allow read, write: if false; }
+    match /semantic_prompt_cache/{doc}  { allow read, write: if false; }
+    match /rag_quarantine_events/{doc}  { allow read, write: if false; }
+    match /compliance_log/{doc}         { allow read, write: if false; }
+    match /referrals/{doc}              { allow read, write: if false; }
+    match /first_100_signups/{doc}      { allow read, write: if false; }
 
-    // --- Health Check (internal, server-side only) ---
-    match /_health/{doc} {
-      allow read, write: if false;
-    }
+    // Virtual office & agent operations (server-only orchestration)
+    match /virtual_office_vms/{doc}     { allow read, write: if false; }
+    match /virtual_office_tasks/{doc}   { allow read, write: if false; }
+    match /agent_actions/{doc}          { allow read, write: if false; }
+    match /agent_alerts/{doc}           { allow read, write: if false; }
+    match /agent_critiques/{doc}        { allow read, write: if false; }
+    match /agent_followups/{doc}        { allow read, write: if false; }
+    match /agent_questions/{doc}        { allow read, write: if false; }
+    match /agent_thoughts/{doc}         { allow read, write: if false; }
+    match /agent_traces/{doc}           { allow read, write: if false; }
+    match /action_requests/{doc}        { allow read, write: if false; }
+    match /approvals/{doc}              { allow read, write: if false; }
+    match /activities/{doc}             { allow read, write: if false; }
+    match /event_log/{doc}              { allow read, write: if false; }
+    match /recipe_runs/{doc}            { allow read, write: if false; }
+    match /launch_runs/{doc}            { allow read, write: if false; }
+    match /omnichannel_messages/{doc}   { allow read, write: if false; }
+    match /channel_identities/{doc}     { allow read, write: if false; }
+    match /experts/{doc}                { allow read, write: if false; }
+    match /okrs/{doc}                   { allow read, write: if false; }
+    match /meetings/{doc}               { allow read, write: if false; }
+    match /support_tickets/{doc}        { allow read, write: if false; }
+    match /knowledge_base/{doc}         { allow read, write: if false; }
+    match /data_room/{doc}              { allow read, write: if false; }
+    match /artifacts/{doc}              { allow read, write: if false; }
+    match /contracts/{doc}              { allow read, write: if false; }
+    match /investor_outreach/{doc}      { allow read, write: if false; }
+    match /crm_leads/{doc}              { allow read, write: if false; }
+    match /job_postings/{doc}           { allow read, write: if false; }
+    match /job_offers/{doc}             { allow read, write: if false; }
+    match /marketplace_jobs/{doc}       { allow read, write: if false; }
+    match /cv_evaluations/{doc}         { allow read, write: if false; }
+    match /financial_reports/{doc}      { allow read, write: if false; }
+    match /financial_scenarios/{doc}    { allow read, write: if false; }
+    match /bank_transactions/{doc}      { allow read, write: if false; }
+    match /inventory/{doc}              { allow read, write: if false; }
+    match /inventory_movements/{doc}    { allow read, write: if false; }
+    match /purchase_orders/{doc}        { allow read, write: if false; }
+    match /daily_brief_deliveries/{doc} { allow read, write: if false; }
+    match /ttfv/{doc}                   { allow read, write: if false; }
+    match /ttfv_daily/{doc}             { allow read, write: if false; }
+    match /saved_opportunities/{doc}    { allow read, write: if false; }
+    match /ops_tasks/{doc}              { allow read, write: if false; }
+    match /twins/{doc}                  { allow read, write: if false; }
+    match /plans/{doc}                  { allow read, write: if false; }
 
-    // --- Consent Ledger (append-only legal record) ---
-    // Writes happen ONLY via Admin SDK (`/api/consent/*`); clients can read
-    // their own history.
+    // ============================================================
+    // Consent ledger — append-only legal record.
+    // Writes via Admin SDK only; user reads own history.
+    // ============================================================
     match /consent_events/{doc} {
-      allow read: if request.auth != null
-                  && resource.data.userId == request.auth.uid;
+      allow read:                 if isSignedIn() && resource.data.userId == request.auth.uid;
       allow create, update, delete: if false;
-    }
-
-    // --- Analytics events (server-side ingestion only) ---
-    match /analytics_events/{doc} {
-      allow read, write: if false;
-    }
-
-    // --- Cost ledger ---
-    // Raw cost events: server-only.
-    match /cost_events/{doc} {
-      allow read, write: if false;
-    }
-    // Hourly + daily rollups: read by admin UI via Admin SDK only;
-    // direct client access is denied so per-tenant aggregates can't leak.
-    match /cost_rollups/{doc} {
-      allow read, write: if false;
-    }
-    match /cost_rollups_daily/{doc} {
-      allow read, write: if false;
-    }
-
-    // --- Account deletion queue (server-only) ---
-    match /account_deletions/{doc} {
-      allow read, write: if false;
     }
   }
 }
