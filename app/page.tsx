@@ -226,7 +226,7 @@ function Hero() {
           className="font-display font-bold tracking-tight leading-[1.08] mb-5 sm:mb-6 break-words [text-wrap:balance]"
           style={{ fontSize: "clamp(2rem, 1rem + 6vw, 5.5rem)" }}
         >
-          <span className="block text-white">{t("titleLine1")}</span>
+          <span className="block text-white mb-1">{t("titleLine1")}</span>
           <span className="block brand-gradient-text pb-2">{t("titleLine2")}</span>
         </motion.h1>
 

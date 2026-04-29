@@ -114,7 +114,7 @@ export function PricingFAQ() {
           فريقنا متاح للإجابة عن أي سؤال يخص الخطط أو الميزات.
         </p>
         <a
-          href="mailto:hello@kalmeron.com"
+          href="mailto:hello@kalmeron.ai"
           className="inline-flex items-center gap-2 rounded-full border border-brand-cyan/40 bg-brand-cyan/10 px-6 py-3 text-sm font-bold text-brand-cyan hover:bg-brand-cyan/20 transition-all"
         >
           تواصل معنا

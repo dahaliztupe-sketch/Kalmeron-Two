@@ -529,7 +529,7 @@ function LiveDemoSection() {
             <Play className="w-3.5 h-3.5" /> تجربة حية
           </div>
           <h2 className="font-display text-2xl sm:text-3xl md:text-5xl font-extrabold text-white mb-3">
-            شوف كيف يعمل <span className="brand-gradient-text">كلميرون</span>
+            اكتشف كيف يعمل <span className="brand-gradient-text">كلميرون</span>
           </h2>
           <p className="text-neutral-400 max-w-xl mx-auto text-sm md:text-base">اختر السيناريو وشاهد المساعد يجيب فوراً</p>
         </motion.div>

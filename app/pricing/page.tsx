@@ -164,8 +164,8 @@ export default function PricingPage() {
           <PricingTrust />
         </div>
 
-        {/* FEATURE COMPARISON (desktop) — keeps Enterprise column for full comparison */}
-        <div className="hidden md:block px-8 mt-20">
+        {/* FEATURE COMPARISON — horizontal scroll on mobile */}
+        <div className="px-4 md:px-8 mt-20">
           <PricingComparison
             plans={[...mainPlanList, enterprisePlan]}
             currentPlan={currentPlan}

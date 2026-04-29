@@ -113,8 +113,8 @@ export function PricingComparison({ plans, currentPlan }: Props) {
         </h2>
       </motion.div>
 
-      <div className="rounded-3xl border border-white/[0.08] bg-dark-surface/40 backdrop-blur-2xl overflow-hidden">
-        <table className="w-full">
+      <div className="rounded-3xl border border-white/[0.08] bg-dark-surface/40 backdrop-blur-2xl overflow-hidden overflow-x-auto">
+        <table className="w-full min-w-[640px]">
           <thead>
             <tr className="border-b border-white/[0.08]">
               <th className="text-right p-5 text-xs font-bold text-text-secondary uppercase tracking-widest w-[28%]">

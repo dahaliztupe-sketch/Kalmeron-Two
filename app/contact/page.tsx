@@ -108,11 +108,11 @@ export default function ContactPage({
             <div className="rounded-xl border border-white/5 bg-white/[0.02] p-4">
               <div className="text-neutral-500 text-xs mb-1">البريد العام</div>
               <a
-                href={`mailto:hello@kalmeron.com`}
+                href={`mailto:hello@kalmeron.ai`}
                 className="hover:text-white transition-colors"
                 dir="ltr"
               >
-                hello@kalmeron.com
+                hello@kalmeron.ai
               </a>
             </div>
             <div className="rounded-xl border border-white/5 bg-white/[0.02] p-4">
