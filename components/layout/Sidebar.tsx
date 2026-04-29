@@ -5,19 +5,10 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/src/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
-import { motion, type Variants } from "motion/react";
+import { motion } from "motion/react";
 import { Settings as SettingsIcon, LogOut, ChevronLeft, Sparkles } from "lucide-react";
 import { NAV_SECTIONS, FOOTER_NAV, isActive, type NavItem } from "@/src/lib/navigation";
 import { WorkspaceSwitcher } from "@/components/workspaces/WorkspaceSwitcher";
-
-const containerV: Variants = {
-  hidden: { opacity: 0 },
-  show: { opacity: 1, transition: { staggerChildren: 0.022, delayChildren: 0.04 } },
-};
-const itemV: Variants = {
-  hidden: { opacity: 0, x: 12 },
-  show: { opacity: 1, x: 0, transition: { duration: 0.28, ease: [0.22, 1, 0.36, 1] } },
-};
 
 function SectionHeading({ children }: { children: React.ReactNode }) {
   return (
@@ -36,7 +27,7 @@ function NavLink({ item, pathname }: { item: NavItem; pathname: string }) {
   const active = isActive(pathname, item.href, item.exact);
 
   return (
-    <motion.div variants={itemV} className="relative">
+    <div className="relative">
       {active && (
         <motion.span
           layoutId="sidebarActiveBg"
@@ -46,6 +37,7 @@ function NavLink({ item, pathname }: { item: NavItem; pathname: string }) {
       )}
       <Link
         href={item.href}
+        prefetch
         className={cn(
           "relative group flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13.5px] font-semibold transition-colors duration-200",
           active ? "text-white" : "text-neutral-400 hover:text-white"
@@ -66,7 +58,7 @@ function NavLink({ item, pathname }: { item: NavItem; pathname: string }) {
           <ChevronLeft className="ms-auto w-3.5 h-3.5 text-cyan-300/80 icon-flip" />
         )}
       </Link>
-    </motion.div>
+    </div>
   );
 }
 
@@ -141,13 +133,9 @@ export function Sidebar() {
         <WorkspaceSwitcher />
       </div>
 
-      {/* Nav */}
-      <motion.nav
-        variants={containerV}
-        initial="hidden"
-        animate="show"
-        className="flex-1 overflow-y-auto scrollbar-thin px-3 pb-4"
-      >
+      {/* Nav — plain semantic <nav>; the previous Framer-motion stagger was
+          delaying first paint of every link by 100-200ms on every render.   */}
+      <nav className="flex-1 overflow-y-auto scrollbar-thin px-3 pb-4">
         {NAV_SECTIONS.map((section) => (
           <div key={section.heading}>
             <SectionHeading>{section.heading}</SectionHeading>
@@ -158,7 +146,7 @@ export function Sidebar() {
             </div>
           </div>
         ))}
-      </motion.nav>
+      </nav>
 
       {/* Footer */}
       <div className="p-3 border-t border-white/[0.05] space-y-0.5 bg-gradient-to-b from-transparent to-black/30">
