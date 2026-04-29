@@ -1,0 +1,1979 @@
+# KALMERON — AUTONOMOUS FULL-STACK AUDIT SYSTEM
+# نظام فحص شامل ذاتي التشغيل — مبني على أفضل ممارسات 2025-2026
+# مصادر: Google Lighthouse, OWASP Top 10, Semgrep, Arcjet Security, Next.js Official Docs
+
+---
+
+أنت مهندس أول متخصص في أمان وجودة تطبيقات Next.js SaaS.
+اقرأ AGENTS.md أولاً ثم نفّذ بناء نظام الفحص الكامل هذا.
+
+---
+
+## ══════════════════════════════
+## الخطوة 1 — هيكل نظام الفحص
+## ══════════════════════════════
+
+أنشئ هذا الهيكل كاملاً:
+
+```
+audit/
+├── index.ts                    ← نقطة الدخول الرئيسية
+├── config.ts                   ← إعدادات النظام
+├── types.ts                    ← TypeScript types
+├── runner.ts                   ← منسق التشغيل
+├── scorer.ts                   ← حساب النقاط
+├── reporter.ts                 ← توليد التقارير HTML/JSON
+│
+├── modules/
+│   ├── 01-code-quality.ts      ← TypeScript + ESLint + dependencies
+│   ├── 02-security.ts          ← OWASP + secrets + headers + CSP
+│   ├── 03-authentication.ts    ← Firebase Auth + routes + JWT
+│   ├── 04-frontend.ts          ← RTL + layout + a11y + i18n
+│   ├── 05-backend.ts           ← API routes + validation + rate limit
+│   ├── 06-storage.ts           ← Firestore rules + indexes + backup
+│   ├── 07-performance.ts       ← Lighthouse + Core Web Vitals + bundle
+│   ├── 08-seo.ts               ← Meta + sitemap + robots + OG + schema
+│   ├── 09-ai-agents.ts         ← 16 agents + streaming + fallbacks
+│   └── 10-business.ts          ← UX + onboarding + pricing + legal
+│
+├── fixers/
+│   ├── auto-fixer.ts           ← إصلاحات تلقائية آمنة
+│   └── fix-suggestions.ts      ← اقتراحات للإصلاح اليدوي
+│
+└── reports/                    ← تقارير HTML + JSON
+    └── .gitkeep
+```
+
+---
+
+## ══════════════════════════════
+## الخطوة 2 — types.ts
+## ══════════════════════════════
+
+```typescript
+// audit/types.ts
+
+export type Severity = 'critical' | 'high' | 'medium' | 'low' | 'info';
+export type Category =
+  | 'code-quality' | 'security' | 'authentication'
+  | 'frontend' | 'backend' | 'storage'
+  | 'performance' | 'seo' | 'ai-agents' | 'business';
+
+export interface AuditFinding {
+  id: string;
+  category: Category;
+  severity: Severity;
+  title: string;
+  description: string;
+  location?: string;       // مسار الملف أو URL
+  evidence?: string;       // دليل المشكلة
+  fix?: string;            // اقتراح الإصلاح
+  autoFixable: boolean;
+  references?: string[];   // روابط OWASP أو Next.js docs
+}
+
+export interface ModuleResult {
+  module: string;
+  category: Category;
+  score: number;           // 0-100
+  findings: AuditFinding[];
+  duration: number;        // ms
+  passed: number;
+  failed: number;
+}
+
+export interface AuditReport {
+  id: string;
+  timestamp: string;
+  projectName: string;
+  overallScore: number;    // 0-100
+  grade: 'A' | 'B' | 'C' | 'D' | 'F';
+  modules: ModuleResult[];
+  criticalCount: number;
+  autoFixCount: number;
+  manualFixCount: number;
+  topPriorities: AuditFinding[];  // أهم 10 مشاكل
+  summary: string;
+}
+```
+
+---
+
+## ══════════════════════════════
+## الخطوة 3 — Module 01: جودة الكود
+## ══════════════════════════════
+
+```typescript
+// audit/modules/01-code-quality.ts
+import { execSync } from 'child_process';
+import { AuditFinding } from '../types';
+
+export async function auditCodeQuality(): Promise<AuditFinding[]> {
+  const findings: AuditFinding[] = [];
+
+  // ── 1. TypeScript strict check ──
+  try {
+    execSync(
+      'node --stack-size=8192 ./node_modules/typescript/bin/tsc --noEmit 2>&1',
+      { encoding: 'utf8' }
+    );
+  } catch (e: any) {
+    const errorCount = (e.stdout?.match(/error TS/g) || []).length;
+    if (errorCount > 0) {
+      findings.push({
+        id: 'CQ-001',
+        category: 'code-quality',
+        severity: 'high',
+        title: `${errorCount} خطأ TypeScript`,
+        description: 'الكود لا يمر من فحص TypeScript الصارم',
+        evidence: e.stdout?.slice(0, 500),
+        fix: 'شغّل: node --stack-size=8192 ./node_modules/typescript/bin/tsc --noEmit وأصلح كل خطأ',
+        autoFixable: false,
+        references: ['https://www.typescriptlang.org/docs/handbook/2/types-from-types.html'],
+      });
+    }
+  }
+
+  // ── 2. ESLint errors ──
+  try {
+    const result = execSync('npm run lint -- --format json 2>&1', { encoding: 'utf8' });
+    const lintData = JSON.parse(result);
+    const errors = lintData.flatMap((f: any) => f.messages.filter((m: any) => m.severity === 2));
+    if (errors.length > 0) {
+      findings.push({
+        id: 'CQ-002',
+        category: 'code-quality',
+        severity: 'medium',
+        title: `${errors.length} خطأ ESLint`,
+        description: 'مخالفات قواعد الكود',
+        fix: 'شغّل: npm run lint -- --fix لإصلاح التلقائي',
+        autoFixable: true,
+        references: ['https://eslint.org/docs/latest/'],
+      });
+    }
+  } catch { /* lint failed entirely */ }
+
+  // ── 3. Dependency vulnerabilities ──
+  try {
+    const audit = JSON.parse(
+      execSync('npm audit --json 2>/dev/null', { encoding: 'utf8' })
+    );
+    const highCrit = (audit.metadata?.vulnerabilities?.high ?? 0) +
+                     (audit.metadata?.vulnerabilities?.critical ?? 0);
+    if (highCrit > 0) {
+      findings.push({
+        id: 'CQ-003',
+        category: 'code-quality',
+        severity: highCrit > 5 ? 'critical' : 'high',
+        title: `${highCrit} ثغرة في المكتبات (High/Critical)`,
+        description: 'مكتبات تحتوي على ثغرات أمنية معروفة',
+        fix: 'شغّل: npm audit fix أو حدّث المكتبات المتأثرة يدوياً',
+        autoFixable: true,
+        references: ['https://docs.npmjs.com/auditing-package-dependencies-for-security-vulnerabilities'],
+      });
+    }
+  } catch { /* audit parse failed */ }
+
+  // ── 4. Unused dependencies check ──
+  try {
+    const pkg = JSON.parse(
+      require('fs').readFileSync('package.json', 'utf8')
+    );
+    const depCount = Object.keys(pkg.dependencies || {}).length;
+    if (depCount > 80) {
+      findings.push({
+        id: 'CQ-004',
+        category: 'code-quality',
+        severity: 'low',
+        title: `${depCount} dependency — قد تكون بعضها غير مستخدمة`,
+        description: 'عدد كبير من المكتبات قد يزيد حجم الـ bundle',
+        fix: 'راجع: npx depcheck لإيجاد المكتبات غير المستخدمة',
+        autoFixable: false,
+      });
+    }
+  } catch { /* */ }
+
+  // ── 5. Console.log في production code ──
+  try {
+    const result = execSync(
+      'grep -rn "console\\.log" app/ src/ --include="*.ts" --include="*.tsx" | grep -v ".test." | grep -v "// " | wc -l',
+      { encoding: 'utf8' }
+    ).trim();
+    const count = parseInt(result, 10);
+    if (count > 10) {
+      findings.push({
+        id: 'CQ-005',
+        category: 'code-quality',
+        severity: 'low',
+        title: `${count} console.log في الكود الإنتاجي`,
+        description: 'console.log تُبطئ الأداء وقد تكشف بيانات حساسة',
+        fix: 'استبدل بـ pino logger أو احذف الـ console.log غير الضرورية',
+        autoFixable: false,
+      });
+    }
+  } catch { /* */ }
+
+  // ── 6. TODO/FIXME comments ──
+  try {
+    const result = execSync(
+      'grep -rn "TODO:\\|FIXME:\\|HACK:\\|XXX:" app/ src/ --include="*.ts" --include="*.tsx" | wc -l',
+      { encoding: 'utf8' }
+    ).trim();
+    const count = parseInt(result, 10);
+    if (count > 5) {
+      findings.push({
+        id: 'CQ-006',
+        category: 'code-quality',
+        severity: 'info',
+        title: `${count} تعليق TODO/FIXME في الكود`,
+        description: 'توجد مهام معلقة في الكود',
+        fix: 'راجع وأكمل أو احذف التعليقات المعلقة قبل الإطلاق',
+        autoFixable: false,
+      });
+    }
+  } catch { /* */ }
+
+  return findings;
+}
+```
+
+---
+
+## ══════════════════════════════
+## الخطوة 4 — Module 02: الأمان
+## ══════════════════════════════
+
+```typescript
+// audit/modules/02-security.ts
+// مبني على: OWASP Top 10, Next.js Security Docs, Arcjet Security Checklist 2025
+import { execSync } from 'child_process';
+import { readFileSync, existsSync } from 'fs';
+import { AuditFinding } from '../types';
+
+export async function auditSecurity(): Promise<AuditFinding[]> {
+  const findings: AuditFinding[] = [];
+
+  // ── OWASP A02: Cryptographic Failures — Secrets في الكود ──
+  const secretPatterns = [
+    { pattern: /AAAA[A-Za-z0-9_-]{20,}/, name: 'Firebase token محتمل' },
+    { pattern: /sk_live_[A-Za-z0-9]{24}/, name: 'Stripe Secret Key' },
+    { pattern: /sk_test_[A-Za-z0-9]{24}/, name: 'Stripe Test Key' },
+    { pattern: /AIzaSy[A-Za-z0-9_-]{33}/, name: 'Google API Key' },
+    { pattern: /ghp_[A-Za-z0-9]{36}/, name: 'GitHub Token' },
+    { pattern: /"private_key":\s*"-----BEGIN/, name: 'Private Key مُضمَّن' },
+  ];
+
+  const filesToScan = ['app/', 'src/', 'components/', '.env.local'].filter(existsSync);
+
+  for (const { pattern, name } of secretPatterns) {
+    try {
+      const result = execSync(
+        `grep -rn "${pattern.source}" ${filesToScan.join(' ')} --include="*.ts" --include="*.tsx" --include="*.js" 2>/dev/null | grep -v ".env" | grep -v "example" | wc -l`,
+        { encoding: 'utf8', stdio: 'pipe' }
+      ).trim();
+
+      if (parseInt(result, 10) > 0) {
+        findings.push({
+          id: `SEC-001-${name.replace(/\s/g, '')}`,
+          category: 'security',
+          severity: 'critical',
+          title: `🔴 Secret محتمل في الكود: ${name}`,
+          description: 'مفتاح سري مُضمَّن في الكود — خطر كبير جداً',
+          fix: 'انقل الـ secret لـ .env.local فوراً وأبلّغ عنه كـ compromised',
+          autoFixable: false,
+          references: ['https://owasp.org/Top10/A02_2021-Cryptographic_Failures/'],
+        });
+      }
+    } catch { /* */ }
+  }
+
+  // ── OWASP A05: Security Headers ──
+  try {
+    const nextConfig = readFileSync('next.config.ts', 'utf8');
+
+    const requiredHeaders = [
+      { header: 'Content-Security-Policy', id: 'SEC-CSP' },
+      { header: 'X-Frame-Options', id: 'SEC-XFO' },
+      { header: 'X-Content-Type-Options', id: 'SEC-CTO' },
+      { header: 'Strict-Transport-Security', id: 'SEC-HSTS' },
+      { header: 'Permissions-Policy', id: 'SEC-PP' },
+    ];
+
+    for (const { header, id } of requiredHeaders) {
+      if (!nextConfig.includes(header)) {
+        findings.push({
+          id,
+          category: 'security',
+          severity: 'high',
+          title: `Header أمني ناقص: ${header}`,
+          description: `Security header ${header} غير موجود في next.config.ts`,
+          location: 'next.config.ts',
+          fix: `أضف ${header} في دالة headers() داخل next.config.ts`,
+          autoFixable: true,
+          references: ['https://owasp.org/www-project-secure-headers/'],
+        });
+      }
+    }
+
+    // تحقق من HSTS max-age
+    if (nextConfig.includes('Strict-Transport-Security')) {
+      const hstsMatch = nextConfig.match(/max-age=(\d+)/);
+      if (hstsMatch && parseInt(hstsMatch[1], 10) < 15552000) {
+        findings.push({
+          id: 'SEC-HSTS-WEAK',
+          category: 'security',
+          severity: 'medium',
+          title: 'HSTS max-age قصير جداً',
+          description: `max-age=${hstsMatch[1]} أقل من 180 يوم (15,552,000 ثانية)`,
+          location: 'next.config.ts',
+          fix: 'اضبط max-age=63072000 (سنتان) مع includeSubDomains; preload',
+          autoFixable: true,
+        });
+      }
+    }
+  } catch { /* */ }
+
+  // ── OWASP A03: Injection — XSS via dangerouslySetInnerHTML ──
+  try {
+    const dangerousUsages = execSync(
+      'grep -rn "dangerouslySetInnerHTML" app/ src/ components/ --include="*.tsx" 2>/dev/null',
+      { encoding: 'utf8' }
+    ).trim().split('\n').filter(Boolean);
+
+    for (const usage of dangerousUsages) {
+      if (!usage.includes('DOMPurify') && !usage.includes('sanitize')) {
+        findings.push({
+          id: 'SEC-XSS-001',
+          category: 'security',
+          severity: 'high',
+          title: 'dangerouslySetInnerHTML بدون sanitization',
+          description: 'استخدام dangerouslySetInnerHTML بدون تنظيف المحتوى — خطر XSS',
+          location: usage.split(':')[0],
+          evidence: usage,
+          fix: 'استخدم DOMPurify.sanitize() قبل تمرير المحتوى لـ dangerouslySetInnerHTML',
+          autoFixable: false,
+          references: ['https://owasp.org/www-community/attacks/xss/'],
+        });
+      }
+    }
+  } catch { /* */ }
+
+  // ── Rate Limiting فحص ──
+  try {
+    const rateLimitUsage = parseInt(
+      execSync(
+        'grep -rn "rateLimit\\|rateLimiter\\|rate_limit" app/api/ --include="*.ts" 2>/dev/null | wc -l',
+        { encoding: 'utf8' }
+      ).trim(), 10
+    );
+    const apiRoutes = parseInt(
+      execSync('find app/api -name "route.ts" | wc -l', { encoding: 'utf8' }).trim(), 10
+    );
+
+    if (rateLimitUsage < apiRoutes * 0.5) {
+      findings.push({
+        id: 'SEC-RATE-001',
+        category: 'security',
+        severity: 'high',
+        title: `Rate limiting ناقص — ${apiRoutes} route و${rateLimitUsage} فحص فقط`,
+        description: 'أكثر من نصف API routes بدون rate limiting',
+        fix: 'أضف middleware لـ rate limiting على كل routes في proxy.ts',
+        autoFixable: false,
+        references: ['https://owasp.org/API-Security/editions/2023/en/0xa4-unrestricted-resource-consumption/'],
+      });
+    }
+  } catch { /* */ }
+
+  // ── CVE-2025-29927: Next.js Middleware Bypass ──
+  try {
+    const pkgJson = JSON.parse(readFileSync('package.json', 'utf8'));
+    const nextVersion = pkgJson.dependencies?.next || '';
+    const versionMatch = nextVersion.match(/(\d+)\.(\d+)\.(\d+)/);
+    if (versionMatch) {
+      const [, major, minor, patch] = versionMatch.map(Number);
+      // الإصدارات المتأثرة < 15.2.3 أو < 14.2.25 أو < 13.5.9
+      const isVulnerable =
+        (major === 15 && (minor < 2 || (minor === 2 && patch < 3))) ||
+        (major === 14 && (minor < 2 || (minor === 2 && patch < 25))) ||
+        major < 13;
+
+      if (isVulnerable) {
+        findings.push({
+          id: 'SEC-CVE-2025-29927',
+          category: 'security',
+          severity: 'critical',
+          title: 'CVE-2025-29927: ثغرة تجاوز Middleware في Next.js',
+          description: `إصدار Next.js الحالي (${nextVersion}) عُرضة لثغرة تجاوز المصادقة`,
+          location: 'package.json',
+          fix: 'حدّث Next.js لأحدث إصدار: npm install next@latest',
+          autoFixable: true,
+          references: ['https://nextjs.org/blog/cve-2025-29927'],
+        });
+      }
+    }
+  } catch { /* */ }
+
+  // ── CSRF Protection ──
+  try {
+    const serverActions = execSync(
+      'grep -rn "use server" app/ --include="*.ts" --include="*.tsx" | wc -l',
+      { encoding: 'utf8' }
+    ).trim();
+    const csrfProtection = execSync(
+      'grep -rn "csrf\\|CSRF\\|x-csrf" app/ src/ --include="*.ts" | wc -l',
+      { encoding: 'utf8' }
+    ).trim();
+
+    if (parseInt(serverActions) > 0 && parseInt(csrfProtection) === 0) {
+      findings.push({
+        id: 'SEC-CSRF-001',
+        category: 'security',
+        severity: 'medium',
+        title: 'Server Actions بدون CSRF protection صريح',
+        description: 'Next.js يوفر حماية ضمنية، لكن يُنصح بـ custom validation',
+        fix: 'تحقق من Origin header في كل Server Action: https://nextjs.org/docs/app/building-your-application/data-fetching/server-actions-and-mutations#security',
+        autoFixable: false,
+        references: ['https://owasp.org/www-community/attacks/csrf'],
+      });
+    }
+  } catch { /* */ }
+
+  return findings;
+}
+```
+
+---
+
+## ══════════════════════════════
+## الخطوة 5 — Module 03: المصادقة
+## ══════════════════════════════
+
+```typescript
+// audit/modules/03-authentication.ts
+import { readFileSync, existsSync } from 'fs';
+import { execSync } from 'child_process';
+import { AuditFinding } from '../types';
+
+export async function auditAuthentication(): Promise<AuditFinding[]> {
+  const findings: AuditFinding[] = [];
+
+  // ── تحقق Firebase Admin SDK صحيح ──
+  const adminFiles = ['src/lib/firebase-admin.ts', 'lib/firebase-admin.ts'];
+  const adminFile = adminFiles.find(existsSync);
+
+  if (!adminFile) {
+    findings.push({
+      id: 'AUTH-001',
+      category: 'authentication',
+      severity: 'critical',
+      title: 'Firebase Admin SDK غير موجود',
+      description: 'ملف firebase-admin.ts مفقود — المصادقة server-side لن تعمل',
+      fix: 'أنشئ src/lib/firebase-admin.ts مع initializeApp صحيح',
+      autoFixable: false,
+    });
+  } else {
+    const content = readFileSync(adminFile, 'utf8');
+
+    if (!content.includes('getApps()') && !content.includes('getApp(')) {
+      findings.push({
+        id: 'AUTH-002',
+        category: 'authentication',
+        severity: 'high',
+        title: 'Firebase Admin قد يُهيَّأ مرات متعددة',
+        description: 'بدون فحص getApps() قد ينهار التطبيق عند إعادة التحميل',
+        location: adminFile,
+        fix: 'استخدم: if (!getApps().length) { initializeApp(...) }',
+        autoFixable: true,
+      });
+    }
+
+    if (!content.includes('FIREBASE_ADMIN_PRIVATE_KEY') &&
+        !content.includes('process.env')) {
+      findings.push({
+        id: 'AUTH-003',
+        category: 'authentication',
+        severity: 'critical',
+        title: 'Firebase Admin credentials hard-coded',
+        description: 'بيانات الاعتماد مُضمَّنة في الكود بدلاً من env vars',
+        location: adminFile,
+        fix: 'استخدم process.env.FIREBASE_ADMIN_PRIVATE_KEY',
+        autoFixable: false,
+      });
+    }
+  }
+
+  // ── فحص AuthContext ──
+  const authContextFiles = [
+    'contexts/AuthContext.tsx',
+    'src/contexts/AuthContext.tsx',
+    'context/AuthContext.tsx',
+  ];
+  const authContext = authContextFiles.find(existsSync);
+
+  if (!authContext) {
+    findings.push({
+      id: 'AUTH-004',
+      category: 'authentication',
+      severity: 'critical',
+      title: 'AuthContext غير موجود',
+      description: 'لا يوجد Context لإدارة حالة المصادقة',
+      fix: 'أنشئ contexts/AuthContext.tsx',
+      autoFixable: false,
+    });
+  }
+
+  // ── فحص المسارات المحمية في proxy.ts ──
+  const proxyFile = existsSync('proxy.ts') ? 'proxy.ts' : null;
+  if (proxyFile) {
+    const proxyContent = readFileSync(proxyFile, 'utf8');
+    const criticalPaths = ['/dashboard', '/admin', '/billing', '/settings'];
+
+    for (const path of criticalPaths) {
+      if (!proxyContent.includes(path)) {
+        findings.push({
+          id: `AUTH-005-${path.replace('/', '')}`,
+          category: 'authentication',
+          severity: 'high',
+          title: `المسار "${path}" قد لا يكون محمياً في proxy.ts`,
+          description: `لم يُعثر على "${path}" في قائمة المسارات المحمية`,
+          location: 'proxy.ts',
+          fix: `أضف "${path}" لقائمة PROTECTED_PATHS في proxy.ts`,
+          autoFixable: true,
+        });
+      }
+    }
+  } else {
+    findings.push({
+      id: 'AUTH-006',
+      category: 'authentication',
+      severity: 'critical',
+      title: 'proxy.ts غير موجود',
+      description: 'لا يوجد Edge Proxy لحماية المسارات',
+      fix: 'أنشئ proxy.ts مع AuthGuard middleware',
+      autoFixable: false,
+    });
+  }
+
+  // ── Session Security ──
+  try {
+    const authContent = authContext ? readFileSync(authContext, 'utf8') : '';
+    if (authContent.includes('localStorage') && !authContent.includes('httpOnly')) {
+      findings.push({
+        id: 'AUTH-007',
+        category: 'authentication',
+        severity: 'medium',
+        title: 'Session token في localStorage',
+        description: 'تخزين tokens في localStorage عُرضة لـ XSS attacks',
+        fix: 'استخدم httpOnly cookies أو Firebase Auth onAuthStateChanged',
+        autoFixable: false,
+        references: ['https://owasp.org/www-community/HttpOnly'],
+      });
+    }
+  } catch { /* */ }
+
+  // ── Token Verification في API Routes ──
+  try {
+    const apiRoutesCount = parseInt(
+      execSync('find app/api -name "route.ts" | wc -l', { encoding: 'utf8' }).trim(), 10
+    );
+    const verifyCount = parseInt(
+      execSync(
+        'grep -rn "verifyIdToken\\|getAuthenticatedUser\\|withAuth" app/api/ --include="*.ts" 2>/dev/null | wc -l',
+        { encoding: 'utf8' }
+      ).trim(), 10
+    );
+
+    if (verifyCount < apiRoutesCount * 0.6) {
+      findings.push({
+        id: 'AUTH-008',
+        category: 'authentication',
+        severity: 'high',
+        title: `${apiRoutesCount - verifyCount} API route بدون تحقق من الهوية`,
+        description: 'كثير من API routes لا تتحقق من Firebase ID Token',
+        fix: 'أضف getAuthenticatedUser() أو withAuth() middleware لكل route محمي',
+        autoFixable: false,
+      });
+    }
+  } catch { /* */ }
+
+  return findings;
+}
+```
+
+---
+
+## ══════════════════════════════
+## الخطوة 6 — Module 04: Frontend
+## ══════════════════════════════
+
+```typescript
+// audit/modules/04-frontend.ts
+import { execSync } from 'child_process';
+import { readFileSync, existsSync } from 'fs';
+import { AuditFinding } from '../types';
+
+export async function auditFrontend(): Promise<AuditFinding[]> {
+  const findings: AuditFinding[] = [];
+
+  // ── RTL Consistency ──
+  try {
+    const layoutFile = 'app/layout.tsx';
+    if (existsSync(layoutFile)) {
+      const layout = readFileSync(layoutFile, 'utf8');
+      if (!layout.includes('dir="rtl"') && !layout.includes("dir='rtl'")) {
+        findings.push({
+          id: 'FE-001',
+          category: 'frontend',
+          severity: 'critical',
+          title: 'dir="rtl" مفقود في Root Layout',
+          description: 'اتجاه RTL غير محدد على مستوى التطبيق كاملاً',
+          location: layoutFile,
+          fix: 'أضف dir="rtl" lang="ar" لـ <html> tag في app/layout.tsx',
+          autoFixable: true,
+        });
+      }
+      if (!layout.includes('lang="ar"')) {
+        findings.push({
+          id: 'FE-002',
+          category: 'frontend',
+          severity: 'medium',
+          title: 'lang="ar" مفقود في Root Layout',
+          description: 'بدون lang attribute: SEO + accessibility يتأثران',
+          location: layoutFile,
+          fix: 'أضف lang="ar" لـ <html> في app/layout.tsx',
+          autoFixable: true,
+        });
+      }
+    }
+  } catch { /* */ }
+
+  // ── Missing next/image optimizations ──
+  try {
+    const imgTags = parseInt(
+      execSync(
+        'grep -rn "<img " app/ components/ --include="*.tsx" | grep -v "next/image" | wc -l',
+        { encoding: 'utf8' }
+      ).trim(), 10
+    );
+    if (imgTags > 0) {
+      findings.push({
+        id: 'FE-003',
+        category: 'frontend',
+        severity: 'medium',
+        title: `${imgTags} صورة تستخدم <img> بدلاً من next/image`,
+        description: 'next/image يحسن الأداء بـ lazy loading + WebP + size optimization',
+        fix: 'استبدل <img> بـ <Image> من next/image',
+        autoFixable: false,
+      });
+    }
+  } catch { /* */ }
+
+  // ── Missing loading.tsx files ──
+  try {
+    const dashboardDirs = execSync(
+      'find app -type d -name "(dashboard)" -o -type d -name "dashboard" 2>/dev/null',
+      { encoding: 'utf8' }
+    ).trim().split('\n').filter(Boolean);
+
+    for (const dir of dashboardDirs) {
+      if (!existsSync(`${dir}/loading.tsx`)) {
+        findings.push({
+          id: `FE-004-${dir.replace(/\//g, '-')}`,
+          category: 'frontend',
+          severity: 'low',
+          title: `loading.tsx مفقود في ${dir}`,
+          description: 'بدون loading.tsx: المستخدم يرى شاشة بيضاء أثناء التحميل',
+          location: dir,
+          fix: `أنشئ ${dir}/loading.tsx مع skeleton مناسب`,
+          autoFixable: true,
+        });
+      }
+    }
+  } catch { /* */ }
+
+  // ── Missing error.tsx files ──
+  try {
+    const mainDirs = ['app/(dashboard)', 'app/dashboard', 'app/api'];
+    for (const dir of mainDirs) {
+      if (existsSync(dir) && !existsSync(`${dir}/error.tsx`)) {
+        findings.push({
+          id: `FE-005-${dir.replace(/\//g, '-')}`,
+          category: 'frontend',
+          severity: 'medium',
+          title: `error.tsx مفقود في ${dir}`,
+          description: 'بدون error.tsx: الأخطاء تُعطي صفحة Next.js الافتراضية',
+          location: dir,
+          fix: `أنشئ ${dir}/error.tsx مع رسالة خطأ بالعربية وزر "حاول مجدداً"`,
+          autoFixable: true,
+        });
+      }
+    }
+  } catch { /* */ }
+
+  // ── Accessibility: missing alt text ──
+  try {
+    const missingAlt = parseInt(
+      execSync(
+        'grep -rn "<Image\\|<img" app/ components/ --include="*.tsx" | grep -v "alt=" | wc -l',
+        { encoding: 'utf8' }
+      ).trim(), 10
+    );
+    if (missingAlt > 0) {
+      findings.push({
+        id: 'FE-006',
+        category: 'frontend',
+        severity: 'medium',
+        title: `${missingAlt} صورة بدون alt text`,
+        description: 'يؤثر على accessibility وSEO',
+        fix: 'أضف alt="" للصور الزخرفية، وalt="وصف واضح" للصور المحتوى',
+        autoFixable: false,
+        references: ['https://www.w3.org/WAI/tutorials/images/'],
+      });
+    }
+  } catch { /* */ }
+
+  // ── Missing metadata exports ──
+  try {
+    const publicPages = execSync(
+      'find app -name "page.tsx" -not -path "*/\\(dashboard\\)/*" -not -path "*/api/*" 2>/dev/null',
+      { encoding: 'utf8' }
+    ).trim().split('\n').filter(Boolean);
+
+    let missingMeta = 0;
+    for (const page of publicPages) {
+      if (existsSync(page)) {
+        const content = readFileSync(page, 'utf8');
+        if (!content.includes('export const metadata') &&
+            !content.includes('export async function generateMetadata')) {
+          missingMeta++;
+        }
+      }
+    }
+
+    if (missingMeta > 0) {
+      findings.push({
+        id: 'FE-007',
+        category: 'frontend',
+        severity: 'high',
+        title: `${missingMeta} صفحة عامة بدون metadata`,
+        description: 'بدون metadata: SEO ضعيف وصور المشاركة مفقودة',
+        fix: 'أضف export const metadata: Metadata لكل صفحة عامة',
+        autoFixable: false,
+      });
+    }
+  } catch { /* */ }
+
+  // ── Cookie Consent Banner ──
+  try {
+    const hasCookieBanner = parseInt(
+      execSync(
+        'grep -rn "CookieBanner\\|cookie.*consent\\|cookiesAccepted" app/ components/ --include="*.tsx" 2>/dev/null | wc -l',
+        { encoding: 'utf8' }
+      ).trim(), 10
+    );
+    if (hasCookieBanner === 0) {
+      findings.push({
+        id: 'FE-008',
+        category: 'frontend',
+        severity: 'high',
+        title: 'Cookie Consent Banner مفقود',
+        description: 'مطلوب قانوناً بموجب GDPR وقانون 151 المصري',
+        fix: 'أنشئ components/ui/CookieBanner.tsx وأضفه في app/layout.tsx',
+        autoFixable: true,
+        references: ['https://gdpr.eu/cookies/'],
+      });
+    }
+  } catch { /* */ }
+
+  return findings;
+}
+```
+
+---
+
+## ══════════════════════════════
+## الخطوة 7 — Module 05: Backend
+## ══════════════════════════════
+
+```typescript
+// audit/modules/05-backend.ts
+import { execSync } from 'child_process';
+import { readFileSync, existsSync } from 'fs';
+import { AuditFinding } from '../types';
+
+export async function auditBackend(): Promise<AuditFinding[]> {
+  const findings: AuditFinding[] = [];
+
+  // ── Input Validation بـ Zod ──
+  try {
+    const apiRoutes = execSync(
+      'find app/api -name "route.ts" 2>/dev/null',
+      { encoding: 'utf8' }
+    ).trim().split('\n').filter(Boolean);
+
+    let zodCount = 0;
+    let totalPOST = 0;
+
+    for (const route of apiRoutes) {
+      const content = readFileSync(route, 'utf8');
+      if (content.includes('POST') || content.includes('PUT') || content.includes('PATCH')) {
+        totalPOST++;
+        if (content.includes('zod') || content.includes('z.object') || content.includes('z.string')) {
+          zodCount++;
+        }
+      }
+    }
+
+    if (zodCount < totalPOST * 0.7) {
+      findings.push({
+        id: 'BE-001',
+        category: 'backend',
+        severity: 'high',
+        title: `${totalPOST - zodCount} من ${totalPOST} POST routes بدون Zod validation`,
+        description: 'Input غير مُتحقق منه يفتح باب لـ injection وcrashes',
+        fix: 'أضف zod schema لكل POST/PUT/PATCH route',
+        autoFixable: false,
+        references: ['https://zod.dev/'],
+      });
+    }
+  } catch { /* */ }
+
+  // ── Webhook Signature Verification ──
+  const webhookFiles = [
+    'app/api/webhooks/stripe/route.ts',
+    'app/api/webhooks/route.ts',
+  ];
+
+  for (const webhookFile of webhookFiles) {
+    if (existsSync(webhookFile)) {
+      const content = readFileSync(webhookFile, 'utf8');
+      if (!content.includes('constructEvent') && !content.includes('signature') &&
+          !content.includes('webhook_secret') && !content.includes('WEBHOOK_SECRET')) {
+        findings.push({
+          id: 'BE-002',
+          category: 'backend',
+          severity: 'critical',
+          title: 'Webhook بدون signature verification',
+          description: `${webhookFile}: Webhook يقبل أي طلب بدون تحقق من المصدر`,
+          location: webhookFile,
+          fix: 'أضف stripe.webhooks.constructEvent() مع STRIPE_WEBHOOK_SECRET',
+          autoFixable: false,
+          references: ['https://stripe.com/docs/webhooks/best-practices'],
+        });
+      }
+    }
+  }
+
+  // ── API Error Handling ──
+  try {
+    const routesWithoutTryCatch = execSync(
+      'grep -rL "try {\\|try{" app/api/ 2>/dev/null | wc -l',
+      { encoding: 'utf8' }
+    ).trim();
+
+    if (parseInt(routesWithoutTryCatch, 10) > 5) {
+      findings.push({
+        id: 'BE-003',
+        category: 'backend',
+        severity: 'medium',
+        title: `${routesWithoutTryCatch} API route بدون try/catch`,
+        description: 'أخطاء unhandled ستُظهر stack traces للمستخدم',
+        fix: 'أضف try/catch لكل API route مع NextResponse.json({error: ...}, {status: 500})',
+        autoFixable: false,
+      });
+    }
+  } catch { /* */ }
+
+  // ── Python Sidecars Health ──
+  const sidecars = [
+    { name: 'PDF Worker', port: 8000 },
+    { name: 'Egypt Calc', port: 8008 },
+    { name: 'LLM Judge', port: 8080 },
+    { name: 'Embeddings Worker', port: 8099 },
+  ];
+
+  for (const sidecar of sidecars) {
+    try {
+      execSync(`curl -s --max-time 3 http://localhost:${sidecar.port}/health`, {
+        encoding: 'utf8',
+      });
+    } catch {
+      findings.push({
+        id: `BE-SIDECAR-${sidecar.port}`,
+        category: 'backend',
+        severity: 'high',
+        title: `${sidecar.name} (port ${sidecar.port}) لا يستجيب`,
+        description: `خدمة Python ${sidecar.name} غير مشغّلة أو تتعطل`,
+        fix: `شغّل: cd services/${sidecar.name.toLowerCase().replace(' ', '-')} && uvicorn main:app --port ${sidecar.port}`,
+        autoFixable: false,
+      });
+    }
+  }
+
+  // ── CORS Configuration ──
+  try {
+    const corsWildcard = parseInt(
+      execSync(
+        'grep -rn "\'*\'\\|\"\\*\"" app/api/ --include="*.ts" | grep -i "cors\\|Access-Control" | wc -l',
+        { encoding: 'utf8' }
+      ).trim(), 10
+    );
+
+    if (corsWildcard > 0) {
+      findings.push({
+        id: 'BE-004',
+        category: 'backend',
+        severity: 'high',
+        title: 'CORS wildcard (*) في production',
+        description: 'Allow-Origin: * يسمح لأي موقع بالوصول لـ API',
+        fix: 'حدد domains صريحة: https://kalmeron.ai, https://kalmeron-two.vercel.app',
+        autoFixable: true,
+        references: ['https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS'],
+      });
+    }
+  } catch { /* */ }
+
+  return findings;
+}
+```
+
+---
+
+## ══════════════════════════════
+## الخطوة 8 — Module 06: التخزين
+## ══════════════════════════════
+
+```typescript
+// audit/modules/06-storage.ts
+import { readFileSync, existsSync } from 'fs';
+import { AuditFinding } from '../types';
+
+export async function auditStorage(): Promise<AuditFinding[]> {
+  const findings: AuditFinding[] = [];
+
+  // ── Firestore Rules ──
+  if (!existsSync('firestore.rules')) {
+    findings.push({
+      id: 'STOR-001',
+      category: 'storage',
+      severity: 'critical',
+      title: 'firestore.rules ملف مفقود',
+      description: 'بدون rules: Firestore قد يكون مفتوحاً للعموم',
+      fix: 'أنشئ firestore.rules مع deny-all default',
+      autoFixable: false,
+    });
+    return findings;
+  }
+
+  const rules = readFileSync('firestore.rules', 'utf8');
+
+  // تحقق من deny-all default
+  if (!rules.includes('allow read, write: if false') &&
+      !rules.includes('allow read,write: if false')) {
+    findings.push({
+      id: 'STOR-002',
+      category: 'storage',
+      severity: 'critical',
+      title: 'Firestore: لا يوجد deny-all default rule',
+      description: 'بدون rule افتراضي لـ deny، قد تكون بعض collections مكشوفة',
+      location: 'firestore.rules',
+      fix: 'أضف في النهاية: match /{document=**} { allow read, write: if false; }',
+      autoFixable: true,
+    });
+  }
+
+  // تحقق من allow write: if true (خطر كبير)
+  const openWrites = (rules.match(/allow write: if true/g) || []).length;
+  if (openWrites > 0) {
+    findings.push({
+      id: 'STOR-003',
+      category: 'storage',
+      severity: 'critical',
+      title: `${openWrites} collection مفتوح للكتابة للجميع`,
+      description: '"allow write: if true" يسمح لأي شخص بالكتابة',
+      location: 'firestore.rules',
+      fix: 'استبدل "if true" بـ "if request.auth != null" أو rule أكثر تحديداً',
+      autoFixable: false,
+    });
+  }
+
+  // تحقق من user_credits — يجب أن يكون Admin SDK فقط
+  if (rules.includes('user_credits')) {
+    const creditSection = rules.split('user_credits')[1]?.slice(0, 200) || '';
+    if (creditSection.includes('allow write') && !creditSection.includes('if false')) {
+      findings.push({
+        id: 'STOR-004',
+        category: 'storage',
+        severity: 'critical',
+        title: 'user_credits قابل للتعديل من العميل',
+        description: 'المستخدم يمكنه تعديل رصيده بنفسه — خطر احتيال',
+        location: 'firestore.rules',
+        fix: 'اضبط user_credits: allow read: if isOwner(); allow write: if false;',
+        autoFixable: true,
+      });
+    }
+  }
+
+  // Backup strategy
+  const hasBackupCron = existsSync('app/api/cron/firestore-backup/route.ts') ||
+    readFileSync('vercel.json', 'utf8').includes('firestore-backup');
+  if (!hasBackupCron) {
+    findings.push({
+      id: 'STOR-005',
+      category: 'storage',
+      severity: 'medium',
+      title: 'لا يوجد Firestore backup مجدول',
+      description: 'فقدان البيانات ممكن بدون نسخ احتياطية منتظمة',
+      fix: 'أضف cron job يشغّل Firestore export يومياً',
+      autoFixable: false,
+    });
+  }
+
+  // Firestore indexes
+  if (!existsSync('firestore.indexes.json')) {
+    findings.push({
+      id: 'STOR-006',
+      category: 'storage',
+      severity: 'low',
+      title: 'firestore.indexes.json مفقود',
+      description: 'queries معقدة قد تفشل بدون composite indexes',
+      fix: 'أنشئ firestore.indexes.json مع الـ indexes اللازمة',
+      autoFixable: false,
+    });
+  }
+
+  return findings;
+}
+```
+
+---
+
+## ══════════════════════════════
+## الخطوة 9 — Module 07: الأداء
+## ══════════════════════════════
+
+```typescript
+// audit/modules/07-performance.ts
+// مبني على: Google Lighthouse, Core Web Vitals 2025
+import { execSync } from 'child_process';
+import { readFileSync, existsSync } from 'fs';
+import { AuditFinding } from '../types';
+
+export async function auditPerformance(): Promise<AuditFinding[]> {
+  const findings: AuditFinding[] = [];
+  const BASE_URL = process.env.QA_BASE_URL ?? 'http://localhost:5000';
+
+  // ── Bundle Size Check ──
+  if (existsSync('.next/analyze')) {
+    findings.push({
+      id: 'PERF-001',
+      category: 'performance',
+      severity: 'info',
+      title: 'Bundle analyzer نتائج موجودة',
+      description: 'راجع .next/analyze لتحسين الـ bundle',
+      fix: 'شغّل: ANALYZE=true npm run build لرؤية التقرير',
+      autoFixable: false,
+    });
+  }
+
+  // ── Lighthouse Score ──
+  try {
+    const lighthouseResult = execSync(
+      `npx lighthouse ${BASE_URL} --only-categories=performance,accessibility,seo,best-practices --output=json --quiet --chrome-flags="--headless --no-sandbox" 2>/dev/null`,
+      { encoding: 'utf8', timeout: 120000 }
+    );
+    const report = JSON.parse(lighthouseResult);
+    const categories = report.categories;
+
+    const checks = [
+      { key: 'performance', name: 'الأداء', threshold: 0.7 },
+      { key: 'accessibility', name: 'إمكانية الوصول', threshold: 0.8 },
+      { key: 'seo', name: 'SEO', threshold: 0.8 },
+      { key: 'best-practices', name: 'أفضل الممارسات', threshold: 0.8 },
+    ];
+
+    for (const check of checks) {
+      const score = categories[check.key]?.score ?? 0;
+      if (score < check.threshold) {
+        findings.push({
+          id: `PERF-LH-${check.key.toUpperCase()}`,
+          category: 'performance',
+          severity: score < 0.5 ? 'high' : 'medium',
+          title: `Lighthouse ${check.name}: ${Math.round(score * 100)}/100`,
+          description: `نقاط Lighthouse ${check.name} أقل من ${check.threshold * 100}`,
+          evidence: `Score: ${Math.round(score * 100)}/100 (الهدف: ${check.threshold * 100})`,
+          fix: `راجع تقرير Lighthouse للتحسينات المحددة`,
+          autoFixable: false,
+          references: ['https://developer.chrome.com/docs/lighthouse/'],
+        });
+      }
+    }
+
+    // Core Web Vitals
+    const audits = report.audits;
+    if (audits['largest-contentful-paint']?.numericValue > 2500) {
+      findings.push({
+        id: 'PERF-LCP',
+        category: 'performance',
+        severity: 'high',
+        title: `LCP بطيء: ${Math.round(audits['largest-contentful-paint'].numericValue)}ms`,
+        description: 'Largest Contentful Paint يجب أن يكون < 2500ms',
+        fix: 'حسّن: الصور الكبيرة، الخطوط، الـ render-blocking resources',
+        autoFixable: false,
+        references: ['https://web.dev/lcp/'],
+      });
+    }
+
+    if (audits['cumulative-layout-shift']?.numericValue > 0.1) {
+      findings.push({
+        id: 'PERF-CLS',
+        category: 'performance',
+        severity: 'medium',
+        title: `CLS مرتفع: ${audits['cumulative-layout-shift'].numericValue.toFixed(3)}`,
+        description: 'Cumulative Layout Shift يجب أن يكون < 0.1',
+        fix: 'أضف أبعاد صريحة للصور والـ dynamic content',
+        autoFixable: false,
+        references: ['https://web.dev/cls/'],
+      });
+    }
+  } catch {
+    findings.push({
+      id: 'PERF-LH-UNAVAILABLE',
+      category: 'performance',
+      severity: 'info',
+      title: 'Lighthouse غير متاح في هذه البيئة',
+      description: 'تحقق من Lighthouse يدوياً أو في CI/CD',
+      fix: 'شغّل: npx lighthouse https://kalmeron-two.vercel.app --view',
+      autoFixable: false,
+    });
+  }
+
+  // ── next/image Usage ──
+  try {
+    const nextConfig = existsSync('next.config.ts') ?
+      readFileSync('next.config.ts', 'utf8') : '';
+    if (!nextConfig.includes("formats: ['image/avif'") &&
+        !nextConfig.includes("formats: ['image/webp'")) {
+      findings.push({
+        id: 'PERF-IMG-FORMAT',
+        category: 'performance',
+        severity: 'medium',
+        title: 'تحسين صيغ الصور (AVIF/WebP) غير مفعّل',
+        description: 'AVIF يوفر 50% من حجم الصور مقارنة بـ JPEG',
+        location: 'next.config.ts',
+        fix: "أضف في next.config.ts: images: { formats: ['image/avif', 'image/webp'] }",
+        autoFixable: true,
+      });
+    }
+  } catch { /* */ }
+
+  return findings;
+}
+```
+
+---
+
+## ══════════════════════════════
+## الخطوة 10 — Module 08: SEO
+## ══════════════════════════════
+
+```typescript
+// audit/modules/08-seo.ts
+// مبني على: seomator 251 rules, Google Search Guidelines 2025
+import { execSync } from 'child_process';
+import { existsSync, readFileSync } from 'fs';
+import { AuditFinding } from '../types';
+
+export async function auditSEO(): Promise<AuditFinding[]> {
+  const findings: AuditFinding[] = [];
+  const BASE_URL = process.env.QA_BASE_URL ?? 'http://localhost:5000';
+
+  // ── sitemap.xml ──
+  try {
+    const status = execSync(
+      `curl -s -o /dev/null -w "%{http_code}" ${BASE_URL}/sitemap.xml`,
+      { encoding: 'utf8' }
+    ).trim();
+
+    if (status !== '200') {
+      findings.push({
+        id: 'SEO-001',
+        category: 'seo',
+        severity: 'high',
+        title: 'sitemap.xml غير موجود أو لا يعمل',
+        description: 'Google لا تستطيع اكتشاف صفحاتك بشكل كامل',
+        fix: 'أضف app/sitemap.ts لتوليد sitemap تلقائياً',
+        autoFixable: true,
+        references: ['https://developers.google.com/search/docs/crawling-indexing/sitemaps/overview'],
+      });
+    }
+  } catch { /* */ }
+
+  // ── robots.txt ──
+  try {
+    const robotsStatus = execSync(
+      `curl -s -o /dev/null -w "%{http_code}" ${BASE_URL}/robots.txt`,
+      { encoding: 'utf8' }
+    ).trim();
+
+    if (robotsStatus !== '200') {
+      findings.push({
+        id: 'SEO-002',
+        category: 'seo',
+        severity: 'medium',
+        title: 'robots.txt غير موجود',
+        description: 'Google تُفضّل robots.txt لفهم ما يُسمح بفهرسته',
+        fix: 'أنشئ public/robots.txt أو app/robots.ts',
+        autoFixable: true,
+      });
+    } else {
+      const robotsContent = execSync(
+        `curl -s ${BASE_URL}/robots.txt`,
+        { encoding: 'utf8' }
+      );
+      if (!robotsContent.includes('Sitemap:')) {
+        findings.push({
+          id: 'SEO-003',
+          category: 'seo',
+          severity: 'low',
+          title: 'robots.txt لا يشير لـ sitemap.xml',
+          description: 'أضف Sitemap URL في robots.txt لتسريع الفهرسة',
+          fix: 'أضف: Sitemap: https://kalmeron.ai/sitemap.xml',
+          autoFixable: true,
+        });
+      }
+    }
+  } catch { /* */ }
+
+  // ── Open Graph Tags ──
+  try {
+    const homeContent = execSync(
+      `curl -s ${BASE_URL}/ 2>/dev/null`,
+      { encoding: 'utf8' }
+    );
+    const ogChecks = [
+      { tag: 'og:title', id: 'SEO-OG-TITLE' },
+      { tag: 'og:description', id: 'SEO-OG-DESC' },
+      { tag: 'og:image', id: 'SEO-OG-IMAGE' },
+      { tag: 'og:url', id: 'SEO-OG-URL' },
+      { tag: 'og:locale', id: 'SEO-OG-LOCALE' },
+    ];
+
+    for (const check of ogChecks) {
+      if (!homeContent.includes(check.tag)) {
+        findings.push({
+          id: check.id,
+          category: 'seo',
+          severity: check.tag === 'og:image' ? 'high' : 'medium',
+          title: `Open Graph tag مفقود: ${check.tag}`,
+          description: `بدون ${check.tag}: مشاركة الروابط على سوشيال ميديا تبدو فقيرة`,
+          location: 'app/layout.tsx أو app/page.tsx',
+          fix: `أضف ${check.tag} في metadata object`,
+          autoFixable: true,
+          references: ['https://ogp.me/'],
+        });
+      }
+    }
+
+    // Twitter Card
+    if (!homeContent.includes('twitter:card')) {
+      findings.push({
+        id: 'SEO-TWITTER',
+        category: 'seo',
+        severity: 'low',
+        title: 'Twitter Card tags مفقودة',
+        description: 'بدون Twitter Card: التغريدات التي تشاركها تبدو عادية',
+        fix: "أضف: twitter: { card: 'summary_large_image' } في metadata",
+        autoFixable: true,
+      });
+    }
+
+    // hreflang للغتين
+    if (!homeContent.includes('hreflang')) {
+      findings.push({
+        id: 'SEO-HREFLANG',
+        category: 'seo',
+        severity: 'medium',
+        title: 'hreflang مفقود (ar / en)',
+        description: 'بدون hreflang: Google لا تعرف أي نسخة للزائر العربي أم الإنجليزي',
+        fix: 'أضف alternates.languages في metadata: { ar: /, en: /en }',
+        autoFixable: true,
+        references: ['https://developers.google.com/search/docs/specialty/international/localization'],
+      });
+    }
+  } catch { /* */ }
+
+  // ── Schema.org Structured Data ──
+  try {
+    const homeContent = execSync(
+      `curl -s ${BASE_URL}/ 2>/dev/null`,
+      { encoding: 'utf8' }
+    );
+    if (!homeContent.includes('application/ld+json') &&
+        !homeContent.includes('schema.org')) {
+      findings.push({
+        id: 'SEO-SCHEMA',
+        category: 'seo',
+        severity: 'medium',
+        title: 'Schema.org Structured Data مفقود',
+        description: 'بدون Schema: لا rich snippets في Google + ضعف AI SEO',
+        fix: `أضف في app/layout.tsx:
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "كلميرون AI",
+  "applicationCategory": "BusinessApplication",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EGP" },
+  "operatingSystem": "Web",
+  "inLanguage": "ar"
+}
+</script>`,
+        autoFixable: true,
+        references: ['https://schema.org/SoftwareApplication'],
+      });
+    }
+  } catch { /* */ }
+
+  return findings;
+}
+```
+
+---
+
+## ══════════════════════════════
+## الخطوة 11 — Module 09: وكلاء AI
+## ══════════════════════════════
+
+```typescript
+// audit/modules/09-ai-agents.ts
+import { AuditFinding } from '../types';
+
+const AGENTS = [
+  'general', 'cfo', 'legal', 'marketing', 'sales', 'hr',
+  'operations', 'product', 'investor', 'customer-voice',
+  'idea-validator', 'plan-builder', 'mistake-shield',
+  'success-museum', 'opportunity-radar', 'real-estate',
+];
+
+export async function auditAIAgents(): Promise<AuditFinding[]> {
+  const findings: AuditFinding[] = [];
+  const BASE_URL = process.env.QA_BASE_URL ?? 'http://localhost:5000';
+  const AUTH_TOKEN = process.env.QA_AUTH_TOKEN ?? '';
+
+  for (const agent of AGENTS) {
+    const start = Date.now();
+    try {
+      const response = await fetch(`${BASE_URL}/api/agents/${agent}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(AUTH_TOKEN && { Authorization: `Bearer ${AUTH_TOKEN}` }),
+        },
+        body: JSON.stringify({
+          messages: [{ role: 'user', content: 'مرحباً، عرّف بنفسك في جملة واحدة.' }],
+          stream: false,
+        }),
+        signal: AbortSignal.timeout(12000),
+      });
+
+      const duration = Date.now() - start;
+
+      if (!response.ok && response.status !== 401) {
+        findings.push({
+          id: `AI-${agent.toUpperCase().replace('-', '_')}-DOWN`,
+          category: 'ai-agents',
+          severity: 'critical',
+          title: `وكيل "${agent}" لا يستجيب (${response.status})`,
+          description: `API route /api/agents/${agent} يُعطي ${response.status}`,
+          location: `app/api/agents/${agent}/route.ts`,
+          fix: `تحقق من الملف وأضف stub response عند غياب GEMINI_API_KEY`,
+          autoFixable: false,
+        });
+        continue;
+      }
+
+      if (duration > 10000) {
+        findings.push({
+          id: `AI-${agent.toUpperCase()}-SLOW`,
+          category: 'ai-agents',
+          severity: 'medium',
+          title: `وكيل "${agent}" بطيء: ${duration}ms`,
+          description: 'استجابة > 10 ثوانٍ تُزعج المستخدم',
+          fix: 'تحقق من model tier وأضف timeout + fallback',
+          autoFixable: false,
+        });
+      }
+
+      if (response.ok && AUTH_TOKEN) {
+        const data = await response.json().catch(() => null);
+        const content =
+          data?.content ?? data?.message ?? data?.text ?? data?.response ?? '';
+
+        if (content && !/[\u0600-\u06FF]/.test(content)) {
+          findings.push({
+            id: `AI-${agent.toUpperCase()}-LANG`,
+            category: 'ai-agents',
+            severity: 'high',
+            title: `وكيل "${agent}" لا يرد بالعربية`,
+            description: 'الوكيل يرد بالإنجليزية بدلاً من العربية',
+            location: `src/ai/agents/${agent}/`,
+            fix: 'تحقق من system prompt وتأكد أنه يطلب الرد بالعربية صراحةً',
+            autoFixable: false,
+          });
+        }
+      }
+    } catch (error: any) {
+      findings.push({
+        id: `AI-${agent.toUpperCase()}-ERROR`,
+        category: 'ai-agents',
+        severity: 'critical',
+        title: `خطأ في الوكيل "${agent}": ${error.message?.slice(0, 50)}`,
+        description: 'فشل في الاتصال بالوكيل',
+        location: `app/api/agents/${agent}/route.ts`,
+        fix: 'تحقق من الملف وأضف error handling',
+        autoFixable: false,
+      });
+    }
+  }
+
+  return findings;
+}
+```
+
+---
+
+## ══════════════════════════════
+## الخطوة 12 — Module 10: الأعمال والتسويق
+## ══════════════════════════════
+
+```typescript
+// audit/modules/10-business.ts
+import { execSync } from 'child_process';
+import { existsSync } from 'fs';
+import { AuditFinding } from '../types';
+
+export async function auditBusiness(): Promise<AuditFinding[]> {
+  const findings: AuditFinding[] = [];
+  const BASE_URL = process.env.QA_BASE_URL ?? 'http://localhost:5000';
+
+  // ── الصفحات الإلزامية للمستثمرين ──
+  const requiredPages = [
+    { path: '/about', name: 'عن كلميرون', priority: 'high' },
+    { path: '/faq', name: 'الأسئلة الشائعة', priority: 'high' },
+    { path: '/contact', name: 'تواصل معنا', priority: 'high' },
+    { path: '/investors', name: 'صفحة المستثمرين', priority: 'high' },
+    { path: '/demo', name: 'Demo تفاعلي', priority: 'high' },
+    { path: '/security', name: 'صفحة الأمان', priority: 'medium' },
+    { path: '/cookies', name: 'سياسة Cookies', priority: 'high' },
+    { path: '/affiliate-terms', name: 'شروط الشركاء', priority: 'high' },
+    { path: '/legal-templates', name: 'نماذج قانونية', priority: 'medium' },
+  ] as const;
+
+  for (const page of requiredPages) {
+    try {
+      const status = execSync(
+        `curl -s -o /dev/null -w "%{http_code}" "${BASE_URL}${page.path}" --max-time 8`,
+        { encoding: 'utf8' }
+      ).trim();
+
+      if (status === '404') {
+        findings.push({
+          id: `BIZ-PAGE-${page.path.replace('/', '').toUpperCase()}`,
+          category: 'business',
+          severity: page.priority === 'high' ? 'high' : 'medium',
+          title: `صفحة "${page.name}" غير موجودة (404)`,
+          description: `${page.path} تُعطي 404 — تؤثر على ثقة المستثمرين والمستخدمين`,
+          fix: `أنشئ app${page.path}/page.tsx بمحتوى مناسب`,
+          autoFixable: false,
+        });
+      }
+    } catch { /* */ }
+  }
+
+  // ── Onboarding Wizard ──
+  const hasOnboarding =
+    existsSync('app/onboarding') ||
+    existsSync('app/(dashboard)/onboarding') ||
+    parseInt(
+      execSync(
+        'grep -rn "onboarding\\|OnboardingWizard" components/ --include="*.tsx" 2>/dev/null | wc -l',
+        { encoding: 'utf8' }
+      ).trim(), 10
+    ) > 2;
+
+  if (!hasOnboarding) {
+    findings.push({
+      id: 'BIZ-ONBOARD-001',
+      category: 'business',
+      severity: 'high',
+      title: 'Onboarding Wizard غير موجود',
+      description: '75% من المستخدمين يتركون في أسبوع بدون onboarding فعّال (SaaS benchmark 2025)',
+      fix: 'أنشئ wizard من 5 خطوات: مرحباً → نوع الشركة → المشكلة → أول وكيل → Quick Win',
+      autoFixable: false,
+      references: ['https://www.chameleon.io/blog/saas-onboarding-benchmarks'],
+    });
+  }
+
+  // ── Inconsistency: عدد الوكلاء ──
+  try {
+    const agent16 = parseInt(
+      execSync(
+        'grep -rn "16" app/ components/ --include="*.tsx" | grep -i "وكيل\\|agent\\|مساعد" | wc -l',
+        { encoding: 'utf8' }
+      ).trim(), 10
+    );
+    const agent50 = parseInt(
+      execSync(
+        'grep -rn "50" app/ components/ --include="*.tsx" | grep -i "وكيل\\|agent\\|مساعد" | wc -l',
+        { encoding: 'utf8' }
+      ).trim(), 10
+    );
+
+    if (agent50 > 0 && agent16 > 0) {
+      findings.push({
+        id: 'BIZ-CONSISTENCY-001',
+        category: 'business',
+        severity: 'high',
+        title: 'تناقض: "16 وكيل" و"50+ وكيل" في نفس الموقع',
+        description: 'المستخدمون والمستثمرون سيلاحظون هذا التناقض',
+        fix: 'وحّد العدد — استخدم "16+" في كل مكان أو حدّد عدداً دقيقاً',
+        autoFixable: false,
+      });
+    }
+  } catch { /* */ }
+
+  // ── Email Consistency ──
+  try {
+    const dotCom = parseInt(
+      execSync(
+        'grep -rn "kalmeron\\.com" app/ components/ --include="*.tsx" 2>/dev/null | wc -l',
+        { encoding: 'utf8' }
+      ).trim(), 10
+    );
+    if (dotCom > 0) {
+      findings.push({
+        id: 'BIZ-EMAIL-001',
+        category: 'business',
+        severity: 'medium',
+        title: `${dotCom} مكان يستخدم kalmeron.com بدلاً من kalmeron.ai`,
+        description: 'تناقض في الدومين يربك المستخدمين والمستثمرين',
+        fix: 'استبدل كل kalmeron.com بـ kalmeron.ai',
+        autoFixable: true,
+      });
+    }
+  } catch { /* */ }
+
+  return findings;
+}
+```
+
+---
+
+## ══════════════════════════════
+## الخطوة 13 — Scorer والـ Reporter
+## ══════════════════════════════
+
+```typescript
+// audit/scorer.ts
+import { AuditFinding, AuditReport, ModuleResult } from './types';
+
+export function calculateScore(findings: AuditFinding[]): number {
+  const weights = { critical: 25, high: 12, medium: 5, low: 2, info: 0 };
+  const maxPenalty = 100;
+
+  const penalty = findings
+    .filter(f => ['critical', 'high', 'medium', 'low'].includes(f.severity))
+    .reduce((sum, f) => sum + (weights[f.severity] ?? 0), 0);
+
+  return Math.max(0, Math.round(100 - Math.min(penalty, maxPenalty)));
+}
+
+export function getGrade(score: number): 'A' | 'B' | 'C' | 'D' | 'F' {
+  if (score >= 90) return 'A';
+  if (score >= 80) return 'B';
+  if (score >= 65) return 'C';
+  if (score >= 50) return 'D';
+  return 'F';
+}
+
+// audit/reporter.ts
+import { writeFileSync } from 'fs';
+import { AuditReport } from './types';
+
+export function generateHTMLReport(report: AuditReport): string {
+  const severityColors = {
+    critical: '#A32D2D',
+    high: '#854F0B',
+    medium: '#185FA5',
+    low: '#27500A',
+    info: '#666',
+  };
+
+  const criticalFindings = report.modules
+    .flatMap(m => m.findings)
+    .filter(f => f.severity === 'critical');
+
+  const html = `<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>تقرير الفحص الشامل — كلميرون AI — ${new Date(report.timestamp).toLocaleDateString('ar-EG')}</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: system-ui, -apple-system, sans-serif; background: #f8f8f6; color: #1a1a18; padding: 2rem; }
+  .header { background: white; border-radius: 12px; padding: 2rem; margin-bottom: 1.5rem; border: 0.5px solid #e8e8e4; display: flex; justify-content: space-between; align-items: center; }
+  .score-circle { width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-direction: column; font-weight: 600; color: white; background: ${report.overallScore >= 80 ? '#3B6D11' : report.overallScore >= 60 ? '#854F0B' : '#A32D2D'}; }
+  .score-circle .num { font-size: 28px; }
+  .score-circle .grade { font-size: 14px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 1.5rem; }
+  .stat { background: white; border-radius: 8px; padding: 1rem; text-align: center; border: 0.5px solid #e8e8e4; }
+  .stat-n { font-size: 24px; font-weight: 600; }
+  .stat-l { font-size: 11px; color: #888; margin-top: 3px; }
+  .modules { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 8px; margin-bottom: 1.5rem; }
+  .module-card { background: white; border-radius: 8px; padding: 12px; border: 0.5px solid #e8e8e4; }
+  .module-score { font-size: 20px; font-weight: 600; }
+  .module-name { font-size: 12px; color: #666; margin-top: 2px; }
+  .findings { background: white; border-radius: 8px; overflow: hidden; border: 0.5px solid #e8e8e4; margin-bottom: 1.5rem; }
+  .finding { padding: 14px 16px; border-top: 0.5px solid #f0f0ec; }
+  .finding-header { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+  .badge { font-size: 10px; padding: 2px 8px; border-radius: 10px; font-weight: 500; color: white; }
+  .finding-title { font-size: 13px; font-weight: 500; }
+  .finding-desc { font-size: 12px; color: #666; line-height: 1.5; }
+  .finding-fix { font-size: 11px; color: #3B6D11; margin-top: 4px; font-family: monospace; }
+  h2 { font-size: 16px; font-weight: 500; margin-bottom: 10px; }
+  .section { margin-bottom: 1.5rem; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <h1 style="font-size:22px;font-weight:500">تقرير الفحص الشامل — كلميرون AI</h1>
+    <p style="font-size:13px;color:#888;margin-top:4px">${new Date(report.timestamp).toLocaleString('ar-EG')}</p>
+    <p style="font-size:13px;margin-top:6px">${report.summary}</p>
+  </div>
+  <div class="score-circle">
+    <span class="num">${report.overallScore}</span>
+    <span class="grade">${report.grade}</span>
+  </div>
+</div>
+
+<div class="grid">
+  <div class="stat"><div class="stat-n" style="color:#A32D2D">${report.criticalCount}</div><div class="stat-l">مشاكل حرجة</div></div>
+  <div class="stat"><div class="stat-n" style="color:#854F0B">${report.modules.flatMap(m=>m.findings).filter(f=>f.severity==='high').length}</div><div class="stat-l">عالية الخطورة</div></div>
+  <div class="stat"><div class="stat-n" style="color:#185FA5">${report.modules.flatMap(m=>m.findings).filter(f=>f.severity==='medium').length}</div><div class="stat-l">متوسطة</div></div>
+  <div class="stat"><div class="stat-n" style="color:#3B6D11">${report.autoFixCount}</div><div class="stat-l">قابلة للإصلاح التلقائي</div></div>
+</div>
+
+<div class="section">
+  <h2>النقاط حسب القسم</h2>
+  <div class="modules">
+    ${report.modules.map(m => `
+      <div class="module-card" style="border-right: 3px solid ${m.score >= 80 ? '#3B6D11' : m.score >= 60 ? '#854F0B' : '#A32D2D'}">
+        <div class="module-score" style="color: ${m.score >= 80 ? '#3B6D11' : m.score >= 60 ? '#854F0B' : '#A32D2D'}">${m.score}/100</div>
+        <div class="module-name">${m.module}</div>
+        <div style="font-size:10px;color:#888;margin-top:2px">${m.failed} مشكلة</div>
+      </div>
+    `).join('')}
+  </div>
+</div>
+
+${criticalFindings.length > 0 ? `
+<div class="section">
+  <h2 style="color:#A32D2D">🔴 مشاكل حرجة — يجب الإصلاح الفوري</h2>
+  <div class="findings">
+    ${criticalFindings.map(f => `
+      <div class="finding">
+        <div class="finding-header">
+          <span class="badge" style="background:${severityColors[f.severity]}">${f.severity}</span>
+          <span class="finding-title">${f.title}</span>
+        </div>
+        <p class="finding-desc">${f.description}</p>
+        ${f.location ? `<p style="font-size:10px;color:#888;margin-top:2px">📁 ${f.location}</p>` : ''}
+        ${f.fix ? `<p class="finding-fix">✅ ${f.fix}</p>` : ''}
+      </div>
+    `).join('')}
+  </div>
+</div>` : `<div style="background:#EAF3DE;border-radius:8px;padding:1.5rem;text-align:center;color:#27500A;margin-bottom:1.5rem">🎉 لا توجد مشاكل حرجة!</div>`}
+
+<div class="section">
+  <h2>كل النتائج</h2>
+  ${report.modules.map(m => `
+    <details style="margin-bottom:8px">
+      <summary style="cursor:pointer;padding:10px;background:white;border-radius:8px;border:0.5px solid #e8e8e4;font-size:13px;font-weight:500">
+        ${m.module} — ${m.score}/100 — ${m.findings.length} نتيجة
+      </summary>
+      <div class="findings" style="margin-top:4px">
+        ${m.findings.map(f => `
+          <div class="finding">
+            <div class="finding-header">
+              <span class="badge" style="background:${severityColors[f.severity]}">${f.severity}</span>
+              <span class="finding-title">${f.title}</span>
+              ${f.autoFixable ? '<span style="font-size:10px;color:#3B6D11">🔧 تلقائي</span>' : ''}
+            </div>
+            <p class="finding-desc">${f.description}</p>
+            ${f.fix ? `<p class="finding-fix">→ ${f.fix}</p>` : ''}
+          </div>
+        `).join('')}
+      </div>
+    </details>
+  `).join('')}
+</div>
+
+</body>
+</html>`;
+
+  const path = `audit/reports/report_${report.id}.html`;
+  writeFileSync(path, html, 'utf8');
+  writeFileSync(`audit/reports/report_${report.id}.json`, JSON.stringify(report, null, 2));
+  return path;
+}
+```
+
+---
+
+## ══════════════════════════════
+## الخطوة 14 — Runner الرئيسي
+## ══════════════════════════════
+
+```typescript
+// audit/runner.ts
+import { auditCodeQuality } from './modules/01-code-quality';
+import { auditSecurity } from './modules/02-security';
+import { auditAuthentication } from './modules/03-authentication';
+import { auditFrontend } from './modules/04-frontend';
+import { auditBackend } from './modules/05-backend';
+import { auditStorage } from './modules/06-storage';
+import { auditPerformance } from './modules/07-performance';
+import { auditSEO } from './modules/08-seo';
+import { auditAIAgents } from './modules/09-ai-agents';
+import { auditBusiness } from './modules/10-business';
+import { calculateScore, getGrade } from './scorer';
+import { generateHTMLReport } from './reporter';
+import { AuditReport, ModuleResult, Category } from './types';
+
+const MODULES = [
+  { fn: auditCodeQuality, name: 'جودة الكود', category: 'code-quality' as Category },
+  { fn: auditSecurity,    name: 'الأمان (OWASP)', category: 'security' as Category },
+  { fn: auditAuthentication, name: 'المصادقة', category: 'authentication' as Category },
+  { fn: auditFrontend,   name: 'الواجهة الأمامية', category: 'frontend' as Category },
+  { fn: auditBackend,    name: 'الخادم والـ API', category: 'backend' as Category },
+  { fn: auditStorage,    name: 'التخزين (Firestore)', category: 'storage' as Category },
+  { fn: auditPerformance, name: 'الأداء (Lighthouse)', category: 'performance' as Category },
+  { fn: auditSEO,        name: 'SEO والتسويق', category: 'seo' as Category },
+  { fn: auditAIAgents,   name: 'وكلاء AI (16)', category: 'ai-agents' as Category },
+  { fn: auditBusiness,   name: 'الأعمال والـ UX', category: 'business' as Category },
+];
+
+export async function runFullAudit(): Promise<AuditReport> {
+  const runId = `audit_${Date.now()}`;
+  const modules: ModuleResult[] = [];
+
+  console.log('\n' + '═'.repeat(55));
+  console.log('  🔍 KALMERON — نظام الفحص الشامل الذاتي');
+  console.log('═'.repeat(55) + '\n');
+
+  for (const mod of MODULES) {
+    const start = Date.now();
+    process.stdout.write(`  ⏳ ${mod.name}...`);
+
+    const findings = await mod.fn().catch(err => {
+      console.error(`\n  ❌ خطأ في ${mod.name}:`, err.message);
+      return [];
+    });
+
+    const duration = Date.now() - start;
+    const failed = findings.filter(f => ['critical','high','medium','low'].includes(f.severity)).length;
+    const passed = Math.max(0, 10 - failed);
+    const score = calculateScore(findings);
+
+    modules.push({ module: mod.name, category: mod.category, score, findings, duration, passed, failed });
+
+    const indicator = score >= 80 ? '✅' : score >= 60 ? '⚠️' : '❌';
+    console.log(` ${indicator} ${score}/100 (${findings.length} نتيجة) — ${duration}ms`);
+  }
+
+  const allFindings = modules.flatMap(m => m.findings);
+  const overallScore = Math.round(modules.reduce((s, m) => s + m.score, 0) / modules.length);
+  const criticalFindings = allFindings.filter(f => f.severity === 'critical');
+
+  const report: AuditReport = {
+    id: runId,
+    timestamp: new Date().toISOString(),
+    projectName: 'Kalmeron AI',
+    overallScore,
+    grade: getGrade(overallScore),
+    modules,
+    criticalCount: criticalFindings.length,
+    autoFixCount: allFindings.filter(f => f.autoFixable).length,
+    manualFixCount: allFindings.filter(f => !f.autoFixable).length,
+    topPriorities: allFindings
+      .filter(f => ['critical', 'high'].includes(f.severity))
+      .slice(0, 10),
+    summary: criticalFindings.length > 0
+      ? `⚠️ ${criticalFindings.length} مشكلة حرجة — النقاط: ${overallScore}/100`
+      : overallScore >= 80
+        ? `✅ المنصة في حالة ممتازة — النقاط: ${overallScore}/100`
+        : `📋 تحتاج تحسينات — النقاط: ${overallScore}/100`,
+  };
+
+  const reportPath = generateHTMLReport(report);
+
+  console.log('\n' + '═'.repeat(55));
+  console.log(`  📊 النتيجة النهائية: ${overallScore}/100 (${report.grade})`);
+  console.log(`  🔴 حرجة: ${report.criticalCount} | 🔧 تلقائية: ${report.autoFixCount}`);
+  console.log(`  📄 التقرير: ${reportPath}`);
+  console.log('═'.repeat(55) + '\n');
+
+  if (report.criticalCount > 0) process.exit(1);
+  return report;
+}
+
+// نقطة الدخول
+runFullAudit().catch(err => {
+  console.error('فشل نظام الفحص:', err);
+  process.exit(1);
+});
+```
+
+---
+
+## ══════════════════════════════
+## الخطوة 15 — GitHub Actions Workflow
+## ══════════════════════════════
+
+أنشئ .github/workflows/full-audit.yml:
+
+```yaml
+name: 🔍 Kalmeron Full Audit
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: '0 6 * * *'   # يومياً 6 صباحاً UTC
+  workflow_dispatch:       # تشغيل يدوي
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: تثبيت المكتبات
+        run: npm ci
+
+      - name: تثبيت Playwright
+        run: npx playwright install chromium --with-deps
+
+      - name: بناء التطبيق
+        run: npm run build
+        env:
+          NEXT_PUBLIC_FIREBASE_API_KEY: ${{ secrets.NEXT_PUBLIC_FIREBASE_API_KEY }}
+          GOOGLE_GENERATIVE_AI_API_KEY: ${{ secrets.GOOGLE_GENERATIVE_AI_API_KEY }}
+
+      - name: تشغيل التطبيق
+        run: npm start &
+        env:
+          PORT: 5000
+
+      - name: انتظار جهوزية الخادم
+        run: npx wait-on http://localhost:5000 --timeout 30000
+
+      - name: تشغيل الفحص الشامل
+        run: npx tsx audit/runner.ts
+        env:
+          QA_BASE_URL: http://localhost:5000
+          QA_AUTH_TOKEN: ${{ secrets.QA_AUTH_TOKEN }}
+
+      - name: رفع تقرير الفحص
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: audit-report-${{ github.sha }}
+          path: audit/reports/
+          retention-days: 30
+
+      - name: تعليق النتائج على PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const reports = fs.readdirSync('audit/reports/')
+              .filter(f => f.endsWith('.json'));
+            if (reports.length === 0) return;
+            
+            const report = JSON.parse(
+              fs.readFileSync(`audit/reports/${reports[0]}`, 'utf8')
+            );
+            
+            const emoji = report.overallScore >= 80 ? '✅' :
+                          report.overallScore >= 60 ? '⚠️' : '❌';
+            
+            const body = `## ${emoji} تقرير الفحص الشامل — كلميرون AI
+            
+**النقاط:** ${report.overallScore}/100 (${report.grade})
+**المشاكل الحرجة:** ${report.criticalCount}
+**إجمالي النتائج:** ${report.modules.flatMap(m => m.findings).length}
+
+| القسم | النقاط | المشاكل |
+|---|---|---|
+${report.modules.map(m => `| ${m.module} | ${m.score}/100 | ${m.failed} |`).join('\n')}
+
+${report.criticalCount > 0 ? '### 🔴 مشاكل حرجة:\n' + 
+  report.modules.flatMap(m => m.findings)
+    .filter(f => f.severity === 'critical')
+    .slice(0, 5)
+    .map(f => `- **${f.title}**: ${f.description}`)
+    .join('\n') : '### ✅ لا توجد مشاكل حرجة!'}
+`;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body
+            });
+```
+
+---
+
+## ══════════════════════════════
+## الخطوة 16 — package.json Scripts
+## ══════════════════════════════
+
+أضف هذه السكريبتات في package.json:
+
+```json
+{
+  "scripts": {
+    "audit": "tsx audit/runner.ts",
+    "audit:fast": "QA_MODULES=security,auth,frontend tsx audit/runner.ts",
+    "audit:security": "QA_MODULES=security tsx audit/runner.ts",
+    "audit:seo": "QA_MODULES=seo tsx audit/runner.ts",
+    "audit:agents": "QA_MODULES=ai-agents tsx audit/runner.ts",
+    "audit:watch": "nodemon --watch app --watch src --watch components --ext ts,tsx --exec 'npm run audit:fast'",
+    "audit:ci": "QA_BASE_URL=http://localhost:5000 tsx audit/runner.ts",
+    "precommit": "npm run typecheck && npm run lint && npm run audit:fast"
+  }
+}
+```
+
+---
+
+## القواعد الإلزامية:
+- npm run typecheck → 0 أخطاء بعد الإنشاء
+- لا تعدّل firestore.rules — فقط افحصها
+- لا تضف dependencies جديدة — استخدم tsx + child_process
+- حدّث replit.md: "Full-stack audit system installed — 10 modules"
