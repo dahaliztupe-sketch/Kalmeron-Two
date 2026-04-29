@@ -177,3 +177,38 @@ export async function recentDaily(n = 14): Promise<DailyRollup[]> {
     .get();
   return snap.docs.map((d) => d.data() as DailyRollup).reverse();
 }
+
+export interface CostEventRow {
+  id: string;
+  agent: string;
+  model: string;
+  provider: Provider;
+  promptTokens: number;
+  completionTokens: number;
+  costUsd: number;
+  workspaceId: string;
+  occurredAt: Date;
+}
+
+/** Read the most recent N raw cost events for the admin AI-logs dashboard. */
+export async function queryRecentCostEvents(n = 50): Promise<CostEventRow[]> {
+  const snap = await adminDb
+    .collection(EVENTS)
+    .orderBy('occurredAt', 'desc')
+    .limit(n)
+    .get();
+  return snap.docs.map((doc) => {
+    const d = doc.data() as Partial<CostEvent> & { occurredAt?: Timestamp };
+    return {
+      id: doc.id,
+      agent: d.agent ?? 'unknown',
+      model: d.model ?? 'unknown',
+      provider: (d.provider ?? 'other') as Provider,
+      promptTokens: d.promptTokens ?? 0,
+      completionTokens: d.completionTokens ?? 0,
+      costUsd: d.costUsd ?? 0,
+      workspaceId: d.workspaceId ?? 'unknown',
+      occurredAt: d.occurredAt?.toDate?.() ?? new Date(0),
+    };
+  });
+}

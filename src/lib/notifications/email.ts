@@ -45,10 +45,9 @@ export async function sendEmail(p: EmailPayload): Promise<SendResult> {
   if (!apiKey) {
     // Scaffold mode — the rest of the system can develop against this without
     // a real provider. Cron jobs that depend on email will log a warning.
-    console.info("[email] RESEND_API_KEY not set — skipping send", {
-      to: p.to,
-      subject: p.subject,
-    });
+    // Email address is redacted to avoid PII in logs.
+    const domain = p.to.split("@")[1] ?? "unknown";
+    console.info(`[email] RESEND_API_KEY not set — skipping send to *@${domain}: ${p.subject}`);
     return { delivered: false, reason: "no-provider" };
   }
 

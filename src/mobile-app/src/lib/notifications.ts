@@ -1,7 +1,4 @@
-// @ts-nocheck
-// src/mobile-app/src/lib/notifications.ts
 import * as Notifications from 'expo-notifications';
-import { Platform } from 'react-native';
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -11,24 +8,28 @@ Notifications.setNotificationHandler({
   }),
 });
 
-export async function registerForPushNotifications() {
+export async function registerForPushNotifications(): Promise<string | null> {
   const { status: existingStatus } = await Notifications.getPermissionsAsync();
   let finalStatus = existingStatus;
-  
+
   if (existingStatus !== 'granted') {
     const { status } = await Notifications.requestPermissionsAsync();
     finalStatus = status;
   }
-  
+
   if (finalStatus !== 'granted') return null;
-  
+
+  const projectId = process.env.EXPO_PROJECT_ID;
+  if (!projectId) {
+    console.warn('[notifications] EXPO_PROJECT_ID is not set — skipping push token registration.');
+    return null;
+  }
+
   try {
-    const token = await Notifications.getExpoPushTokenAsync({
-      projectId: process.env.EXPO_PROJECT_ID,
-    });
+    const token = await Notifications.getExpoPushTokenAsync({ projectId });
     return token.data;
   } catch (error) {
-    console.error('Failed to get push token:', error);
+    console.error('[notifications] Failed to get push token:', error);
     return null;
   }
 }

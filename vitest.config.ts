@@ -14,6 +14,7 @@ export default defineConfig({
     globals: true,
     exclude: [
       'node_modules',
+      'artifacts',
       'dist',
       '.next',
       '.cache/**',

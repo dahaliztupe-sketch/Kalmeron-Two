@@ -109,11 +109,13 @@ const Carousel = React.forwardRef<
         return
       }
 
-      onSelect(api)
       api.on("reInit", onSelect)
       api.on("select", onSelect)
+      // Defer initial state sync — avoids calling setState synchronously in effect body.
+      const rafId = requestAnimationFrame(() => onSelect(api))
 
       return () => {
+        cancelAnimationFrame(rafId)
         api?.off("select", onSelect)
       }
     }, [api, onSelect])
