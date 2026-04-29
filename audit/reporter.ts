@@ -78,6 +78,15 @@ export function generateHTMLReport(report: AuditReport): string {
   .ok-banner { background: #EAF3DE; border-radius: 8px; padding: 1.5rem; text-align: center; color: #27500A; margin-bottom: 1.5rem; }
   a { color: #185FA5; text-decoration: none; }
   a:hover { text-decoration: underline; }
+  .bench-table { width: 100%; background: white; border-radius: 8px; border: 0.5px solid #e8e8e4; border-collapse: separate; border-spacing: 0; overflow: hidden; }
+  .bench-table th { background: #f5f5f0; font-size: 12px; padding: 10px 12px; text-align: right; font-weight: 500; color: #555; border-bottom: 0.5px solid #e8e8e4; }
+  .bench-table td { font-size: 12px; padding: 12px; border-top: 0.5px solid #f0f0ec; vertical-align: middle; }
+  .bench-bar { display: inline-block; width: 120px; height: 8px; background: #f0f0ec; border-radius: 4px; overflow: hidden; vertical-align: middle; margin: 0 6px; }
+  .bench-bar-fill { display: block; height: 100%; }
+  .bench-pct { font-weight: 600; font-size: 13px; }
+  .bench-notes { color: #888; font-size: 11px; margin-top: 2px; }
+  .competitor-link { font-weight: 500; color: #1a1a18; }
+  .competitor-link:hover { color: #185FA5; }
 </style>
 </head>
 <body>
@@ -114,6 +123,45 @@ export function generateHTMLReport(report: AuditReport): string {
   </div>
 </div>
 
+${report.benchmarks && report.benchmarks.length > 0 ? `
+<div class="section">
+  <h2>📐 المقارنة بالمنصات النموذجية الاحترافية</h2>
+  <p style="font-size:12px;color:#666;margin-bottom:10px">
+    نقارن مشروعنا بـ ${report.benchmarks.length} منصة عالمية رائدة. كل صف يُظهر ما يفعلونه ومدى تطابقنا معهم.
+  </p>
+  <table class="bench-table">
+    <thead>
+      <tr>
+        <th style="width:18%">المنصة</th>
+        <th style="width:22%">نسبة التطابق</th>
+        <th style="width:12%">عندنا / إجمالي</th>
+        <th>ما ينقصنا مقارنةً بهم</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${report.benchmarks.map(b => {
+        const color = b.parityPct >= 80 ? '#3B6D11' : b.parityPct >= 50 ? '#854F0B' : '#A32D2D';
+        return `
+        <tr>
+          <td>
+            ${b.competitorUrl
+              ? `<a class="competitor-link" href="${escapeHtml(b.competitorUrl)}" target="_blank" rel="noopener">${escapeHtml(b.competitor)} ↗</a>`
+              : `<span class="competitor-link">${escapeHtml(b.competitor)}</span>`}
+          </td>
+          <td>
+            <span class="bench-pct" style="color:${color}">${b.parityPct}%</span>
+            <span class="bench-bar"><span class="bench-bar-fill" style="width:${b.parityPct}%;background:${color}"></span></span>
+          </td>
+          <td><span style="color:#3B6D11;font-weight:500">${b.weHave}</span> / ${b.totalChecks}</td>
+          <td>
+            <div class="bench-notes">${escapeHtml(b.notes)}</div>
+          </td>
+        </tr>`;
+      }).join('')}
+    </tbody>
+  </table>
+</div>` : ''}
+
 ${criticalFindings.length > 0 ? `
 <div class="section">
   <h2 style="color:#A32D2D">🔴 مشاكل حرجة — يجب الإصلاح الفوري</h2>
@@ -149,6 +197,7 @@ ${criticalFindings.length > 0 ? `
                   <span class="badge" style="background:${severityColors[f.severity]}">${escapeHtml(f.severity)}</span>
                   <span class="finding-title">${escapeHtml(f.title)}</span>
                   ${f.autoFixable ? '<span style="font-size:10px;color:#3B6D11">🔧 تلقائي</span>' : ''}
+                  ${f.benchmark ? `<span style="font-size:10px;color:#185FA5">📐 مقارنة: ${escapeHtml(f.benchmark.competitor)}</span>` : ''}
                 </div>
                 <p class="finding-desc">${escapeHtml(f.description)}</p>
                 ${f.location ? `<p class="finding-loc">📁 ${escapeHtml(f.location)}</p>` : ''}

@@ -1,8 +1,8 @@
 {
-  "id": "audit_1777493499188",
-  "timestamp": "2026-04-29T20:12:10.682Z",
+  "id": "audit_1777493488403",
+  "timestamp": "2026-04-29T20:12:09.702Z",
   "projectName": "Kalmeron AI",
-  "overallScore": 84,
+  "overallScore": 87,
   "grade": "B",
   "modules": [
     {
@@ -57,7 +57,7 @@
           ]
         }
       ],
-      "duration": 1898,
+      "duration": 1463,
       "passed": 6,
       "failed": 4
     },
@@ -66,9 +66,37 @@
       "category": "i18n",
       "score": 100,
       "findings": [],
-      "duration": 1151,
+      "duration": 847,
       "passed": 10,
       "failed": 0
+    },
+    {
+      "module": "المراقبة والـ Logs",
+      "category": "observability",
+      "score": 96,
+      "findings": [
+        {
+          "id": "OBS-005",
+          "category": "observability",
+          "severity": "low",
+          "title": "15 ملف API يستخدم console بدلاً من logger",
+          "description": "API routes يجب أن تستخدم pino logger للـ structured JSON logs",
+          "fix": "استبدل console.* بـ logger.* المهيكل",
+          "autoFixable": false
+        },
+        {
+          "id": "OBS-011",
+          "category": "observability",
+          "severity": "low",
+          "title": "لا يوجد قنوات تنبيه (Slack/PagerDuty) للإنتاج",
+          "description": "إذا انهار الخادم في الليل، لن يعرف أحد قبل الصباح",
+          "fix": "أعد Sentry alerts → Slack channel، وأضف uptime monitor خارجي",
+          "autoFixable": false
+        }
+      ],
+      "duration": 642,
+      "passed": 8,
+      "failed": 2
     },
     {
       "module": "الاختبارات والتغطية",
@@ -127,9 +155,70 @@
           ]
         }
       ],
-      "duration": 23502,
+      "duration": 24648,
       "passed": 6,
       "failed": 4
+    },
+    {
+      "module": "DevOps والـ CI/CD",
+      "category": "devops",
+      "score": 91,
+      "findings": [
+        {
+          "id": "OPS-002",
+          "category": "devops",
+          "severity": "medium",
+          "title": "CODEOWNERS مفقود",
+          "description": "بدون CODEOWNERS: لا توجد مراجعة إجبارية للملفات الحرجة (firestore.rules, payments)",
+          "fix": "أنشئ .github/CODEOWNERS وحدد ownership للمسارات الحساسة",
+          "autoFixable": false,
+          "references": [
+            "https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners"
+          ]
+        },
+        {
+          "id": "OPS-004",
+          "category": "devops",
+          "severity": "low",
+          "title": "PR template مفقود",
+          "description": "PRs بدون قالب موحد تُصعّب المراجعة",
+          "fix": "أنشئ .github/PULL_REQUEST_TEMPLATE.md",
+          "autoFixable": true
+        },
+        {
+          "id": "OPS-005",
+          "category": "devops",
+          "severity": "low",
+          "title": "لا يوجد pre-commit hooks (Husky/Lefthook)",
+          "description": "الأخطاء البسيطة (lint, typecheck) تصل للـ CI بدلاً من الكشف محلياً",
+          "fix": "npm i -D husky lint-staged ثم npx husky init",
+          "autoFixable": false
+        },
+        {
+          "id": "OPS-006",
+          "category": "devops",
+          "severity": "info",
+          "title": "لا يوجد فرض لـ Conventional Commits",
+          "description": "بدون commit format موحد: الـ changelog وتتبع التغييرات صعب",
+          "fix": "npm i -D @commitlint/cli @commitlint/config-conventional",
+          "autoFixable": false,
+          "references": [
+            "https://www.conventionalcommits.org/"
+          ]
+        },
+        {
+          "id": "OPS-009",
+          "category": "devops",
+          "severity": "info",
+          "title": "لا يوجد Dockerfile",
+          "description": "النشر متعدد المنصات أصعب بدون container reproducible",
+          "fix": "أنشئ Dockerfile أو اعتمد على Vercel/Cloud Run بدون Docker",
+          "autoFixable": false
+        }
+      ],
+      "duration": 10,
+      "passed": 7,
+      "failed": 3
     },
     {
       "module": "الوثائق",
@@ -178,7 +267,57 @@
           "autoFixable": false
         }
       ],
-      "duration": 1388,
+      "duration": 1175,
+      "passed": 9,
+      "failed": 1
+    },
+    {
+      "module": "PWA والموبايل",
+      "category": "pwa-mobile",
+      "score": 96,
+      "findings": [
+        {
+          "id": "PWA-007",
+          "category": "pwa-mobile",
+          "severity": "low",
+          "title": "Apple meta tags / touch icon مفقودة",
+          "description": "iOS لن يعرف كيفية إضافة التطبيق للـ home screen",
+          "fix": "أضف apple-touch-icon.png + apple-mobile-web-app-capable في metadata",
+          "autoFixable": false
+        },
+        {
+          "id": "PWA-011",
+          "category": "pwa-mobile",
+          "severity": "low",
+          "title": "40 استخدام لأحجام pixel ثابتة",
+          "description": "الأحجام الثابتة تكسر التصميم على شاشات مختلفة",
+          "fix": "استخدم rem/em أو نسب مئوية أو Tailwind size classes",
+          "autoFixable": false
+        }
+      ],
+      "duration": 6545,
+      "passed": 8,
+      "failed": 2
+    },
+    {
+      "module": "الخصوصية (GDPR/PDPL)",
+      "category": "data-privacy",
+      "score": 88,
+      "findings": [
+        {
+          "id": "PRIV-007",
+          "category": "data-privacy",
+          "severity": "high",
+          "title": "1 حالة تسجيل محتمل لـ PII في console",
+          "description": "logs قد تحتوي على email/password/token — مخاطر تسرب",
+          "fix": "استخدم pino مع redaction: { paths: [\"email\",\"password\",\"token\"] }",
+          "autoFixable": false,
+          "references": [
+            "https://github.com/pinojs/pino/blob/master/docs/redaction.md"
+          ]
+        }
+      ],
+      "duration": 2085,
       "passed": 9,
       "failed": 1
     },
@@ -368,14 +507,14 @@
           }
         }
       ],
-      "duration": 3548,
+      "duration": 3876,
       "passed": 1,
       "failed": 9
     }
   ],
   "criticalCount": 0,
-  "autoFixCount": 2,
-  "manualFixCount": 19,
+  "autoFixCount": 3,
+  "manualFixCount": 28,
   "topPriorities": [
     {
       "id": "A11Y-004",
@@ -396,6 +535,18 @@
       "autoFixable": false,
       "references": [
         "https://martinfowler.com/articles/practical-test-pyramid.html"
+      ]
+    },
+    {
+      "id": "PRIV-007",
+      "category": "data-privacy",
+      "severity": "high",
+      "title": "1 حالة تسجيل محتمل لـ PII في console",
+      "description": "logs قد تحتوي على email/password/token — مخاطر تسرب",
+      "fix": "استخدم pino مع redaction: { paths: [\"email\",\"password\",\"token\"] }",
+      "autoFixable": false,
+      "references": [
+        "https://github.com/pinojs/pino/blob/master/docs/redaction.md"
       ]
     },
     {
@@ -439,7 +590,7 @@
       }
     }
   ],
-  "summary": "✅ المنصة في حالة ممتازة — النقاط: 84/100",
+  "summary": "✅ المنصة في حالة ممتازة — النقاط: 87/100",
   "benchmarks": [
     {
       "competitor": "OpenAI",

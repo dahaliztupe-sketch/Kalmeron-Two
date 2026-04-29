@@ -9,12 +9,16 @@ export interface AuditConfig {
   lighthouseTimeout: number;
 }
 
+const ALL_CATEGORIES: Category[] = [
+  'code-quality', 'security', 'authentication', 'frontend', 'backend',
+  'storage', 'performance', 'seo', 'ai-agents', 'business',
+  'accessibility', 'i18n', 'observability', 'testing',
+  'devops', 'documentation', 'payments', 'pwa-mobile',
+  'data-privacy', 'benchmarks',
+];
+
 function parseModules(raw: string | undefined): Category[] | undefined {
   if (!raw) return undefined;
-  const valid: Category[] = [
-    'code-quality', 'security', 'authentication', 'frontend', 'backend',
-    'storage', 'performance', 'seo', 'ai-agents', 'business',
-  ];
   const mapAlias: Record<string, Category> = {
     auth: 'authentication',
     code: 'code-quality',
@@ -24,11 +28,24 @@ function parseModules(raw: string | undefined): Category[] | undefined {
     perf: 'performance',
     agents: 'ai-agents',
     biz: 'business',
+    a11y: 'accessibility',
+    obs: 'observability',
+    test: 'testing',
+    ci: 'devops',
+    docs: 'documentation',
+    pay: 'payments',
+    pwa: 'pwa-mobile',
+    mobile: 'pwa-mobile',
+    privacy: 'data-privacy',
+    gdpr: 'data-privacy',
+    bench: 'benchmarks',
+    benchmark: 'benchmarks',
+    compare: 'benchmarks',
   };
   return raw
     .split(',')
     .map(s => s.trim().toLowerCase())
-    .map(s => (valid.includes(s as Category) ? (s as Category) : mapAlias[s]))
+    .map(s => (ALL_CATEGORIES.includes(s as Category) ? (s as Category) : mapAlias[s]))
     .filter((m): m is Category => Boolean(m));
 }
 

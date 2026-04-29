@@ -1,5 +1,38 @@
 # Kalmeron AI (ai-studio-applet)
 
+## Session 2026-04-29 — Audit System Expanded — 20 modules + Benchmark Comparison
+
+تم توسيع نظام الفحص من 10 إلى **20 وحدة** وأُضيف محرّك **مقارنة بالمنصات النموذجية** (Vercel, Linear, Stripe, Notion, Anthropic, OpenAI, Cursor, Resend) — يُحدد ما ينقصنا مقارنةً بهم في كل تشغيلة.
+
+### الوحدات الجديدة (11–20)
+- `11-accessibility.ts` — WCAG 2.2 AA (alt, aria, contrast, keyboard nav, focus visible)
+- `12-i18n.ts` — تطابق ar/en، RTL، next-intl، تواريخ هجرية، dir="rtl"
+- `13-observability.ts` — Sentry، OpenTelemetry، pino، structured logging، traces
+- `14-testing.ts` — تغطية vitest، e2e Playwright، unit/integration ratio، CI gates
+- `15-devops.ts` — CI/CD، Dockerfile، secrets في الكود، health checks، rollback
+- `16-documentation.ts` — README، API docs، CONTRIBUTING، CHANGELOG، JSDoc
+- `17-payments.ts` — Stripe webhook signature، idempotency، فشل الدفع، refund flow
+- `18-pwa-mobile.ts` — manifest، service worker، responsive، touch targets، offline
+- `19-data-privacy.ts` — GDPR/PDPL، DPIA، حذف الحساب، export data، cookie consent
+- `20-benchmarks.ts` — **القلب الجديد**: ~30 check مقابل 9 منصات عالمية رائدة
+
+### المحرّك الجديد
+- `audit/benchmarks.ts` — `summarizeBenchmarks()` يجمع نتائج 20-benchmarks حسب كل منصة ويحسب **نسبة التطابق %**.
+- `audit/runner.ts` — يطبع شريط مقارنة في الـ console + يحفظ `benchmarks[]` في `AuditReport`.
+- `audit/reporter.ts` — قسم HTML جديد: جدول بكل منصة، نسبة تطابق ملوّنة، رابط للموقع، وما ينقصنا تحديداً.
+- `audit/types.ts` — أُضيف `BenchmarkContext` (competitor, theyHave, weAreMissing) و `BenchmarkSummary` (parityPct, weHave, weMiss, notes).
+
+### scripts الجديدة (في package.json)
+- `npm run audit:benchmarks` (= `audit:compare`) — مقارنة فقط بالمنصات النموذجية
+- `npm run audit:a11y | i18n | obs | test | devops | docs | payments | pwa | privacy`
+- `audit:fast` صار يشمل: security + auth + frontend + storage + accessibility + i18n + benchmarks
+
+### نتيجة أول تشغيل
+- Vercel 80% · Linear 80% · Notion 100% · Stripe 40% · Anthropic 50% · Resend 0% · OpenAI 0%
+- التقرير في `audit/reports/latest.html` — قسم "المقارنة بالمنصات النموذجية الاحترافية" يظهر في الأعلى.
+
+---
+
 ## Session 2026-04-29 — Full-stack audit system installed — 10 modules
 
 نظام فحص ذاتي شامل مبني على OWASP Top 10 + Next.js Security Docs + Lighthouse + Arcjet checklist.
