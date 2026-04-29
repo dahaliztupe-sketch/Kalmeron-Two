@@ -12,6 +12,7 @@ import { WebVitals } from "@/components/analytics/WebVitals";
 import { NextIntlClientProvider } from 'next-intl';
 import { getLocale, getMessages } from 'next-intl/server';
 import { safeJsonLd } from "@/src/lib/security/safe-json-ld";
+import { ScrollRestoration } from "@/components/utils/ScrollRestoration";
 
 // ═══ Lean typography stack — perf-first ═══
 // Reduced from 4 fonts × 17 weights → 2 fonts × 5 weights (~70% smaller font payload).
@@ -137,6 +138,7 @@ export default async function RootLayout({
             <ThemeProvider attribute="class" defaultTheme="dark" forcedTheme="dark" enableSystem={false}>
               <AuthProvider>
                 <QueryProvider>
+                  <ScrollRestoration />
                   {children}
                   <CookieBanner />
                   <Toaster position="top-right" richColors />
