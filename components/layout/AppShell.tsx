@@ -37,7 +37,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   if (!user) {
     return (
       <div
-        className="relative min-h-screen flex flex-col items-center justify-center text-white overflow-hidden mesh-gradient aurora-bg starfield"
+        className="relative min-h-screen flex flex-col items-center justify-center text-white mesh-gradient aurora-bg starfield py-16"
         dir={dir}
       >
         {/* Subtle grid overlay for depth */}
@@ -124,8 +124,13 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   }
 
   // ───────────── Logged-in shell ─────────────
+  // NOTE: We deliberately let the BODY be the scroll container (no
+  // overflow-hidden / no inner overflow-y-auto). On mobile, nested scroll
+  // containers caused a hard-lock where touch-scroll would not move the page.
+  // The Sidebar is `position: fixed` (md+), so the main column can scroll
+  // naturally with the document and `position: sticky` headers still work.
   return (
-    <div className="flex min-h-screen bg-[#05070D] overflow-hidden" dir={dir}>
+    <div className="flex min-h-screen bg-[#05070D]" dir={dir}>
       {/* Skip-to-content link — visible only when focused (a11y P1 #9). */}
       <a
         href="#kalmeron-main"
@@ -139,7 +144,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <main
         id="kalmeron-main"
         className={cn(
-          "flex-1 flex flex-col min-h-screen w-full transition-all duration-300",
+          "flex-1 flex flex-col w-full min-w-0 transition-all duration-300",
           dir === "rtl" ? "md:mr-72" : "md:ml-72"
         )}
       >
@@ -229,8 +234,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </div>
         </header>
 
-        {/* Page Content */}
-        <div className="flex-1 overflow-y-auto overflow-x-hidden scrollbar-hide pb-28 md:pb-0">
+        {/* Page Content — body is the scroll container; pb leaves room for
+            the mobile bottom nav (env(safe-area-inset-bottom) included). */}
+        <div className="flex-1 w-full pb-[calc(7rem+env(safe-area-inset-bottom))] md:pb-0">
           <AnimatePresence mode="wait">
             <motion.div
               key={pathname}

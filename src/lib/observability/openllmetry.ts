@@ -12,7 +12,21 @@
  * `docs/ECOSYSTEM_RESEARCH_2026-04-28.md` §8 for the rationale.
  */
 
-import type { InitializeOptions } from '@traceloop/node-server-sdk';
+// NOTE: `@traceloop/node-server-sdk` is an OPTIONAL peer dep — it is only
+// installed in environments that opt in to LLM tracing (`OTEL_LLM_TRACING=on`).
+// We avoid both static `import type` AND a literal `await import('pkg')` here
+// because Turbopack/Webpack will eagerly try to resolve those at build time
+// and fail when the package is absent. The indirection through a variable
+// name keeps the bundler out of it; the import only runs at request time when
+// tracing is explicitly enabled.
+
+type InitializeOptions = {
+  appName?: string;
+  disableBatch?: boolean;
+  baseUrl?: string;
+  apiKey?: string;
+  traceContent?: boolean;
+};
 
 let initialised = false;
 
@@ -20,7 +34,16 @@ export async function initOpenLLMetry(): Promise<void> {
   if (initialised) return;
   initialised = true;
 
-  const traceloop = await import('@traceloop/node-server-sdk');
+  const pkg = '@traceloop/node-server-sdk';
+  // Bundler-opaque dynamic import — the literal string never appears in a
+  // static `import(...)` expression so Turbopack won't try to resolve it.
+  const traceloop = (await import(/* webpackIgnore: true */ /* @vite-ignore */ pkg).catch((err) => {
+     
+    console.warn('[openllmetry] traceloop package not installed; skipping init.', err);
+    return null;
+  })) as { initialize: (o: InitializeOptions) => void } | null;
+
+  if (!traceloop) return;
 
   const debug = process.env.OTEL_LLM_TRACING === 'debug';
   const opts: InitializeOptions = {

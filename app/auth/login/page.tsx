@@ -74,7 +74,7 @@ export default function LoginPage() {
   const isRedirecting = !loading && !!user;
 
   return (
-    <div className="min-h-screen mesh-gradient aurora-bg starfield flex items-center justify-center relative overflow-hidden px-4 sm:px-6" dir="rtl">
+    <div className="min-h-screen mesh-gradient aurora-bg starfield flex items-center justify-center relative px-4 sm:px-6 py-16 sm:py-12" dir="rtl">
       <Link href="/" className="absolute top-4 right-4 sm:top-6 sm:right-6 z-20 inline-flex items-center gap-2 text-sm text-neutral-400 hover:text-white transition-colors">
         <ArrowLeft className="w-4 h-4 icon-flip" /> العودة للرئيسية
       </Link>

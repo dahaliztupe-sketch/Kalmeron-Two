@@ -2035,3 +2035,63 @@ own "Level 4 = 21 hours" estimate that exceeds a single session.
 - `npm run lint:lexicon` → PASS.
 - `npx tsc --noEmit` (main app, excluding `artifacts/`) → 0 errors.
 - `npm run lint` → only pre-existing `artifacts/mockup-sandbox` warnings.
+
+---
+
+## v2026.04.29 — Mobile scroll fix + auth/instrumentation hardening
+
+### Symptom (user report, AR)
+> "جربت الموقع من خلال هاتف كان لا يقبل السكرول مهما فعلت لا يتحرك
+>  وهناك مشاكل كثيرة في المصادقة"
+
+### Root causes
+1. **Build failure on every request** — `instrumentation.ts` dynamically
+   imported `@traceloop/node-server-sdk` (an OPTIONAL peer dep that is not
+   installed). Turbopack still tried to resolve the literal package name at
+   build time and returned 500 for `/`, which by itself looked like an
+   "auth issue" because the login page never rendered.
+2. **Mobile scroll trap in `AppShell`** — outer `flex min-h-screen overflow-hidden`
+   + `<main className="min-h-screen">` + `<div className="flex-1 overflow-y-auto">`
+   is the classic flexbox scroll trap. On mobile the inner div had no
+   constrained height to scroll within, and the parent's `overflow-hidden`
+   blocked any rubber-band scroll from reaching the body.
+3. **Same trap on auth pages** — `/auth/login` and `/auth/signup` wrappers
+   used `min-h-screen ... overflow-hidden`; on small phones the form was
+   taller than the viewport and could not be scrolled to reach the
+   "Remember me" / footer area.
+4. **`ScrollRestoration` was a no-op inside dashboard** — it called
+   `window.scrollTo` while the actual scroll container was the inner div.
+
+### Fix
+- `src/lib/observability/openllmetry.ts` — replaced `import type` from the
+  optional package with a local type alias and made the dynamic import
+  bundler-opaque (assign string to a variable first, then `import(pkg)`),
+  with a graceful catch so a missing package logs a warning instead of
+  killing the build.
+- `components/layout/AppShell.tsx` —
+  - Logged-in shell: dropped `overflow-hidden` from outer wrapper, dropped
+    `min-h-screen` from `<main>` (replaced with `min-w-0` to keep flex
+    children honest), and removed `overflow-y-auto`/`scrollbar-hide` from
+    the inner content div. Padding now uses
+    `pb-[calc(7rem+env(safe-area-inset-bottom))]` for the mobile bottom nav.
+  - Logged-out splash: dropped `overflow-hidden`, added `py-16` so tall
+    content scrolls naturally on small phones.
+  - The Sidebar is already `position: fixed` on `md+`, so making the
+    document the single scroll container Just Works for both breakpoints
+    and lets iOS Safari's native momentum + URL-bar collapse take over.
+- `app/auth/login/page.tsx` and `app/auth/signup/page.tsx` — dropped
+  `overflow-hidden` from the outer container and added `py-16 sm:py-12` so
+  the auth card can be scrolled past on short viewports.
+
+### Files touched
+- `instrumentation.ts` (no change — already wrapped in try/catch)
+- `src/lib/observability/openllmetry.ts`
+- `components/layout/AppShell.tsx`
+- `app/auth/login/page.tsx`
+- `app/auth/signup/page.tsx`
+
+### Verification
+- `Start application` workflow boots cleanly (no module-not-found, `Ready in 1956ms`).
+- `/` and `/auth/login` render without 500.
+- Body is now the single scroll container on mobile; Sidebar (fixed) and
+  sticky header continue to behave correctly on desktop.

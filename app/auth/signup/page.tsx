@@ -77,7 +77,7 @@ export default function SignUpPage() {
   const isRedirecting = !loading && !!user;
 
   return (
-    <div className="min-h-screen mesh-gradient aurora-bg starfield flex items-center justify-center relative overflow-hidden px-4 sm:px-6" dir="rtl">
+    <div className="min-h-screen mesh-gradient aurora-bg starfield flex items-center justify-center relative px-4 sm:px-6 py-16 sm:py-12" dir="rtl">
       <Suspense fallback={null}>
         <ReferralCapture />
       </Suspense>
