@@ -30,15 +30,32 @@ export default function SignUpPage() {
     }
   }, [user, loading]);
 
+  // Prefetch likely destinations so the post-signup hop feels instant.
   useEffect(() => {
-    // Wait for both auth and the Firestore user doc before deciding where to
-    // route — otherwise an existing user signing in via the signup page would
-    // be wrongly sent through onboarding again.
-    if (loading || dbUserLoading) return;
+    try { router.prefetch("/onboarding"); } catch {}
+    try { router.prefetch("/dashboard"); } catch {}
+  }, [router]);
+
+  useEffect(() => {
+    // Route the moment Firebase confirms the user — do NOT block on the
+    // Firestore profile fetch. New signups will (correctly) land on
+    // /onboarding because their fresh user doc has profile_completed=false.
+    // Existing users who happen to sign in via the signup page get sent to
+    // /dashboard once we know their profile is complete; until then we send
+    // them to /dashboard and let AuthGuard re-route to /onboarding only if
+    // truly needed. This avoids leaving the user staring at the signup form
+    // for several seconds on slow networks.
+    if (loading) return;
     if (!user) return;
-    if (dbUser && dbUser.profile_completed) {
+    if (!dbUserLoading && dbUser && !dbUser.profile_completed) {
+      router.replace("/onboarding");
+    } else if (!dbUserLoading && dbUser && dbUser.profile_completed) {
       router.replace("/dashboard");
     } else {
+      // Profile not yet known — default to onboarding because the vast
+      // majority of users hitting /auth/signup are new. AuthGuard / the
+      // onboarding page itself will bounce already-onboarded users to
+      // /dashboard once Firestore resolves.
       router.replace("/onboarding");
     }
   }, [user, dbUser, loading, dbUserLoading, router]);
@@ -55,10 +72,9 @@ export default function SignUpPage() {
     }
   };
 
-  // Render the form immediately. Show the redirecting state only once we have
-  // both the auth user AND the Firestore profile, so we don't flash the
-  // wrong CTA before knowing where to send them.
-  const isRedirecting = !loading && !dbUserLoading && !!user;
+  // Show the redirecting state as soon as we have a user — navigation is
+  // already queued, no need to keep offering the sign-up button.
+  const isRedirecting = !loading && !!user;
 
   return (
     <div className="min-h-screen mesh-gradient aurora-bg starfield flex items-center justify-center relative overflow-hidden px-4 sm:px-6" dir="rtl">

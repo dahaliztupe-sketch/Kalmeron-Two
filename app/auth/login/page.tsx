@@ -14,16 +14,29 @@ export default function LoginPage() {
   const reduce = useReducedMotion();
   const [signingIn, setSigningIn] = useState(false);
 
+  // Prefetch the dashboard bundle on mount so the post-login navigation feels
+  // instant once the Firebase user resolves.
   useEffect(() => {
-    // CRITICAL: only route AFTER both auth and the Firestore user doc have
-    // resolved. Otherwise dbUser is still null and `!dbUser?.profile_completed`
-    // is truthy, sending an already-onboarded user to /onboarding by mistake.
-    if (loading || dbUserLoading) return;
+    try { router.prefetch("/dashboard"); } catch {}
+    try { router.prefetch("/onboarding"); } catch {}
+  }, [router]);
+
+  useEffect(() => {
+    // Route the moment Firebase confirms the user — do NOT wait for the
+    // Firestore profile fetch. Waiting for `dbUserLoading` to settle keeps the
+    // user staring at the login form for several seconds on slow networks.
+    // The dashboard's own AuthGuard handles the profile check (and bounces to
+    // /onboarding if profile_completed=false), so this is safe.
+    if (loading) return;
     if (!user) return;
-    if (dbUser && dbUser.profile_completed) {
-      router.replace("/dashboard");
-    } else {
+    // If we already know the profile is incomplete, skip the dashboard hop and
+    // go straight to onboarding. Otherwise (profile complete OR not yet known)
+    // send to /dashboard — AuthGuard will re-route to /onboarding if needed
+    // once the Firestore doc resolves.
+    if (!dbUserLoading && dbUser && !dbUser.profile_completed) {
       router.replace("/onboarding");
+    } else {
+      router.replace("/dashboard");
     }
   }, [user, dbUser, loading, dbUserLoading, router]);
 
@@ -40,11 +53,10 @@ export default function LoginPage() {
     }
   };
 
-  // Render the form immediately. Show a small redirecting overlay only when
-  // we already have an authenticated user AND the Firestore profile has
-  // resolved — otherwise the button flashes "جارِ التحويل" before we even
-  // know where to send the user.
-  const isRedirecting = !loading && !dbUserLoading && !!user;
+  // Show the redirecting state as soon as we have a user — the navigation is
+  // already queued in the effect above, so we shouldn't keep offering the
+  // sign-in button.
+  const isRedirecting = !loading && !!user;
 
   return (
     <div className="min-h-screen mesh-gradient aurora-bg starfield flex items-center justify-center relative overflow-hidden px-4 sm:px-6" dir="rtl">
