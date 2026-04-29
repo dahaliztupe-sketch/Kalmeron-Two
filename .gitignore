@@ -69,3 +69,11 @@ test/eval/promptfoo/.cache/
 data/egypt-legal/
 data/kitab-bench/
 
+
+# Firebase
+.firebase/
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+*-debug.log
+.runtimeconfig.json
