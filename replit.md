@@ -1,5 +1,19 @@
 # Kalmeron AI (ai-studio-applet)
 
+## Session 2026-04-29 — Login UX + Remember Me
+
+تحسينات على تجربة تسجيل الدخول بناءً على شكوى مستخدم ("بفضل واقف على صفحة تسجيل الدخول لفترة طويلة قبل ما يحول"):
+
+1. **`app/auth/login/page.tsx` و `app/auth/signup/page.tsx`** — إزالة الانتظار على `dbUserLoading` قبل التحويل. كان الـ useEffect يربط التحويل بانتهاء جلب وثيقة Firestore، مما يبقي المستخدم على صفحة الدخول لعدة ثوانٍ بعد تأكيد Google. الحل: التحويل يحدث فور وصول `user` من `onAuthStateChanged`، والـ `AuthGuard` على `/dashboard` يتولى التحقق من `profile_completed` ويحوّل إلى `/onboarding` فقط إذا لزم. أُضيف `router.prefetch("/dashboard")` و `router.prefetch("/onboarding")` على mount لجعل القفزة لحظية.
+
+2. **ميزة "تذكّرني على هذا الجهاز"** — checkbox جديد في `app/auth/login/page.tsx` (افتراضياً مُفعَّل). عند إلغائه، تُستخدم `browserSessionPersistence` بدل `browserLocalPersistence` فيُسجَّل خروج المستخدم تلقائياً عند إغلاق المتصفح (مفيد للأجهزة المشتركة).
+   - `contexts/AuthContext.tsx`: `signInWithGoogle(remember?: boolean = true)` يستدعي `setPersistence` قبل `signInWithPopup/Redirect`، ويخزّن الاختيار في `localStorage` تحت `kal_remember_session`.
+   - عند إعادة تحميل التطبيق، الـ `AuthProvider` يقرأ المفتاح ويعيد تطبيق نفس وضع الـ persistence قبل تسجيل الـ listener — يضمن سلوك متّسق عبر إعادة تشغيل المتصفح حتى في حالات Safari ITP / private mode (يفشل بصمت ويعود لـ inMemory).
+
+3. **إصلاحات بناء**:
+   - `@traceloop/node-server-sdk` كان موجود في `package.json` لكن غير مثبّت في `node_modules` → كان يكسر تجميع `instrumentation.ts`. تم تشغيل `npm install` فعلياً.
+   - `components/cookie-banner.tsx` — TS7030 (Not all code paths return a value) من `useEffect` يرجع cleanup فقط في فرع `if`. أُعيد كتابته بـ early-return.
+
 ## Session 2026-04-28 (لاحق) — تنفيذ تقرير `docs/ECOSYSTEM_RESEARCH_2026-04-28.md`
 
 البنود السبعة كلّها صارت داخل الكود، كلّها **opt-in** عبر متغيّرات بيئة لكي لا يتغيّر السلوك الافتراضي للتطبيق:

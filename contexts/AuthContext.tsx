@@ -7,6 +7,9 @@ import {
   signInWithPopup,
   signInWithRedirect,
   getRedirectResult,
+  setPersistence,
+  browserLocalPersistence,
+  browserSessionPersistence,
   signOut as firebaseSignOut,
 } from "firebase/auth";
 import { auth, googleProvider, db, isFirebaseConfigured } from "@/src/lib/firebase";
@@ -42,11 +45,21 @@ interface AuthContextType {
    * not-onboarded, sending an existing user back through onboarding.
    */
   dbUserLoading: boolean;
-  signInWithGoogle: () => Promise<void>;
+  /**
+   * Sign in with Google. Pass `remember=false` to use session persistence
+   * (the user is signed out automatically when they close the browser).
+   * Defaults to `true` (persistent across browser restarts).
+   */
+  signInWithGoogle: (remember?: boolean) => Promise<void>;
   signOut: () => Promise<void>;
   refreshDBUser: () => Promise<void>;
   mergeDBUser: (patch: Partial<DBUser>) => void;
 }
+
+// localStorage key that mirrors the user's "Remember me" choice so we can
+// re-apply the same persistence mode on subsequent visits BEFORE the auth
+// listener fires. Stored as "1" (remember) or "0" (session-only).
+const REMEMBER_KEY = "kal_remember_session";
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -127,6 +140,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (!FIREBASE_READY) {
       return;
     }
+    // Re-apply the user's previously chosen persistence mode BEFORE wiring up
+    // the auth listener. Firebase persists this internally, but calling it
+    // explicitly guarantees consistent behaviour across browsers/edge cases
+    // (e.g. Safari ITP clearing IndexedDB).
+    try {
+      const stored =
+        typeof window !== "undefined"
+          ? window.localStorage.getItem(REMEMBER_KEY)
+          : null;
+      // Default to "remember" when no preference has been recorded yet.
+      const remember = stored !== "0";
+      void setPersistence(
+        auth,
+        remember ? browserLocalPersistence : browserSessionPersistence
+      ).catch(() => {});
+    } catch {
+      /* ignore — persistence is best-effort */
+    }
+
     // Resolve any pending redirect-based sign-in BEFORE we wire up the listener
     // so the popup → redirect transition completes cleanly. Errors here are
     // surfaced as toasts but never block the rest of auth.
@@ -185,7 +217,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => unsubscribe();
   }, []);
 
-  const signInWithGoogle = async () => {
+  const signInWithGoogle = async (remember: boolean = true) => {
     if (!FIREBASE_READY) {
       try {
         toast.error("تسجيل الدخول معطّل في هذه البيئة (وضع تجريبي).");
@@ -193,6 +225,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return;
     }
     try {
+      // Apply the user's "Remember me" choice BEFORE kicking off the sign-in.
+      // browserLocalPersistence (default) keeps the session across browser
+      // restarts. browserSessionPersistence clears it the moment the tab
+      // closes — a common expectation on shared/public devices.
+      try {
+        await setPersistence(
+          auth,
+          remember ? browserLocalPersistence : browserSessionPersistence
+        );
+        if (typeof window !== "undefined") {
+          window.localStorage.setItem(REMEMBER_KEY, remember ? "1" : "0");
+        }
+      } catch (persistErr) {
+        // Persistence failures (e.g. private browsing on Safari) shouldn't
+        // block sign-in — Firebase will fall back to in-memory persistence.
+        console.warn("Failed to set auth persistence:", persistErr);
+      }
+
       if (shouldUseRedirect()) {
         // Redirect flow — page will reload and getRedirectResult above will
         // pick up the result on return.

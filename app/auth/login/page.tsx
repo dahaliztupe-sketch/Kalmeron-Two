@@ -4,15 +4,30 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { motion, useReducedMotion } from "motion/react";
-import { Loader2, Globe, ArrowLeft } from "lucide-react";
+import { Loader2, Globe, ArrowLeft, Check } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+
+const REMEMBER_KEY = "kal_remember_session";
 
 export default function LoginPage() {
   const { user, dbUser, loading, dbUserLoading, signInWithGoogle } = useAuth();
   const router = useRouter();
   const reduce = useReducedMotion();
   const [signingIn, setSigningIn] = useState(false);
+  // Default the checkbox from whatever the user picked last time, falling back
+  // to "true" (remember me). This way returning users see their previous
+  // preference reflected in the UI.
+  const [remember, setRemember] = useState(true);
+
+  useEffect(() => {
+    try {
+      const stored = window.localStorage.getItem(REMEMBER_KEY);
+      if (stored === "0") setRemember(false);
+    } catch {
+      /* localStorage may be unavailable in private mode — keep default */
+    }
+  }, []);
 
   // Prefetch the dashboard bundle on mount so the post-login navigation feels
   // instant once the Firebase user resolves.
@@ -44,7 +59,7 @@ export default function LoginPage() {
     if (signingIn) return;
     setSigningIn(true);
     try {
-      await signInWithGoogle();
+      await signInWithGoogle(remember);
     } catch {
       /* toast already shown in context */
     } finally {
@@ -103,6 +118,38 @@ export default function LoginPage() {
               </>
             )}
           </button>
+
+          <label
+            htmlFor="remember-me"
+            className="flex items-center justify-center gap-2.5 text-sm text-neutral-300 cursor-pointer select-none hover:text-white transition-colors"
+          >
+            <span className="relative inline-flex">
+              <input
+                id="remember-me"
+                type="checkbox"
+                checked={remember}
+                onChange={(e) => setRemember(e.target.checked)}
+                disabled={signingIn || isRedirecting}
+                className="peer sr-only"
+              />
+              <span
+                aria-hidden
+                className={`w-5 h-5 rounded-md border transition-all flex items-center justify-center ${
+                  remember
+                    ? "bg-cyan-400 border-cyan-300"
+                    : "bg-white/[0.04] border-white/20"
+                }`}
+              >
+                {remember && <Check className="w-3.5 h-3.5 text-black" strokeWidth={3} />}
+              </span>
+            </span>
+            <span className="font-medium">تذكّرني على هذا الجهاز</span>
+          </label>
+          {!remember && (
+            <p className="text-[11px] text-neutral-500 -mt-3 leading-relaxed">
+              سيتم تسجيل خروجك تلقائياً عند إغلاق المتصفح. مناسب للأجهزة المشتركة.
+            </p>
+          )}
 
           <div className="relative flex items-center gap-3 text-xs text-neutral-600">
             <span className="flex-1 h-px bg-white/[0.08]" />
