@@ -1,5 +1,48 @@
 # Kalmeron AI (ai-studio-applet)
 
+## Session 2026-04-29 — Full-stack audit system installed — 10 modules
+
+نظام فحص ذاتي شامل مبني على OWASP Top 10 + Next.js Security Docs + Lighthouse + Arcjet checklist.
+
+### الهيكل
+```
+audit/
+├── index.ts            ← Public API
+├── config.ts           ← QA_BASE_URL / QA_AUTH_TOKEN / QA_MODULES env vars
+├── types.ts            ← AuditFinding, AuditReport, ModuleResult
+├── runner.ts           ← المنسّق الرئيسي + entry point
+├── scorer.ts           ← weighted scoring (critical=25, high=12, medium=5, low=2)
+├── reporter.ts         ← HTML (RTL) + JSON output
+├── modules/01..10      ← 10 وحدات فحص
+├── fixers/auto-fixer.ts       ← lint --fix, npm audit fix, RTL/lang
+└── fixers/fix-suggestions.ts  ← markdown-friendly suggestions list
+```
+
+### scripts (في package.json)
+- `npm run audit` — كامل
+- `npm run audit:fast` — security + auth + frontend + storage فقط
+- `npm run audit:security|auth|frontend|backend|storage|performance|seo|agents|business`
+- `npm run audit:ci` — للـ GitHub Actions، يفشل عند مشكلة حرجة
+- `npm run precommit` — typecheck + lint + audit:fast
+
+### env vars
+- `QA_BASE_URL` (default: `http://localhost:5000`)
+- `QA_AUTH_TOKEN` — Firebase ID Token لاختبار agents المحمية
+- `QA_MODULES=security,frontend` لتشغيل جزء فقط
+- `QA_FAIL_ON_CRITICAL=false` لمنع exit(1) عند المشاكل الحرجة
+
+### CI
+`.github/workflows/full-audit.yml` يشغّل النظام يومياً 6:00 UTC + على كل PR، يرفع التقارير كـ artifact، ويعلّق ملخصاً على الـ PR.
+
+### المخرجات
+كل تشغيلة تُولّد `audit/reports/report_<timestamp>.{html,json}` + نسخة `latest.{html,json}` للوصول السريع.
+
+### اختبار
+✅ `npm run typecheck` — صفر أخطاء بعد الإضافة.
+✅ تشغيل `QA_MODULES=storage,security npx tsx audit/runner.ts` نجح وأنتج تقرير HTML/JSON.
+
+---
+
 ## Session 2026-04-29 — Login UX + Remember Me
 
 تحسينات على تجربة تسجيل الدخول بناءً على شكوى مستخدم ("بفضل واقف على صفحة تسجيل الدخول لفترة طويلة قبل ما يحول"):

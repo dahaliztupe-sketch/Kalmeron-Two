@@ -1,0 +1,1050 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>تقرير الفحص الشامل — كلميرون AI — ٢٩‏/٤‏/٢٠٢٦</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; background: #f8f8f6; color: #1a1a18; padding: 2rem; line-height: 1.5; }
+  .header { background: white; border-radius: 12px; padding: 2rem; margin-bottom: 1.5rem; border: 0.5px solid #e8e8e4; display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; }
+  .score-circle { width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-direction: column; font-weight: 600; color: white; background: #854F0B; flex-shrink: 0; }
+  .score-circle .num { font-size: 28px; line-height: 1; }
+  .score-circle .grade { font-size: 14px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 1.5rem; }
+  .stat { background: white; border-radius: 8px; padding: 1rem; text-align: center; border: 0.5px solid #e8e8e4; }
+  .stat-n { font-size: 24px; font-weight: 600; }
+  .stat-l { font-size: 11px; color: #888; margin-top: 3px; }
+  .modules { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 8px; margin-bottom: 1.5rem; }
+  .module-card { background: white; border-radius: 8px; padding: 12px; border: 0.5px solid #e8e8e4; }
+  .module-score { font-size: 20px; font-weight: 600; }
+  .module-name { font-size: 12px; color: #666; margin-top: 2px; }
+  .findings { background: white; border-radius: 8px; overflow: hidden; border: 0.5px solid #e8e8e4; margin-bottom: 1.5rem; }
+  .finding { padding: 14px 16px; border-top: 0.5px solid #f0f0ec; }
+  .finding:first-child { border-top: 0; }
+  .finding-header { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; flex-wrap: wrap; }
+  .badge { font-size: 10px; padding: 2px 8px; border-radius: 10px; font-weight: 500; color: white; }
+  .finding-title { font-size: 13px; font-weight: 500; }
+  .finding-desc { font-size: 12px; color: #666; line-height: 1.5; }
+  .finding-fix { font-size: 11px; color: #3B6D11; margin-top: 4px; font-family: ui-monospace, "SF Mono", Menlo, monospace; white-space: pre-wrap; }
+  .finding-evidence { font-size: 11px; color: #888; margin-top: 4px; font-family: ui-monospace, "SF Mono", Menlo, monospace; background: #f5f5f0; padding: 4px 6px; border-radius: 3px; white-space: pre-wrap; word-break: break-all; }
+  .finding-loc { font-size: 10px; color: #888; margin-top: 2px; }
+  h1 { font-size: 22px; font-weight: 500; }
+  h2 { font-size: 16px; font-weight: 500; margin-bottom: 10px; }
+  .section { margin-bottom: 1.5rem; }
+  details summary { cursor: pointer; padding: 10px 12px; background: white; border-radius: 8px; border: 0.5px solid #e8e8e4; font-size: 13px; font-weight: 500; }
+  details summary:hover { background: #fafaf7; }
+  details[open] summary { border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
+  .ok-banner { background: #EAF3DE; border-radius: 8px; padding: 1.5rem; text-align: center; color: #27500A; margin-bottom: 1.5rem; }
+  a { color: #185FA5; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <h1>تقرير الفحص الشامل — كلميرون AI</h1>
+    <p style="font-size:13px;color:#888;margin-top:4px">٢٩‏/٤‏/٢٠٢٦، ٧:٤٨:٥٦ م</p>
+    <p style="font-size:13px;margin-top:6px">⚠️ 17 مشكلة حرجة — النقاط: 64/100</p>
+  </div>
+  <div class="score-circle">
+    <span class="num">64</span>
+    <span class="grade">D</span>
+  </div>
+</div>
+
+<div class="grid">
+  <div class="stat"><div class="stat-n" style="color:#A32D2D">17</div><div class="stat-l">مشاكل حرجة</div></div>
+  <div class="stat"><div class="stat-n" style="color:#854F0B">16</div><div class="stat-l">عالية الخطورة</div></div>
+  <div class="stat"><div class="stat-n" style="color:#185FA5">11</div><div class="stat-l">متوسطة</div></div>
+  <div class="stat"><div class="stat-n" style="color:#3B6D11">7</div><div class="stat-l">قابلة للإصلاح التلقائي</div></div>
+</div>
+
+<div class="section">
+  <h2>النقاط حسب القسم</h2>
+  <div class="modules">
+    
+      <div class="module-card" style="border-right: 3px solid #3B6D11">
+        <div class="module-score" style="color: #3B6D11">93/100</div>
+        <div class="module-name">جودة الكود</div>
+        <div style="font-size:10px;color:#888;margin-top:2px">2 مشكلة · 53919ms</div>
+      </div>
+    
+      <div class="module-card" style="border-right: 3px solid #A32D2D">
+        <div class="module-score" style="color: #A32D2D">0/100</div>
+        <div class="module-name">الأمان (OWASP)</div>
+        <div style="font-size:10px;color:#888;margin-top:2px">10 مشكلة · 1817ms</div>
+      </div>
+    
+      <div class="module-card" style="border-right: 3px solid #3B6D11">
+        <div class="module-score" style="color: #3B6D11">83/100</div>
+        <div class="module-name">المصادقة</div>
+        <div style="font-size:10px;color:#888;margin-top:2px">2 مشكلة · 210ms</div>
+      </div>
+    
+      <div class="module-card" style="border-right: 3px solid #A32D2D">
+        <div class="module-score" style="color: #A32D2D">39/100</div>
+        <div class="module-name">الواجهة الأمامية</div>
+        <div style="font-size:10px;color:#888;margin-top:2px">8 مشكلة · 901ms</div>
+      </div>
+    
+      <div class="module-card" style="border-right: 3px solid #3B6D11">
+        <div class="module-score" style="color: #3B6D11">83/100</div>
+        <div class="module-name">الخادم والـ API</div>
+        <div style="font-size:10px;color:#888;margin-top:2px">2 مشكلة · 619ms</div>
+      </div>
+    
+      <div class="module-card" style="border-right: 3px solid #3B6D11">
+        <div class="module-score" style="color: #3B6D11">100/100</div>
+        <div class="module-name">التخزين (Firestore)</div>
+        <div style="font-size:10px;color:#888;margin-top:2px">0 مشكلة · 1ms</div>
+      </div>
+    
+      <div class="module-card" style="border-right: 3px solid #3B6D11">
+        <div class="module-score" style="color: #3B6D11">100/100</div>
+        <div class="module-name">الأداء (Lighthouse)</div>
+        <div style="font-size:10px;color:#888;margin-top:2px">0 مشكلة · 7720ms</div>
+      </div>
+    
+      <div class="module-card" style="border-right: 3px solid #3B6D11">
+        <div class="module-score" style="color: #3B6D11">95/100</div>
+        <div class="module-name">SEO والتسويق</div>
+        <div style="font-size:10px;color:#888;margin-top:2px">1 مشكلة · 1727ms</div>
+      </div>
+    
+      <div class="module-card" style="border-right: 3px solid #A32D2D">
+        <div class="module-score" style="color: #A32D2D">0/100</div>
+        <div class="module-name">وكلاء AI (16)</div>
+        <div style="font-size:10px;color:#888;margin-top:2px">16 مشكلة · 2239ms</div>
+      </div>
+    
+      <div class="module-card" style="border-right: 3px solid #A32D2D">
+        <div class="module-score" style="color: #A32D2D">42/100</div>
+        <div class="module-name">الأعمال والـ UX</div>
+        <div style="font-size:10px;color:#888;margin-top:2px">6 مشكلة · 9941ms</div>
+      </div>
+    
+  </div>
+</div>
+
+
+<div class="section">
+  <h2 style="color:#A32D2D">🔴 مشاكل حرجة — يجب الإصلاح الفوري</h2>
+  <div class="findings">
+    
+      <div class="finding">
+        <div class="finding-header">
+          <span class="badge" style="background:#A32D2D">critical</span>
+          <span class="finding-title">dir=&quot;rtl&quot; مفقود في Root Layout</span>
+        </div>
+        <p class="finding-desc">اتجاه RTL غير محدد على مستوى التطبيق كاملاً</p>
+        <p class="finding-loc">📁 app/layout.tsx</p>
+        
+        <pre class="finding-fix">✅ أضف dir=&quot;rtl&quot; lang=&quot;ar&quot; لـ &lt;html&gt; tag في app/layout.tsx</pre>
+      </div>
+    
+      <div class="finding">
+        <div class="finding-header">
+          <span class="badge" style="background:#A32D2D">critical</span>
+          <span class="finding-title">وكيل &quot;general&quot; لا يستجيب (404)</span>
+        </div>
+        <p class="finding-desc">API route /api/agents/general يُعطي 404</p>
+        <p class="finding-loc">📁 app/api/agents/general/route.ts</p>
+        
+        <pre class="finding-fix">✅ تحقق من الملف وأضف stub response عند غياب GEMINI_API_KEY</pre>
+      </div>
+    
+      <div class="finding">
+        <div class="finding-header">
+          <span class="badge" style="background:#A32D2D">critical</span>
+          <span class="finding-title">وكيل &quot;cfo&quot; لا يستجيب (404)</span>
+        </div>
+        <p class="finding-desc">API route /api/agents/cfo يُعطي 404</p>
+        <p class="finding-loc">📁 app/api/agents/cfo/route.ts</p>
+        
+        <pre class="finding-fix">✅ تحقق من الملف وأضف stub response عند غياب GEMINI_API_KEY</pre>
+      </div>
+    
+      <div class="finding">
+        <div class="finding-header">
+          <span class="badge" style="background:#A32D2D">critical</span>
+          <span class="finding-title">وكيل &quot;legal&quot; لا يستجيب (404)</span>
+        </div>
+        <p class="finding-desc">API route /api/agents/legal يُعطي 404</p>
+        <p class="finding-loc">📁 app/api/agents/legal/route.ts</p>
+        
+        <pre class="finding-fix">✅ تحقق من الملف وأضف stub response عند غياب GEMINI_API_KEY</pre>
+      </div>
+    
+      <div class="finding">
+        <div class="finding-header">
+          <span class="badge" style="background:#A32D2D">critical</span>
+          <span class="finding-title">وكيل &quot;marketing&quot; لا يستجيب (404)</span>
+        </div>
+        <p class="finding-desc">API route /api/agents/marketing يُعطي 404</p>
+        <p class="finding-loc">📁 app/api/agents/marketing/route.ts</p>
+        
+        <pre class="finding-fix">✅ تحقق من الملف وأضف stub response عند غياب GEMINI_API_KEY</pre>
+      </div>
+    
+      <div class="finding">
+        <div class="finding-header">
+          <span class="badge" style="background:#A32D2D">critical</span>
+          <span class="finding-title">وكيل &quot;sales&quot; لا يستجيب (404)</span>
+        </div>
+        <p class="finding-desc">API route /api/agents/sales يُعطي 404</p>
+        <p class="finding-loc">📁 app/api/agents/sales/route.ts</p>
+        
+        <pre class="finding-fix">✅ تحقق من الملف وأضف stub response عند غياب GEMINI_API_KEY</pre>
+      </div>
+    
+      <div class="finding">
+        <div class="finding-header">
+          <span class="badge" style="background:#A32D2D">critical</span>
+          <span class="finding-title">وكيل &quot;hr&quot; لا يستجيب (404)</span>
+        </div>
+        <p class="finding-desc">API route /api/agents/hr يُعطي 404</p>
+        <p class="finding-loc">📁 app/api/agents/hr/route.ts</p>
+        
+        <pre class="finding-fix">✅ تحقق من الملف وأضف stub response عند غياب GEMINI_API_KEY</pre>
+      </div>
+    
+      <div class="finding">
+        <div class="finding-header">
+          <span class="badge" style="background:#A32D2D">critical</span>
+          <span class="finding-title">وكيل &quot;operations&quot; لا يستجيب (404)</span>
+        </div>
+        <p class="finding-desc">API route /api/agents/operations يُعطي 404</p>
+        <p class="finding-loc">📁 app/api/agents/operations/route.ts</p>
+        
+        <pre class="finding-fix">✅ تحقق من الملف وأضف stub response عند غياب GEMINI_API_KEY</pre>
+      </div>
+    
+      <div class="finding">
+        <div class="finding-header">
+          <span class="badge" style="background:#A32D2D">critical</span>
+          <span class="finding-title">وكيل &quot;product&quot; لا يستجيب (404)</span>
+        </div>
+        <p class="finding-desc">API route /api/agents/product يُعطي 404</p>
+        <p class="finding-loc">📁 app/api/agents/product/route.ts</p>
+        
+        <pre class="finding-fix">✅ تحقق من الملف وأضف stub response عند غياب GEMINI_API_KEY</pre>
+      </div>
+    
+      <div class="finding">
+        <div class="finding-header">
+          <span class="badge" style="background:#A32D2D">critical</span>
+          <span class="finding-title">وكيل &quot;investor&quot; لا يستجيب (404)</span>
+        </div>
+        <p class="finding-desc">API route /api/agents/investor يُعطي 404</p>
+        <p class="finding-loc">📁 app/api/agents/investor/route.ts</p>
+        
+        <pre class="finding-fix">✅ تحقق من الملف وأضف stub response عند غياب GEMINI_API_KEY</pre>
+      </div>
+    
+      <div class="finding">
+        <div class="finding-header">
+          <span class="badge" style="background:#A32D2D">critical</span>
+          <span class="finding-title">وكيل &quot;customer-voice&quot; لا يستجيب (404)</span>
+        </div>
+        <p class="finding-desc">API route /api/agents/customer-voice يُعطي 404</p>
+        <p class="finding-loc">📁 app/api/agents/customer-voice/route.ts</p>
+        
+        <pre class="finding-fix">✅ تحقق من الملف وأضف stub response عند غياب GEMINI_API_KEY</pre>
+      </div>
+    
+      <div class="finding">
+        <div class="finding-header">
+          <span class="badge" style="background:#A32D2D">critical</span>
+          <span class="finding-title">وكيل &quot;idea-validator&quot; لا يستجيب (404)</span>
+        </div>
+        <p class="finding-desc">API route /api/agents/idea-validator يُعطي 404</p>
+        <p class="finding-loc">📁 app/api/agents/idea-validator/route.ts</p>
+        
+        <pre class="finding-fix">✅ تحقق من الملف وأضف stub response عند غياب GEMINI_API_KEY</pre>
+      </div>
+    
+      <div class="finding">
+        <div class="finding-header">
+          <span class="badge" style="background:#A32D2D">critical</span>
+          <span class="finding-title">وكيل &quot;plan-builder&quot; لا يستجيب (404)</span>
+        </div>
+        <p class="finding-desc">API route /api/agents/plan-builder يُعطي 404</p>
+        <p class="finding-loc">📁 app/api/agents/plan-builder/route.ts</p>
+        
+        <pre class="finding-fix">✅ تحقق من الملف وأضف stub response عند غياب GEMINI_API_KEY</pre>
+      </div>
+    
+      <div class="finding">
+        <div class="finding-header">
+          <span class="badge" style="background:#A32D2D">critical</span>
+          <span class="finding-title">وكيل &quot;mistake-shield&quot; لا يستجيب (404)</span>
+        </div>
+        <p class="finding-desc">API route /api/agents/mistake-shield يُعطي 404</p>
+        <p class="finding-loc">📁 app/api/agents/mistake-shield/route.ts</p>
+        
+        <pre class="finding-fix">✅ تحقق من الملف وأضف stub response عند غياب GEMINI_API_KEY</pre>
+      </div>
+    
+      <div class="finding">
+        <div class="finding-header">
+          <span class="badge" style="background:#A32D2D">critical</span>
+          <span class="finding-title">وكيل &quot;success-museum&quot; لا يستجيب (404)</span>
+        </div>
+        <p class="finding-desc">API route /api/agents/success-museum يُعطي 404</p>
+        <p class="finding-loc">📁 app/api/agents/success-museum/route.ts</p>
+        
+        <pre class="finding-fix">✅ تحقق من الملف وأضف stub response عند غياب GEMINI_API_KEY</pre>
+      </div>
+    
+      <div class="finding">
+        <div class="finding-header">
+          <span class="badge" style="background:#A32D2D">critical</span>
+          <span class="finding-title">وكيل &quot;opportunity-radar&quot; لا يستجيب (404)</span>
+        </div>
+        <p class="finding-desc">API route /api/agents/opportunity-radar يُعطي 404</p>
+        <p class="finding-loc">📁 app/api/agents/opportunity-radar/route.ts</p>
+        
+        <pre class="finding-fix">✅ تحقق من الملف وأضف stub response عند غياب GEMINI_API_KEY</pre>
+      </div>
+    
+      <div class="finding">
+        <div class="finding-header">
+          <span class="badge" style="background:#A32D2D">critical</span>
+          <span class="finding-title">وكيل &quot;real-estate&quot; لا يستجيب (404)</span>
+        </div>
+        <p class="finding-desc">API route /api/agents/real-estate يُعطي 404</p>
+        <p class="finding-loc">📁 app/api/agents/real-estate/route.ts</p>
+        
+        <pre class="finding-fix">✅ تحقق من الملف وأضف stub response عند غياب GEMINI_API_KEY</pre>
+      </div>
+    
+  </div>
+</div>
+
+<div class="section">
+  <h2>كل النتائج (مفصّل)</h2>
+  
+    <details style="margin-bottom:8px">
+      <summary>
+        جودة الكود — 93/100 — 2 نتيجة
+      </summary>
+      <div class="findings" style="border-top-left-radius:0;border-top-right-radius:0">
+        
+              <div class="finding">
+                <div class="finding-header">
+                  <span class="badge" style="background:#185FA5">medium</span>
+                  <span class="finding-title">18 خطأ ESLint</span>
+                  <span style="font-size:10px;color:#3B6D11">🔧 تلقائي</span>
+                </div>
+                <p class="finding-desc">مخالفات قواعد الكود</p>
+                
+                
+                <pre class="finding-fix">→ شغّل: npx eslint . --fix لإصلاح التلقائي</pre>
+                <p style="font-size:10px;margin-top:4px"><a href="https://eslint.org/docs/latest/" target="_blank" rel="noopener">📖 مرجع</a></p>
+              </div>
+            
+              <div class="finding">
+                <div class="finding-header">
+                  <span class="badge" style="background:#27500A">low</span>
+                  <span class="finding-title">23 console.log في الكود الإنتاجي</span>
+                  
+                </div>
+                <p class="finding-desc">console.log تُبطئ الأداء وقد تكشف بيانات حساسة في الإنتاج</p>
+                
+                
+                <pre class="finding-fix">→ استبدل بـ pino logger أو احذف console.log غير الضرورية</pre>
+                
+              </div>
+            
+      </div>
+    </details>
+  
+    <details style="margin-bottom:8px">
+      <summary>
+        الأمان (OWASP) — 0/100 — 10 نتيجة
+      </summary>
+      <div class="findings" style="border-top-left-radius:0;border-top-right-radius:0">
+        
+              <div class="finding">
+                <div class="finding-header">
+                  <span class="badge" style="background:#854F0B">high</span>
+                  <span class="finding-title">dangerouslySetInnerHTML بدون sanitization</span>
+                  
+                </div>
+                <p class="finding-desc">استخدام dangerouslySetInnerHTML بدون تنظيف المحتوى — خطر XSS</p>
+                <p class="finding-loc">📁 app/layout.tsx</p>
+                <pre class="finding-evidence">app/layout.tsx:133:          dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}</pre>
+                <pre class="finding-fix">→ استخدم DOMPurify.sanitize() أو xss(...) قبل تمرير المحتوى</pre>
+                <p style="font-size:10px;margin-top:4px"><a href="https://owasp.org/www-community/attacks/xss/" target="_blank" rel="noopener">📖 مرجع</a></p>
+              </div>
+            
+              <div class="finding">
+                <div class="finding-header">
+                  <span class="badge" style="background:#854F0B">high</span>
+                  <span class="finding-title">dangerouslySetInnerHTML بدون sanitization</span>
+                  
+                </div>
+                <p class="finding-desc">استخدام dangerouslySetInnerHTML بدون تنظيف المحتوى — خطر XSS</p>
+                <p class="finding-loc">📁 app/use-cases/[slug]/page.tsx</p>
+                <pre class="finding-evidence">app/use-cases/[slug]/page.tsx:80:        dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}</pre>
+                <pre class="finding-fix">→ استخدم DOMPurify.sanitize() أو xss(...) قبل تمرير المحتوى</pre>
+                <p style="font-size:10px;margin-top:4px"><a href="https://owasp.org/www-community/attacks/xss/" target="_blank" rel="noopener">📖 مرجع</a></p>
+              </div>
+            
+              <div class="finding">
+                <div class="finding-header">
+                  <span class="badge" style="background:#854F0B">high</span>
+                  <span class="finding-title">dangerouslySetInnerHTML بدون sanitization</span>
+                  
+                </div>
+                <p class="finding-desc">استخدام dangerouslySetInnerHTML بدون تنظيف المحتوى — خطر XSS</p>
+                <p class="finding-loc">📁 app/templates/[slug]/page.tsx</p>
+                <pre class="finding-evidence">app/templates/[slug]/page.tsx:71:        dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}</pre>
+                <pre class="finding-fix">→ استخدم DOMPurify.sanitize() أو xss(...) قبل تمرير المحتوى</pre>
+                <p style="font-size:10px;margin-top:4px"><a href="https://owasp.org/www-community/attacks/xss/" target="_blank" rel="noopener">📖 مرجع</a></p>
+              </div>
+            
+              <div class="finding">
+                <div class="finding-header">
+                  <span class="badge" style="background:#854F0B">high</span>
+                  <span class="finding-title">dangerouslySetInnerHTML بدون sanitization</span>
+                  
+                </div>
+                <p class="finding-desc">استخدام dangerouslySetInnerHTML بدون تنظيف المحتوى — خطر XSS</p>
+                <p class="finding-loc">📁 app/glossary/[term]/page.tsx</p>
+                <pre class="finding-evidence">app/glossary/[term]/page.tsx:60:        dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}</pre>
+                <pre class="finding-fix">→ استخدم DOMPurify.sanitize() أو xss(...) قبل تمرير المحتوى</pre>
+                <p style="font-size:10px;margin-top:4px"><a href="https://owasp.org/www-community/attacks/xss/" target="_blank" rel="noopener">📖 مرجع</a></p>
+              </div>
+            
+              <div class="finding">
+                <div class="finding-header">
+                  <span class="badge" style="background:#854F0B">high</span>
+                  <span class="finding-title">dangerouslySetInnerHTML بدون sanitization</span>
+                  
+                </div>
+                <p class="finding-desc">استخدام dangerouslySetInnerHTML بدون تنظيف المحتوى — خطر XSS</p>
+                <p class="finding-loc">📁 app/cities/[city]/page.tsx</p>
+                <pre class="finding-evidence">app/cities/[city]/page.tsx:65:        dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}</pre>
+                <pre class="finding-fix">→ استخدم DOMPurify.sanitize() أو xss(...) قبل تمرير المحتوى</pre>
+                <p style="font-size:10px;margin-top:4px"><a href="https://owasp.org/www-community/attacks/xss/" target="_blank" rel="noopener">📖 مرجع</a></p>
+              </div>
+            
+              <div class="finding">
+                <div class="finding-header">
+                  <span class="badge" style="background:#854F0B">high</span>
+                  <span class="finding-title">dangerouslySetInnerHTML بدون sanitization</span>
+                  
+                </div>
+                <p class="finding-desc">استخدام dangerouslySetInnerHTML بدون تنظيف المحتوى — خطر XSS</p>
+                <p class="finding-loc">📁 app/blog/[slug]/page.tsx</p>
+                <pre class="finding-evidence">app/blog/[slug]/page.tsx:58:            &lt;span dangerouslySetInnerHTML={{ __html: escapeHtml(item).replace(/\*\*(.+?)\*\*/g, &quot;&lt;strong&gt;$1&lt;/strong&gt;&quot;) }} /&gt;</pre>
+                <pre class="finding-fix">→ استخدم DOMPurify.sanitize() أو xss(...) قبل تمرير المحتوى</pre>
+                <p style="font-size:10px;margin-top:4px"><a href="https://owasp.org/www-community/attacks/xss/" target="_blank" rel="noopener">📖 مرجع</a></p>
+              </div>
+            
+              <div class="finding">
+                <div class="finding-header">
+                  <span class="badge" style="background:#854F0B">high</span>
+                  <span class="finding-title">dangerouslySetInnerHTML بدون sanitization</span>
+                  
+                </div>
+                <p class="finding-desc">استخدام dangerouslySetInnerHTML بدون تنظيف المحتوى — خطر XSS</p>
+                <p class="finding-loc">📁 app/blog/[slug]/page.tsx</p>
+                <pre class="finding-evidence">app/blog/[slug]/page.tsx:95:          dangerouslySetInnerHTML={{ __html: escapeHtml(line).replace(/\*\*(.+?)\*\*/g, &quot;&lt;strong class=&#39;text-white&#39;&gt;$1&lt;/strong&gt;&quot;) }}</pre>
+                <pre class="finding-fix">→ استخدم DOMPurify.sanitize() أو xss(...) قبل تمرير المحتوى</pre>
+                <p style="font-size:10px;margin-top:4px"><a href="https://owasp.org/www-community/attacks/xss/" target="_blank" rel="noopener">📖 مرجع</a></p>
+              </div>
+            
+              <div class="finding">
+                <div class="finding-header">
+                  <span class="badge" style="background:#854F0B">high</span>
+                  <span class="finding-title">dangerouslySetInnerHTML بدون sanitization</span>
+                  
+                </div>
+                <p class="finding-desc">استخدام dangerouslySetInnerHTML بدون تنظيف المحتوى — خطر XSS</p>
+                <p class="finding-loc">📁 app/blog/[slug]/page.tsx</p>
+                <pre class="finding-evidence">app/blog/[slug]/page.tsx:126:      &lt;script type=&quot;application/ld+json&quot; dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }} /&gt;</pre>
+                <pre class="finding-fix">→ استخدم DOMPurify.sanitize() أو xss(...) قبل تمرير المحتوى</pre>
+                <p style="font-size:10px;margin-top:4px"><a href="https://owasp.org/www-community/attacks/xss/" target="_blank" rel="noopener">📖 مرجع</a></p>
+              </div>
+            
+              <div class="finding">
+                <div class="finding-header">
+                  <span class="badge" style="background:#854F0B">high</span>
+                  <span class="finding-title">dangerouslySetInnerHTML بدون sanitization</span>
+                  
+                </div>
+                <p class="finding-desc">استخدام dangerouslySetInnerHTML بدون تنظيف المحتوى — خطر XSS</p>
+                <p class="finding-loc">📁 app/ai-experts/[slug]/page.tsx</p>
+                <pre class="finding-evidence">app/ai-experts/[slug]/page.tsx:72:        dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}</pre>
+                <pre class="finding-fix">→ استخدم DOMPurify.sanitize() أو xss(...) قبل تمرير المحتوى</pre>
+                <p style="font-size:10px;margin-top:4px"><a href="https://owasp.org/www-community/attacks/xss/" target="_blank" rel="noopener">📖 مرجع</a></p>
+              </div>
+            
+              <div class="finding">
+                <div class="finding-header">
+                  <span class="badge" style="background:#185FA5">medium</span>
+                  <span class="finding-title">Server Actions بدون CSRF / Origin protection صريح</span>
+                  
+                </div>
+                <p class="finding-desc">Next.js يوفر حماية ضمنية، لكن يُنصح بـ custom origin validation</p>
+                
+                
+                <pre class="finding-fix">→ تحقق من Origin header في كل Server Action حساس</pre>
+                <p style="font-size:10px;margin-top:4px"><a href="https://owasp.org/www-community/attacks/csrf" target="_blank" rel="noopener">📖 مرجع</a></p>
+              </div>
+            
+      </div>
+    </details>
+  
+    <details style="margin-bottom:8px">
+      <summary>
+        المصادقة — 83/100 — 2 نتيجة
+      </summary>
+      <div class="findings" style="border-top-left-radius:0;border-top-right-radius:0">
+        
+              <div class="finding">
+                <div class="finding-header">
+                  <span class="badge" style="background:#185FA5">medium</span>
+                  <span class="finding-title">Session token محتمل في localStorage</span>
+                  
+                </div>
+                <p class="finding-desc">تخزين tokens في localStorage عُرضة لـ XSS</p>
+                
+                
+                <pre class="finding-fix">→ استخدم httpOnly cookies أو Firebase Auth onAuthStateChanged فقط</pre>
+                <p style="font-size:10px;margin-top:4px"><a href="https://owasp.org/www-community/HttpOnly" target="_blank" rel="noopener">📖 مرجع</a></p>
+              </div>
+            
+              <div class="finding">
+                <div class="finding-header">
+                  <span class="badge" style="background:#854F0B">high</span>
+                  <span class="finding-title">38 من 94 API route بدون تحقق هوية واضح</span>
+                  
+                </div>
+                <p class="finding-desc">كثير من API routes لا تستدعي verifyIdToken أو withAuth</p>
+                
+                
+                <pre class="finding-fix">→ أضف getAuthenticatedUser() أو withAuth() لكل route محمي</pre>
+                
+              </div>
+            
+      </div>
+    </details>
+  
+    <details style="margin-bottom:8px">
+      <summary>
+        الواجهة الأمامية — 39/100 — 8 نتيجة
+      </summary>
+      <div class="findings" style="border-top-left-radius:0;border-top-right-radius:0">
+        
+              <div class="finding">
+                <div class="finding-header">
+                  <span class="badge" style="background:#A32D2D">critical</span>
+                  <span class="finding-title">dir=&quot;rtl&quot; مفقود في Root Layout</span>
+                  <span style="font-size:10px;color:#3B6D11">🔧 تلقائي</span>
+                </div>
+                <p class="finding-desc">اتجاه RTL غير محدد على مستوى التطبيق كاملاً</p>
+                <p class="finding-loc">📁 app/layout.tsx</p>
+                
+                <pre class="finding-fix">→ أضف dir=&quot;rtl&quot; lang=&quot;ar&quot; لـ &lt;html&gt; tag في app/layout.tsx</pre>
+                
+              </div>
+            
+              <div class="finding">
+                <div class="finding-header">
+                  <span class="badge" style="background:#185FA5">medium</span>
+                  <span class="finding-title">lang=&quot;ar&quot; مفقود في Root Layout</span>
+                  <span style="font-size:10px;color:#3B6D11">🔧 تلقائي</span>
+                </div>
+                <p class="finding-desc">بدون lang attribute: SEO + accessibility يتأثران</p>
+                <p class="finding-loc">📁 app/layout.tsx</p>
+                
+                <pre class="finding-fix">→ أضف lang=&quot;ar&quot; لـ &lt;html&gt; في app/layout.tsx</pre>
+                
+              </div>
+            
+              <div class="finding">
+                <div class="finding-header">
+                  <span class="badge" style="background:#185FA5">medium</span>
+                  <span class="finding-title">1 صورة تستخدم &lt;img&gt; بدلاً من next/image</span>
+                  
+                </div>
+                <p class="finding-desc">next/image يحسن الأداء بـ lazy loading + WebP + size optimization</p>
+                
+                
+                <pre class="finding-fix">→ استبدل &lt;img&gt; بـ &lt;Image&gt; من next/image</pre>
+                
+              </div>
+            
+              <div class="finding">
+                <div class="finding-header">
+                  <span class="badge" style="background:#27500A">low</span>
+                  <span class="finding-title">loading.tsx مفقود في app/(dashboard)/dashboard</span>
+                  <span style="font-size:10px;color:#3B6D11">🔧 تلقائي</span>
+                </div>
+                <p class="finding-desc">بدون loading.tsx: المستخدم يرى شاشة بيضاء أثناء التحميل</p>
+                <p class="finding-loc">📁 app/(dashboard)/dashboard</p>
+                
+                <pre class="finding-fix">→ أنشئ app/(dashboard)/dashboard/loading.tsx مع skeleton مناسب</pre>
+                
+              </div>
+            
+              <div class="finding">
+                <div class="finding-header">
+                  <span class="badge" style="background:#27500A">low</span>
+                  <span class="finding-title">loading.tsx مفقود في app/api/dashboard</span>
+                  <span style="font-size:10px;color:#3B6D11">🔧 تلقائي</span>
+                </div>
+                <p class="finding-desc">بدون loading.tsx: المستخدم يرى شاشة بيضاء أثناء التحميل</p>
+                <p class="finding-loc">📁 app/api/dashboard</p>
+                
+                <pre class="finding-fix">→ أنشئ app/api/dashboard/loading.tsx مع skeleton مناسب</pre>
+                
+              </div>
+            
+              <div class="finding">
+                <div class="finding-header">
+                  <span class="badge" style="background:#185FA5">medium</span>
+                  <span class="finding-title">error.tsx مفقود في app/api</span>
+                  <span style="font-size:10px;color:#3B6D11">🔧 تلقائي</span>
+                </div>
+                <p class="finding-desc">بدون error.tsx: الأخطاء تُعطي صفحة Next.js الافتراضية</p>
+                <p class="finding-loc">📁 app/api</p>
+                
+                <pre class="finding-fix">→ أنشئ app/api/error.tsx برسالة خطأ بالعربية وزر &quot;حاول مجدداً&quot;</pre>
+                
+              </div>
+            
+              <div class="finding">
+                <div class="finding-header">
+                  <span class="badge" style="background:#185FA5">medium</span>
+                  <span class="finding-title">7 صورة بدون alt text</span>
+                  
+                </div>
+                <p class="finding-desc">يؤثر على accessibility وSEO</p>
+                
+                
+                <pre class="finding-fix">→ أضف alt=&quot;&quot; للصور الزخرفية، وalt=&quot;وصف واضح&quot; لصور المحتوى</pre>
+                <p style="font-size:10px;margin-top:4px"><a href="https://www.w3.org/WAI/tutorials/images/" target="_blank" rel="noopener">📖 مرجع</a></p>
+              </div>
+            
+              <div class="finding">
+                <div class="finding-header">
+                  <span class="badge" style="background:#854F0B">high</span>
+                  <span class="finding-title">40 صفحة عامة بدون metadata</span>
+                  
+                </div>
+                <p class="finding-desc">بدون metadata: SEO ضعيف وصور المشاركة مفقودة</p>
+                
+                
+                <pre class="finding-fix">→ أضف export const metadata: Metadata لكل صفحة عامة</pre>
+                
+              </div>
+            
+      </div>
+    </details>
+  
+    <details style="margin-bottom:8px">
+      <summary>
+        الخادم والـ API — 83/100 — 2 نتيجة
+      </summary>
+      <div class="findings" style="border-top-left-radius:0;border-top-right-radius:0">
+        
+              <div class="finding">
+                <div class="finding-header">
+                  <span class="badge" style="background:#854F0B">high</span>
+                  <span class="finding-title">42 من 45 POST/PUT/PATCH route بدون Zod validation</span>
+                  
+                </div>
+                <p class="finding-desc">Input غير مُتحقق منه يفتح باب لـ injection و crashes</p>
+                
+                
+                <pre class="finding-fix">→ أضف zod schema لكل POST/PUT/PATCH route</pre>
+                <p style="font-size:10px;margin-top:4px"><a href="https://zod.dev/" target="_blank" rel="noopener">📖 مرجع</a></p>
+              </div>
+            
+              <div class="finding">
+                <div class="finding-header">
+                  <span class="badge" style="background:#185FA5">medium</span>
+                  <span class="finding-title">27 API route بدون try/catch</span>
+                  
+                </div>
+                <p class="finding-desc">أخطاء unhandled قد تُظهر stack traces للمستخدم</p>
+                
+                
+                <pre class="finding-fix">→ أضف try/catch لكل API route مع NextResponse.json({error: ...}, {status: 500})</pre>
+                
+              </div>
+            
+      </div>
+    </details>
+  
+    <details style="margin-bottom:8px">
+      <summary>
+        التخزين (Firestore) — 100/100 — 0 نتيجة
+      </summary>
+      <div class="findings" style="border-top-left-radius:0;border-top-right-radius:0">
+        <div class="finding" style="color:#3B6D11">✅ لا مشاكل في هذا القسم</div>
+      </div>
+    </details>
+  
+    <details style="margin-bottom:8px">
+      <summary>
+        الأداء (Lighthouse) — 100/100 — 1 نتيجة
+      </summary>
+      <div class="findings" style="border-top-left-radius:0;border-top-right-radius:0">
+        
+              <div class="finding">
+                <div class="finding-header">
+                  <span class="badge" style="background:#666">info</span>
+                  <span class="finding-title">Lighthouse غير متاح في هذه البيئة</span>
+                  
+                </div>
+                <p class="finding-desc">تحقق من Lighthouse يدوياً أو في CI/CD</p>
+                
+                
+                <pre class="finding-fix">→ شغّل: npx lighthouse https://kalmeron-two.vercel.app --view</pre>
+                
+              </div>
+            
+      </div>
+    </details>
+  
+    <details style="margin-bottom:8px">
+      <summary>
+        SEO والتسويق — 95/100 — 1 نتيجة
+      </summary>
+      <div class="findings" style="border-top-left-radius:0;border-top-right-radius:0">
+        
+              <div class="finding">
+                <div class="finding-header">
+                  <span class="badge" style="background:#185FA5">medium</span>
+                  <span class="finding-title">hreflang مفقود (ar / en)</span>
+                  
+                </div>
+                <p class="finding-desc">بدون hreflang: Google لا تعرف أي نسخة للزائر العربي أم الإنجليزي</p>
+                
+                
+                <pre class="finding-fix">→ أضف alternates.languages في metadata: { ar: /, en: /en }</pre>
+                <p style="font-size:10px;margin-top:4px"><a href="https://developers.google.com/search/docs/specialty/international/localization" target="_blank" rel="noopener">📖 مرجع</a></p>
+              </div>
+            
+      </div>
+    </details>
+  
+    <details style="margin-bottom:8px">
+      <summary>
+        وكلاء AI (16) — 0/100 — 16 نتيجة
+      </summary>
+      <div class="findings" style="border-top-left-radius:0;border-top-right-radius:0">
+        
+              <div class="finding">
+                <div class="finding-header">
+                  <span class="badge" style="background:#A32D2D">critical</span>
+                  <span class="finding-title">وكيل &quot;general&quot; لا يستجيب (404)</span>
+                  
+                </div>
+                <p class="finding-desc">API route /api/agents/general يُعطي 404</p>
+                <p class="finding-loc">📁 app/api/agents/general/route.ts</p>
+                
+                <pre class="finding-fix">→ تحقق من الملف وأضف stub response عند غياب GEMINI_API_KEY</pre>
+                
+              </div>
+            
+              <div class="finding">
+                <div class="finding-header">
+                  <span class="badge" style="background:#A32D2D">critical</span>
+                  <span class="finding-title">وكيل &quot;cfo&quot; لا يستجيب (404)</span>
+                  
+                </div>
+                <p class="finding-desc">API route /api/agents/cfo يُعطي 404</p>
+                <p class="finding-loc">📁 app/api/agents/cfo/route.ts</p>
+                
+                <pre class="finding-fix">→ تحقق من الملف وأضف stub response عند غياب GEMINI_API_KEY</pre>
+                
+              </div>
+            
+              <div class="finding">
+                <div class="finding-header">
+                  <span class="badge" style="background:#A32D2D">critical</span>
+                  <span class="finding-title">وكيل &quot;legal&quot; لا يستجيب (404)</span>
+                  
+                </div>
+                <p class="finding-desc">API route /api/agents/legal يُعطي 404</p>
+                <p class="finding-loc">📁 app/api/agents/legal/route.ts</p>
+                
+                <pre class="finding-fix">→ تحقق من الملف وأضف stub response عند غياب GEMINI_API_KEY</pre>
+                
+              </div>
+            
+              <div class="finding">
+                <div class="finding-header">
+                  <span class="badge" style="background:#A32D2D">critical</span>
+                  <span class="finding-title">وكيل &quot;marketing&quot; لا يستجيب (404)</span>
+                  
+                </div>
+                <p class="finding-desc">API route /api/agents/marketing يُعطي 404</p>
+                <p class="finding-loc">📁 app/api/agents/marketing/route.ts</p>
+                
+                <pre class="finding-fix">→ تحقق من الملف وأضف stub response عند غياب GEMINI_API_KEY</pre>
+                
+              </div>
+            
+              <div class="finding">
+                <div class="finding-header">
+                  <span class="badge" style="background:#A32D2D">critical</span>
+                  <span class="finding-title">وكيل &quot;sales&quot; لا يستجيب (404)</span>
+                  
+                </div>
+                <p class="finding-desc">API route /api/agents/sales يُعطي 404</p>
+                <p class="finding-loc">📁 app/api/agents/sales/route.ts</p>
+                
+                <pre class="finding-fix">→ تحقق من الملف وأضف stub response عند غياب GEMINI_API_KEY</pre>
+                
+              </div>
+            
+              <div class="finding">
+                <div class="finding-header">
+                  <span class="badge" style="background:#A32D2D">critical</span>
+                  <span class="finding-title">وكيل &quot;hr&quot; لا يستجيب (404)</span>
+                  
+                </div>
+                <p class="finding-desc">API route /api/agents/hr يُعطي 404</p>
+                <p class="finding-loc">📁 app/api/agents/hr/route.ts</p>
+                
+                <pre class="finding-fix">→ تحقق من الملف وأضف stub response عند غياب GEMINI_API_KEY</pre>
+                
+              </div>
+            
+              <div class="finding">
+                <div class="finding-header">
+                  <span class="badge" style="background:#A32D2D">critical</span>
+                  <span class="finding-title">وكيل &quot;operations&quot; لا يستجيب (404)</span>
+                  
+                </div>
+                <p class="finding-desc">API route /api/agents/operations يُعطي 404</p>
+                <p class="finding-loc">📁 app/api/agents/operations/route.ts</p>
+                
+                <pre class="finding-fix">→ تحقق من الملف وأضف stub response عند غياب GEMINI_API_KEY</pre>
+                
+              </div>
+            
+              <div class="finding">
+                <div class="finding-header">
+                  <span class="badge" style="background:#A32D2D">critical</span>
+                  <span class="finding-title">وكيل &quot;product&quot; لا يستجيب (404)</span>
+                  
+                </div>
+                <p class="finding-desc">API route /api/agents/product يُعطي 404</p>
+                <p class="finding-loc">📁 app/api/agents/product/route.ts</p>
+                
+                <pre class="finding-fix">→ تحقق من الملف وأضف stub response عند غياب GEMINI_API_KEY</pre>
+                
+              </div>
+            
+              <div class="finding">
+                <div class="finding-header">
+                  <span class="badge" style="background:#A32D2D">critical</span>
+                  <span class="finding-title">وكيل &quot;investor&quot; لا يستجيب (404)</span>
+                  
+                </div>
+                <p class="finding-desc">API route /api/agents/investor يُعطي 404</p>
+                <p class="finding-loc">📁 app/api/agents/investor/route.ts</p>
+                
+                <pre class="finding-fix">→ تحقق من الملف وأضف stub response عند غياب GEMINI_API_KEY</pre>
+                
+              </div>
+            
+              <div class="finding">
+                <div class="finding-header">
+                  <span class="badge" style="background:#A32D2D">critical</span>
+                  <span class="finding-title">وكيل &quot;customer-voice&quot; لا يستجيب (404)</span>
+                  
+                </div>
+                <p class="finding-desc">API route /api/agents/customer-voice يُعطي 404</p>
+                <p class="finding-loc">📁 app/api/agents/customer-voice/route.ts</p>
+                
+                <pre class="finding-fix">→ تحقق من الملف وأضف stub response عند غياب GEMINI_API_KEY</pre>
+                
+              </div>
+            
+              <div class="finding">
+                <div class="finding-header">
+                  <span class="badge" style="background:#A32D2D">critical</span>
+                  <span class="finding-title">وكيل &quot;idea-validator&quot; لا يستجيب (404)</span>
+                  
+                </div>
+                <p class="finding-desc">API route /api/agents/idea-validator يُعطي 404</p>
+                <p class="finding-loc">📁 app/api/agents/idea-validator/route.ts</p>
+                
+                <pre class="finding-fix">→ تحقق من الملف وأضف stub response عند غياب GEMINI_API_KEY</pre>
+                
+              </div>
+            
+              <div class="finding">
+                <div class="finding-header">
+                  <span class="badge" style="background:#A32D2D">critical</span>
+                  <span class="finding-title">وكيل &quot;plan-builder&quot; لا يستجيب (404)</span>
+                  
+                </div>
+                <p class="finding-desc">API route /api/agents/plan-builder يُعطي 404</p>
+                <p class="finding-loc">📁 app/api/agents/plan-builder/route.ts</p>
+                
+                <pre class="finding-fix">→ تحقق من الملف وأضف stub response عند غياب GEMINI_API_KEY</pre>
+                
+              </div>
+            
+              <div class="finding">
+                <div class="finding-header">
+                  <span class="badge" style="background:#A32D2D">critical</span>
+                  <span class="finding-title">وكيل &quot;mistake-shield&quot; لا يستجيب (404)</span>
+                  
+                </div>
+                <p class="finding-desc">API route /api/agents/mistake-shield يُعطي 404</p>
+                <p class="finding-loc">📁 app/api/agents/mistake-shield/route.ts</p>
+                
+                <pre class="finding-fix">→ تحقق من الملف وأضف stub response عند غياب GEMINI_API_KEY</pre>
+                
+              </div>
+            
+              <div class="finding">
+                <div class="finding-header">
+                  <span class="badge" style="background:#A32D2D">critical</span>
+                  <span class="finding-title">وكيل &quot;success-museum&quot; لا يستجيب (404)</span>
+                  
+                </div>
+                <p class="finding-desc">API route /api/agents/success-museum يُعطي 404</p>
+                <p class="finding-loc">📁 app/api/agents/success-museum/route.ts</p>
+                
+                <pre class="finding-fix">→ تحقق من الملف وأضف stub response عند غياب GEMINI_API_KEY</pre>
+                
+              </div>
+            
+              <div class="finding">
+                <div class="finding-header">
+                  <span class="badge" style="background:#A32D2D">critical</span>
+                  <span class="finding-title">وكيل &quot;opportunity-radar&quot; لا يستجيب (404)</span>
+                  
+                </div>
+                <p class="finding-desc">API route /api/agents/opportunity-radar يُعطي 404</p>
+                <p class="finding-loc">📁 app/api/agents/opportunity-radar/route.ts</p>
+                
+                <pre class="finding-fix">→ تحقق من الملف وأضف stub response عند غياب GEMINI_API_KEY</pre>
+                
+              </div>
+            
+              <div class="finding">
+                <div class="finding-header">
+                  <span class="badge" style="background:#A32D2D">critical</span>
+                  <span class="finding-title">وكيل &quot;real-estate&quot; لا يستجيب (404)</span>
+                  
+                </div>
+                <p class="finding-desc">API route /api/agents/real-estate يُعطي 404</p>
+                <p class="finding-loc">📁 app/api/agents/real-estate/route.ts</p>
+                
+                <pre class="finding-fix">→ تحقق من الملف وأضف stub response عند غياب GEMINI_API_KEY</pre>
+                
+              </div>
+            
+      </div>
+    </details>
+  
+    <details style="margin-bottom:8px">
+      <summary>
+        الأعمال والـ UX — 42/100 — 6 نتيجة
+      </summary>
+      <div class="findings" style="border-top-left-radius:0;border-top-right-radius:0">
+        
+              <div class="finding">
+                <div class="finding-header">
+                  <span class="badge" style="background:#854F0B">high</span>
+                  <span class="finding-title">صفحة &quot;الأسئلة الشائعة&quot; غير موجودة (404)</span>
+                  
+                </div>
+                <p class="finding-desc">/faq تُعطي 404 — تؤثر على ثقة المستثمرين والمستخدمين</p>
+                
+                
+                <pre class="finding-fix">→ أنشئ app/faq/page.tsx بمحتوى مناسب</pre>
+                
+              </div>
+            
+              <div class="finding">
+                <div class="finding-header">
+                  <span class="badge" style="background:#185FA5">medium</span>
+                  <span class="finding-title">صفحة &quot;صفحة الأمان&quot; غير موجودة (404)</span>
+                  
+                </div>
+                <p class="finding-desc">/security تُعطي 404 — تؤثر على ثقة المستثمرين والمستخدمين</p>
+                
+                
+                <pre class="finding-fix">→ أنشئ app/security/page.tsx بمحتوى مناسب</pre>
+                
+              </div>
+            
+              <div class="finding">
+                <div class="finding-header">
+                  <span class="badge" style="background:#854F0B">high</span>
+                  <span class="finding-title">صفحة &quot;سياسة Cookies&quot; غير موجودة (404)</span>
+                  
+                </div>
+                <p class="finding-desc">/cookies تُعطي 404 — تؤثر على ثقة المستثمرين والمستخدمين</p>
+                
+                
+                <pre class="finding-fix">→ أنشئ app/cookies/page.tsx بمحتوى مناسب</pre>
+                
+              </div>
+            
+              <div class="finding">
+                <div class="finding-header">
+                  <span class="badge" style="background:#854F0B">high</span>
+                  <span class="finding-title">صفحة &quot;شروط الشركاء&quot; غير موجودة (404)</span>
+                  
+                </div>
+                <p class="finding-desc">/affiliate-terms تُعطي 404 — تؤثر على ثقة المستثمرين والمستخدمين</p>
+                
+                
+                <pre class="finding-fix">→ أنشئ app/affiliate-terms/page.tsx بمحتوى مناسب</pre>
+                
+              </div>
+            
+              <div class="finding">
+                <div class="finding-header">
+                  <span class="badge" style="background:#854F0B">high</span>
+                  <span class="finding-title">تناقض: &quot;16 وكيل&quot; و&quot;50+ وكيل&quot; في نفس الموقع</span>
+                  
+                </div>
+                <p class="finding-desc">المستخدمون والمستثمرون سيلاحظون هذا التناقض</p>
+                
+                
+                <pre class="finding-fix">→ وحّد العدد — استخدم &quot;16+&quot; في كل مكان أو حدّد عدداً دقيقاً</pre>
+                
+              </div>
+            
+              <div class="finding">
+                <div class="finding-header">
+                  <span class="badge" style="background:#185FA5">medium</span>
+                  <span class="finding-title">8 ملف يستخدم kalmeron.com بدلاً من kalmeron.ai</span>
+                  <span style="font-size:10px;color:#3B6D11">🔧 تلقائي</span>
+                </div>
+                <p class="finding-desc">تناقض في الدومين يربك المستخدمين والمستثمرين</p>
+                
+                
+                <pre class="finding-fix">→ استبدل كل kalmeron.com بـ kalmeron.ai</pre>
+                
+              </div>
+            
+      </div>
+    </details>
+  
+</div>
+
+<p style="font-size:11px;color:#888;text-align:center;margin-top:2rem">
+  تم التوليد بواسطة <strong>Kalmeron Audit System</strong> · audit_1777492057727
+</p>
+
+</body>
+</html>

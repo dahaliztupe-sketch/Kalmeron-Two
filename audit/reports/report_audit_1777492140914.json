@@ -1,0 +1,298 @@
+{
+  "id": "audit_1777492140914",
+  "timestamp": "2026-04-29T19:49:02.669Z",
+  "projectName": "Kalmeron AI",
+  "overallScore": 50,
+  "grade": "D",
+  "modules": [
+    {
+      "module": "الأمان (OWASP)",
+      "category": "security",
+      "score": 0,
+      "findings": [
+        {
+          "id": "SEC-XSS-app/layout.tsx",
+          "category": "security",
+          "severity": "high",
+          "title": "dangerouslySetInnerHTML بدون sanitization",
+          "description": "استخدام dangerouslySetInnerHTML بدون تنظيف المحتوى — خطر XSS",
+          "location": "app/layout.tsx",
+          "evidence": "app/layout.tsx:133:          dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}",
+          "fix": "استخدم DOMPurify.sanitize() أو xss(...) قبل تمرير المحتوى",
+          "autoFixable": false,
+          "references": [
+            "https://owasp.org/www-community/attacks/xss/"
+          ]
+        },
+        {
+          "id": "SEC-XSS-app/use-cases/[slug]/page.tsx",
+          "category": "security",
+          "severity": "high",
+          "title": "dangerouslySetInnerHTML بدون sanitization",
+          "description": "استخدام dangerouslySetInnerHTML بدون تنظيف المحتوى — خطر XSS",
+          "location": "app/use-cases/[slug]/page.tsx",
+          "evidence": "app/use-cases/[slug]/page.tsx:80:        dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}",
+          "fix": "استخدم DOMPurify.sanitize() أو xss(...) قبل تمرير المحتوى",
+          "autoFixable": false,
+          "references": [
+            "https://owasp.org/www-community/attacks/xss/"
+          ]
+        },
+        {
+          "id": "SEC-XSS-app/templates/[slug]/page.tsx",
+          "category": "security",
+          "severity": "high",
+          "title": "dangerouslySetInnerHTML بدون sanitization",
+          "description": "استخدام dangerouslySetInnerHTML بدون تنظيف المحتوى — خطر XSS",
+          "location": "app/templates/[slug]/page.tsx",
+          "evidence": "app/templates/[slug]/page.tsx:71:        dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}",
+          "fix": "استخدم DOMPurify.sanitize() أو xss(...) قبل تمرير المحتوى",
+          "autoFixable": false,
+          "references": [
+            "https://owasp.org/www-community/attacks/xss/"
+          ]
+        },
+        {
+          "id": "SEC-XSS-app/glossary/[term]/page.tsx",
+          "category": "security",
+          "severity": "high",
+          "title": "dangerouslySetInnerHTML بدون sanitization",
+          "description": "استخدام dangerouslySetInnerHTML بدون تنظيف المحتوى — خطر XSS",
+          "location": "app/glossary/[term]/page.tsx",
+          "evidence": "app/glossary/[term]/page.tsx:60:        dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}",
+          "fix": "استخدم DOMPurify.sanitize() أو xss(...) قبل تمرير المحتوى",
+          "autoFixable": false,
+          "references": [
+            "https://owasp.org/www-community/attacks/xss/"
+          ]
+        },
+        {
+          "id": "SEC-XSS-app/cities/[city]/page.tsx",
+          "category": "security",
+          "severity": "high",
+          "title": "dangerouslySetInnerHTML بدون sanitization",
+          "description": "استخدام dangerouslySetInnerHTML بدون تنظيف المحتوى — خطر XSS",
+          "location": "app/cities/[city]/page.tsx",
+          "evidence": "app/cities/[city]/page.tsx:65:        dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}",
+          "fix": "استخدم DOMPurify.sanitize() أو xss(...) قبل تمرير المحتوى",
+          "autoFixable": false,
+          "references": [
+            "https://owasp.org/www-community/attacks/xss/"
+          ]
+        },
+        {
+          "id": "SEC-XSS-app/blog/[slug]/page.tsx",
+          "category": "security",
+          "severity": "high",
+          "title": "dangerouslySetInnerHTML بدون sanitization",
+          "description": "استخدام dangerouslySetInnerHTML بدون تنظيف المحتوى — خطر XSS",
+          "location": "app/blog/[slug]/page.tsx",
+          "evidence": "app/blog/[slug]/page.tsx:58:            <span dangerouslySetInnerHTML={{ __html: escapeHtml(item).replace(/\\*\\*(.+?)\\*\\*/g, \"<strong>$1</strong>\") }} />",
+          "fix": "استخدم DOMPurify.sanitize() أو xss(...) قبل تمرير المحتوى",
+          "autoFixable": false,
+          "references": [
+            "https://owasp.org/www-community/attacks/xss/"
+          ]
+        },
+        {
+          "id": "SEC-XSS-app/blog/[slug]/page.tsx",
+          "category": "security",
+          "severity": "high",
+          "title": "dangerouslySetInnerHTML بدون sanitization",
+          "description": "استخدام dangerouslySetInnerHTML بدون تنظيف المحتوى — خطر XSS",
+          "location": "app/blog/[slug]/page.tsx",
+          "evidence": "app/blog/[slug]/page.tsx:95:          dangerouslySetInnerHTML={{ __html: escapeHtml(line).replace(/\\*\\*(.+?)\\*\\*/g, \"<strong class='text-white'>$1</strong>\") }}",
+          "fix": "استخدم DOMPurify.sanitize() أو xss(...) قبل تمرير المحتوى",
+          "autoFixable": false,
+          "references": [
+            "https://owasp.org/www-community/attacks/xss/"
+          ]
+        },
+        {
+          "id": "SEC-XSS-app/blog/[slug]/page.tsx",
+          "category": "security",
+          "severity": "high",
+          "title": "dangerouslySetInnerHTML بدون sanitization",
+          "description": "استخدام dangerouslySetInnerHTML بدون تنظيف المحتوى — خطر XSS",
+          "location": "app/blog/[slug]/page.tsx",
+          "evidence": "app/blog/[slug]/page.tsx:126:      <script type=\"application/ld+json\" dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }} />",
+          "fix": "استخدم DOMPurify.sanitize() أو xss(...) قبل تمرير المحتوى",
+          "autoFixable": false,
+          "references": [
+            "https://owasp.org/www-community/attacks/xss/"
+          ]
+        },
+        {
+          "id": "SEC-XSS-app/ai-experts/[slug]/page.tsx",
+          "category": "security",
+          "severity": "high",
+          "title": "dangerouslySetInnerHTML بدون sanitization",
+          "description": "استخدام dangerouslySetInnerHTML بدون تنظيف المحتوى — خطر XSS",
+          "location": "app/ai-experts/[slug]/page.tsx",
+          "evidence": "app/ai-experts/[slug]/page.tsx:72:        dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}",
+          "fix": "استخدم DOMPurify.sanitize() أو xss(...) قبل تمرير المحتوى",
+          "autoFixable": false,
+          "references": [
+            "https://owasp.org/www-community/attacks/xss/"
+          ]
+        },
+        {
+          "id": "SEC-CSRF-001",
+          "category": "security",
+          "severity": "medium",
+          "title": "Server Actions بدون CSRF / Origin protection صريح",
+          "description": "Next.js يوفر حماية ضمنية، لكن يُنصح بـ custom origin validation",
+          "fix": "تحقق من Origin header في كل Server Action حساس",
+          "autoFixable": false,
+          "references": [
+            "https://owasp.org/www-community/attacks/csrf"
+          ]
+        }
+      ],
+      "duration": 1751,
+      "passed": 0,
+      "failed": 10
+    },
+    {
+      "module": "التخزين (Firestore)",
+      "category": "storage",
+      "score": 100,
+      "findings": [],
+      "duration": 1,
+      "passed": 10,
+      "failed": 0
+    }
+  ],
+  "criticalCount": 0,
+  "autoFixCount": 0,
+  "manualFixCount": 10,
+  "topPriorities": [
+    {
+      "id": "SEC-XSS-app/layout.tsx",
+      "category": "security",
+      "severity": "high",
+      "title": "dangerouslySetInnerHTML بدون sanitization",
+      "description": "استخدام dangerouslySetInnerHTML بدون تنظيف المحتوى — خطر XSS",
+      "location": "app/layout.tsx",
+      "evidence": "app/layout.tsx:133:          dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}",
+      "fix": "استخدم DOMPurify.sanitize() أو xss(...) قبل تمرير المحتوى",
+      "autoFixable": false,
+      "references": [
+        "https://owasp.org/www-community/attacks/xss/"
+      ]
+    },
+    {
+      "id": "SEC-XSS-app/use-cases/[slug]/page.tsx",
+      "category": "security",
+      "severity": "high",
+      "title": "dangerouslySetInnerHTML بدون sanitization",
+      "description": "استخدام dangerouslySetInnerHTML بدون تنظيف المحتوى — خطر XSS",
+      "location": "app/use-cases/[slug]/page.tsx",
+      "evidence": "app/use-cases/[slug]/page.tsx:80:        dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}",
+      "fix": "استخدم DOMPurify.sanitize() أو xss(...) قبل تمرير المحتوى",
+      "autoFixable": false,
+      "references": [
+        "https://owasp.org/www-community/attacks/xss/"
+      ]
+    },
+    {
+      "id": "SEC-XSS-app/templates/[slug]/page.tsx",
+      "category": "security",
+      "severity": "high",
+      "title": "dangerouslySetInnerHTML بدون sanitization",
+      "description": "استخدام dangerouslySetInnerHTML بدون تنظيف المحتوى — خطر XSS",
+      "location": "app/templates/[slug]/page.tsx",
+      "evidence": "app/templates/[slug]/page.tsx:71:        dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}",
+      "fix": "استخدم DOMPurify.sanitize() أو xss(...) قبل تمرير المحتوى",
+      "autoFixable": false,
+      "references": [
+        "https://owasp.org/www-community/attacks/xss/"
+      ]
+    },
+    {
+      "id": "SEC-XSS-app/glossary/[term]/page.tsx",
+      "category": "security",
+      "severity": "high",
+      "title": "dangerouslySetInnerHTML بدون sanitization",
+      "description": "استخدام dangerouslySetInnerHTML بدون تنظيف المحتوى — خطر XSS",
+      "location": "app/glossary/[term]/page.tsx",
+      "evidence": "app/glossary/[term]/page.tsx:60:        dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}",
+      "fix": "استخدم DOMPurify.sanitize() أو xss(...) قبل تمرير المحتوى",
+      "autoFixable": false,
+      "references": [
+        "https://owasp.org/www-community/attacks/xss/"
+      ]
+    },
+    {
+      "id": "SEC-XSS-app/cities/[city]/page.tsx",
+      "category": "security",
+      "severity": "high",
+      "title": "dangerouslySetInnerHTML بدون sanitization",
+      "description": "استخدام dangerouslySetInnerHTML بدون تنظيف المحتوى — خطر XSS",
+      "location": "app/cities/[city]/page.tsx",
+      "evidence": "app/cities/[city]/page.tsx:65:        dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}",
+      "fix": "استخدم DOMPurify.sanitize() أو xss(...) قبل تمرير المحتوى",
+      "autoFixable": false,
+      "references": [
+        "https://owasp.org/www-community/attacks/xss/"
+      ]
+    },
+    {
+      "id": "SEC-XSS-app/blog/[slug]/page.tsx",
+      "category": "security",
+      "severity": "high",
+      "title": "dangerouslySetInnerHTML بدون sanitization",
+      "description": "استخدام dangerouslySetInnerHTML بدون تنظيف المحتوى — خطر XSS",
+      "location": "app/blog/[slug]/page.tsx",
+      "evidence": "app/blog/[slug]/page.tsx:58:            <span dangerouslySetInnerHTML={{ __html: escapeHtml(item).replace(/\\*\\*(.+?)\\*\\*/g, \"<strong>$1</strong>\") }} />",
+      "fix": "استخدم DOMPurify.sanitize() أو xss(...) قبل تمرير المحتوى",
+      "autoFixable": false,
+      "references": [
+        "https://owasp.org/www-community/attacks/xss/"
+      ]
+    },
+    {
+      "id": "SEC-XSS-app/blog/[slug]/page.tsx",
+      "category": "security",
+      "severity": "high",
+      "title": "dangerouslySetInnerHTML بدون sanitization",
+      "description": "استخدام dangerouslySetInnerHTML بدون تنظيف المحتوى — خطر XSS",
+      "location": "app/blog/[slug]/page.tsx",
+      "evidence": "app/blog/[slug]/page.tsx:95:          dangerouslySetInnerHTML={{ __html: escapeHtml(line).replace(/\\*\\*(.+?)\\*\\*/g, \"<strong class='text-white'>$1</strong>\") }}",
+      "fix": "استخدم DOMPurify.sanitize() أو xss(...) قبل تمرير المحتوى",
+      "autoFixable": false,
+      "references": [
+        "https://owasp.org/www-community/attacks/xss/"
+      ]
+    },
+    {
+      "id": "SEC-XSS-app/blog/[slug]/page.tsx",
+      "category": "security",
+      "severity": "high",
+      "title": "dangerouslySetInnerHTML بدون sanitization",
+      "description": "استخدام dangerouslySetInnerHTML بدون تنظيف المحتوى — خطر XSS",
+      "location": "app/blog/[slug]/page.tsx",
+      "evidence": "app/blog/[slug]/page.tsx:126:      <script type=\"application/ld+json\" dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }} />",
+      "fix": "استخدم DOMPurify.sanitize() أو xss(...) قبل تمرير المحتوى",
+      "autoFixable": false,
+      "references": [
+        "https://owasp.org/www-community/attacks/xss/"
+      ]
+    },
+    {
+      "id": "SEC-XSS-app/ai-experts/[slug]/page.tsx",
+      "category": "security",
+      "severity": "high",
+      "title": "dangerouslySetInnerHTML بدون sanitization",
+      "description": "استخدام dangerouslySetInnerHTML بدون تنظيف المحتوى — خطر XSS",
+      "location": "app/ai-experts/[slug]/page.tsx",
+      "evidence": "app/ai-experts/[slug]/page.tsx:72:        dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}",
+      "fix": "استخدم DOMPurify.sanitize() أو xss(...) قبل تمرير المحتوى",
+      "autoFixable": false,
+      "references": [
+        "https://owasp.org/www-community/attacks/xss/"
+      ]
+    }
+  ],
+  "summary": "📋 تحتاج تحسينات — النقاط: 50/100"
+}

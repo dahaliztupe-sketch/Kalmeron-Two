@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>تقرير الفحص الشامل — كلميرون AI — ٢٩‏/٤‏/٢٠٢٦</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; background: #f8f8f6; color: #1a1a18; padding: 2rem; line-height: 1.5; }
+  .header { background: white; border-radius: 12px; padding: 2rem; margin-bottom: 1.5rem; border: 0.5px solid #e8e8e4; display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; }
+  .score-circle { width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-direction: column; font-weight: 600; color: white; background: #A32D2D; flex-shrink: 0; }
+  .score-circle .num { font-size: 28px; line-height: 1; }
+  .score-circle .grade { font-size: 14px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 1.5rem; }
+  .stat { background: white; border-radius: 8px; padding: 1rem; text-align: center; border: 0.5px solid #e8e8e4; }
+  .stat-n { font-size: 24px; font-weight: 600; }
+  .stat-l { font-size: 11px; color: #888; margin-top: 3px; }
+  .modules { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 8px; margin-bottom: 1.5rem; }
+  .module-card { background: white; border-radius: 8px; padding: 12px; border: 0.5px solid #e8e8e4; }
+  .module-score { font-size: 20px; font-weight: 600; }
+  .module-name { font-size: 12px; color: #666; margin-top: 2px; }
+  .findings { background: white; border-radius: 8px; overflow: hidden; border: 0.5px solid #e8e8e4; margin-bottom: 1.5rem; }
+  .finding { padding: 14px 16px; border-top: 0.5px solid #f0f0ec; }
+  .finding:first-child { border-top: 0; }
+  .finding-header { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; flex-wrap: wrap; }
+  .badge { font-size: 10px; padding: 2px 8px; border-radius: 10px; font-weight: 500; color: white; }
+  .finding-title { font-size: 13px; font-weight: 500; }
+  .finding-desc { font-size: 12px; color: #666; line-height: 1.5; }
+  .finding-fix { font-size: 11px; color: #3B6D11; margin-top: 4px; font-family: ui-monospace, "SF Mono", Menlo, monospace; white-space: pre-wrap; }
+  .finding-evidence { font-size: 11px; color: #888; margin-top: 4px; font-family: ui-monospace, "SF Mono", Menlo, monospace; background: #f5f5f0; padding: 4px 6px; border-radius: 3px; white-space: pre-wrap; word-break: break-all; }
+  .finding-loc { font-size: 10px; color: #888; margin-top: 2px; }
+  h1 { font-size: 22px; font-weight: 500; }
+  h2 { font-size: 16px; font-weight: 500; margin-bottom: 10px; }
+  .section { margin-bottom: 1.5rem; }
+  details summary { cursor: pointer; padding: 10px 12px; background: white; border-radius: 8px; border: 0.5px solid #e8e8e4; font-size: 13px; font-weight: 500; }
+  details summary:hover { background: #fafaf7; }
+  details[open] summary { border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
+  .ok-banner { background: #EAF3DE; border-radius: 8px; padding: 1.5rem; text-align: center; color: #27500A; margin-bottom: 1.5rem; }
+  a { color: #185FA5; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <h1>تقرير الفحص الشامل — كلميرون AI</h1>
+    <p style="font-size:13px;color:#888;margin-top:4px">٢٩‏/٤‏/٢٠٢٦، ٧:٤٩:٠٢ م</p>
+    <p style="font-size:13px;margin-top:6px">📋 تحتاج تحسينات — النقاط: 50/100</p>
+  </div>
+  <div class="score-circle">
+    <span class="num">50</span>
+    <span class="grade">D</span>
+  </div>
+</div>
+
+<div class="grid">
+  <div class="stat"><div class="stat-n" style="color:#A32D2D">0</div><div class="stat-l">مشاكل حرجة</div></div>
+  <div class="stat"><div class="stat-n" style="color:#854F0B">9</div><div class="stat-l">عالية الخطورة</div></div>
+  <div class="stat"><div class="stat-n" style="color:#185FA5">1</div><div class="stat-l">متوسطة</div></div>
+  <div class="stat"><div class="stat-n" style="color:#3B6D11">0</div><div class="stat-l">قابلة للإصلاح التلقائي</div></div>
+</div>
+
+<div class="section">
+  <h2>النقاط حسب القسم</h2>
+  <div class="modules">
+    
+      <div class="module-card" style="border-right: 3px solid #A32D2D">
+        <div class="module-score" style="color: #A32D2D">0/100</div>
+        <div class="module-name">الأمان (OWASP)</div>
+        <div style="font-size:10px;color:#888;margin-top:2px">10 مشكلة · 1751ms</div>
+      </div>
+    
+      <div class="module-card" style="border-right: 3px solid #3B6D11">
+        <div class="module-score" style="color: #3B6D11">100/100</div>
+        <div class="module-name">التخزين (Firestore)</div>
+        <div style="font-size:10px;color:#888;margin-top:2px">0 مشكلة · 1ms</div>
+      </div>
+    
+  </div>
+</div>
+
+<div class="ok-banner">🎉 لا توجد مشاكل حرجة!</div>
+
+<div class="section">
+  <h2>كل النتائج (مفصّل)</h2>
+  
+    <details style="margin-bottom:8px">
+      <summary>
+        الأمان (OWASP) — 0/100 — 10 نتيجة
+      </summary>
+      <div class="findings" style="border-top-left-radius:0;border-top-right-radius:0">
+        
+              <div class="finding">
+                <div class="finding-header">
+                  <span class="badge" style="background:#854F0B">high</span>
+                  <span class="finding-title">dangerouslySetInnerHTML بدون sanitization</span>
+                  
+                </div>
+                <p class="finding-desc">استخدام dangerouslySetInnerHTML بدون تنظيف المحتوى — خطر XSS</p>
+                <p class="finding-loc">📁 app/layout.tsx</p>
+                <pre class="finding-evidence">app/layout.tsx:133:          dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}</pre>
+                <pre class="finding-fix">→ استخدم DOMPurify.sanitize() أو xss(...) قبل تمرير المحتوى</pre>
+                <p style="font-size:10px;margin-top:4px"><a href="https://owasp.org/www-community/attacks/xss/" target="_blank" rel="noopener">📖 مرجع</a></p>
+              </div>
+            
+              <div class="finding">
+                <div class="finding-header">
+                  <span class="badge" style="background:#854F0B">high</span>
+                  <span class="finding-title">dangerouslySetInnerHTML بدون sanitization</span>
+                  
+                </div>
+                <p class="finding-desc">استخدام dangerouslySetInnerHTML بدون تنظيف المحتوى — خطر XSS</p>
+                <p class="finding-loc">📁 app/use-cases/[slug]/page.tsx</p>
+                <pre class="finding-evidence">app/use-cases/[slug]/page.tsx:80:        dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}</pre>
+                <pre class="finding-fix">→ استخدم DOMPurify.sanitize() أو xss(...) قبل تمرير المحتوى</pre>
+                <p style="font-size:10px;margin-top:4px"><a href="https://owasp.org/www-community/attacks/xss/" target="_blank" rel="noopener">📖 مرجع</a></p>
+              </div>
+            
+              <div class="finding">
+                <div class="finding-header">
+                  <span class="badge" style="background:#854F0B">high</span>
+                  <span class="finding-title">dangerouslySetInnerHTML بدون sanitization</span>
+                  
+                </div>
+                <p class="finding-desc">استخدام dangerouslySetInnerHTML بدون تنظيف المحتوى — خطر XSS</p>
+                <p class="finding-loc">📁 app/templates/[slug]/page.tsx</p>
+                <pre class="finding-evidence">app/templates/[slug]/page.tsx:71:        dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}</pre>
+                <pre class="finding-fix">→ استخدم DOMPurify.sanitize() أو xss(...) قبل تمرير المحتوى</pre>
+                <p style="font-size:10px;margin-top:4px"><a href="https://owasp.org/www-community/attacks/xss/" target="_blank" rel="noopener">📖 مرجع</a></p>
+              </div>
+            
+              <div class="finding">
+                <div class="finding-header">
+                  <span class="badge" style="background:#854F0B">high</span>
+                  <span class="finding-title">dangerouslySetInnerHTML بدون sanitization</span>
+                  
+                </div>
+                <p class="finding-desc">استخدام dangerouslySetInnerHTML بدون تنظيف المحتوى — خطر XSS</p>
+                <p class="finding-loc">📁 app/glossary/[term]/page.tsx</p>
+                <pre class="finding-evidence">app/glossary/[term]/page.tsx:60:        dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}</pre>
+                <pre class="finding-fix">→ استخدم DOMPurify.sanitize() أو xss(...) قبل تمرير المحتوى</pre>
+                <p style="font-size:10px;margin-top:4px"><a href="https://owasp.org/www-community/attacks/xss/" target="_blank" rel="noopener">📖 مرجع</a></p>
+              </div>
+            
+              <div class="finding">
+                <div class="finding-header">
+                  <span class="badge" style="background:#854F0B">high</span>
+                  <span class="finding-title">dangerouslySetInnerHTML بدون sanitization</span>
+                  
+                </div>
+                <p class="finding-desc">استخدام dangerouslySetInnerHTML بدون تنظيف المحتوى — خطر XSS</p>
+                <p class="finding-loc">📁 app/cities/[city]/page.tsx</p>
+                <pre class="finding-evidence">app/cities/[city]/page.tsx:65:        dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}</pre>
+                <pre class="finding-fix">→ استخدم DOMPurify.sanitize() أو xss(...) قبل تمرير المحتوى</pre>
+                <p style="font-size:10px;margin-top:4px"><a href="https://owasp.org/www-community/attacks/xss/" target="_blank" rel="noopener">📖 مرجع</a></p>
+              </div>
+            
+              <div class="finding">
+                <div class="finding-header">
+                  <span class="badge" style="background:#854F0B">high</span>
+                  <span class="finding-title">dangerouslySetInnerHTML بدون sanitization</span>
+                  
+                </div>
+                <p class="finding-desc">استخدام dangerouslySetInnerHTML بدون تنظيف المحتوى — خطر XSS</p>
+                <p class="finding-loc">📁 app/blog/[slug]/page.tsx</p>
+                <pre class="finding-evidence">app/blog/[slug]/page.tsx:58:            &lt;span dangerouslySetInnerHTML={{ __html: escapeHtml(item).replace(/\*\*(.+?)\*\*/g, &quot;&lt;strong&gt;$1&lt;/strong&gt;&quot;) }} /&gt;</pre>
+                <pre class="finding-fix">→ استخدم DOMPurify.sanitize() أو xss(...) قبل تمرير المحتوى</pre>
+                <p style="font-size:10px;margin-top:4px"><a href="https://owasp.org/www-community/attacks/xss/" target="_blank" rel="noopener">📖 مرجع</a></p>
+              </div>
+            
+              <div class="finding">
+                <div class="finding-header">
+                  <span class="badge" style="background:#854F0B">high</span>
+                  <span class="finding-title">dangerouslySetInnerHTML بدون sanitization</span>
+                  
+                </div>
+                <p class="finding-desc">استخدام dangerouslySetInnerHTML بدون تنظيف المحتوى — خطر XSS</p>
+                <p class="finding-loc">📁 app/blog/[slug]/page.tsx</p>
+                <pre class="finding-evidence">app/blog/[slug]/page.tsx:95:          dangerouslySetInnerHTML={{ __html: escapeHtml(line).replace(/\*\*(.+?)\*\*/g, &quot;&lt;strong class=&#39;text-white&#39;&gt;$1&lt;/strong&gt;&quot;) }}</pre>
+                <pre class="finding-fix">→ استخدم DOMPurify.sanitize() أو xss(...) قبل تمرير المحتوى</pre>
+                <p style="font-size:10px;margin-top:4px"><a href="https://owasp.org/www-community/attacks/xss/" target="_blank" rel="noopener">📖 مرجع</a></p>
+              </div>
+            
+              <div class="finding">
+                <div class="finding-header">
+                  <span class="badge" style="background:#854F0B">high</span>
+                  <span class="finding-title">dangerouslySetInnerHTML بدون sanitization</span>
+                  
+                </div>
+                <p class="finding-desc">استخدام dangerouslySetInnerHTML بدون تنظيف المحتوى — خطر XSS</p>
+                <p class="finding-loc">📁 app/blog/[slug]/page.tsx</p>
+                <pre class="finding-evidence">app/blog/[slug]/page.tsx:126:      &lt;script type=&quot;application/ld+json&quot; dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }} /&gt;</pre>
+                <pre class="finding-fix">→ استخدم DOMPurify.sanitize() أو xss(...) قبل تمرير المحتوى</pre>
+                <p style="font-size:10px;margin-top:4px"><a href="https://owasp.org/www-community/attacks/xss/" target="_blank" rel="noopener">📖 مرجع</a></p>
+              </div>
+            
+              <div class="finding">
+                <div class="finding-header">
+                  <span class="badge" style="background:#854F0B">high</span>
+                  <span class="finding-title">dangerouslySetInnerHTML بدون sanitization</span>
+                  
+                </div>
+                <p class="finding-desc">استخدام dangerouslySetInnerHTML بدون تنظيف المحتوى — خطر XSS</p>
+                <p class="finding-loc">📁 app/ai-experts/[slug]/page.tsx</p>
+                <pre class="finding-evidence">app/ai-experts/[slug]/page.tsx:72:        dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}</pre>
+                <pre class="finding-fix">→ استخدم DOMPurify.sanitize() أو xss(...) قبل تمرير المحتوى</pre>
+                <p style="font-size:10px;margin-top:4px"><a href="https://owasp.org/www-community/attacks/xss/" target="_blank" rel="noopener">📖 مرجع</a></p>
+              </div>
+            
+              <div class="finding">
+                <div class="finding-header">
+                  <span class="badge" style="background:#185FA5">medium</span>
+                  <span class="finding-title">Server Actions بدون CSRF / Origin protection صريح</span>
+                  
+                </div>
+                <p class="finding-desc">Next.js يوفر حماية ضمنية، لكن يُنصح بـ custom origin validation</p>
+                
+                
+                <pre class="finding-fix">→ تحقق من Origin header في كل Server Action حساس</pre>
+                <p style="font-size:10px;margin-top:4px"><a href="https://owasp.org/www-community/attacks/csrf" target="_blank" rel="noopener">📖 مرجع</a></p>
+              </div>
+            
+      </div>
+    </details>
+  
+    <details style="margin-bottom:8px">
+      <summary>
+        التخزين (Firestore) — 100/100 — 0 نتيجة
+      </summary>
+      <div class="findings" style="border-top-left-radius:0;border-top-right-radius:0">
+        <div class="finding" style="color:#3B6D11">✅ لا مشاكل في هذا القسم</div>
+      </div>
+    </details>
+  
+</div>
+
+<p style="font-size:11px;color:#888;text-align:center;margin-top:2rem">
+  تم التوليد بواسطة <strong>Kalmeron Audit System</strong> · audit_1777492140914
+</p>
+
+</body>
+</html>

@@ -42,7 +42,20 @@
     "firebase:emulators": "firebase emulators:start",
     "firebase:deploy": "firebase deploy --only firestore",
     "firebase:deploy:rules": "firebase deploy --only firestore:rules",
-    "firebase:deploy:indexes": "firebase deploy --only firestore:indexes"
+    "firebase:deploy:indexes": "firebase deploy --only firestore:indexes",
+    "audit": "tsx audit/runner.ts",
+    "audit:fast": "QA_MODULES=security,authentication,frontend,storage tsx audit/runner.ts",
+    "audit:security": "QA_MODULES=security tsx audit/runner.ts",
+    "audit:auth": "QA_MODULES=authentication tsx audit/runner.ts",
+    "audit:frontend": "QA_MODULES=frontend tsx audit/runner.ts",
+    "audit:backend": "QA_MODULES=backend tsx audit/runner.ts",
+    "audit:storage": "QA_MODULES=storage tsx audit/runner.ts",
+    "audit:performance": "QA_MODULES=performance tsx audit/runner.ts",
+    "audit:seo": "QA_MODULES=seo tsx audit/runner.ts",
+    "audit:agents": "QA_MODULES=ai-agents tsx audit/runner.ts",
+    "audit:business": "QA_MODULES=business tsx audit/runner.ts",
+    "audit:ci": "QA_BASE_URL=http://localhost:5000 QA_FAIL_ON_CRITICAL=true tsx audit/runner.ts",
+    "precommit": "npm run typecheck && npm run lint && npm run audit:fast"
   },
   "dependencies": {
     "@ag-ui/client": "^0.0.52",

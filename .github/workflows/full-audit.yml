@@ -1,0 +1,112 @@
+name: 🔍 Kalmeron Full Audit
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: '0 6 * * *'   # يومياً 6 صباحاً UTC
+  workflow_dispatch:
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: تثبيت المكتبات
+        run: npm ci
+
+      - name: تثبيت Playwright (اختياري)
+        run: npx playwright install chromium --with-deps
+        continue-on-error: true
+
+      - name: بناء التطبيق
+        run: npm run build
+        env:
+          NEXT_PUBLIC_FIREBASE_API_KEY: ${{ secrets.NEXT_PUBLIC_FIREBASE_API_KEY }}
+          NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: ${{ secrets.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN }}
+          NEXT_PUBLIC_FIREBASE_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_PROJECT_ID }}
+          GOOGLE_GENERATIVE_AI_API_KEY: ${{ secrets.GOOGLE_GENERATIVE_AI_API_KEY }}
+
+      - name: تشغيل التطبيق في الخلفية
+        run: npm start &
+        env:
+          PORT: 5000
+
+      - name: انتظار جهوزية الخادم
+        run: npx wait-on http://localhost:5000 --timeout 60000
+
+      - name: تشغيل الفحص الشامل
+        run: npx tsx audit/runner.ts
+        env:
+          QA_BASE_URL: http://localhost:5000
+          QA_AUTH_TOKEN: ${{ secrets.QA_AUTH_TOKEN }}
+          QA_FAIL_ON_CRITICAL: 'true'
+
+      - name: رفع تقرير الفحص
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: audit-report-${{ github.sha }}
+          path: audit/reports/
+          retention-days: 30
+
+      - name: تعليق النتائج على PR
+        if: github.event_name == 'pull_request' && always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+            const dir = 'audit/reports';
+            if (!fs.existsSync(dir)) return;
+            const reports = fs.readdirSync(dir)
+              .filter(f => f.startsWith('report_') && f.endsWith('.json'))
+              .sort()
+              .reverse();
+            if (reports.length === 0) return;
+
+            const report = JSON.parse(
+              fs.readFileSync(path.join(dir, reports[0]), 'utf8')
+            );
+
+            const emoji = report.overallScore >= 80 ? '✅' :
+                          report.overallScore >= 60 ? '⚠️' : '❌';
+
+            const total = report.modules.reduce((sum, m) => sum + m.findings.length, 0);
+
+            const body = `## ${emoji} تقرير الفحص الشامل — كلميرون AI
+
+**النقاط:** ${report.overallScore}/100 (${report.grade})
+**المشاكل الحرجة:** ${report.criticalCount}
+**إجمالي النتائج:** ${total}
+
+| القسم | النقاط | المشاكل |
+|---|---|---|
+${report.modules.map(m => `| ${m.module} | ${m.score}/100 | ${m.failed} |`).join('\n')}
+
+${report.criticalCount > 0
+  ? '### 🔴 مشاكل حرجة:\n' +
+    report.modules.flatMap(m => m.findings)
+      .filter(f => f.severity === 'critical')
+      .slice(0, 5)
+      .map(f => `- **${f.title}**: ${f.description}`)
+      .join('\n')
+  : '### ✅ لا توجد مشاكل حرجة!'}
+`;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body
+            });

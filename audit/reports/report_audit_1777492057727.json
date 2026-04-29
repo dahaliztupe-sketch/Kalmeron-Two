@@ -1,0 +1,765 @@
+{
+  "id": "audit_1777492057727",
+  "timestamp": "2026-04-29T19:48:56.824Z",
+  "projectName": "Kalmeron AI",
+  "overallScore": 64,
+  "grade": "D",
+  "modules": [
+    {
+      "module": "جودة الكود",
+      "category": "code-quality",
+      "score": 93,
+      "findings": [
+        {
+          "id": "CQ-002",
+          "category": "code-quality",
+          "severity": "medium",
+          "title": "18 خطأ ESLint",
+          "description": "مخالفات قواعد الكود",
+          "fix": "شغّل: npx eslint . --fix لإصلاح التلقائي",
+          "autoFixable": true,
+          "references": [
+            "https://eslint.org/docs/latest/"
+          ]
+        },
+        {
+          "id": "CQ-005",
+          "category": "code-quality",
+          "severity": "low",
+          "title": "23 console.log في الكود الإنتاجي",
+          "description": "console.log تُبطئ الأداء وقد تكشف بيانات حساسة في الإنتاج",
+          "fix": "استبدل بـ pino logger أو احذف console.log غير الضرورية",
+          "autoFixable": false
+        }
+      ],
+      "duration": 53919,
+      "passed": 8,
+      "failed": 2
+    },
+    {
+      "module": "الأمان (OWASP)",
+      "category": "security",
+      "score": 0,
+      "findings": [
+        {
+          "id": "SEC-XSS-app/layout.tsx",
+          "category": "security",
+          "severity": "high",
+          "title": "dangerouslySetInnerHTML بدون sanitization",
+          "description": "استخدام dangerouslySetInnerHTML بدون تنظيف المحتوى — خطر XSS",
+          "location": "app/layout.tsx",
+          "evidence": "app/layout.tsx:133:          dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}",
+          "fix": "استخدم DOMPurify.sanitize() أو xss(...) قبل تمرير المحتوى",
+          "autoFixable": false,
+          "references": [
+            "https://owasp.org/www-community/attacks/xss/"
+          ]
+        },
+        {
+          "id": "SEC-XSS-app/use-cases/[slug]/page.tsx",
+          "category": "security",
+          "severity": "high",
+          "title": "dangerouslySetInnerHTML بدون sanitization",
+          "description": "استخدام dangerouslySetInnerHTML بدون تنظيف المحتوى — خطر XSS",
+          "location": "app/use-cases/[slug]/page.tsx",
+          "evidence": "app/use-cases/[slug]/page.tsx:80:        dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}",
+          "fix": "استخدم DOMPurify.sanitize() أو xss(...) قبل تمرير المحتوى",
+          "autoFixable": false,
+          "references": [
+            "https://owasp.org/www-community/attacks/xss/"
+          ]
+        },
+        {
+          "id": "SEC-XSS-app/templates/[slug]/page.tsx",
+          "category": "security",
+          "severity": "high",
+          "title": "dangerouslySetInnerHTML بدون sanitization",
+          "description": "استخدام dangerouslySetInnerHTML بدون تنظيف المحتوى — خطر XSS",
+          "location": "app/templates/[slug]/page.tsx",
+          "evidence": "app/templates/[slug]/page.tsx:71:        dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}",
+          "fix": "استخدم DOMPurify.sanitize() أو xss(...) قبل تمرير المحتوى",
+          "autoFixable": false,
+          "references": [
+            "https://owasp.org/www-community/attacks/xss/"
+          ]
+        },
+        {
+          "id": "SEC-XSS-app/glossary/[term]/page.tsx",
+          "category": "security",
+          "severity": "high",
+          "title": "dangerouslySetInnerHTML بدون sanitization",
+          "description": "استخدام dangerouslySetInnerHTML بدون تنظيف المحتوى — خطر XSS",
+          "location": "app/glossary/[term]/page.tsx",
+          "evidence": "app/glossary/[term]/page.tsx:60:        dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}",
+          "fix": "استخدم DOMPurify.sanitize() أو xss(...) قبل تمرير المحتوى",
+          "autoFixable": false,
+          "references": [
+            "https://owasp.org/www-community/attacks/xss/"
+          ]
+        },
+        {
+          "id": "SEC-XSS-app/cities/[city]/page.tsx",
+          "category": "security",
+          "severity": "high",
+          "title": "dangerouslySetInnerHTML بدون sanitization",
+          "description": "استخدام dangerouslySetInnerHTML بدون تنظيف المحتوى — خطر XSS",
+          "location": "app/cities/[city]/page.tsx",
+          "evidence": "app/cities/[city]/page.tsx:65:        dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}",
+          "fix": "استخدم DOMPurify.sanitize() أو xss(...) قبل تمرير المحتوى",
+          "autoFixable": false,
+          "references": [
+            "https://owasp.org/www-community/attacks/xss/"
+          ]
+        },
+        {
+          "id": "SEC-XSS-app/blog/[slug]/page.tsx",
+          "category": "security",
+          "severity": "high",
+          "title": "dangerouslySetInnerHTML بدون sanitization",
+          "description": "استخدام dangerouslySetInnerHTML بدون تنظيف المحتوى — خطر XSS",
+          "location": "app/blog/[slug]/page.tsx",
+          "evidence": "app/blog/[slug]/page.tsx:58:            <span dangerouslySetInnerHTML={{ __html: escapeHtml(item).replace(/\\*\\*(.+?)\\*\\*/g, \"<strong>$1</strong>\") }} />",
+          "fix": "استخدم DOMPurify.sanitize() أو xss(...) قبل تمرير المحتوى",
+          "autoFixable": false,
+          "references": [
+            "https://owasp.org/www-community/attacks/xss/"
+          ]
+        },
+        {
+          "id": "SEC-XSS-app/blog/[slug]/page.tsx",
+          "category": "security",
+          "severity": "high",
+          "title": "dangerouslySetInnerHTML بدون sanitization",
+          "description": "استخدام dangerouslySetInnerHTML بدون تنظيف المحتوى — خطر XSS",
+          "location": "app/blog/[slug]/page.tsx",
+          "evidence": "app/blog/[slug]/page.tsx:95:          dangerouslySetInnerHTML={{ __html: escapeHtml(line).replace(/\\*\\*(.+?)\\*\\*/g, \"<strong class='text-white'>$1</strong>\") }}",
+          "fix": "استخدم DOMPurify.sanitize() أو xss(...) قبل تمرير المحتوى",
+          "autoFixable": false,
+          "references": [
+            "https://owasp.org/www-community/attacks/xss/"
+          ]
+        },
+        {
+          "id": "SEC-XSS-app/blog/[slug]/page.tsx",
+          "category": "security",
+          "severity": "high",
+          "title": "dangerouslySetInnerHTML بدون sanitization",
+          "description": "استخدام dangerouslySetInnerHTML بدون تنظيف المحتوى — خطر XSS",
+          "location": "app/blog/[slug]/page.tsx",
+          "evidence": "app/blog/[slug]/page.tsx:126:      <script type=\"application/ld+json\" dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }} />",
+          "fix": "استخدم DOMPurify.sanitize() أو xss(...) قبل تمرير المحتوى",
+          "autoFixable": false,
+          "references": [
+            "https://owasp.org/www-community/attacks/xss/"
+          ]
+        },
+        {
+          "id": "SEC-XSS-app/ai-experts/[slug]/page.tsx",
+          "category": "security",
+          "severity": "high",
+          "title": "dangerouslySetInnerHTML بدون sanitization",
+          "description": "استخدام dangerouslySetInnerHTML بدون تنظيف المحتوى — خطر XSS",
+          "location": "app/ai-experts/[slug]/page.tsx",
+          "evidence": "app/ai-experts/[slug]/page.tsx:72:        dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}",
+          "fix": "استخدم DOMPurify.sanitize() أو xss(...) قبل تمرير المحتوى",
+          "autoFixable": false,
+          "references": [
+            "https://owasp.org/www-community/attacks/xss/"
+          ]
+        },
+        {
+          "id": "SEC-CSRF-001",
+          "category": "security",
+          "severity": "medium",
+          "title": "Server Actions بدون CSRF / Origin protection صريح",
+          "description": "Next.js يوفر حماية ضمنية، لكن يُنصح بـ custom origin validation",
+          "fix": "تحقق من Origin header في كل Server Action حساس",
+          "autoFixable": false,
+          "references": [
+            "https://owasp.org/www-community/attacks/csrf"
+          ]
+        }
+      ],
+      "duration": 1817,
+      "passed": 0,
+      "failed": 10
+    },
+    {
+      "module": "المصادقة",
+      "category": "authentication",
+      "score": 83,
+      "findings": [
+        {
+          "id": "AUTH-007",
+          "category": "authentication",
+          "severity": "medium",
+          "title": "Session token محتمل في localStorage",
+          "description": "تخزين tokens في localStorage عُرضة لـ XSS",
+          "fix": "استخدم httpOnly cookies أو Firebase Auth onAuthStateChanged فقط",
+          "autoFixable": false,
+          "references": [
+            "https://owasp.org/www-community/HttpOnly"
+          ]
+        },
+        {
+          "id": "AUTH-008",
+          "category": "authentication",
+          "severity": "high",
+          "title": "38 من 94 API route بدون تحقق هوية واضح",
+          "description": "كثير من API routes لا تستدعي verifyIdToken أو withAuth",
+          "fix": "أضف getAuthenticatedUser() أو withAuth() لكل route محمي",
+          "autoFixable": false
+        }
+      ],
+      "duration": 210,
+      "passed": 8,
+      "failed": 2
+    },
+    {
+      "module": "الواجهة الأمامية",
+      "category": "frontend",
+      "score": 39,
+      "findings": [
+        {
+          "id": "FE-001",
+          "category": "frontend",
+          "severity": "critical",
+          "title": "dir=\"rtl\" مفقود في Root Layout",
+          "description": "اتجاه RTL غير محدد على مستوى التطبيق كاملاً",
+          "location": "app/layout.tsx",
+          "fix": "أضف dir=\"rtl\" lang=\"ar\" لـ <html> tag في app/layout.tsx",
+          "autoFixable": true
+        },
+        {
+          "id": "FE-002",
+          "category": "frontend",
+          "severity": "medium",
+          "title": "lang=\"ar\" مفقود في Root Layout",
+          "description": "بدون lang attribute: SEO + accessibility يتأثران",
+          "location": "app/layout.tsx",
+          "fix": "أضف lang=\"ar\" لـ <html> في app/layout.tsx",
+          "autoFixable": true
+        },
+        {
+          "id": "FE-003",
+          "category": "frontend",
+          "severity": "medium",
+          "title": "1 صورة تستخدم <img> بدلاً من next/image",
+          "description": "next/image يحسن الأداء بـ lazy loading + WebP + size optimization",
+          "fix": "استبدل <img> بـ <Image> من next/image",
+          "autoFixable": false
+        },
+        {
+          "id": "FE-004-app--dashboard--dashboard",
+          "category": "frontend",
+          "severity": "low",
+          "title": "loading.tsx مفقود في app/(dashboard)/dashboard",
+          "description": "بدون loading.tsx: المستخدم يرى شاشة بيضاء أثناء التحميل",
+          "location": "app/(dashboard)/dashboard",
+          "fix": "أنشئ app/(dashboard)/dashboard/loading.tsx مع skeleton مناسب",
+          "autoFixable": true
+        },
+        {
+          "id": "FE-004-app-api-dashboard",
+          "category": "frontend",
+          "severity": "low",
+          "title": "loading.tsx مفقود في app/api/dashboard",
+          "description": "بدون loading.tsx: المستخدم يرى شاشة بيضاء أثناء التحميل",
+          "location": "app/api/dashboard",
+          "fix": "أنشئ app/api/dashboard/loading.tsx مع skeleton مناسب",
+          "autoFixable": true
+        },
+        {
+          "id": "FE-005-app-api",
+          "category": "frontend",
+          "severity": "medium",
+          "title": "error.tsx مفقود في app/api",
+          "description": "بدون error.tsx: الأخطاء تُعطي صفحة Next.js الافتراضية",
+          "location": "app/api",
+          "fix": "أنشئ app/api/error.tsx برسالة خطأ بالعربية وزر \"حاول مجدداً\"",
+          "autoFixable": true
+        },
+        {
+          "id": "FE-006",
+          "category": "frontend",
+          "severity": "medium",
+          "title": "7 صورة بدون alt text",
+          "description": "يؤثر على accessibility وSEO",
+          "fix": "أضف alt=\"\" للصور الزخرفية، وalt=\"وصف واضح\" لصور المحتوى",
+          "autoFixable": false,
+          "references": [
+            "https://www.w3.org/WAI/tutorials/images/"
+          ]
+        },
+        {
+          "id": "FE-007",
+          "category": "frontend",
+          "severity": "high",
+          "title": "40 صفحة عامة بدون metadata",
+          "description": "بدون metadata: SEO ضعيف وصور المشاركة مفقودة",
+          "fix": "أضف export const metadata: Metadata لكل صفحة عامة",
+          "autoFixable": false
+        }
+      ],
+      "duration": 901,
+      "passed": 2,
+      "failed": 8
+    },
+    {
+      "module": "الخادم والـ API",
+      "category": "backend",
+      "score": 83,
+      "findings": [
+        {
+          "id": "BE-001",
+          "category": "backend",
+          "severity": "high",
+          "title": "42 من 45 POST/PUT/PATCH route بدون Zod validation",
+          "description": "Input غير مُتحقق منه يفتح باب لـ injection و crashes",
+          "fix": "أضف zod schema لكل POST/PUT/PATCH route",
+          "autoFixable": false,
+          "references": [
+            "https://zod.dev/"
+          ]
+        },
+        {
+          "id": "BE-003",
+          "category": "backend",
+          "severity": "medium",
+          "title": "27 API route بدون try/catch",
+          "description": "أخطاء unhandled قد تُظهر stack traces للمستخدم",
+          "fix": "أضف try/catch لكل API route مع NextResponse.json({error: ...}, {status: 500})",
+          "autoFixable": false
+        }
+      ],
+      "duration": 619,
+      "passed": 8,
+      "failed": 2
+    },
+    {
+      "module": "التخزين (Firestore)",
+      "category": "storage",
+      "score": 100,
+      "findings": [],
+      "duration": 1,
+      "passed": 10,
+      "failed": 0
+    },
+    {
+      "module": "الأداء (Lighthouse)",
+      "category": "performance",
+      "score": 100,
+      "findings": [
+        {
+          "id": "PERF-LH-UNAVAILABLE",
+          "category": "performance",
+          "severity": "info",
+          "title": "Lighthouse غير متاح في هذه البيئة",
+          "description": "تحقق من Lighthouse يدوياً أو في CI/CD",
+          "fix": "شغّل: npx lighthouse https://kalmeron-two.vercel.app --view",
+          "autoFixable": false
+        }
+      ],
+      "duration": 7720,
+      "passed": 10,
+      "failed": 0
+    },
+    {
+      "module": "SEO والتسويق",
+      "category": "seo",
+      "score": 95,
+      "findings": [
+        {
+          "id": "SEO-HREFLANG",
+          "category": "seo",
+          "severity": "medium",
+          "title": "hreflang مفقود (ar / en)",
+          "description": "بدون hreflang: Google لا تعرف أي نسخة للزائر العربي أم الإنجليزي",
+          "fix": "أضف alternates.languages في metadata: { ar: /, en: /en }",
+          "autoFixable": false,
+          "references": [
+            "https://developers.google.com/search/docs/specialty/international/localization"
+          ]
+        }
+      ],
+      "duration": 1727,
+      "passed": 9,
+      "failed": 1
+    },
+    {
+      "module": "وكلاء AI (16)",
+      "category": "ai-agents",
+      "score": 0,
+      "findings": [
+        {
+          "id": "AI-GENERAL-DOWN",
+          "category": "ai-agents",
+          "severity": "critical",
+          "title": "وكيل \"general\" لا يستجيب (404)",
+          "description": "API route /api/agents/general يُعطي 404",
+          "location": "app/api/agents/general/route.ts",
+          "fix": "تحقق من الملف وأضف stub response عند غياب GEMINI_API_KEY",
+          "autoFixable": false
+        },
+        {
+          "id": "AI-CFO-DOWN",
+          "category": "ai-agents",
+          "severity": "critical",
+          "title": "وكيل \"cfo\" لا يستجيب (404)",
+          "description": "API route /api/agents/cfo يُعطي 404",
+          "location": "app/api/agents/cfo/route.ts",
+          "fix": "تحقق من الملف وأضف stub response عند غياب GEMINI_API_KEY",
+          "autoFixable": false
+        },
+        {
+          "id": "AI-LEGAL-DOWN",
+          "category": "ai-agents",
+          "severity": "critical",
+          "title": "وكيل \"legal\" لا يستجيب (404)",
+          "description": "API route /api/agents/legal يُعطي 404",
+          "location": "app/api/agents/legal/route.ts",
+          "fix": "تحقق من الملف وأضف stub response عند غياب GEMINI_API_KEY",
+          "autoFixable": false
+        },
+        {
+          "id": "AI-MARKETING-DOWN",
+          "category": "ai-agents",
+          "severity": "critical",
+          "title": "وكيل \"marketing\" لا يستجيب (404)",
+          "description": "API route /api/agents/marketing يُعطي 404",
+          "location": "app/api/agents/marketing/route.ts",
+          "fix": "تحقق من الملف وأضف stub response عند غياب GEMINI_API_KEY",
+          "autoFixable": false
+        },
+        {
+          "id": "AI-SALES-DOWN",
+          "category": "ai-agents",
+          "severity": "critical",
+          "title": "وكيل \"sales\" لا يستجيب (404)",
+          "description": "API route /api/agents/sales يُعطي 404",
+          "location": "app/api/agents/sales/route.ts",
+          "fix": "تحقق من الملف وأضف stub response عند غياب GEMINI_API_KEY",
+          "autoFixable": false
+        },
+        {
+          "id": "AI-HR-DOWN",
+          "category": "ai-agents",
+          "severity": "critical",
+          "title": "وكيل \"hr\" لا يستجيب (404)",
+          "description": "API route /api/agents/hr يُعطي 404",
+          "location": "app/api/agents/hr/route.ts",
+          "fix": "تحقق من الملف وأضف stub response عند غياب GEMINI_API_KEY",
+          "autoFixable": false
+        },
+        {
+          "id": "AI-OPERATIONS-DOWN",
+          "category": "ai-agents",
+          "severity": "critical",
+          "title": "وكيل \"operations\" لا يستجيب (404)",
+          "description": "API route /api/agents/operations يُعطي 404",
+          "location": "app/api/agents/operations/route.ts",
+          "fix": "تحقق من الملف وأضف stub response عند غياب GEMINI_API_KEY",
+          "autoFixable": false
+        },
+        {
+          "id": "AI-PRODUCT-DOWN",
+          "category": "ai-agents",
+          "severity": "critical",
+          "title": "وكيل \"product\" لا يستجيب (404)",
+          "description": "API route /api/agents/product يُعطي 404",
+          "location": "app/api/agents/product/route.ts",
+          "fix": "تحقق من الملف وأضف stub response عند غياب GEMINI_API_KEY",
+          "autoFixable": false
+        },
+        {
+          "id": "AI-INVESTOR-DOWN",
+          "category": "ai-agents",
+          "severity": "critical",
+          "title": "وكيل \"investor\" لا يستجيب (404)",
+          "description": "API route /api/agents/investor يُعطي 404",
+          "location": "app/api/agents/investor/route.ts",
+          "fix": "تحقق من الملف وأضف stub response عند غياب GEMINI_API_KEY",
+          "autoFixable": false
+        },
+        {
+          "id": "AI-CUSTOMER_VOICE-DOWN",
+          "category": "ai-agents",
+          "severity": "critical",
+          "title": "وكيل \"customer-voice\" لا يستجيب (404)",
+          "description": "API route /api/agents/customer-voice يُعطي 404",
+          "location": "app/api/agents/customer-voice/route.ts",
+          "fix": "تحقق من الملف وأضف stub response عند غياب GEMINI_API_KEY",
+          "autoFixable": false
+        },
+        {
+          "id": "AI-IDEA_VALIDATOR-DOWN",
+          "category": "ai-agents",
+          "severity": "critical",
+          "title": "وكيل \"idea-validator\" لا يستجيب (404)",
+          "description": "API route /api/agents/idea-validator يُعطي 404",
+          "location": "app/api/agents/idea-validator/route.ts",
+          "fix": "تحقق من الملف وأضف stub response عند غياب GEMINI_API_KEY",
+          "autoFixable": false
+        },
+        {
+          "id": "AI-PLAN_BUILDER-DOWN",
+          "category": "ai-agents",
+          "severity": "critical",
+          "title": "وكيل \"plan-builder\" لا يستجيب (404)",
+          "description": "API route /api/agents/plan-builder يُعطي 404",
+          "location": "app/api/agents/plan-builder/route.ts",
+          "fix": "تحقق من الملف وأضف stub response عند غياب GEMINI_API_KEY",
+          "autoFixable": false
+        },
+        {
+          "id": "AI-MISTAKE_SHIELD-DOWN",
+          "category": "ai-agents",
+          "severity": "critical",
+          "title": "وكيل \"mistake-shield\" لا يستجيب (404)",
+          "description": "API route /api/agents/mistake-shield يُعطي 404",
+          "location": "app/api/agents/mistake-shield/route.ts",
+          "fix": "تحقق من الملف وأضف stub response عند غياب GEMINI_API_KEY",
+          "autoFixable": false
+        },
+        {
+          "id": "AI-SUCCESS_MUSEUM-DOWN",
+          "category": "ai-agents",
+          "severity": "critical",
+          "title": "وكيل \"success-museum\" لا يستجيب (404)",
+          "description": "API route /api/agents/success-museum يُعطي 404",
+          "location": "app/api/agents/success-museum/route.ts",
+          "fix": "تحقق من الملف وأضف stub response عند غياب GEMINI_API_KEY",
+          "autoFixable": false
+        },
+        {
+          "id": "AI-OPPORTUNITY_RADAR-DOWN",
+          "category": "ai-agents",
+          "severity": "critical",
+          "title": "وكيل \"opportunity-radar\" لا يستجيب (404)",
+          "description": "API route /api/agents/opportunity-radar يُعطي 404",
+          "location": "app/api/agents/opportunity-radar/route.ts",
+          "fix": "تحقق من الملف وأضف stub response عند غياب GEMINI_API_KEY",
+          "autoFixable": false
+        },
+        {
+          "id": "AI-REAL_ESTATE-DOWN",
+          "category": "ai-agents",
+          "severity": "critical",
+          "title": "وكيل \"real-estate\" لا يستجيب (404)",
+          "description": "API route /api/agents/real-estate يُعطي 404",
+          "location": "app/api/agents/real-estate/route.ts",
+          "fix": "تحقق من الملف وأضف stub response عند غياب GEMINI_API_KEY",
+          "autoFixable": false
+        }
+      ],
+      "duration": 2239,
+      "passed": 0,
+      "failed": 16
+    },
+    {
+      "module": "الأعمال والـ UX",
+      "category": "business",
+      "score": 42,
+      "findings": [
+        {
+          "id": "BIZ-PAGE-FAQ",
+          "category": "business",
+          "severity": "high",
+          "title": "صفحة \"الأسئلة الشائعة\" غير موجودة (404)",
+          "description": "/faq تُعطي 404 — تؤثر على ثقة المستثمرين والمستخدمين",
+          "fix": "أنشئ app/faq/page.tsx بمحتوى مناسب",
+          "autoFixable": false
+        },
+        {
+          "id": "BIZ-PAGE-SECURITY",
+          "category": "business",
+          "severity": "medium",
+          "title": "صفحة \"صفحة الأمان\" غير موجودة (404)",
+          "description": "/security تُعطي 404 — تؤثر على ثقة المستثمرين والمستخدمين",
+          "fix": "أنشئ app/security/page.tsx بمحتوى مناسب",
+          "autoFixable": false
+        },
+        {
+          "id": "BIZ-PAGE-COOKIES",
+          "category": "business",
+          "severity": "high",
+          "title": "صفحة \"سياسة Cookies\" غير موجودة (404)",
+          "description": "/cookies تُعطي 404 — تؤثر على ثقة المستثمرين والمستخدمين",
+          "fix": "أنشئ app/cookies/page.tsx بمحتوى مناسب",
+          "autoFixable": false
+        },
+        {
+          "id": "BIZ-PAGE-AFFILIATE-TERMS",
+          "category": "business",
+          "severity": "high",
+          "title": "صفحة \"شروط الشركاء\" غير موجودة (404)",
+          "description": "/affiliate-terms تُعطي 404 — تؤثر على ثقة المستثمرين والمستخدمين",
+          "fix": "أنشئ app/affiliate-terms/page.tsx بمحتوى مناسب",
+          "autoFixable": false
+        },
+        {
+          "id": "BIZ-CONSISTENCY-001",
+          "category": "business",
+          "severity": "high",
+          "title": "تناقض: \"16 وكيل\" و\"50+ وكيل\" في نفس الموقع",
+          "description": "المستخدمون والمستثمرون سيلاحظون هذا التناقض",
+          "fix": "وحّد العدد — استخدم \"16+\" في كل مكان أو حدّد عدداً دقيقاً",
+          "autoFixable": false
+        },
+        {
+          "id": "BIZ-EMAIL-001",
+          "category": "business",
+          "severity": "medium",
+          "title": "8 ملف يستخدم kalmeron.com بدلاً من kalmeron.ai",
+          "description": "تناقض في الدومين يربك المستخدمين والمستثمرين",
+          "fix": "استبدل كل kalmeron.com بـ kalmeron.ai",
+          "autoFixable": true
+        }
+      ],
+      "duration": 9941,
+      "passed": 4,
+      "failed": 6
+    }
+  ],
+  "criticalCount": 17,
+  "autoFixCount": 7,
+  "manualFixCount": 41,
+  "topPriorities": [
+    {
+      "id": "SEC-XSS-app/layout.tsx",
+      "category": "security",
+      "severity": "high",
+      "title": "dangerouslySetInnerHTML بدون sanitization",
+      "description": "استخدام dangerouslySetInnerHTML بدون تنظيف المحتوى — خطر XSS",
+      "location": "app/layout.tsx",
+      "evidence": "app/layout.tsx:133:          dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}",
+      "fix": "استخدم DOMPurify.sanitize() أو xss(...) قبل تمرير المحتوى",
+      "autoFixable": false,
+      "references": [
+        "https://owasp.org/www-community/attacks/xss/"
+      ]
+    },
+    {
+      "id": "SEC-XSS-app/use-cases/[slug]/page.tsx",
+      "category": "security",
+      "severity": "high",
+      "title": "dangerouslySetInnerHTML بدون sanitization",
+      "description": "استخدام dangerouslySetInnerHTML بدون تنظيف المحتوى — خطر XSS",
+      "location": "app/use-cases/[slug]/page.tsx",
+      "evidence": "app/use-cases/[slug]/page.tsx:80:        dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}",
+      "fix": "استخدم DOMPurify.sanitize() أو xss(...) قبل تمرير المحتوى",
+      "autoFixable": false,
+      "references": [
+        "https://owasp.org/www-community/attacks/xss/"
+      ]
+    },
+    {
+      "id": "SEC-XSS-app/templates/[slug]/page.tsx",
+      "category": "security",
+      "severity": "high",
+      "title": "dangerouslySetInnerHTML بدون sanitization",
+      "description": "استخدام dangerouslySetInnerHTML بدون تنظيف المحتوى — خطر XSS",
+      "location": "app/templates/[slug]/page.tsx",
+      "evidence": "app/templates/[slug]/page.tsx:71:        dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}",
+      "fix": "استخدم DOMPurify.sanitize() أو xss(...) قبل تمرير المحتوى",
+      "autoFixable": false,
+      "references": [
+        "https://owasp.org/www-community/attacks/xss/"
+      ]
+    },
+    {
+      "id": "SEC-XSS-app/glossary/[term]/page.tsx",
+      "category": "security",
+      "severity": "high",
+      "title": "dangerouslySetInnerHTML بدون sanitization",
+      "description": "استخدام dangerouslySetInnerHTML بدون تنظيف المحتوى — خطر XSS",
+      "location": "app/glossary/[term]/page.tsx",
+      "evidence": "app/glossary/[term]/page.tsx:60:        dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}",
+      "fix": "استخدم DOMPurify.sanitize() أو xss(...) قبل تمرير المحتوى",
+      "autoFixable": false,
+      "references": [
+        "https://owasp.org/www-community/attacks/xss/"
+      ]
+    },
+    {
+      "id": "SEC-XSS-app/cities/[city]/page.tsx",
+      "category": "security",
+      "severity": "high",
+      "title": "dangerouslySetInnerHTML بدون sanitization",
+      "description": "استخدام dangerouslySetInnerHTML بدون تنظيف المحتوى — خطر XSS",
+      "location": "app/cities/[city]/page.tsx",
+      "evidence": "app/cities/[city]/page.tsx:65:        dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}",
+      "fix": "استخدم DOMPurify.sanitize() أو xss(...) قبل تمرير المحتوى",
+      "autoFixable": false,
+      "references": [
+        "https://owasp.org/www-community/attacks/xss/"
+      ]
+    },
+    {
+      "id": "SEC-XSS-app/blog/[slug]/page.tsx",
+      "category": "security",
+      "severity": "high",
+      "title": "dangerouslySetInnerHTML بدون sanitization",
+      "description": "استخدام dangerouslySetInnerHTML بدون تنظيف المحتوى — خطر XSS",
+      "location": "app/blog/[slug]/page.tsx",
+      "evidence": "app/blog/[slug]/page.tsx:58:            <span dangerouslySetInnerHTML={{ __html: escapeHtml(item).replace(/\\*\\*(.+?)\\*\\*/g, \"<strong>$1</strong>\") }} />",
+      "fix": "استخدم DOMPurify.sanitize() أو xss(...) قبل تمرير المحتوى",
+      "autoFixable": false,
+      "references": [
+        "https://owasp.org/www-community/attacks/xss/"
+      ]
+    },
+    {
+      "id": "SEC-XSS-app/blog/[slug]/page.tsx",
+      "category": "security",
+      "severity": "high",
+      "title": "dangerouslySetInnerHTML بدون sanitization",
+      "description": "استخدام dangerouslySetInnerHTML بدون تنظيف المحتوى — خطر XSS",
+      "location": "app/blog/[slug]/page.tsx",
+      "evidence": "app/blog/[slug]/page.tsx:95:          dangerouslySetInnerHTML={{ __html: escapeHtml(line).replace(/\\*\\*(.+?)\\*\\*/g, \"<strong class='text-white'>$1</strong>\") }}",
+      "fix": "استخدم DOMPurify.sanitize() أو xss(...) قبل تمرير المحتوى",
+      "autoFixable": false,
+      "references": [
+        "https://owasp.org/www-community/attacks/xss/"
+      ]
+    },
+    {
+      "id": "SEC-XSS-app/blog/[slug]/page.tsx",
+      "category": "security",
+      "severity": "high",
+      "title": "dangerouslySetInnerHTML بدون sanitization",
+      "description": "استخدام dangerouslySetInnerHTML بدون تنظيف المحتوى — خطر XSS",
+      "location": "app/blog/[slug]/page.tsx",
+      "evidence": "app/blog/[slug]/page.tsx:126:      <script type=\"application/ld+json\" dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }} />",
+      "fix": "استخدم DOMPurify.sanitize() أو xss(...) قبل تمرير المحتوى",
+      "autoFixable": false,
+      "references": [
+        "https://owasp.org/www-community/attacks/xss/"
+      ]
+    },
+    {
+      "id": "SEC-XSS-app/ai-experts/[slug]/page.tsx",
+      "category": "security",
+      "severity": "high",
+      "title": "dangerouslySetInnerHTML بدون sanitization",
+      "description": "استخدام dangerouslySetInnerHTML بدون تنظيف المحتوى — خطر XSS",
+      "location": "app/ai-experts/[slug]/page.tsx",
+      "evidence": "app/ai-experts/[slug]/page.tsx:72:        dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}",
+      "fix": "استخدم DOMPurify.sanitize() أو xss(...) قبل تمرير المحتوى",
+      "autoFixable": false,
+      "references": [
+        "https://owasp.org/www-community/attacks/xss/"
+      ]
+    },
+    {
+      "id": "AUTH-008",
+      "category": "authentication",
+      "severity": "high",
+      "title": "38 من 94 API route بدون تحقق هوية واضح",
+      "description": "كثير من API routes لا تستدعي verifyIdToken أو withAuth",
+      "fix": "أضف getAuthenticatedUser() أو withAuth() لكل route محمي",
+      "autoFixable": false
+    }
+  ],
+  "summary": "⚠️ 17 مشكلة حرجة — النقاط: 64/100"
+}
