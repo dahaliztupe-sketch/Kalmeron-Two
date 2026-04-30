@@ -4,7 +4,7 @@
  *
  * Service: egypt-calc
  */
-/* eslint-disable */
+ 
 
 export interface paths {
     "/health": {

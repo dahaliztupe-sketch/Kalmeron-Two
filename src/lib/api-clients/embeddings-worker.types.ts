@@ -4,7 +4,7 @@
  *
  * Service: embeddings-worker
  */
-/* eslint-disable */
+ 
 
 export interface paths {
     "/health": {

@@ -63,7 +63,7 @@ export function formatRunwayEmail(p: RunwayEmailPayload): {
     `وصل رصيدك النقدي إلى مستوى يكفي لـ ${monthsLabel} فقط — تحت العتبة التي حدّدتها (${p.inputs.thresholdMonths} شهر).`,
     "",
     "إليك ٣ خطوات مقترحة:",
-    ...recs.map((r, i) => `${i + 1}. ${r.title} — ${r.body}`),
+    ...recs.map((r, i) => `${i + 1}. ${r.title} — ${r.rationale}`),
     "",
     "افتح لوحة كلميرون لتعديل الأرقام أو إسكات التنبيه:",
     "https://kalmeron.app/cash-runway",
@@ -78,7 +78,7 @@ export function formatRunwayEmail(p: RunwayEmailPayload): {
     '<ol style="line-height:1.8;padding-right:20px">',
     ...recs.map(
       (r) =>
-        `<li style="margin-bottom:8px"><strong>${r.title}</strong><br/><span style="color:#4B5563">${r.body}</span></li>`,
+        `<li style="margin-bottom:8px"><strong>${r.title}</strong><br/><span style="color:#4B5563">${r.rationale}</span></li>`,
     ),
     "</ol>",
     '<div style="margin:24px 0">',

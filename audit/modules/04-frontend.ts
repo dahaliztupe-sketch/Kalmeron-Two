@@ -134,7 +134,21 @@ export async function auditFrontend(): Promise<AuditFinding[]> {
         !content.includes('export const metadata') &&
         !content.includes('export async function generateMetadata')
       ) {
-        missingMeta++;
+        // A page may legitimately inherit metadata from a sibling layout.tsx
+        // (Next.js App Router merges metadata up the segment tree). Skip the
+        // finding when the same directory's layout.tsx defines metadata.
+        const siblingLayout = page.replace(/page\.tsx$/, 'layout.tsx');
+        let inheritsFromLayout = false;
+        if (existsSync(siblingLayout)) {
+          const layoutContent = readFileSync(siblingLayout, 'utf8');
+          inheritsFromLayout =
+            layoutContent.includes('export const metadata') ||
+            layoutContent.includes('export async function generateMetadata') ||
+            layoutContent.includes('export function generateMetadata');
+        }
+        if (!inheritsFromLayout) {
+          missingMeta++;
+        }
       }
     }
   }

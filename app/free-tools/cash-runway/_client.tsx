@@ -202,7 +202,7 @@ export default function PublicRunwayPage() {
                   <div>
                     <div className="font-bold text-white text-sm">{r.title}</div>
                     <div className="text-sm text-white/70 leading-relaxed mt-0.5">
-                      {r.body}
+                      {r.rationale}
                     </div>
                   </div>
                 </li>

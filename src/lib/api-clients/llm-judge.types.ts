@@ -4,7 +4,7 @@
  *
  * Service: llm-judge
  */
-/* eslint-disable */
+ 
 
 export interface paths {
     "/health": {
