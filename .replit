@@ -2,6 +2,7 @@ modules = ["nodejs-20", "python-3.12", "web"]
 [agent]
 expertMode = true
 stack = "GAMESTACK_JS"
+integrations = ["javascript_gemini_ai_integrations:2.0.0"]
 
 [nix]
 channel = "stable-25_05"

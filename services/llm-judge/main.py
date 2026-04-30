@@ -3,7 +3,9 @@ LLM-as-judge sidecar — evaluates an {question, answer} pair against a
 named rubric and returns a 0..1 score plus per-criterion breakdown.
 
 Modes:
-  • If GEMINI_API_KEY is set → calls `gemini-2.5-flash-lite` (cheap, fast).
+  • If AI_INTEGRATIONS_GEMINI_BASE_URL + AI_INTEGRATIONS_GEMINI_API_KEY are set
+    (Replit AI Integrations) → calls the proxied Gemini endpoint.
+  • Else if GEMINI_API_KEY is set → calls Google AI Studio directly.
   • Otherwise → falls back to deterministic stub scoring so dev/CI still work.
 
 Endpoints:
@@ -25,6 +27,7 @@ import os
 import re
 from typing import Any
 
+import httpx
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
@@ -35,25 +38,59 @@ logging.basicConfig(level=logging.INFO,
                     format="%(asctime)s [%(levelname)s] %(message)s")
 log = logging.getLogger("llm-judge")
 
-GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "").strip()
-JUDGE_MODEL = os.environ.get("JUDGE_MODEL", "gemini-2.5-flash-lite").strip()
-MODE = "real" if GEMINI_API_KEY else "stub"
+# ──────────────── Provider config ────────────────
+# Prefer Replit AI Integrations proxy when present (no own API key needed).
+_AI_BASE = os.environ.get("AI_INTEGRATIONS_GEMINI_BASE_URL", "").strip().rstrip("/")
+_AI_KEY = os.environ.get("AI_INTEGRATIONS_GEMINI_API_KEY", "").strip()
+_GEMINI_KEY = os.environ.get("GEMINI_API_KEY", "").strip()
 
-_gemini = None
-if MODE == "real":
-    try:
-        import google.generativeai as genai
-        genai.configure(api_key=GEMINI_API_KEY)
-        _gemini = genai.GenerativeModel(JUDGE_MODEL)
-        log.info("LLM judge: real mode, model=%s", JUDGE_MODEL)
-    except Exception as e:  # noqa: BLE001
-        log.warning("LLM judge: failed to init Gemini (%s) — falling back to stub", e)
-        MODE = "stub"
-        _gemini = None
+# Default model: gemini-2.5-flash (cheap+fast, supported by both proxy and AI Studio).
+JUDGE_MODEL = os.environ.get("JUDGE_MODEL", "gemini-2.5-flash").strip()
+
+# Replit's AI Integrations proxy supports a fixed list of Gemini models.
+# If the configured model isn't in the list, transparently map it to the
+# nearest supported equivalent for the proxy provider only.
+_AI_INTEGRATIONS_MODEL_ALIASES = {
+    "gemini-2.5-flash-lite": "gemini-2.5-flash",
+    "gemini-1.5-flash": "gemini-2.5-flash",
+    "gemini-1.5-pro": "gemini-2.5-pro",
+}
+
+# Pick provider:
+#   "ai_integrations" → POST {base}/models/{model}:generateContent  (no v1beta path)
+#   "google_ai"       → POST https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent
+#   "stub"            → no LLM, deterministic fallback
+if _AI_BASE and _AI_KEY:
+    PROVIDER = "ai_integrations"
+    _resolved = _AI_INTEGRATIONS_MODEL_ALIASES.get(JUDGE_MODEL, JUDGE_MODEL)
+    if _resolved != JUDGE_MODEL:
+        log.info("LLM judge: remapped unsupported model %s → %s for AI Integrations proxy",
+                 JUDGE_MODEL, _resolved)
+        JUDGE_MODEL = _resolved
+    _ENDPOINT = f"{_AI_BASE}/models/{JUDGE_MODEL}:generateContent"
+    _API_KEY = _AI_KEY
+    MODE = "real"
+    log.info("LLM judge: real mode via Replit AI Integrations, model=%s", JUDGE_MODEL)
+elif _GEMINI_KEY:
+    PROVIDER = "google_ai"
+    _ENDPOINT = (
+        f"https://generativelanguage.googleapis.com/v1beta/models/"
+        f"{JUDGE_MODEL}:generateContent"
+    )
+    _API_KEY = _GEMINI_KEY
+    MODE = "real"
+    log.info("LLM judge: real mode via Google AI Studio, model=%s", JUDGE_MODEL)
 else:
-    log.info("LLM judge: stub mode (no GEMINI_API_KEY)")
+    PROVIDER = "stub"
+    _ENDPOINT = ""
+    _API_KEY = ""
+    MODE = "stub"
+    log.info("LLM judge: stub mode (no GEMINI provider configured)")
 
-app = FastAPI(title="Kalmeron LLM Judge", version="1.0.0")
+_TIMEOUT = float(os.environ.get("JUDGE_TIMEOUT_S", "20"))
+_HTTP = httpx.Client(timeout=_TIMEOUT)
+
+app = FastAPI(title="Kalmeron LLM Judge", version="1.1.0")
 
 # CORS: قابل للتكوين. الافتراضي محصور بـ main app في dev.
 _origins = [o.strip() for o in os.getenv("LLM_JUDGE_CORS", "http://localhost:5000").split(",") if o.strip()]
@@ -93,6 +130,31 @@ class JudgeBatchOut(BaseModel):
 JSON_BLOCK = re.compile(r"\{[\s\S]*\}")
 
 
+def _gemini_call(prompt: str) -> str:
+    """Send a single-turn prompt to the configured Gemini endpoint and return the text."""
+    # Disable "thinking" so the small output budget isn't consumed by hidden
+    # reasoning tokens — the judge only needs a short structured JSON reply.
+    payload = {
+        "contents": [{"role": "user", "parts": [{"text": prompt}]}],
+        "generationConfig": {
+            "temperature": 0.0,
+            "maxOutputTokens": 1024,
+            "responseMimeType": "application/json",
+            "thinkingConfig": {"thinkingBudget": 0},
+        },
+    }
+    headers = {"Content-Type": "application/json", "x-goog-api-key": _API_KEY}
+    r = _HTTP.post(_ENDPOINT, json=payload, headers=headers)
+    r.raise_for_status()
+    data = r.json()
+    parts = (
+        (data.get("candidates") or [{}])[0]
+        .get("content", {})
+        .get("parts", [])
+    )
+    return "".join(p.get("text", "") for p in parts).strip()
+
+
 def _real_judge(question: str, answer: str, rubric_name: str) -> dict[str, Any]:
     rubric = get_rubric(rubric_name)
     criteria_list = ", ".join(c[0] for c in rubric.criteria)
@@ -102,15 +164,7 @@ def _real_judge(question: str, answer: str, rubric_name: str) -> dict[str, Any]:
         answer=answer,
     )
     try:
-        resp = _gemini.generate_content(  # type: ignore[union-attr]
-            prompt,
-            generation_config={
-                "temperature": 0.0,
-                "max_output_tokens": 400,
-                "response_mime_type": "application/json",
-            },
-        )
-        text = (resp.text or "").strip()
+        text = _gemini_call(prompt)
     except Exception as e:  # noqa: BLE001
         log.warning("Gemini call failed (%s) — using stub", e)
         return rubric.stub_score(question, answer)
@@ -142,7 +196,14 @@ def _real_judge(question: str, answer: str, rubric_name: str) -> dict[str, Any]:
 
 @app.get("/health")
 def health() -> dict:
-    return {"ok": True, "service": "llm-judge", "version": app.version, "mode": MODE, "model": JUDGE_MODEL}
+    return {
+        "ok": True,
+        "service": "llm-judge",
+        "version": app.version,
+        "mode": MODE,
+        "provider": PROVIDER,
+        "model": JUDGE_MODEL,
+    }
 
 
 @app.get("/rubrics")

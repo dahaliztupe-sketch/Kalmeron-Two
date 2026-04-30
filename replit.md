@@ -880,7 +880,9 @@ npm run diag:gaps    # فجوات فقط
 - **`services/llm-judge/` — تقييم الإجابات بـ LLM-as-judge (FastAPI · port 8080).**
   - `judges.py`: 4 rubrics — `factual_accuracy`, `egyptian_voice` (مصري vs فصحى vs خليجي vs مغربي)، `safety` (rejection of unsafe content)، `completeness`.
   - `main.py` `/judge` endpoint: يأخذ `{question, answer, rubric, context?}` ويعيد `{score 0-1, criteria_scores, reasoning, mode}`.
-  - يستخدم Gemini Flash-Lite عبر `google-generativeai` لو متوفّر `GEMINI_API_KEY`، أو يقع back على scorer حتميّ مبسَّط (يعتمد على length + hedge words penalties) عند غياب المفتاح — بحيث الـ CI eval pipeline يشتغل دايماً.
+  - **3 مزوّدات بترتيب أولويّة:** (1) `AI_INTEGRATIONS_GEMINI_BASE_URL` + `AI_INTEGRATIONS_GEMINI_API_KEY` (Replit AI Integrations — proxy محلّي على `localhost:1106/modelfarm/gemini`، بدون مفتاح خاصّ، الفواتير على credits)، (2) `GEMINI_API_KEY` (Google AI Studio مباشرة)، (3) stub حتميّ. الاستدعاء عبر `httpx` REST مباشرةً (وليس `google-generativeai` SDK) لأنّ proxy Replit يستخدم بادئة مسار مخصّصة لا يدعمها الـ SDK.
+  - **خَريطة موديلات للـ proxy:** `gemini-2.5-flash-lite` يُترجم تلقائيًّا إلى `gemini-2.5-flash` لأنّ proxy AI Integrations يدعم قائمة موديلات محدودة فقط (`gemini-2.5-flash`, `gemini-2.5-pro`, `gemini-3.1-pro-preview`, إلخ — وليس أي موديل بنهاية `-lite`).
+  - **تعطيل thinking:** `thinkingConfig.thinkingBudget = 0` لأنّ Judge يحتاج JSON قصير فقط، فلا يستهلك hidden reasoning tokens من ميزانية الإخراج.
   - `src/lib/eval/llm-judge-client.ts`: نفس النمط (Zod + timeout + no-throw).
 
 - **`services/embeddings-worker/` — embeddings محلّيّة متعدّدة اللغات (FastAPI · port 8099).**
