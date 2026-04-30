@@ -1,4 +1,4 @@
-modules = ["nodejs-20", "web", "python-3.12"]
+modules = ["nodejs-20", "python-3.12", "web"]
 [agent]
 expertMode = true
 stack = "GAMESTACK_JS"

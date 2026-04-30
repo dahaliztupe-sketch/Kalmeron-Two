@@ -1,0 +1,46 @@
+Agent
+إستخدم جميع السكيلز التي أصفتها لك بكفاءة و أخبرني خطة عملك الشاملة
+
+19 minutes ago
+خطة العمل الشاملة — Kalmeron Two
+أهلاً بك. راجعتُ حالة المشروع الحاليّة (آخر تقرير audit، تقييم 25 أبريل، تحليل الفجوات، USER_INTERVENTION_REQUIRED، وحالة الـ workflows والـ sandbox)، وأدناه خطّة منظَّمة تستفيد من كل الـ skills المتاحة بكفاءة، مقسَّمة حسب الأولويّة والمسار.
+
+📍 ملخّص الوضع الحالي
+التقني: 9.0/10 — صفر أخطاء TypeScript/ESLint، البناء ناجح، 4 خدمات Python تعمل.
+الفجوة الأكبر: GTM = 5/10 و نموذج العمل = 6.5/10 (تسعير غير ملائم للسوق المصري).
+آخر audit:fast: 66/100 (Grade C). الـ Frontend module = 39 و Benchmarks = 53 يحتاجان عمل ميزات حقيقي.
+Sandbox الـ mockup يعمل على port 23636 لكن platform لا يكتشفه — قابل للإصلاح.
+12 توصية مفتوحة من تحليل الفجوات (#1 Cash Runway Alarm حتى #12).
+🎯 الخطّة على 4 مسارات متوازية
+المسار A — إصلاحات سريعة (يوم واحد) ⚡
+البند	السكيل المستخدَم	الأثر
+تشغيل الـ workflows الناقصة (sandbox, audit-fast, lint, test, typecheck)	workflows	يفعّل بوّابات الجودة
+رفع الـ audit score من 66 → 75+ بإصلاح false positives في وحدة 01-code-quality.ts (الاعتراف بـ safeJsonLd)	validation + diagnostics	+9 نقاط
+تشغيل فحص أمني شامل وتوثيق نتائج خط الأساس	security_scan	باسلاين رسمي
+تحديث replit.md بسجلّ الجلسة الحالي	replit_environment	ذاكرة طويلة المدى
+المسار B — ميزات منتج عالية الأثر (1–3 أسابيع) 🏗️
+هذه أعلى ROI وفقاً لتحليل الفجوات:
+
+الميزة	السكيل	الفائدة
+#1 Cash Runway Alarm — تنبيه يومي عند نزول الـ runway تحت X شهر مع توصيات استباقيّة	frontend-design + vercel-react-best-practices + cfo-advisor	يعالج 82% من سبب الفشل
+#3 Contract Reviewer Agent — رفع PDF → تحليل → استخراج البنود الخطرة	يستخدم services/pdf-worker الموجود + gemini-api + contract-and-proposal-writer	فجوة كبيرة لا منافس محلّي
+#6 Customer Discovery Suite — Mom Test methodology، استبيانات + تحليل ردود AI	ux-researcher-designer + product-discovery + experiment-designer	أهم فجوة في التسويق
+#7 Brand Identity Builder — Wizard يولّد اسم/نبرة/Tagline/Brand Book PDF	branding-generator + media-generation + frontend-design	يوسّع المكتبة الإبداعيّة
+#4 Founder Agreement Wizard — 7 خطوات تفاعليّة (Vesting/IP/Exit/Disputes)	legal-contract + shadcn-ui	يحلّ 40% من فشل الفِرَق
+المسار C — التسويق و GTM (المحور الأضعف) 📢
+يستفيد من حزمة سكيلز ضخمة لم تُستخدم بعد:
+
+المهمّة	السكيل
+تدقيق SEO شامل وخطّة محتوى	seo-audit + audit-website + geo
+توليد صفحات هبوط محسَّنة للتحويل (variants A/B)	landing-page-generator + mockup-sandbox + design-exploration
+تحليل المنافسين العرب (Tasheel، Innovest، …)	competitive-teardown + competitive-intel
+بناء Free Tools للجذب (Tax Calc العام، Runway Calc)	free-tool-strategy
+توليد محتوى تسويقي (Twitter, LinkedIn, blogs)	content-machine + ad-creative
+Pitch deck + Investor One-Pager محدَّث 2026	board-deck-builder + ceo-advisor + cfo-advisor
+المسار D — الجودة والامتثال والنشر 🛡️
+البند	السكيل
+تحديث Threat Model + DPIA للميزات الجديدة	threat_modeling + security_scan
+Lighthouse + Web Vitals + accessibility deep audit	frontend-design-review + web-design-guidelines
+تجهيز ملف .replit للنشر (يحتاج تدخّلك أنت — لا أملك صلاحيّة تعديله)	deployment
+توثيق RUNBOOK للنشر على Replit Autoscale أو Vercel	deployment + documentation
+إعداد E2E tests منظَّمة لرحلات المستخدم الكاملة	validation + Playwright
