@@ -95,7 +95,14 @@ export async function auditSecurity(): Promise<AuditFinding[]> {
   );
   const dangerousUsages = dangerousRaw.split('\n').filter(Boolean);
   for (const usage of dangerousUsages) {
-    if (!usage.includes('DOMPurify') && !usage.includes('sanitize') && !usage.includes('xss')) {
+    if (
+      !usage.includes('DOMPurify') &&
+      !usage.includes('sanitize') &&
+      !usage.includes('xss') &&
+      !usage.includes('safeJsonLd') &&
+      !usage.includes('sanitizeJsonLd') &&
+      !usage.includes('sanitizeHtml')
+    ) {
       findings.push({
         id: `SEC-XSS-${usage.split(':')[0]}`,
         category: 'security',

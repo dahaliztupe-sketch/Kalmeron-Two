@@ -233,11 +233,11 @@ function useCountUp(target: number, duration: number, isInView: boolean) {
 function TrustMarquee() {
   return (
     <section className="px-4 py-6 overflow-hidden">
-      <p className="text-center text-xs uppercase tracking-[0.3em] text-neutral-600 mb-5">موثوق به من قِبل رواد الأعمال في مصر والمنطقة</p>
+      <p className="text-center text-xs uppercase tracking-[0.3em] text-neutral-400 mb-5">موثوق به من قِبل رواد الأعمال في مصر والمنطقة</p>
       <div className="relative max-w-6xl mx-auto overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_15%,black_85%,transparent)]">
-        <div className="marquee flex w-max gap-10">
+        <div className="marquee flex w-max gap-10" aria-hidden="true">
           {[...TRUST_LOGOS, ...TRUST_LOGOS].map((name, i) => (
-            <span key={i} className="font-display font-bold text-base md:text-lg text-neutral-600 hover:text-neutral-300 transition-colors whitespace-nowrap">
+            <span key={i} className="font-display font-bold text-base md:text-lg text-neutral-400 hover:text-white transition-colors whitespace-nowrap">
               {name}
             </span>
           ))}
@@ -356,7 +356,7 @@ function TrendingToolsSection() {
 
               {/* Bottom: time + arrow */}
               <div className="flex items-center justify-between mt-auto">
-                <div className="flex items-center gap-1 text-[10px] text-neutral-500">
+                <div className="flex items-center gap-1 text-[10px] text-neutral-300">
                   <Clock className="w-3 h-3 shrink-0" />
                   {tool.time}
                 </div>
@@ -369,7 +369,7 @@ function TrendingToolsSection() {
         </div>
 
         {/* Mobile scroll hint */}
-        <p className="md:hidden text-center text-[11px] text-neutral-600 mt-3">← اسحب للمزيد</p>
+        <p className="md:hidden text-center text-[11px] text-neutral-400 mt-3">← اسحب للمزيد</p>
       </div>
     </section>
   );
@@ -416,7 +416,7 @@ function DepartmentsSection() {
                   </div>
                   <div>
                     <div className="font-bold text-white text-base">{d.title}</div>
-                    <div className="text-xs text-neutral-500 mb-2">{d.subtitle}</div>
+                    <div className="text-xs text-neutral-300 mb-2">{d.subtitle}</div>
                     <p className="text-sm text-neutral-300 leading-relaxed">{d.desc}</p>
                   </div>
                   <div className="flex flex-col gap-1.5 mt-1">
@@ -435,7 +435,7 @@ function DepartmentsSection() {
               );
             })}
           </div>
-          <p className="text-center text-[11px] text-neutral-600 mt-3">← اسحب للمزيد</p>
+          <p className="text-center text-[11px] text-neutral-400 mt-3">← اسحب للمزيد</p>
         </div>
 
         {/* ── Desktop: interactive tab layout ── */}
@@ -452,7 +452,7 @@ function DepartmentsSection() {
                   </div>
                   <div className="flex-1 text-right">
                     <div className={`font-bold text-sm ${isActive ? "text-white" : "text-neutral-200"}`}>{d.title}</div>
-                    <div className="text-xs text-neutral-500">{d.subtitle}</div>
+                    <div className="text-xs text-neutral-300">{d.subtitle}</div>
                   </div>
                   {isActive && <ChevronRight className="w-4 h-4 text-neutral-400 shrink-0 rotate-180" />}
                 </button>
@@ -479,7 +479,7 @@ function DepartmentsSection() {
                   ))}
                 </div>
                 <div className="rounded-2xl bg-black/30 border border-white/10 p-4 mb-5">
-                  <p className="text-xs text-neutral-500 mb-2 font-medium">مثال حقيقي</p>
+                  <p className="text-xs text-neutral-300 mb-2 font-medium">مثال حقيقي</p>
                   <p className="text-sm text-neutral-200 font-medium leading-relaxed" dir="rtl">{DEPARTMENTS[active].demo}</p>
                 </div>
                 <Link href="/auth/signup" className="inline-flex items-center gap-2 btn-primary px-5 py-2.5 rounded-xl text-sm font-bold">
@@ -557,7 +557,7 @@ function LiveDemoSection() {
               <div className="w-2.5 h-2.5 rounded-full bg-emerald-500/60" />
             </div>
             <div className="flex-1 text-center min-w-0">
-              <span className="text-[11px] text-neutral-500 truncate block">kalmeron.app/chat</span>
+              <span className="text-[11px] text-neutral-300 truncate block">kalmeron.app/chat</span>
             </div>
             <div className="flex items-center gap-1.5 text-[11px] text-emerald-400 shrink-0">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" /> مباشر
@@ -580,7 +580,7 @@ function LiveDemoSection() {
                 <Icon className="w-4 h-4 text-white" />
               </div>
               <div className="min-w-0 max-w-[85%] bg-white/[0.04] border border-white/10 rounded-2xl rounded-bl-md px-3 sm:px-4 py-4">
-                <div className="text-xs text-neutral-500 mb-2 font-medium">🤖 {conv.agent}</div>
+                <div className="text-xs text-neutral-300 mb-2 font-medium">🤖 {conv.agent}</div>
                 <div className="text-sm text-neutral-100 leading-relaxed whitespace-pre-line break-words">
                   {displayedText}
                   {isTyping && (
@@ -598,7 +598,7 @@ function LiveDemoSection() {
           {/* Input bar */}
           <div className="p-3 sm:p-4 border-t border-white/[0.06] bg-white/[0.02]">
             <div className="flex items-center gap-3 bg-white/5 border border-white/10 rounded-2xl px-4 py-3">
-              <span className="text-neutral-500 text-sm flex-1 text-right">اسأل كلميرون أي شيء…</span>
+              <span className="text-neutral-300 text-sm flex-1 text-right">اسأل كلميرون أي شيء…</span>
               <Link href="/auth/signup" className="btn-primary text-xs px-4 py-2 rounded-xl font-bold flex items-center gap-1.5 shrink-0">
                 ابدأ الآن <ArrowLeft className="w-3.5 h-3.5" />
               </Link>
@@ -650,15 +650,15 @@ function ComparisonSection() {
               <div className="text-sm text-neutral-200 font-medium mb-3">{row.feature}</div>
               <div className="grid grid-cols-3 gap-2 text-center">
                 <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] py-2.5 px-2 flex flex-col items-center gap-1">
-                  <span className="text-[10px] text-neutral-500">كلميرون</span>
+                  <span className="text-[10px] text-neutral-300">كلميرون</span>
                   <ComparisonCell value={row.kalmeron} kalmeron />
                 </div>
                 <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] py-2.5 px-2 flex flex-col items-center gap-1">
-                  <span className="text-[10px] text-neutral-500">مستشارون</span>
+                  <span className="text-[10px] text-neutral-300">مستشارون</span>
                   <ComparisonCell value={row.consultant} />
                 </div>
                 <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] py-2.5 px-2 flex flex-col items-center gap-1">
-                  <span className="text-[10px] text-neutral-500">أدوات</span>
+                  <span className="text-[10px] text-neutral-300">أدوات</span>
                   <ComparisonCell value={row.tools} />
                 </div>
               </div>
@@ -797,7 +797,7 @@ function TestimonialsSection() {
             </div>
           ))}
         </div>
-        <p className="lg:hidden text-center text-[11px] text-neutral-600 mt-2">← اسحب للمزيد</p>
+        <p className="lg:hidden text-center text-[11px] text-neutral-400 mt-2">← اسحب للمزيد</p>
 
         {/* Desktop: grid */}
         <div className="hidden lg:grid grid-cols-3 gap-4 md:gap-5">
@@ -874,7 +874,7 @@ function FinalCTA() {
               </button>
             </div>
           </form>
-          <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-neutral-500">
+          <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-neutral-300">
             <span className="flex items-center gap-1.5"><Check className="w-3.5 h-3.5 text-emerald-400" /> مجاني للبداية</span>
             <span className="flex items-center gap-1.5"><Check className="w-3.5 h-3.5 text-emerald-400" /> بدون بطاقة</span>
             <span className="flex items-center gap-1.5"><Check className="w-3.5 h-3.5 text-emerald-400" /> آمن ومشفّر</span>
@@ -898,7 +898,7 @@ function Footer() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-10">
           <div className="col-span-2 md:col-span-1">
             <BrandLogo size={36} glow iconOnly />
-            <p className="text-sm text-neutral-500 mt-3 leading-relaxed max-w-xs">
+            <p className="text-sm text-neutral-300 mt-3 leading-relaxed max-w-xs">
               مقرّ عمليات شركتك الذكي. 16 مساعداً ذكياً يعملون كفريقك المؤسّس.
             </p>
           </div>
@@ -908,14 +908,14 @@ function Footer() {
               <ul className="flex flex-col gap-2">
                 {col.links.map((l) => (
                   <li key={l.href}>
-                    <Link href={l.href} className="text-sm text-neutral-500 hover:text-white transition-colors">{l.label}</Link>
+                    <Link href={l.href} className="text-sm text-neutral-300 hover:text-white transition-colors">{l.label}</Link>
                   </li>
                 ))}
               </ul>
             </div>
           ))}
         </div>
-        <div className="border-t border-white/[0.05] pt-6 flex flex-col md:flex-row items-center justify-between gap-3 text-xs text-neutral-600">
+        <div className="border-t border-white/[0.05] pt-6 flex flex-col md:flex-row items-center justify-between gap-3 text-xs text-neutral-400">
           <span>© {year} Kalmeron AI. جميع الحقوق محفوظة.</span>
           <span className="flex items-center gap-1.5">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />

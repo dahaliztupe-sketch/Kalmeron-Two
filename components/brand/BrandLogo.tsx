@@ -50,6 +50,8 @@ export function BrandLogo({
           src="/brand/kalmeron-mark.svg"
           width={size}
           height={size}
+          priority
+          loading="eager"
           className="w-full h-full object-contain"
         />
       </div>

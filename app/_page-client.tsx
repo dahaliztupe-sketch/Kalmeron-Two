@@ -231,7 +231,7 @@ function Hero() {
         </motion.h1>
 
         <motion.p initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}
-          className="text-base sm:text-lg md:text-xl text-white/55 max-w-3xl mx-auto mb-10 sm:mb-12 leading-[1.8] font-medium px-2 [text-wrap:pretty]"
+          className="text-base sm:text-lg md:text-xl text-white/75 max-w-3xl mx-auto mb-10 sm:mb-12 leading-[1.8] font-medium px-2 [text-wrap:pretty]"
         >
           {t("subtitleLead")}
           {" "}
@@ -246,13 +246,13 @@ function Hero() {
         >
           <div className="absolute -inset-1 rounded-3xl bg-gradient-to-r from-cyan-500/25 via-indigo-500/25 to-fuchsia-500/25 opacity-0 group-focus-within:opacity-100 blur-xl transition-opacity duration-500" />
           <div className="relative flex items-center bg-[#0A0D14]/85 backdrop-blur-xl border border-white/[0.08] rounded-3xl p-2 shadow-2xl focus-within:border-indigo-400/40 focus-within:bg-[#0A0D14] transition-all">
-            <div className="ps-3 pe-2 text-white/40 shrink-0">
-              <Search className="w-5 h-5" />
+            <div className="ps-3 pe-2 text-white/60 shrink-0">
+              <Search className="w-5 h-5" aria-hidden="true" />
             </div>
             <input
               value={query} onChange={(e) => setQuery(e.target.value)}
               placeholder={t("inputPlaceholder")}
-              className="flex-1 min-w-0 bg-transparent border-none outline-none text-white text-base md:text-lg py-3 placeholder:text-white/30"
+              className="flex-1 min-w-0 bg-transparent border-none outline-none text-white text-base md:text-lg py-3 placeholder:text-white/55"
               aria-label={tCommon("yourIdea")}
             />
             <button type="submit" disabled={!query.trim()}
@@ -273,7 +273,7 @@ function Hero() {
             const text = tSugg(key);
             return (
               <button key={key} type="button" onClick={() => router.push(`/chat?q=${encodeURIComponent(text)}`)}
-                className="text-xs md:text-sm border border-white/[0.08] text-white/55 px-3.5 py-2 rounded-full hover:text-white hover:border-white/20 hover:bg-white/[0.03] transition-colors"
+                className="text-xs md:text-sm border border-white/15 text-white/75 px-3.5 py-2 rounded-full hover:text-white hover:border-white/30 hover:bg-white/[0.05] focus-visible:ring-2 focus-visible:ring-indigo-400/60 focus-visible:ring-offset-2 focus-visible:ring-offset-[#04060B] transition-all"
               >
                 {text}
               </button>
@@ -282,33 +282,36 @@ function Hero() {
         </motion.div>
 
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.9 }}
-          className="flex flex-col items-center gap-2 mt-12 sm:mt-16 text-white/35 text-xs"
+          className="flex flex-col items-center gap-2 mt-12 sm:mt-16 text-white/65 text-xs"
         >
-          <a href="#departments" className="flex flex-col items-center gap-1.5 hover:text-white/70 transition-colors">
+          <a
+            href="#departments"
+            className="flex flex-col items-center gap-1.5 hover:text-white focus-visible:text-white focus-visible:ring-2 focus-visible:ring-indigo-400/60 focus-visible:ring-offset-2 focus-visible:ring-offset-[#04060B] rounded transition-colors"
+          >
             <span>{t("scrollHint")}</span>
-            <ChevronDown className="w-4 h-4 animate-bounce" />
+            <ChevronDown className="w-4 h-4 animate-bounce" aria-hidden="true" />
           </a>
         </motion.div>
       </div>
 
-      {/* Trust badges — muted grayscale row at bottom */}
+      {/* Trust badges — WCAG-AA compliant contrast (≥4.5:1 on #04060B) */}
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.7 }}
         className="relative z-10 w-full pb-8 sm:pb-10 pt-6 flex justify-center"
       >
-        <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 sm:gap-x-10 px-4">
-          <span className="flex items-center gap-2 text-white/40 hover:text-white/75 transition-colors text-xs sm:text-sm font-medium">
-            <ShieldCheck className="w-4 h-4 shrink-0" /> {tBadges("lawCompliant")}
-          </span>
-          <span className="flex items-center gap-2 text-white/40 hover:text-white/75 transition-colors text-xs sm:text-sm font-medium">
-            <Globe2 className="w-4 h-4 shrink-0" /> {tBadges("arabicNative")}
-          </span>
-          <span className="flex items-center gap-2 text-white/40 hover:text-white/75 transition-colors text-xs sm:text-sm font-medium">
-            <TrendingUp className="w-4 h-4 shrink-0" /> {tBadges("founderCount")}
-          </span>
-          <span className="flex items-center gap-2 text-white/40 hover:text-white/75 transition-colors text-xs sm:text-sm font-medium">
-            <Zap className="w-4 h-4 shrink-0" /> {tBadges("freeStart")}
-          </span>
-        </div>
+        <ul className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 sm:gap-x-10 px-4 list-none" role="list">
+          <li className="flex items-center gap-2 text-white/70 hover:text-white transition-colors text-xs sm:text-sm font-medium">
+            <ShieldCheck className="w-4 h-4 shrink-0 text-cyan-300/80" aria-hidden="true" /> {tBadges("lawCompliant")}
+          </li>
+          <li className="flex items-center gap-2 text-white/70 hover:text-white transition-colors text-xs sm:text-sm font-medium">
+            <Globe2 className="w-4 h-4 shrink-0 text-indigo-300/80" aria-hidden="true" /> {tBadges("arabicNative")}
+          </li>
+          <li className="flex items-center gap-2 text-white/70 hover:text-white transition-colors text-xs sm:text-sm font-medium">
+            <TrendingUp className="w-4 h-4 shrink-0 text-fuchsia-300/80" aria-hidden="true" /> {tBadges("founderCount")}
+          </li>
+          <li className="flex items-center gap-2 text-white/70 hover:text-white transition-colors text-xs sm:text-sm font-medium">
+            <Zap className="w-4 h-4 shrink-0 text-amber-300/80" aria-hidden="true" /> {tBadges("freeStart")}
+          </li>
+        </ul>
       </motion.div>
     </motion.section>
   );
