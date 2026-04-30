@@ -2209,3 +2209,23 @@ own "Level 4 = 21 hours" estimate that exceeds a single session.
 - `/` and `/auth/login` render without 500.
 - Body is now the single scroll container on mobile; Sidebar (fixed) and
   sticky header continue to behave correctly on desktop.
+
+## 2026-04-30 — جلسة 2: Hero variants على Canvas
+
+**الهدف:** تحسين تصميم الصفحة الرئيسية (frontend audit 39/100) — استكشاف 3 اتجاهات تصميمية للـ hero قبل التعديل على الكود الفعلي.
+
+### ما تم
+- إعادة تشغيل `artifacts/mockup-sandbox: Component Preview Server` بنجاح بعد تعليق طويل (vite يقرأ `PORT` و `BASE_PATH` من env). الـ preview URLs ترجع HTTP 200.
+- 3 variants موجودة في `artifacts/mockup-sandbox/src/components/mockups/kalmeron-hero/` من جلسة سابقة:
+  - **MinimalPremium.tsx** — تصميم نظيف، gradient cyan→indigo→fuchsia، input كبير بـ chips اقتراحات، trust bar أسفل.
+  - **OperatingSystem.tsx** — أكثر تقنية، grid background، typing animation تعرض رد فعلي من المساعد، تركيز على "مقرّ عمليات".
+  - **Storytelling.tsx** — framer-motion، scroll storytelling، grid لـ 12 عضو فريق ذكي.
+- جميعها RTL، عربي أصيل، dark theme #030509/slate-950، Cairo/IBM Plex Sans Arabic.
+- تم وضع 3 iframes (1280×900) متجاورة على الـ canvas مع `align: top` + `distribute: horizontal`.
+- استدعاء `focusCanvasShapes` (canvas كان فاضي = empty-canvas exception).
+- استدعاء `presentArtifact({ artifactId: "artifacts/mockup-sandbox", shapeIds: [...] })`.
+
+### ملاحظات للجلسة القادمة
+- المستخدم سيختار variant واحد ثم نستخدم `mockup-graduate` لدمجه في `app/page.tsx`.
+- `presentArtifact` يحتاج `artifactId: "artifacts/mockup-sandbox"` (مع البريفكس)، ليس `"mockup-sandbox"`.
+- مشكلة "port detection failed" على sandbox تنحل بـ restart بسيط — لا تتطلب تعديل vite.config.ts.
