@@ -509,3 +509,145 @@ export async function safeStreamText<TOOLS extends ToolSet = ToolSet>(
     withDefaultTimeout(applyPromptOverride(args, promptToSend), ctx) as Parameters<typeof streamText>[0],
   ) as unknown as StreamTextResult<TOOLS, never>;
 }
+
+// =============================================================================
+// SMART TIER-BASED API (multi-provider) — adds OpenRouter / Groq / Anthropic /
+// OpenAI fallback on top of Gemini, with optional semantic cache and per-model
+// budget enforcement.  These functions dispatch through `withProviderFallback`
+// so a single call can transparently move across providers when one fails.
+// =============================================================================
+
+import type { TaskTier } from '@/src/lib/model-router';
+import {
+  withProviderFallback,
+  type ProviderId,
+  type ProviderCapabilities,
+} from './providers';
+import { getModelInstance } from './adapters';
+import { llmCacheGet, llmCacheSet } from './llm-response-cache';
+import { enforceBudget, recordSpend } from './budget';
+
+export interface SmartGatewayContext extends GatewayContext {
+  /** Tier requested by the caller; resolved to a concrete model per provider. */
+  tier: TaskTier;
+  /** Optional explicit provider order; otherwise the providers.ts default is used. */
+  providerOrder?: ProviderId[];
+  /** Capability filter — e.g. `{vision:true}` skips text-only providers. */
+  requiredCaps?: Partial<ProviderCapabilities>;
+  /** Opt-in semantic cache lookup (default off). */
+  cache?: boolean;
+  /** Override cache bucket (defaults to `agent`). */
+  cacheBucket?: string;
+}
+
+type SmartTextArgs<TOOLS extends ToolSet = ToolSet> = Omit<SafeGenerateTextArgs<TOOLS>, 'model'>;
+type SmartObjectArgs<S extends z.ZodType> = Omit<SafeGenerateObjectArgs<S>, 'model'>;
+
+/**
+ * Tier-aware text generation. Chooses a provider via `withProviderFallback`,
+ * resolves the right model id, then delegates to `safeGenerateText` so the
+ * existing PII / injection / cost pipeline still applies.
+ *
+ * On semantic-cache hit we short-circuit — no upstream call, no charge.
+ * On budget overrun for the chosen model we move to the next provider in the
+ * fallback chain so the request still completes (just on a cheaper backend).
+ */
+export async function safeGenerateTextSmart<TOOLS extends ToolSet = ToolSet>(
+  args: SmartTextArgs<TOOLS>,
+  ctx: SmartGatewayContext,
+): Promise<{
+  result: GenerateTextResult<TOOLS, never>;
+  meta: GatewayMeta & { provider: ProviderId; modelId: string; cached?: boolean };
+}> {
+  const rawPrompt = extractRawText(args);
+  const bucket = ctx.cacheBucket ?? ctx.agent;
+
+  if (ctx.cache) {
+    const hit = await llmCacheGet<{ text: string }>(rawPrompt, bucket);
+    if (hit) {
+      const fakeResult = { text: hit.value.text } as unknown as GenerateTextResult<TOOLS, never>;
+      return {
+        result: fakeResult,
+        meta: {
+          agent: ctx.agent, userId: ctx.userId || 'guest', durationMs: 0,
+          piiHits: [], injectionBlocked: false,
+          provider: 'gemini', modelId: 'cache-hit', cached: true,
+        },
+      };
+    }
+  }
+
+  const { result, usedProvider } = await withProviderFallback(
+    ctx.tier,
+    async (chosen) => {
+      // Pre-flight budget gate — if this provider's model is over budget, skip
+      // it (throw → fallback chain moves on).
+      const estCost = approxCostUsd(chosen.id, rawPrompt.length, 1024);
+      const decision = enforceBudget(chosen.id, chosen.provider, estCost);
+      if (!decision.allow) {
+        throw new Error(`budget_exceeded: ${decision.reason}`);
+      }
+      const model = await getModelInstance(chosen.provider, chosen.id);
+      const out = await safeGenerateText<TOOLS>({ ...args, model }, ctx);
+      const realCost = approxCostUsd(chosen.id, rawPrompt.length, out.result.text?.length ?? 0);
+      recordSpend(chosen.id, realCost);
+      return { ...out, modelId: chosen.id };
+    },
+    ctx.providerOrder,
+    ctx.requiredCaps,
+  );
+
+  if (ctx.cache && result.result.text) {
+    void llmCacheSet(rawPrompt, { text: result.result.text }, bucket);
+  }
+
+  return {
+    result: result.result,
+    meta: {
+      ...result.meta,
+      provider: usedProvider,
+      modelId: result.modelId,
+    },
+  };
+}
+
+/** Tier-aware structured-object generation. Same routing rules as text. */
+export async function safeGenerateObjectSmart<SCHEMA extends z.ZodType>(
+  args: SmartObjectArgs<SCHEMA>,
+  ctx: SmartGatewayContext,
+): Promise<{
+  result: GenerateObjectResult<z.infer<SCHEMA>>;
+  meta: GatewayMeta & { provider: ProviderId; modelId: string };
+}> {
+  const rawPrompt = extractRawText(args);
+  // Capability gate: structured object generation needs JSON mode by default.
+  const required: Partial<ProviderCapabilities> = { json: true, ...(ctx.requiredCaps || {}) };
+
+  const { result, usedProvider } = await withProviderFallback(
+    ctx.tier,
+    async (chosen) => {
+      const estCost = approxCostUsd(chosen.id, rawPrompt.length, 1024);
+      const decision = enforceBudget(chosen.id, chosen.provider, estCost);
+      if (!decision.allow) {
+        throw new Error(`budget_exceeded: ${decision.reason}`);
+      }
+      const model = await getModelInstance(chosen.provider, chosen.id);
+      const out = await safeGenerateObject<SCHEMA>({ ...args, model }, ctx);
+      const realCost = approxCostUsd(chosen.id, rawPrompt.length, JSON.stringify(out.result.object ?? {}).length);
+      recordSpend(chosen.id, realCost);
+      return { ...out, modelId: chosen.id };
+    },
+    ctx.providerOrder,
+    required,
+  );
+
+  return {
+    result: result.result,
+    meta: {
+      ...result.meta,
+      provider: usedProvider,
+      modelId: result.modelId,
+    },
+  };
+}
+

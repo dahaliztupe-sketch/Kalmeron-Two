@@ -39,12 +39,19 @@ logging.basicConfig(level=logging.INFO,
 log = logging.getLogger("llm-judge")
 
 # ──────────────── Provider config ────────────────
-# Prefer Replit AI Integrations proxy when present (no own API key needed).
+# Provider priority (first one with a valid key wins):
+#   1. Replit AI Integrations proxy (Gemini, no own key needed)
+#   2. OpenRouter (200+ models, free Llama/DeepSeek tiers available)
+#   3. Groq (very fast Llama, free tier)
+#   4. Google AI Studio direct (Gemini)
+#   5. Stub (deterministic fallback so dev/CI work without any key)
 _AI_BASE = os.environ.get("AI_INTEGRATIONS_GEMINI_BASE_URL", "").strip().rstrip("/")
 _AI_KEY = os.environ.get("AI_INTEGRATIONS_GEMINI_API_KEY", "").strip()
+_OPENROUTER_KEY = os.environ.get("OPENROUTER_API_KEY", "").strip()
+_GROQ_KEY = os.environ.get("GROQ_API_KEY", "").strip()
 _GEMINI_KEY = os.environ.get("GEMINI_API_KEY", "").strip()
 
-# Default model: gemini-2.5-flash (cheap+fast, supported by both proxy and AI Studio).
+# Default model — overridden per-provider below to use the right native id.
 JUDGE_MODEL = os.environ.get("JUDGE_MODEL", "gemini-2.5-flash").strip()
 
 # Replit's AI Integrations proxy supports a fixed list of Gemini models.
@@ -56,10 +63,11 @@ _AI_INTEGRATIONS_MODEL_ALIASES = {
     "gemini-1.5-pro": "gemini-2.5-pro",
 }
 
-# Pick provider:
-#   "ai_integrations" → POST {base}/models/{model}:generateContent  (no v1beta path)
-#   "google_ai"       → POST https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent
-#   "stub"            → no LLM, deterministic fallback
+# Default models per provider when JUDGE_MODEL is left at its Gemini default.
+# Caller can override by setting JUDGE_MODEL explicitly.
+_DEFAULT_OPENROUTER_MODEL = "meta-llama/llama-3.3-70b-instruct:free"
+_DEFAULT_GROQ_MODEL = "llama-3.3-70b-versatile"
+
 if _AI_BASE and _AI_KEY:
     PROVIDER = "ai_integrations"
     _resolved = _AI_INTEGRATIONS_MODEL_ALIASES.get(JUDGE_MODEL, JUDGE_MODEL)
@@ -71,6 +79,22 @@ if _AI_BASE and _AI_KEY:
     _API_KEY = _AI_KEY
     MODE = "real"
     log.info("LLM judge: real mode via Replit AI Integrations, model=%s", JUDGE_MODEL)
+elif _OPENROUTER_KEY:
+    PROVIDER = "openrouter"
+    if JUDGE_MODEL.startswith("gemini"):
+        JUDGE_MODEL = _DEFAULT_OPENROUTER_MODEL
+    _ENDPOINT = "https://openrouter.ai/api/v1/chat/completions"
+    _API_KEY = _OPENROUTER_KEY
+    MODE = "real"
+    log.info("LLM judge: real mode via OpenRouter, model=%s", JUDGE_MODEL)
+elif _GROQ_KEY:
+    PROVIDER = "groq"
+    if JUDGE_MODEL.startswith("gemini"):
+        JUDGE_MODEL = _DEFAULT_GROQ_MODEL
+    _ENDPOINT = "https://api.groq.com/openai/v1/chat/completions"
+    _API_KEY = _GROQ_KEY
+    MODE = "real"
+    log.info("LLM judge: real mode via Groq, model=%s", JUDGE_MODEL)
 elif _GEMINI_KEY:
     PROVIDER = "google_ai"
     _ENDPOINT = (
@@ -85,7 +109,7 @@ else:
     _ENDPOINT = ""
     _API_KEY = ""
     MODE = "stub"
-    log.info("LLM judge: stub mode (no GEMINI provider configured)")
+    log.info("LLM judge: stub mode (no LLM provider configured)")
 
 _TIMEOUT = float(os.environ.get("JUDGE_TIMEOUT_S", "20"))
 _HTTP = httpx.Client(timeout=_TIMEOUT)
@@ -155,6 +179,46 @@ def _gemini_call(prompt: str) -> str:
     return "".join(p.get("text", "") for p in parts).strip()
 
 
+def _openai_compat_call(prompt: str) -> str:
+    """Single-turn call against an OpenAI-compatible chat/completions endpoint
+    (OpenRouter, Groq, and friends). Returns the response text or raises on
+    non-2xx. We force `response_format=json_object` so the rubric parser sees
+    a JSON body even on chatty models.
+    """
+    payload = {
+        "model": JUDGE_MODEL,
+        "messages": [{"role": "user", "content": prompt}],
+        "temperature": 0.0,
+        "max_tokens": 1024,
+        "response_format": {"type": "json_object"},
+    }
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {_API_KEY}",
+    }
+    if PROVIDER == "openrouter":
+        # OpenRouter recommends these for analytics + rate-limit fairness.
+        headers["HTTP-Referer"] = os.environ.get("NEXT_PUBLIC_SITE_URL", "https://kalmeron.com")
+        headers["X-Title"] = "Kalmeron LLM Judge"
+    r = _HTTP.post(_ENDPOINT, json=payload, headers=headers)
+    r.raise_for_status()
+    data = r.json()
+    choices = data.get("choices") or []
+    if not choices:
+        return ""
+    msg = choices[0].get("message") or {}
+    return str(msg.get("content") or "").strip()
+
+
+def _llm_call(prompt: str) -> str:
+    """Provider-agnostic dispatch."""
+    if PROVIDER in ("ai_integrations", "google_ai"):
+        return _gemini_call(prompt)
+    if PROVIDER in ("openrouter", "groq"):
+        return _openai_compat_call(prompt)
+    raise RuntimeError(f"unsupported provider: {PROVIDER}")
+
+
 def _real_judge(question: str, answer: str, rubric_name: str) -> dict[str, Any]:
     rubric = get_rubric(rubric_name)
     criteria_list = ", ".join(c[0] for c in rubric.criteria)
@@ -164,9 +228,9 @@ def _real_judge(question: str, answer: str, rubric_name: str) -> dict[str, Any]:
         answer=answer,
     )
     try:
-        text = _gemini_call(prompt)
+        text = _llm_call(prompt)
     except Exception as e:  # noqa: BLE001
-        log.warning("Gemini call failed (%s) — using stub", e)
+        log.warning("LLM call failed (%s) — using stub", e)
         return rubric.stub_score(question, answer)
 
     # Be tolerant: Gemini sometimes wraps JSON in extra prose.

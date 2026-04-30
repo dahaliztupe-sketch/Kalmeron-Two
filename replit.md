@@ -40,6 +40,84 @@ workflows are CI-style validation tasks that run on demand.
 
 ---
 
+## Session 2026-04-30 (PM #2) — Multi-Provider LLM Stack
+
+Replaced the single Gemini-via-Replit-AI path with a coordinated 5-provider mesh
+so the app keeps working even when any one vendor is down or quota-exhausted.
+
+### Providers (priority order)
+1. **Replit AI Integrations** — Gemini through the Replit gateway (zero-key).
+2. **OpenRouter** — `meta-llama/llama-3.3-70b-instruct:free`, `deepseek-r1:free`,
+   plus paid Sonnet/4o/Pro for the high tier.
+3. **Groq** — Llama 3.x and `gpt-oss-120b` for low-latency free tier.
+4. **Gemini direct** — `GEMINI_API_KEY` fallback when AI Integrations is offline.
+5. **Anthropic / OpenAI direct** — opt-in via `ANTHROPIC_API_KEY` /
+   `OPENAI_API_KEY` for the strongest tier.
+
+### New modules
+- `src/lib/llm/providers.ts` — declarative provider registry with tier mappings,
+  capability flags (`vision`, `json`, `tools`, `streaming`), and
+  `withProviderFallback(...)`.
+- `src/lib/llm/adapters/{openrouter,groq,gemini,anthropic,openai,index}.ts` —
+  lazy-loaded `LanguageModel` factory; nothing imports a provider SDK at
+  module load time.
+- `src/lib/llm/circuit-breaker.ts` — 3-failures / 60s opens for 5 min,
+  half-open probe, observable via `getCircuitSnapshot()`.
+- `src/lib/llm/llm-response-cache.ts` — process-local semantic cache backed
+  by the Embeddings Worker (cosine ≥ 0.95). **Distinct** from the existing
+  `semantic-cache.ts` (Firestore-backed L1+L2 used by the agent layer).
+- `src/lib/llm/budget.ts` — monthly USD caps from `MODEL_BUDGETS` env;
+  forces tier downshift when exhausted.
+- `src/lib/llm/gateway.ts` — adds `safeGenerateTextSmart` /
+  `safeGenerateObjectSmart` that take a *tier* (instead of a model) and
+  walk providers via the breaker + cache + budget.
+
+### Service-side
+- `services/llm-judge/main.py` — extended with OpenAI-compat HTTP backends
+  for OpenRouter and Groq; dispatcher tries
+  AI-Integrations → OpenRouter → Groq → Gemini → stub.
+
+### Operator surfaces
+- `app/admin/models/page.tsx` — RTL dashboard showing enabled providers,
+  circuit states, cache stats, budget snapshot, cost-by-model.
+- `scripts/eval-models.ts` (`npm run eval:models`) — N golden prompts × M
+  models, judged by LLM Judge, writes `audit/reports/model-eval-*.md`.
+- `audit/modules/21-llm-providers.ts` — connectivity check per declared
+  provider (registered in the audit runner & index).
+
+### Environment knobs
+| Var | Default | Purpose |
+|-----|---------|---------|
+| `OPENROUTER_API_KEY`            | unset      | Enables OpenRouter provider. |
+| `GROQ_API_KEY`                  | unset      | Enables Groq provider. |
+| `GEMINI_API_KEY`                | unset      | Direct Gemini fallback. |
+| `ANTHROPIC_API_KEY`             | unset      | Enables Anthropic. |
+| `OPENAI_API_KEY`                | unset      | Enables OpenAI. |
+| `LLM_CACHE_SIM_THRESHOLD`       | `0.95`     | Cosine cutoff for cache hits. |
+| `LLM_CACHE_CAPACITY`            | `500`      | LRU size. |
+| `LLM_CACHE_TTL_MS`              | `1800000`  | 30 min entry TTL. |
+| `MODEL_BUDGETS`                 | `{}`       | JSON: model-id → USD/month cap. |
+| `EMBEDDINGS_URL`                | `http://localhost:8099` | Embeddings worker. |
+
+### Tests
+- `tests/llm-providers-multi.test.ts` — capability filter + tier resolution.
+- `tests/circuit-breaker.test.ts` — open/half-open/close transitions.
+- `tests/llm-response-cache.test.ts` — cosine match + bucket isolation.
+- `tests/budget.test.ts` — downshift trigger when cap exhausted.
+
+### Validations status
+- `npm run typecheck` ✅ clean
+- `npm run lint`      ✅ clean
+- `npm test`          ✅ 199/199
+- `npm run audit:fast` ✅ 100/100
+
+### Backward-compat notes
+The existing `safeGenerateText` / `safeGenerateObject` (Gemini-only fallback
+ladder) are unchanged; new code paths opt into the multi-provider behaviour
+via the `*Smart` variants.
+
+---
+
 ## Session 2026-04-30 (PM) — Audit 66→98, LCP fix, contrast sweep
 
 ### النتائج الكبرى

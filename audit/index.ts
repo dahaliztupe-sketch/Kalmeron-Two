@@ -32,6 +32,7 @@ export { auditPayments }       from './modules/17-payments';
 export { auditPwaMobile }      from './modules/18-pwa-mobile';
 export { auditDataPrivacy }    from './modules/19-data-privacy';
 export { auditBenchmarks }     from './modules/20-benchmarks';
+export { auditLLMProviders }  from './modules/21-llm-providers';
 
 export { applyAutoFixes }       from './fixers/auto-fixer';
 export { generateFixSuggestions } from './fixers/fix-suggestions';

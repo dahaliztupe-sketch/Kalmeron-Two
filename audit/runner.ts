@@ -18,6 +18,7 @@ import { auditPayments }       from './modules/17-payments';
 import { auditPwaMobile }      from './modules/18-pwa-mobile';
 import { auditDataPrivacy }    from './modules/19-data-privacy';
 import { auditBenchmarks }     from './modules/20-benchmarks';
+import { auditLLMProviders }  from './modules/21-llm-providers';
 import { calculateScore, getGrade } from './scorer';
 import { generateHTMLReport } from './reporter';
 import { summarizeBenchmarks } from './benchmarks';
@@ -40,6 +41,7 @@ const ALL_MODULES: ModuleSpec[] = [
   { fn: auditPerformance,    name: 'الأداء (Lighthouse)',         category: 'performance' },
   { fn: auditSEO,            name: 'SEO والتسويق',                 category: 'seo' },
   { fn: auditAIAgents,       name: 'وكلاء AI',                     category: 'ai-agents' },
+  { fn: auditLLMProviders,   name: 'مزودو LLM (Multi-provider)',   category: 'ai-agents' },
   { fn: auditBusiness,       name: 'الأعمال والـ UX',              category: 'business' },
   { fn: auditAccessibility,  name: 'إمكانية الوصول (WCAG)',        category: 'accessibility' },
   { fn: auditI18n,           name: 'التدويل (ar/en)',              category: 'i18n' },
