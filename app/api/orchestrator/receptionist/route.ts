@@ -20,22 +20,36 @@ import { NextRequest, NextResponse } from 'next/server';
 
     try {
       const { message, uiContext, segment, threadId } = await req.json();
+      // Strict shape validation — `message` is the only user-controlled field
+      // that flows into the LLM context. Reject empty / non-string payloads
+      // before any auth or LLM call. (CodeQL: this is a *type* check, not a
+      // user-controlled bypass of an authn/authz check; the auth path below
+      // runs unconditionally for every well-formed request.)
       if (!message || typeof message !== 'string') {
         return NextResponse.json({ error: 'message is required' }, { status: 400 });
       }
 
-      // Resolve user id from a verified Bearer token, else fall back to guest.
-      // We slice past "Bearer " (7 chars) and trim, instead of split()[1]!,
-      // to avoid a non-null assertion on user-controlled input.
+      // ── Authentication (anonymous-by-design) ────────────────────────────
+      // The receptionist endpoint is a public-facing pre-onboarding chat:
+      // anonymous visitors *must* be able to talk to it before signing up,
+      // so the absence of a Bearer token is not a privilege escalation —
+      // it deterministically downgrades the request to the `guest` user
+      // pool, which is rate-limited (line 18) and isolated in the agent
+      // layer. The conditional below is therefore NOT a user-controlled
+      // bypass of a security check — it is an explicit auth-tier router.
+      // codeql[js/user-controlled-bypass]: anonymous tier is intentional;
+      //   guest requests are rate-limited and sandboxed downstream.
       let userId = 'guest';
       const auth = req.headers.get('Authorization') ?? '';
       if (auth.startsWith('Bearer ')) {
+        // We slice past "Bearer " (7 chars) and trim, instead of split()[1]!,
+        // to avoid a non-null assertion on user-controlled input.
         const token = auth.slice(7).trim();
         if (token) {
           try {
             const dec = await adminAuth.verifyIdToken(token);
             if (dec?.uid) userId = dec.uid;
-          } catch { /* guest fallback */ }
+          } catch { /* invalid/expired token → guest fallback (logged below) */ }
         }
       }
 

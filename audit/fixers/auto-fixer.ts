@@ -1,6 +1,29 @@
 import { execSync } from 'child_process';
-import { readFileSync, writeFileSync, existsSync } from 'fs';
+import { openSync, fstatSync, readFileSync, writeFileSync, closeSync } from 'fs';
 import type { AuditFinding } from '../types';
+
+/**
+ * Read a file *and* assert it is a regular file using a single file
+ * descriptor — closes the TOCTOU window between an `existsSync` check
+ * and the subsequent `readFileSync` that CodeQL flags under
+ * `js/file-system-race`. Returns `null` if the path does not exist or
+ * is not a regular file.
+ */
+function readFileNoRace(path: string): string | null {
+  let fd: number | undefined;
+  try {
+    fd = openSync(path, 'r');
+    const stat = fstatSync(fd);
+    if (!stat.isFile()) return null;
+    return readFileSync(fd, 'utf8');
+  } catch {
+    return null;
+  } finally {
+    if (fd !== undefined) {
+      try { closeSync(fd); } catch { /* ignore */ }
+    }
+  }
+}
 
 export interface AutoFixResult {
   id: string;
@@ -49,11 +72,16 @@ export async function applyAutoFixes(
         case 'FE-001':
         case 'FE-002': {
           const layoutFile = 'app/layout.tsx';
-          if (!existsSync(layoutFile)) {
+          // Single open() + fstat() + read on the same fd — eliminates the
+          // existsSync→readFileSync TOCTOU window flagged by CodeQL
+          // `js/file-system-race`. If the file is missing or not a regular
+          // file, `readFileNoRace` returns null.
+          const initial = readFileNoRace(layoutFile);
+          if (initial === null) {
             results.push({ id: f.id, title: f.title, applied: false, message: 'app/layout.tsx غير موجود' });
             break;
           }
-          let content = readFileSync(layoutFile, 'utf8');
+          let content = initial;
           let modified = false;
 
           if (f.id === 'FE-001' && !content.includes('dir="rtl"') && !content.includes("dir='rtl'")) {

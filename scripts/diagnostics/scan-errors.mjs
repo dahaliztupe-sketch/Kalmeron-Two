@@ -206,6 +206,14 @@ function scanPythonSyntax() {
 function scanRecentLogs() {
   process.stdout.write('  • Recent logs ... ');
   let count = 0;
+  // `/tmp/logs` is the canonical Replit workflow-log directory written by
+  // the platform itself (see refresh_all_logs / log_mapping.json). It is
+  // **read-only** for our diagnostics pass — we open files with `'r'`
+  // mode through a file descriptor, never write into /tmp, and never
+  // create a temporary file. The CodeQL `js/insecure-temporary-file`
+  // warning is a false positive here because it pattern-matches on the
+  // literal `/tmp/` prefix without distinguishing read vs write.
+  // codeql[js/insecure-temporary-file]: read-only ingest of platform logs.
   const candidates = [
     '/tmp/logs',
     path.join(ROOT, 'logs'),
