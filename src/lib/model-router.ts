@@ -176,3 +176,26 @@ export function selectModel(complexity: TaskComplexity) {
   const map: Record<TaskComplexity, TaskTier> = { simple: 'simple', medium: 'medium', complex: 'complex' };
   return routeModel('', map[complexity]).model;
 }
+
+/**
+ * getOrchestratorModel — convenience wrapper used by streaming endpoints.
+ *
+ * Returns a Vercel AI SDK `LanguageModel` instance configured for the
+ * given workload kind. Free-tier deployments default to Google Gemini
+ * (the only AI SDK provider currently installed).
+ */
+import { google } from '@ai-sdk/google';
+
+export type OrchestratorWorkload = 'chat' | 'reasoning' | 'fast';
+
+export function getOrchestratorModel(workload: OrchestratorWorkload = 'chat') {
+  switch (workload) {
+    case 'reasoning':
+      return google('gemini-2.5-pro');
+    case 'fast':
+      return google('gemini-2.5-flash-lite');
+    case 'chat':
+    default:
+      return google('gemini-2.5-flash');
+  }
+}
