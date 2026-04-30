@@ -1,0 +1,55 @@
+title = "Kalmeron Gitleaks Config"
+
+# Inherit all default Gitleaks rules (Google API key, AWS keys, generic
+# tokens, private keys, etc.) and only add a narrow allowlist for values
+# that are intentionally public.
+[extend]
+useDefault = true
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Allowlist
+# ─────────────────────────────────────────────────────────────────────────────
+# Firebase **Web** API keys (`AIzaSy…`) are not secrets in the traditional
+# sense — Google ships them inside the public web bundle of every Firebase
+# project. They identify the project and let the SDK call public endpoints;
+# all access control lives in Firestore Rules / Storage Rules / App Check.
+#
+# Reference:
+#   https://firebase.google.com/docs/projects/api-keys
+#   "Although API keys for Firebase services are safe to embed in source
+#    code or in client-side apps, there are some specific cases when you
+#    should enforce restrictions for your API key …"
+#
+# We still want Gitleaks to fire on **server-side** Google API keys (Maps
+# Premium, GCP service accounts, etc.) — those use a different lifecycle
+# and key-restriction model. We therefore only allowlist the exact
+# project-bound web client key for the kalmeron-two Firebase project, plus
+# the audit document that intentionally references it as a tracked issue.
+[allowlist]
+description = "Public Firebase web API key + documented references"
+
+# Exact key values — narrow allowlist, will not mask any other secret.
+regexes = [
+  # Public Firebase web client API key for the kalmeron-two project.
+  '''AIzaSy8RRcFPp2YwhQYawPvs9pUckwmCKcXzQhW''',
+  # localStorage key constant — not a credential. Pattern is the literal
+  # value, not a wildcard, to keep the allowlist tight.
+  '''kalmeron-decision-journal-v1''',
+  # Demo placeholder bearer tokens in copy-paste recipe documents.
+  '''Bearer DEMO_TOKEN''',
+]
+
+# Files that are not part of the deployed codebase (user-uploaded assets,
+# audit / threat-model docs that intentionally reference the public web
+# key, and rotation history).
+paths = [
+  # All user-uploaded reference material — never shipped, never executed.
+  '''attached_assets/.*''',
+  # Audit / threat-model docs that document the public Firebase key.
+  '''docs/PROJECT_ASSESSMENT_AND_HUMAN_TASKS\.md''',
+  '''docs/SECRETS_ROTATION\.md''',
+  '''docs/AUDIT_SWEEP_FINAL_REPORT\.md''',
+  '''docs/INVESTOR_READINESS_AUDIT_2026_04_25\.md''',
+  # CHANGELOG entries that reference the rotation history.
+  '''CHANGELOG\.md''',
+]

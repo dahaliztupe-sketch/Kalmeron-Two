@@ -16,3 +16,17 @@ playwright-report/
 test-results/
 .local/
 attached_assets/
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Dev / CI tooling — never deployed to runtime, never receives user input.
+# These directories run via local CLI (`npm run audit:*`, `npm run diag`, etc.)
+# and shell out to hardcoded commands; the resulting `detect-child-process`
+# warnings are by-design.
+# ─────────────────────────────────────────────────────────────────────────────
+audit/
+scripts/
+diagnostics/
+qa/
+test/
+tests/
+e2e/

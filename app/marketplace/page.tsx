@@ -3,7 +3,7 @@ import PageClient from "./_page-client";
 
 export const metadata: Metadata = {
   title: "متجر الوكلاء",
-  description: "تصفّح وأضف وكلاء جدد لمنصّتك",
+  description: "تصفّح وأضف مساعدين أذكياء جدد لمنصّتك",
 };
 
 export default function Page() {

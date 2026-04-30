@@ -3,7 +3,7 @@ import PageClient from "./_page-client";
 
 export const metadata: Metadata = {
   title: "صحة الوكلاء",
-  description: "حالة جميع وكلاء الذكاء الاصطناعي ومراقبتهم",
+  description: "حالة جميع مساعدي الذكاء الاصطناعي ومراقبتهم",
 };
 
 export default function Page() {

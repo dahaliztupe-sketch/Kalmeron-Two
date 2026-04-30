@@ -149,7 +149,7 @@ export default function UsageClient() {
             </Card>
           </section>
 
-          <section className="mb-8" aria-label="استخدام لكل وكيل">
+          <section className="mb-8" aria-label="استخدام لكل مساعد ذكي">
             <Card>
               <CardHeader><CardTitle>الاستخدام حسب الوكيل</CardTitle></CardHeader>
               <CardContent>
