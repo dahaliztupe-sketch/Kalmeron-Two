@@ -49,7 +49,7 @@ export default function HRDashboard() {
              <p className="text-xs text-neutral-500">يفرز 100+ سيرة ذاتية في ثوانٍ لاستخراج المرشح الأفضل.</p>
            </div>
            <div className="bg-neutral-900 p-5 rounded-xl border border-neutral-800 opacity-80">
-             <Calendar className="w-5 h-5 text-green-400 mb-3" />
+             <Calendar className="w-5 h-5 text-emerald-400 mb-3" />
              <h4 className="font-bold text-sm mb-1">المجدول (Scheduler)</h4>
              <p className="text-xs text-neutral-500">يتواصل عبر البريد ليجدول المواعيد آلياً مثل مستشار Olivia.</p>
            </div>

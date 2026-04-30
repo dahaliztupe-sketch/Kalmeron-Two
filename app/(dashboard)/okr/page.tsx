@@ -69,7 +69,7 @@ export default function OKRPage() {
         </header>
 
         {loading && <p className="text-neutral-500">جارٍ التحميل...</p>}
-        {error && <p className="text-red-400">{error}</p>}
+        {error && <p className="text-rose-400">{error}</p>}
 
         {!loading && weekly.length === 0 && (
           <div className="p-8 rounded-2xl bg-neutral-900/60 border border-white/[0.05] text-center">

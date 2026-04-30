@@ -41,11 +41,11 @@ export default function AgentsHealthDashboard() {
         </Card>
         <Card className="glass-panel text-white flex flex-col justify-center">
           <CardHeader><CardTitle className="text-xl text-neutral-400">متوسط التقييم العام</CardTitle></CardHeader>
-          <CardContent className="text-4xl font-bold text-green-500">88/100</CardContent>
+          <CardContent className="text-4xl font-bold text-emerald-500">88/100</CardContent>
         </Card>
         <Card className="glass-panel text-white flex flex-col justify-center">
           <CardHeader><CardTitle className="text-xl text-neutral-400">التنبيهات النشطة</CardTitle></CardHeader>
-          <CardContent className="text-4xl font-bold text-red-500">2</CardContent>
+          <CardContent className="text-4xl font-bold text-rose-500">2</CardContent>
         </Card>
       </div>
 

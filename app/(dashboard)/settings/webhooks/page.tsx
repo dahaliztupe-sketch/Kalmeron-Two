@@ -153,7 +153,7 @@ export default function WebhooksPage() {
                   <button
                     onClick={() => onRevoke(s.id)}
                     disabled={revokeMutation.isPending}
-                    className="text-xs text-red-600 hover:underline disabled:opacity-50"
+                    className="text-xs text-rose-600 hover:underline disabled:opacity-50"
                   >
                     إيقاف
                   </button>

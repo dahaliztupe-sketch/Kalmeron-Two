@@ -44,14 +44,14 @@ export default function RealEstateAnalyzer() {
          {/* Mock Data representation after analysis */}
          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             <div className={`bg-neutral-900 border border-neutral-800 rounded-2xl p-6 relative overflow-hidden transition-all ${analyzing ? 'opacity-50' : ''}`}>
-               <div className="absolute top-0 right-0 bg-green-500/20 text-green-400 text-xs px-3 py-1 font-bold rounded-bl-lg">Strong Buy</div>
+               <div className="absolute top-0 right-0 bg-green-500/20 text-emerald-400 text-xs px-3 py-1 font-bold rounded-bl-lg">Strong Buy</div>
                <h3 className="font-bold text-xl mt-4 mb-1">فيلا 3 غرف - الياسمين</h3>
                <p className="text-neutral-400 text-sm mb-6">السعر التقديري: 4,500,000 EGP</p>
                
                <div className="space-y-3">
                  <div className="flex justify-between items-center text-sm border-b border-neutral-800 pb-2">
                    <span className="text-neutral-500">التدفق النقدي:</span>
-                   <span className="font-mono text-green-400">+12,500 EGP/ش</span>
+                   <span className="font-mono text-emerald-400">+12,500 EGP/ش</span>
                  </div>
                  <div className="flex justify-between items-center text-sm border-b border-neutral-800 pb-2">
                    <span className="text-neutral-500">العائد على الاستثمار ROI:</span>
@@ -63,7 +63,7 @@ export default function RealEstateAnalyzer() {
                  </div>
                  <div className="flex justify-between items-center text-sm">
                    <span className="text-neutral-500">قاعدة الـ 1%:</span>
-                   <span className="font-mono text-green-400">محققة ✓</span>
+                   <span className="font-mono text-emerald-400">محققة ✓</span>
                  </div>
                </div>
                

@@ -101,7 +101,7 @@
           </header>
 
           {error && (
-            <div className="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-300">
+            <div className="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-rose-300">
               خطأ في التحميل: {error}
             </div>
           )}
@@ -161,7 +161,7 @@
                   )}
                   {data.alertsRecent.map((a, i) => (
                     <div key={i} className={`p-3 rounded-lg text-sm border ${
-                      a.severity === 'critical' ? 'bg-red-500/10 border-red-500/30 text-red-300' :
+                      a.severity === 'critical' ? 'bg-red-500/10 border-red-500/30 text-rose-300' :
                       a.severity === 'high' ? 'bg-amber-500/10 border-amber-500/30 text-amber-300' :
                       'bg-neutral-800 border-white/[0.04] text-neutral-300'
                     }`}>

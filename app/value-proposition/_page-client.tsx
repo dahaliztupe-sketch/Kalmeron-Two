@@ -216,7 +216,7 @@ function Section({ title, hint, items, setItems, placeholder, accent }: {
               className={`flex-1 bg-white/[0.03] border border-white/10 rounded-md px-3 py-2 text-sm text-white outline-none transition-colors ${ringColor[accent]}`}
             />
             {items.length > 1 && (
-              <button onClick={() => setItems(items.filter((it) => it.id !== item.id))} className="text-neutral-500 hover:text-red-400 p-1">
+              <button onClick={() => setItems(items.filter((it) => it.id !== item.id))} className="text-neutral-500 hover:text-rose-400 p-1">
                 <X className="w-4 h-4" />
               </button>
             )}

@@ -39,7 +39,7 @@ export default function SupplyChainDashboard() {
                <h3 className="font-bold text-lg">التنبؤ بالطلب</h3>
              </div>
              <p className="text-sm text-neutral-400 mb-4">يعتمد على Gemini 3.1 Pro لمراجعة الأنماط الموسمية للمنتجات.</p>
-             <div className="bg-neutral-950 rounded p-3 text-xs text-green-400 font-mono">
+             <div className="bg-neutral-950 rounded p-3 text-xs text-emerald-400 font-mono">
                {`>`} أحدث تقرير: +15% طلب متوقع على المنتجات التقنية في الربع القادم.
              </div>
           </div>

@@ -34,7 +34,7 @@ export default function GlobalError({
       <body className="min-h-screen bg-[#0A0A0F] flex items-center justify-center p-6">
         <div className="text-center space-y-6 max-w-md">
           <div className="mx-auto w-24 h-24 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center">
-            <AlertOctagon className="w-12 h-12 text-red-400" />
+            <AlertOctagon className="w-12 h-12 text-rose-400" />
           </div>
           <div className="space-y-2">
             <h1 className="text-3xl font-black text-white">المنصة تواجه مشكلة</h1>

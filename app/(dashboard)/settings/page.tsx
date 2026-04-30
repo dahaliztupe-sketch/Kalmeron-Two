@@ -420,12 +420,12 @@ export default function SettingsPage() {
 
                 <div className="rounded-xl border border-red-500/30 bg-red-500/5 p-4 flex items-start justify-between flex-wrap gap-3">
                   <div className="flex gap-3 items-start">
-                    <AlertTriangle className="h-5 w-5 text-red-400 shrink-0 mt-0.5" />
+                    <AlertTriangle className="h-5 w-5 text-rose-400 shrink-0 mt-0.5" />
                     <div>
-                      <p className="text-sm font-semibold text-red-300">
+                      <p className="text-sm font-semibold text-rose-300">
                         طلب حذف حسابي نهائياً
                       </p>
-                      <p className="text-xs text-red-300/70 mt-1 leading-relaxed">
+                      <p className="text-xs text-rose-300/70 mt-1 leading-relaxed">
                         سيتم مسح كل محادثاتك، أفكارك، وخططك. هذا الإجراء لا يمكن التراجع عنه.
                       </p>
                     </div>
@@ -433,7 +433,7 @@ export default function SettingsPage() {
                   <Button
                     onClick={handleDelete}
                     disabled={isDeleting}
-                    className="bg-red-500/20 text-red-300 hover:bg-red-500 hover:text-white border border-red-500/40"
+                    className="bg-red-500/20 text-rose-300 hover:bg-red-500 hover:text-white border border-red-500/40"
                   >
                     {isDeleting ? "جارٍ الحذف..." : "طلب حذف حسابي"}
                   </Button>

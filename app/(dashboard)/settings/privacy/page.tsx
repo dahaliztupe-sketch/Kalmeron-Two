@@ -60,7 +60,7 @@ export default function PrivacyPage() {
           </button>
         </Card>
         <Card className="border-red-300">
-          <h2 className="font-semibold mb-2 text-red-700">حذف الحساب</h2>
+          <h2 className="font-semibold mb-2 text-rose-700">حذف الحساب</h2>
           <p className="text-sm text-gray-500 mb-3">
             سيتم حذف حسابك وجميع بياناتك بعد 30 يوماً. يمكنك إلغاء الطلب خلال هذه الفترة.
           </p>

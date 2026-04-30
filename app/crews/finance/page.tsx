@@ -151,8 +151,8 @@ export default function FinanceCrewPage() {
           <h2 className="text-2xl font-bold mb-6 text-center">حسبة بسيطة</h2>
           <div className="grid md:grid-cols-3 gap-4">
             <div className="rounded-2xl border border-red-500/20 bg-red-500/5 p-6 text-center">
-              <TrendingUp className="w-6 h-6 text-red-400 mx-auto mb-3" />
-              <div className="text-3xl font-bold text-red-300">5,000$+</div>
+              <TrendingUp className="w-6 h-6 text-rose-400 mx-auto mb-3" />
+              <div className="text-3xl font-bold text-rose-300">5,000$+</div>
               <div className="text-neutral-400 text-sm mt-2">راتب محاسب واحد بدوام كامل</div>
             </div>
             <div className="rounded-2xl border border-amber-500/20 bg-amber-500/5 p-6 text-center">

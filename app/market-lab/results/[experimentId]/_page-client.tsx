@@ -34,7 +34,7 @@ export default function MarketLabResults() {
           <CardContent className="text-7xl font-black text-[#D4AF37]">
             78<span className="text-2xl text-neutral-500">/100</span>
           </CardContent>
-          <p className="text-md text-green-400 mt-2 font-medium">فرصة واعدة مع بعض التعديلات المطلوبة</p>
+          <p className="text-md text-emerald-400 mt-2 font-medium">فرصة واعدة مع بعض التعديلات المطلوبة</p>
         </Card>
 
         <Card className="glass-panel text-white bento-wide">

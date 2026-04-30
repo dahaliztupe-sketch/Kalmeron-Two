@@ -7,5 +7,5 @@ export const metadata: Metadata = {
 };
 
 export default function Page() {
-  return <PageClient />;
+  return (<><h1 className="sr-only">الفحص والتدقيق</h1><PageClient  /></>);
 }

@@ -75,7 +75,7 @@ export default function SalesMarketingPage() {
            {/* Card 2 */}
            <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-6 opacity-60">
              <div className="flex items-center gap-3 mb-4">
-                <Users className="w-6 h-6 text-green-400" />
+                <Users className="w-6 h-6 text-emerald-400" />
                 <h3 className="font-bold text-lg">كاتب المحتوى</h3>
              </div>
              <p className="text-sm text-neutral-400">ينتظر قائمة العملاء لصياغة رسائل البريد الإلكتروني و DMs مخصصة لكل شخص باستخدام Gemini 3.0 Flash.</p>

@@ -18,7 +18,7 @@ export default function ComplianceDashboard() {
       <div className="bento-grid">
         <Card className="glass-panel text-white bento-wide flex flex-col justify-center">
              <CardHeader><CardTitle className="text-xl text-neutral-400">الامتثال لقانون 151</CardTitle></CardHeader>
-             <CardContent className="text-5xl font-black text-green-500">85%</CardContent>
+             <CardContent className="text-5xl font-black text-emerald-500">85%</CardContent>
         </Card>
         <Card className="glass-panel text-white bento-wide flex flex-col justify-center">
              <CardHeader><CardTitle className="text-xl text-neutral-400">حالة GDPR</CardTitle></CardHeader>

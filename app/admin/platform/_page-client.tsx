@@ -69,7 +69,7 @@ export default function PlatformAdminPage() {
               <ul className="divide-y text-xs font-mono" role="list">
                 {data.recentAudit.map((a) => (
                   <li key={a.id} className="py-1.5 flex gap-2">
-                    <span className={`px-1.5 py-0.5 rounded ${a.success ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>
+                    <span className={`px-1.5 py-0.5 rounded ${a.success ? "bg-green-100 text-emerald-700" : "bg-red-100 text-rose-700"}`}>
                       {a.action}
                     </span>
                     <span className="flex-1 truncate">{a.resource}</span>

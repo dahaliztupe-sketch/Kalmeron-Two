@@ -61,8 +61,8 @@ export function EmptyState({
 export function ErrorBlock({ error, retry }: { error: string; retry?: () => void }) {
   return (
     <div role="alert" className="border border-red-300 rounded-lg p-4 bg-red-50 dark:bg-red-950/20">
-      <div className="font-semibold text-red-700 dark:text-red-300">حدث خطأ</div>
-      <div className="text-sm text-red-600 dark:text-red-400 mt-1">{error}</div>
+      <div className="font-semibold text-rose-700 dark:text-rose-300">حدث خطأ</div>
+      <div className="text-sm text-rose-600 dark:text-rose-400 mt-1">{error}</div>
       {retry && (
         <button
           onClick={retry}

@@ -102,7 +102,7 @@ export default function DailyBriefPage() {
       </motion.div>
 
       {error && (
-        <div className="rounded-2xl border border-red-500/20 bg-red-500/5 p-4 mb-6 text-red-200 text-sm">
+        <div className="rounded-2xl border border-red-500/20 bg-red-500/5 p-4 mb-6 text-rose-200 text-sm">
           تعذّر تحميل الإيجاز: {error.message}
         </div>
       )}

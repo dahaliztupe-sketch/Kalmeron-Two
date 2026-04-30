@@ -119,7 +119,7 @@ export default function InvestorMetricsPage() {
         )}
 
         {!loading && !data && (
-          <div className="rounded-2xl border border-red-500/20 bg-red-500/5 p-6 text-red-200">
+          <div className="rounded-2xl border border-red-500/20 bg-red-500/5 p-6 text-rose-200">
             تعذّر تحميل المؤشّرات. حاول إعادة تحميل الصفحة.
           </div>
         )}

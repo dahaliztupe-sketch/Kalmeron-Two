@@ -162,7 +162,7 @@ function LiveEventsFeed() {
               <li key={ev.id} className="py-1.5 flex justify-between gap-2">
                 <span className="font-mono truncate flex-1">{ev.resource}</span>
                 <span className="text-gray-500">{ev.workspaceId?.slice(0, 8) || "—"}</span>
-                <span className={ev.success ? "text-green-600" : "text-red-600"}>
+                <span className={ev.success ? "text-emerald-600" : "text-rose-600"}>
                   {ev.success ? "✓" : "✗"}
                 </span>
               </li>

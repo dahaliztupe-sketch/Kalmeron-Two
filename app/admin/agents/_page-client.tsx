@@ -26,7 +26,7 @@ export default function AdminAgentsHub() {
                    <Activity className="w-6 h-6 text-indigo-400" />
                    <h2 className="text-lg font-bold">مراقب لوحة التحكم</h2>
                  </div>
-                 <span className="text-xs bg-green-500/10 text-green-400 px-2 py-1 rounded">مستقر</span>
+                 <span className="text-xs bg-green-500/10 text-emerald-400 px-2 py-1 rounded">مستقر</span>
               </div>
               <div className="bg-neutral-950 p-4 rounded-lg font-mono text-sm text-neutral-300">
                 {`>`} آخر الفحوصات (Amplitude): تم رصد زيادة +12% في النشاط.
@@ -38,10 +38,10 @@ export default function AdminAgentsHub() {
            <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-6">
               <div className="flex items-center justify-between mb-6">
                  <div className="flex items-center gap-3">
-                   <ShieldCheck className="w-6 h-6 text-green-400" />
+                   <ShieldCheck className="w-6 h-6 text-emerald-400" />
                    <h2 className="text-lg font-bold">التدقيق والامتثال القانوي</h2>
                  </div>
-                 <span className="text-xs bg-green-500/10 text-green-400 px-2 py-1 rounded">متوافق (EU AI Act)</span>
+                 <span className="text-xs bg-green-500/10 text-emerald-400 px-2 py-1 rounded">متوافق (EU AI Act)</span>
               </div>
               <div className="bg-neutral-950 p-4 rounded-lg font-mono text-sm text-neutral-300">
                 {`>`} تدقيق تلقائي RAG Pipeline: مكتمل. 
@@ -71,7 +71,7 @@ export default function AdminAgentsHub() {
                    <AlertCircle className="w-6 h-6 text-rose-500" />
                    <h2 className="text-lg font-bold">الأمن السيبراني الاستباقي</h2>
                  </div>
-                 <span className="text-xs bg-green-500/10 text-green-400 px-2 py-1 rounded">محمي</span>
+                 <span className="text-xs bg-green-500/10 text-emerald-400 px-2 py-1 rounded">محمي</span>
               </div>
               <div className="bg-neutral-950 p-4 rounded-lg font-mono text-sm text-neutral-300">
                 {`>`} فحص ثغرات (API Dependencies): اجتياز.

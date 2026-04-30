@@ -136,7 +136,7 @@ export default function FounderAgreementWizard() {
                     <div className="flex items-center justify-between">
                       <span className="text-xs text-neutral-400">المؤسّس #{i + 1}</span>
                       {founders.length > 2 && (
-                        <button onClick={() => removeFounder(i)} className="text-red-400/70 hover:text-red-400 text-sm flex items-center gap-1">
+                        <button onClick={() => removeFounder(i)} className="text-rose-400/70 hover:text-rose-400 text-sm flex items-center gap-1">
                           <Trash2 className="w-3.5 h-3.5" /> حذف
                         </button>
                       )}

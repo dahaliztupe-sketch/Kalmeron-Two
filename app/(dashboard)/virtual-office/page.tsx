@@ -65,8 +65,8 @@ export default function VirtualOfficePage() {
               <div className="flex items-center justify-between">
                 <div className="font-semibold">{v.agentId}</div>
                 <span className={`text-xs px-2 py-1 rounded ${
-                  v.status === "running" ? "bg-green-100 text-green-700" :
-                  v.status === "error" ? "bg-red-100 text-red-700" :
+                  v.status === "running" ? "bg-green-100 text-emerald-700" :
+                  v.status === "error" ? "bg-red-100 text-rose-700" :
                   "bg-gray-100 text-gray-600"
                 }`}>{v.status}</span>
               </div>
@@ -74,7 +74,7 @@ export default function VirtualOfficePage() {
               {v.providerSandboxId && (
                 <div className="text-xs font-mono mt-2 text-gray-600 truncate">{v.providerSandboxId}</div>
               )}
-              {v.lastError && <div className="text-xs text-red-600 mt-2">{v.lastError}</div>}
+              {v.lastError && <div className="text-xs text-rose-600 mt-2">{v.lastError}</div>}
             </div>
           ))}
         </div>

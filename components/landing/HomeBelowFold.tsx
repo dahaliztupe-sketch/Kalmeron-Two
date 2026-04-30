@@ -612,9 +612,9 @@ function LiveDemoSection() {
 
 function ComparisonCell({ value, kalmeron = false }: { value: boolean | string; kalmeron?: boolean }) {
   if (value === true) return <CheckCircle2 className={`${kalmeron ? "w-5 h-5" : "w-4 h-4"} text-emerald-400 mx-auto`} />;
-  if (value === false) return <XCircle className={`${kalmeron ? "w-5 h-5" : "w-4 h-4"} text-red-400/60 mx-auto`} />;
+  if (value === false) return <XCircle className={`${kalmeron ? "w-5 h-5" : "w-4 h-4"} text-rose-400/60 mx-auto`} />;
   if (value === "جزئي") return <Minus className="w-4 h-4 text-amber-400 mx-auto" />;
-  return <span className="text-[10px] text-center text-red-300 font-medium leading-tight block break-words">{value}</span>;
+  return <span className="text-[10px] text-center text-rose-300 font-medium leading-tight block break-words">{value}</span>;
 }
 
 function ComparisonSection() {

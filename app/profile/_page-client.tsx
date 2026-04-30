@@ -112,7 +112,7 @@ function ProfilePageContent() {
             >
                 {isDeleting ? "جاري الحذف..." : "حذف حسابي (الحق في النسيان)"}
             </Button>
-            <Button onClick={logout} variant="destructive" className="h-14 px-8 text-lg rounded-2xl bg-red-500/20 text-red-500 hover:bg-red-500 hover:text-white border border-red-500/30 transition-all font-bold">
+            <Button onClick={logout} variant="destructive" className="h-14 px-8 text-lg rounded-2xl bg-red-500/20 text-rose-500 hover:bg-red-500 hover:text-white border border-red-500/30 transition-all font-bold">
                 تسجيل الخروج <LogOut className="mr-3 h-5 w-5" />
             </Button>
         </motion.div>

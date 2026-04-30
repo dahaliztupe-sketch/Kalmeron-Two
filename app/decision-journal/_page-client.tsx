@@ -98,7 +98,7 @@ export default function DecisionJournalPage() {
             <StatTile label="إجمالي القرارات" value={stats.total} color="text-white" />
             <StatTile label="نجح" value={stats.great} color="text-emerald-300" />
             <StatTile label="مقبول" value={stats.okay} color="text-cyan-300" />
-            <StatTile label="ندمت" value={stats.regret} color="text-red-300" />
+            <StatTile label="ندمت" value={stats.regret} color="text-rose-300" />
           </div>
         )}
 
@@ -138,13 +138,13 @@ export default function DecisionJournalPage() {
                       <div className="flex items-center gap-3 text-xs text-neutral-400">
                         <span className="inline-flex items-center gap-1"><Calendar className="w-3 h-3" /> منذ {days} يوماً</span>
                         {d.reviewedAt && d.outcome && (
-                          <span className={`inline-flex items-center gap-1 ${d.outcome === "great" ? "text-emerald-300" : d.outcome === "okay" ? "text-cyan-300" : "text-red-300"}`}>
+                          <span className={`inline-flex items-center gap-1 ${d.outcome === "great" ? "text-emerald-300" : d.outcome === "okay" ? "text-cyan-300" : "text-rose-300"}`}>
                             <CheckCircle2 className="w-3 h-3" /> {d.outcome === "great" ? "نجح" : d.outcome === "okay" ? "مقبول" : "ندمت"}
                           </span>
                         )}
                       </div>
                     </div>
-                    <button onClick={() => deleteDecision(d.id)} className="text-neutral-500 hover:text-red-400 p-1"><Trash2 className="w-4 h-4" /></button>
+                    <button onClick={() => deleteDecision(d.id)} className="text-neutral-500 hover:text-rose-400 p-1"><Trash2 className="w-4 h-4" /></button>
                   </div>
 
                   <div className="grid md:grid-cols-2 gap-3 text-sm mb-3">
@@ -268,7 +268,7 @@ function ReviewForm({ decision, onSubmit, onClose }: { decision: Decision; onSub
         <p className="text-xs text-neutral-500 mb-5">كنت توقّعت: {decision.expectedOutcome}</p>
         <div className="grid grid-cols-3 gap-2 mb-4">
           {(["great", "okay", "regret"] as const).map((o) => (
-            <button key={o} onClick={() => setOutcome(o)} className={`p-3 rounded-lg border text-sm transition-colors ${outcome === o ? (o === "great" ? "bg-emerald-500/20 border-emerald-500/50 text-emerald-200" : o === "okay" ? "bg-cyan-500/20 border-cyan-500/50 text-cyan-200" : "bg-red-500/20 border-red-500/50 text-red-200") : "bg-white/[0.02] border-white/10 text-neutral-400"}`}>
+            <button key={o} onClick={() => setOutcome(o)} className={`p-3 rounded-lg border text-sm transition-colors ${outcome === o ? (o === "great" ? "bg-emerald-500/20 border-emerald-500/50 text-emerald-200" : o === "okay" ? "bg-cyan-500/20 border-cyan-500/50 text-cyan-200" : "bg-red-500/20 border-red-500/50 text-rose-200") : "bg-white/[0.02] border-white/10 text-neutral-400"}`}>
               {o === "great" ? "نجح" : o === "okay" ? "مقبول" : "ندمت"}
             </button>
           ))}

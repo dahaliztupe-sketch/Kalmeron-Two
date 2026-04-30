@@ -129,7 +129,7 @@ function ChatSidebar({
                     </div>
                     <button onClick={(e) => { e.stopPropagation(); onDelete(conv.id); }}
                       title={t("deleteThread")}
-                      className="shrink-0 p-1 rounded-lg opacity-0 group-hover:opacity-100 hover:bg-red-500/20 hover:text-red-400 text-neutral-600 transition-all"
+                      className="shrink-0 p-1 rounded-lg opacity-0 group-hover:opacity-100 hover:bg-red-500/20 hover:text-rose-400 text-neutral-600 transition-all"
                     >
                       <Trash2 className="w-3 h-3" />
                     </button>

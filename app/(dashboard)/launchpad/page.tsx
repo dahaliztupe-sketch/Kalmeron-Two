@@ -79,7 +79,7 @@ export default function LaunchpadPage() {
               const done = STAGES.findIndex((x) => x.id === lastStage) >= STAGES.findIndex((x) => x.id === s.id);
               const active = s.id === lastStage;
               return (
-                <li key={s.id} className={`text-sm flex items-center gap-2 ${done ? "text-green-700" : "text-gray-500"}`}>
+                <li key={s.id} className={`text-sm flex items-center gap-2 ${done ? "text-emerald-700" : "text-gray-500"}`}>
                   <span>{active ? "⏳" : done ? "✅" : "⚪"}</span>
                   <span>{s.label}</span>
                 </li>

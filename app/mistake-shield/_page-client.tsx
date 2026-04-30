@@ -106,7 +106,7 @@ const MISTAKES: Mistake[] = [
 const SEVERITY_CONFIG = {
   critical: { label: "خطير جداً", color: "text-rose-400 bg-rose-500/10 border-rose-500/20", dot: "bg-rose-400" },
   high: { label: "عالي الأثر", color: "text-amber-400 bg-amber-500/10 border-amber-500/20", dot: "bg-amber-400" },
-  medium: { label: "متوسط", color: "text-yellow-400 bg-yellow-500/10 border-yellow-500/20", dot: "bg-yellow-400" },
+  medium: { label: "متوسط", color: "text-amber-400 bg-yellow-500/10 border-yellow-500/20", dot: "bg-yellow-400" },
 };
 
 const CATEGORIES = ["الكل", "المنتج", "المالية", "الشراكة", "القانونية", "التوسع", "الفريق", "التسويق"];

@@ -291,7 +291,7 @@ export default function LearnedSkillsPage() {
         )}
 
         {error && (
-          <div className="rounded-xl bg-red-500/10 border border-red-500/30 p-3 text-sm text-red-300 flex items-center gap-2">
+          <div className="rounded-xl bg-red-500/10 border border-red-500/30 p-3 text-sm text-rose-300 flex items-center gap-2">
             <AlertCircle className="w-4 h-4" />
             {error}
           </div>
@@ -403,7 +403,7 @@ export default function LearnedSkillsPage() {
                         <EvolutionTree skill={s} all={skills} />
                       </div>
                       {s.lastFailureReason && (
-                        <div className="rounded-lg bg-red-500/10 border border-red-500/30 p-2 text-xs text-red-300">
+                        <div className="rounded-lg bg-red-500/10 border border-red-500/30 p-2 text-xs text-rose-300">
                           {t("details.lastFailure")}: {s.lastFailureReason}
                         </div>
                       )}

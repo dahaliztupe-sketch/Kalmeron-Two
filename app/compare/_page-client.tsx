@@ -68,7 +68,7 @@ const TIME_COMPARISON = [
 
 function CellIcon({ value, isKalmeron }: { value: CellValue; isKalmeron?: boolean }) {
   if (value === true) return <CheckCircle2 className={`w-5 h-5 ${isKalmeron ? "text-emerald-400" : "text-emerald-400/70"}`} />;
-  if (value === false) return <XCircle className="w-5 h-5 text-red-400/50" />;
+  if (value === false) return <XCircle className="w-5 h-5 text-rose-400/50" />;
   if (value === "partial") return <Minus className="w-5 h-5 text-amber-400/70" />;
   return <span className="text-xs text-neutral-400 text-center leading-tight">{value}</span>;
 }
@@ -140,7 +140,7 @@ export default function ComparePage() {
                 {c.isKalmeron && (
                   <div className="text-[10px] text-emerald-400 font-medium mb-2 bg-emerald-400/10 px-2 py-0.5 rounded-full inline-block">الأفضل قيمة</div>
                 )}
-                <div className={`font-display text-lg font-extrabold mb-1 ${c.isKalmeron ? "text-emerald-400" : "text-red-400"}`}>{c.monthly}</div>
+                <div className={`font-display text-lg font-extrabold mb-1 ${c.isKalmeron ? "text-emerald-400" : "text-rose-400"}`}>{c.monthly}</div>
                 <div className="text-xs text-neutral-400">{c.item}</div>
               </motion.div>
             ))}
@@ -182,7 +182,7 @@ export default function ComparePage() {
               <div key={i} className={`grid grid-cols-3 p-4 border-b border-white/[0.04] last:border-0 ${i % 2 === 0 ? "" : "bg-white/[0.015]"}`}>
                 <div className="text-sm text-neutral-300">{row.task}</div>
                 <div className="text-sm font-bold text-emerald-400 text-center">{row.kalmeron}</div>
-                <div className="text-sm text-red-400/80 text-center">{row.traditional}</div>
+                <div className="text-sm text-rose-400/80 text-center">{row.traditional}</div>
               </div>
             ))}
           </div>
@@ -259,7 +259,7 @@ export default function ComparePage() {
           <div className="flex flex-wrap items-center justify-center gap-6 mt-6 text-xs text-neutral-500">
             <span className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-400" /> مدعوم بالكامل</span>
             <span className="flex items-center gap-2"><Minus className="w-4 h-4 text-amber-400" /> دعم جزئي</span>
-            <span className="flex items-center gap-2"><XCircle className="w-4 h-4 text-red-400/50" /> غير مدعوم</span>
+            <span className="flex items-center gap-2"><XCircle className="w-4 h-4 text-rose-400/50" /> غير مدعوم</span>
           </div>
         </div>
       </section>

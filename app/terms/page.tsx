@@ -66,13 +66,13 @@ export default function TermsPage() {
 
           <section className="glass p-8 rounded-3xl">
             <h2 className="text-xl font-bold text-white mb-3">4. الاستخدام المقبول والمحظور</h2>
-            <p className="mb-3 text-green-300 font-medium">الاستخدامات المقبولة تشمل:</p>
+            <p className="mb-3 text-emerald-300 font-medium">الاستخدامات المقبولة تشمل:</p>
             <ul className="list-disc list-inside space-y-1 text-sm mb-4">
               <li>تطوير خطط عمل وتحليل السوق لأغراض ريادة الأعمال المشروعة.</li>
               <li>الاستعانة بالمساعدين الذكيين للحصول على إرشادات استراتيجية.</li>
               <li>إنشاء المستندات القانونية والمالية كنماذج أولية للمراجعة البشرية.</li>
             </ul>
-            <p className="mb-3 text-red-400 font-medium">الاستخدامات المحظورة تشمل تحديداً:</p>
+            <p className="mb-3 text-rose-400 font-medium">الاستخدامات المحظورة تشمل تحديداً:</p>
             <ul className="list-disc list-inside space-y-1 text-sm text-neutral-400">
               <li>أي نشاط مخالف للقانون المصري أو قوانين الدولة التي تعمل منها.</li>
               <li>محاولة اختراق أو التلاعب بنماذج الذكاء الاصطناعي (Prompt Injection / Jailbreaking).</li>

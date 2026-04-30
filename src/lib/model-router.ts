@@ -184,8 +184,6 @@ export function selectModel(complexity: TaskComplexity) {
  * given workload kind. Free-tier deployments default to Google Gemini
  * (the only AI SDK provider currently installed).
  */
-import { google } from '@ai-sdk/google';
-
 export type OrchestratorWorkload = 'chat' | 'reasoning' | 'fast';
 
 export function getOrchestratorModel(workload: OrchestratorWorkload = 'chat') {

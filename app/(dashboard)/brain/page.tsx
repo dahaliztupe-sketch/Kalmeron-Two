@@ -17,7 +17,7 @@ const TYPE_COLORS: Record<string, string> = {
   Lead: "bg-emerald-500/15 text-emerald-300 border-emerald-500/30",
   Customer: "bg-sky-500/15 text-sky-300 border-sky-500/30",
   Competitor: "bg-rose-500/15 text-rose-300 border-rose-500/30",
-  Risk: "bg-red-500/15 text-red-300 border-red-500/30",
+  Risk: "bg-red-500/15 text-rose-300 border-red-500/30",
   Finding: "bg-violet-500/15 text-violet-300 border-violet-500/30",
 };
 

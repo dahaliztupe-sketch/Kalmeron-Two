@@ -71,7 +71,7 @@ export default function SkillsPage() {
                     {s.agentType} · الجيل {s.generation} · {s.source}
                   </div>
                 </div>
-                <span className={`text-xs px-2 py-1 rounded ${s.enabled ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-600"}`}>
+                <span className={`text-xs px-2 py-1 rounded ${s.enabled ? "bg-green-100 text-emerald-700" : "bg-gray-100 text-gray-600"}`}>
                   {s.enabled ? "مفعّلة" : "موقوفة"}
                 </span>
               </div>
