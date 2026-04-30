@@ -26,7 +26,9 @@ import {
   setCurrentLearnedSkills,
   clearCurrentLearnedSkills,
   markFeedbackRecorded,
+  runWithBootstrapAddon,
 } from '@/src/lib/learning/context';
+import { getBootstrapSkillsAddon } from '@/src/lib/agent-skills/runtime-loader';
 
 export interface InstrumentOptions {
   model?: string;
@@ -102,19 +104,40 @@ export async function instrumentAgent<T>(
   // اجعل المهارات مرئية للكود الداخلي (مثل بنّاء system prompt) عبر السياق،
   // وامسح أي قيمة قديمة من وكيل سابق إذا لم نجد مهارات لهذا الاستدعاء حتى
   // لا تتسرّب نصوص قديمة إلى prompt الوكيل التالي.
+  //
+  // نَدمج هنا مصدرين:
+  //   1) المهارات البذريّة (Bootstrap) من ملفّات SKILL.md المُسجّلة لهذا
+  //      الوكيل في `agent-skills/registry.ts` — تعمل دون الحاجة إلى
+  //      workspaceId وتُحقن دائماً.
+  //   2) المهارات المُتعلَّمة (LearnedSkill) من Firestore — تتطلّب
+  //      workspaceId ومهمّة فعليّة.
+  const bootstrapAddon = getBootstrapSkillsAddon(agentName);
+  const learnedAddon = preloadedSkills.length
+    ? formatSkillsForPrompt(preloadedSkills)
+    : '';
+  const combinedAddon = [bootstrapAddon, learnedAddon].filter(Boolean).join('\n\n');
+  const combinedIds = preloadedSkills.map((s) => s.id!).filter(Boolean);
+
+  // ملاحظة: إذا كان `learningEnabled=false` لا يوجد AsyncLocalStorage
+  // فعّال للكتابة عليه؛ في هذه الحالة نُنشئ سياقاً خفيفاً حول التنفيذ
+  // فقط ليصل البذريّ إلى `getCurrentLearnedSkillsAddon()` داخل الوكيل.
   if (learningEnabled) {
-    if (preloadedSkills.length) {
-      setCurrentLearnedSkills(
-        formatSkillsForPrompt(preloadedSkills),
-        preloadedSkills.map((s) => s.id!).filter(Boolean)
-      );
+    if (combinedAddon) {
+      setCurrentLearnedSkills(combinedAddon, combinedIds);
     } else {
       clearCurrentLearnedSkills();
     }
   }
 
+  // إذا لم تكن دورة التعلّم مُفعّلة، نَلفّ exec بسياق خفيف يحمل البذريّ
+  // فقط — حتى يصل `getCurrentLearnedSkillsAddon()` إلى المهارات داخل الوكيل.
+  const runExec = () =>
+    !learningEnabled && combinedAddon
+      ? runWithBootstrapAddon(combinedAddon, combinedIds, exec)
+      : exec();
+
   try {
-    result = await exec();
+    result = await runExec();
     return result;
   } catch (e: unknown) {
     success = false;

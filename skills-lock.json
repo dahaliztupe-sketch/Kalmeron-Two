@@ -1,6 +1,18 @@
 {
   "version": 1,
   "skills": {
+    "business-growth-skills": {
+      "source": "alirezarezvani/claude-skills",
+      "sourceType": "github",
+      "skillPath": "business-growth/SKILL.md",
+      "computedHash": "79378703fcff4525acdd5d852efb9f119f9111dec734633a4ce1d1f80a4cfe8d"
+    },
+    "c-level-advisor": {
+      "source": "alirezarezvani/claude-skills",
+      "sourceType": "github",
+      "skillPath": "c-level-advisor/SKILL.md",
+      "computedHash": "8c055a9ae9080fa546f1ddf645db737024ab6bc74016814ab5096bd40c65009c"
+    },
     "cloud-run-basics": {
       "source": "google/skills",
       "sourceType": "github",
@@ -12,6 +24,12 @@
       "sourceType": "github",
       "skillPath": ".github/skills/continual-learning/SKILL.md",
       "computedHash": "1f7c1a79d6ee166aac48591acbc9165778d2384fa9e84405099750b6e065c0c7"
+    },
+    "finance-skills": {
+      "source": "alirezarezvani/claude-skills",
+      "sourceType": "github",
+      "skillPath": "finance/SKILL.md",
+      "computedHash": "6af5e170870776cc67cee631fdf17fb0d1feeccfda57d98d7d7d65babf108ec7"
     },
     "firebase-basics": {
       "source": "google/skills",
@@ -54,6 +72,12 @@
       "sourceType": "github",
       "skillPath": "skills/mcp-builder/SKILL.md",
       "computedHash": "826e46adf81e1372282e205c34e1a2ee876e72148007726e4a2512599d2fef7b"
+    },
+    "product-skills": {
+      "source": "alirezarezvani/claude-skills",
+      "sourceType": "github",
+      "skillPath": "product-team/SKILL.md",
+      "computedHash": "e3dca3510a4f9f783ac235c5696363f548be8a61637ac4a81bd30d7705b8f13c"
     },
     "skill-creator": {
       "source": "anthropics/skills",

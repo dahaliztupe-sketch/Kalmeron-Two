@@ -53,6 +53,28 @@ export function getCurrentLearningContext(): LearningContext | undefined {
 }
 
 /**
+ * يُنشئ سياقاً خفيفاً مُحمّلاً بـ skills addon فقط (بدون workspace/task).
+ * يُستخدم لتمرير المهارات البذريّة (Bootstrap من ملفّات SKILL.md) إلى
+ * الوكلاء حتى عندما لا تكون دورة التعلّم مُفعّلة (لا workspaceId).
+ */
+export function runWithBootstrapAddon<T>(
+  addon: string,
+  ids: string[],
+  fn: () => Promise<T> | T
+): Promise<T> | T {
+  if (!addon) return fn();
+  return storage.run(
+    {
+      workspaceId: '',
+      task: '',
+      learnedSkillsAddon: addon,
+      learnedSkillIds: ids,
+    },
+    fn
+  );
+}
+
+/**
  * Returns the formatted "learned skills" addon for the current execution, or
  * an empty string if none. Safe to call from any agent's prompt builder —
  * append it to your system prompt to make the agent aware of past lessons.
