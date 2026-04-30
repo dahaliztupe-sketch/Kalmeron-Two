@@ -144,6 +144,36 @@ npm run embeddings-worker:dev   # 8099
 
 راجع `SKILL.md` (في الجذر) — يحوي خطوات تفصيليّة من الفكرة إلى الإنتاج.
 
+### 10.1 Agent Skills المثبّتة (مرجع للوكلاء البرمجيين)
+
+> هذه ملفات `SKILL.md` خارجيّة مُثبّتة عبر `npx skills add` وموثّقة في `skills-lock.json`.
+> **مهم:** هذه المهارات تُوجّه **الوكلاء البرمجيّين** (Replit Agent، Cursor، Claude Code…) أثناء كتابة/صيانة كود كلميرون — وليست تعليمات للوكلاء الـ16 وقت التشغيل.
+> الموقع: `.agents/skills/<skill-name>/SKILL.md`. أعد القراءة عند بدء أيّ مهمّة في النطاق المعني.
+
+| المهارة | المصدر | متى تُستدعى |
+|---|---|---|
+| `firebase-basics` | google/skills | أيّ تعديل على Firestore، Auth، Storage، Functions |
+| `gemini-api` | google/skills | أيّ كود يستخدم `@google/genai` أو `@ai-sdk/google` |
+| `cloud-run-basics` | google/skills | عند نشر/تكوين خدمات Python sidecar |
+| `google-cloud-waf-security` | google/skills | مراجعات أمنيّة، IAM، حماية البيانات |
+| `google-cloud-waf-reliability` | google/skills | تصميم الموثوقيّة، SLO، تحمّل الأعطال |
+| `google-cloud-waf-cost-optimization` | google/skills | مراقبة تكلفة Gemini/Firestore، تحسين الموارد |
+| `vercel-react-best-practices` | vercel-labs/agent-skills | كتابة/مراجعة RSC، data fetching، bundle |
+| `vercel-composition-patterns` | vercel-labs/agent-skills | تصميم مكوّنات قابلة لإعادة الاستخدام (compound, render-props) |
+| `web-design-guidelines` | vercel-labs/agent-skills | تدقيق UI: accessibility، UX، responsive |
+| `frontend-design-review` | microsoft/agent-skills | مراجعات PR للواجهة، فحص نظام التصميم |
+| `continual-learning` | microsoft/agent-skills | بناء حلقات تعلّم/ذاكرة للوكلاء |
+| `mcp-builder` | anthropics/skills | بناء MCP server (مثل `app/mcp-server/`) |
+| `skill-creator` | anthropics/skills | إنشاء/تحسين مهارة جديدة محلّيّة |
+
+**أوامر إدارة المهارات:**
+```bash
+npx skills list                     # عرض المثبّت
+npx skills add <owner>/<repo> --agent replit --skill <name> -y
+npx skills update -p -y             # تحديث المهارات داخل المشروع
+npx skills remove <name> -a replit  # إزالة
+```
+
 ## 11. خريطة Harness Engineering (مرجع سريع)
 
 كل آليّة سلامة لها مكان واحد في الكود — راجع `docs/HARNESS.md` للجدول الكامل. أهم النقاط:
