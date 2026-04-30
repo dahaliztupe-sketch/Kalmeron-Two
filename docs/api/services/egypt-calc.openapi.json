@@ -1,0 +1,261 @@
+{
+    "openapi": "3.1.0",
+    "info": {
+        "title": "Kalmeron Egypt Calc",
+        "version": "1.0.0"
+    },
+    "paths": {
+        "/health": {
+            "get": {
+                "summary": "Health",
+                "operationId": "health_health_get",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "additionalProperties": true,
+                                    "type": "object",
+                                    "title": "Response Health Health Get"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/income-tax": {
+            "post": {
+                "summary": "Calc Income Tax",
+                "operationId": "calc_income_tax_income_tax_post",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/IncomeTaxIn"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "additionalProperties": true,
+                                    "type": "object",
+                                    "title": "Response Calc Income Tax Income Tax Post"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/social-insurance": {
+            "post": {
+                "summary": "Calc Social Insurance",
+                "operationId": "calc_social_insurance_social_insurance_post",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/SocialInsuranceIn"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "additionalProperties": true,
+                                    "type": "object",
+                                    "title": "Response Calc Social Insurance Social Insurance Post"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/total-cost": {
+            "post": {
+                "summary": "Calc Total Cost",
+                "operationId": "calc_total_cost_total_cost_post",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/TotalCostIn"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "additionalProperties": true,
+                                    "type": "object",
+                                    "title": "Response Calc Total Cost Total Cost Post"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "HTTPValidationError": {
+                "properties": {
+                    "detail": {
+                        "items": {
+                            "$ref": "#/components/schemas/ValidationError"
+                        },
+                        "type": "array",
+                        "title": "Detail"
+                    }
+                },
+                "type": "object",
+                "title": "HTTPValidationError"
+            },
+            "IncomeTaxIn": {
+                "properties": {
+                    "annual_gross": {
+                        "type": "number",
+                        "minimum": 0.0,
+                        "title": "Annual Gross",
+                        "description": "Gross annual salary in EGP"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "annual_gross"
+                ],
+                "title": "IncomeTaxIn"
+            },
+            "SocialInsuranceIn": {
+                "properties": {
+                    "monthly_wage": {
+                        "type": "number",
+                        "minimum": 0.0,
+                        "title": "Monthly Wage",
+                        "description": "Monthly wage in EGP"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "monthly_wage"
+                ],
+                "title": "SocialInsuranceIn"
+            },
+            "TotalCostIn": {
+                "properties": {
+                    "monthly_gross": {
+                        "type": "number",
+                        "minimum": 0.0,
+                        "title": "Monthly Gross",
+                        "description": "Monthly gross salary in EGP"
+                    },
+                    "months": {
+                        "type": "integer",
+                        "enum": [
+                            12,
+                            13,
+                            14
+                        ],
+                        "title": "Months",
+                        "default": 12
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "monthly_gross"
+                ],
+                "title": "TotalCostIn"
+            },
+            "ValidationError": {
+                "properties": {
+                    "loc": {
+                        "items": {
+                            "anyOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "integer"
+                                }
+                            ]
+                        },
+                        "type": "array",
+                        "title": "Location"
+                    },
+                    "msg": {
+                        "type": "string",
+                        "title": "Message"
+                    },
+                    "type": {
+                        "type": "string",
+                        "title": "Error Type"
+                    },
+                    "input": {
+                        "title": "Input"
+                    },
+                    "ctx": {
+                        "type": "object",
+                        "title": "Context"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "loc",
+                    "msg",
+                    "type"
+                ],
+                "title": "ValidationError"
+            }
+        }
+    }
+}

@@ -1,5 +1,45 @@
 # Kalmeron AI (ai-studio-applet)
 
+## Polyglot architecture (current)
+
+The codebase deliberately spans several languages. Each is used **only** for
+the work it is best at — never for fashion. See ADRs 0005–0007 in
+`docs/decisions/` for the full rationale.
+
+| Language    | Where                                                                   | Why                                                                  |
+|-------------|-------------------------------------------------------------------------|----------------------------------------------------------------------|
+| TypeScript  | `app/`, `src/`, `components/` (Next.js 16 + React 19)                   | Front-end, API routes, business logic, agent orchestration.          |
+| Python 3.12 | `services/{pdf-worker,embeddings-worker,llm-judge,egypt-calc,eval-analyzer}` | OCR, sentence embeddings, LLM evaluation, tax math, dbt analytics.   |
+| SQL + dbt   | `services/data-warehouse`                                               | Analytics warehouse on DuckDB.                                       |
+| Rust 1.88   | `services/token-meter`                                                  | Hot-path BPE token counting (10-50× faster than the JS equivalent).  |
+| JS (`.mjs`) | `scripts/`                                                              | Codegen and DevOps glue; runs on Node, no install.                   |
+
+### Cross-language contracts
+
+- Each FastAPI service publishes its OpenAPI spec at `/openapi.json`.
+- `npm run codegen:openapi` snapshots specs into `docs/api/services/*.openapi.json`.
+- `npm run codegen:clients` regenerates typed TS clients into `src/lib/api-clients/`.
+- App code imports from `@/lib/api-clients` only — never raw `fetch` to a service URL.
+
+### Tooling commands
+
+| Command                  | What it does                                          |
+|--------------------------|-------------------------------------------------------|
+| `npm run codegen`        | Pull OpenAPI specs and regen TypeScript clients.      |
+| `npm run lint:py`        | Ruff lint + format check on every Python service.     |
+| `npm run format:py`      | Ruff auto-format Python.                              |
+| `npm run typecheck:py`   | Mypy strict on Python services.                       |
+| `cd services/token-meter && cargo build --profile release-prod` | Production Rust build with LTO. |
+
+### Workflows
+
+`Start application` (Next.js, port 5000), `PDF Worker` (8000),
+`Egypt Calc` (8008), `LLM Judge` (8080), `Embeddings Worker` (8099),
+`Token Meter` (9000, Rust). The `lint`, `typecheck`, `test`, `audit-fast`
+workflows are CI-style validation tasks that run on demand.
+
+---
+
 ## Session 2026-04-30 (PM) — Audit 66→98, LCP fix, contrast sweep
 
 ### النتائج الكبرى

@@ -1,0 +1,284 @@
+{
+    "openapi": "3.1.0",
+    "info": {
+        "title": "Kalmeron LLM Judge",
+        "version": "1.0.0"
+    },
+    "paths": {
+        "/health": {
+            "get": {
+                "summary": "Health",
+                "operationId": "health_health_get",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "additionalProperties": true,
+                                    "type": "object",
+                                    "title": "Response Health Health Get"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/rubrics": {
+            "get": {
+                "summary": "Rubrics",
+                "operationId": "rubrics_rubrics_get",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "additionalProperties": true,
+                                    "type": "object",
+                                    "title": "Response Rubrics Rubrics Get"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/judge": {
+            "post": {
+                "summary": "Judge One",
+                "operationId": "judge_one_judge_post",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/JudgeIn"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JudgeOut"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/judge/batch": {
+            "post": {
+                "summary": "Judge Batch",
+                "operationId": "judge_batch_judge_batch_post",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/JudgeBatchIn"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JudgeBatchOut"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "HTTPValidationError": {
+                "properties": {
+                    "detail": {
+                        "items": {
+                            "$ref": "#/components/schemas/ValidationError"
+                        },
+                        "type": "array",
+                        "title": "Detail"
+                    }
+                },
+                "type": "object",
+                "title": "HTTPValidationError"
+            },
+            "JudgeBatchIn": {
+                "properties": {
+                    "items": {
+                        "items": {
+                            "$ref": "#/components/schemas/JudgeIn"
+                        },
+                        "type": "array",
+                        "maxItems": 64,
+                        "minItems": 1,
+                        "title": "Items"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "items"
+                ],
+                "title": "JudgeBatchIn"
+            },
+            "JudgeBatchOut": {
+                "properties": {
+                    "mode": {
+                        "type": "string",
+                        "title": "Mode"
+                    },
+                    "results": {
+                        "items": {
+                            "$ref": "#/components/schemas/JudgeOut"
+                        },
+                        "type": "array",
+                        "title": "Results"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "mode",
+                    "results"
+                ],
+                "title": "JudgeBatchOut"
+            },
+            "JudgeIn": {
+                "properties": {
+                    "question": {
+                        "type": "string",
+                        "maxLength": 8000,
+                        "minLength": 1,
+                        "title": "Question"
+                    },
+                    "answer": {
+                        "type": "string",
+                        "maxLength": 20000,
+                        "title": "Answer"
+                    },
+                    "rubric": {
+                        "type": "string",
+                        "title": "Rubric",
+                        "description": "One of the rubric names from /rubrics"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "question",
+                    "answer",
+                    "rubric"
+                ],
+                "title": "JudgeIn"
+            },
+            "JudgeOut": {
+                "properties": {
+                    "rubric": {
+                        "type": "string",
+                        "title": "Rubric"
+                    },
+                    "mode": {
+                        "type": "string",
+                        "title": "Mode"
+                    },
+                    "score": {
+                        "type": "number",
+                        "title": "Score"
+                    },
+                    "criteria_scores": {
+                        "additionalProperties": {
+                            "type": "number"
+                        },
+                        "type": "object",
+                        "title": "Criteria Scores"
+                    },
+                    "reasoning": {
+                        "type": "string",
+                        "title": "Reasoning"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "rubric",
+                    "mode",
+                    "score",
+                    "criteria_scores",
+                    "reasoning"
+                ],
+                "title": "JudgeOut"
+            },
+            "ValidationError": {
+                "properties": {
+                    "loc": {
+                        "items": {
+                            "anyOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "integer"
+                                }
+                            ]
+                        },
+                        "type": "array",
+                        "title": "Location"
+                    },
+                    "msg": {
+                        "type": "string",
+                        "title": "Message"
+                    },
+                    "type": {
+                        "type": "string",
+                        "title": "Error Type"
+                    },
+                    "input": {
+                        "title": "Input"
+                    },
+                    "ctx": {
+                        "type": "object",
+                        "title": "Context"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "loc",
+                    "msg",
+                    "type"
+                ],
+                "title": "ValidationError"
+            }
+        }
+    }
+}

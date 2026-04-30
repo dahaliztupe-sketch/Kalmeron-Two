@@ -1,4 +1,4 @@
-modules = ["nodejs-20", "python-3.12", "web"]
+modules = ["nodejs-20", "python-3.12", "web", "rust-stable"]
 [agent]
 expertMode = true
 stack = "GAMESTACK_JS"
@@ -50,6 +50,10 @@ args = "test"
 [[workflows.workflow.tasks]]
 task = "workflow.run"
 args = "audit-fast"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Token Meter"
 
 [[workflows.workflow]]
 name = "Start application"
@@ -155,6 +159,18 @@ args = "npm run audit:fast"
 [workflows.workflow.metadata]
 isValidation = true
 
+[[workflows.workflow]]
+name = "Token Meter"
+author = "agent"
+
+[workflows.workflow.metadata]
+outputType = "console"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "TOKEN_METER_PORT=9000 bash services/token-meter/run.sh"
+waitForPort = 9000
+
 [[ports]]
 localPort = 5000
 externalPort = 80
@@ -207,6 +223,10 @@ externalPort = 3003
 localPort = 23636
 externalPort = 6800
 
+[[ports]]
+localPort = 9000
+externalPort = 9000
+
 [userenv]
 
 [userenv.shared]
@@ -228,6 +248,7 @@ EMBEDDINGS_WORKER_URL = "http://localhost:8099"
 EMBEDDINGS_MODEL = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
 FAWRY_BASE_URL = "https://atfawry.fawrystaging.com"
 JUDGE_MODEL = "gemini-2.5-flash-lite"
+TOKEN_METER_URL = "http://localhost:9000"
 
 [deployment]
 deploymentTarget = "autoscale"
