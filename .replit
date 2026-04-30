@@ -212,6 +212,10 @@ localPort = 8099
 externalPort = 8099
 
 [[ports]]
+localPort = 9000
+externalPort = 9000
+
+[[ports]]
 localPort = 9005
 externalPort = 3002
 
@@ -222,10 +226,6 @@ externalPort = 3003
 [[ports]]
 localPort = 23636
 externalPort = 6800
-
-[[ports]]
-localPort = 9000
-externalPort = 9000
 
 [userenv]
 
