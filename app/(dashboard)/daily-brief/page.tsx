@@ -291,7 +291,7 @@ function DeliveryPanel({ brief }: { brief: DailyBrief }) {
       {open && (
         <div className="space-y-3 border-t border-white/[0.05] pt-3">
           <label className="flex items-center gap-2 text-sm text-neutral-200">
-            <input type="checkbox" checked={!!prefs.whatsapp} onChange={(e) => save({ whatsapp: e.target.checked })} />
+            <input aria-label="خانة اختيار" type="checkbox" checked={!!prefs.whatsapp} onChange={(e) => save({ whatsapp: e.target.checked })} />
             تسليم على واتساب
           </label>
           <input
@@ -304,7 +304,7 @@ function DeliveryPanel({ brief }: { brief: DailyBrief }) {
           />
 
           <label className="flex items-center gap-2 text-sm text-neutral-200">
-            <input type="checkbox" checked={prefs.email !== false} onChange={(e) => save({ email: e.target.checked })} />
+            <input aria-label="خانة اختيار" type="checkbox" checked={prefs.email !== false} onChange={(e) => save({ email: e.target.checked })} />
             تسليم على الإيميل
           </label>
           <input

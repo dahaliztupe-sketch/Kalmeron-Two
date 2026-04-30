@@ -11,7 +11,7 @@ import { ServiceWorkerRegistrar } from "@/components/pwa/ServiceWorkerRegistrar"
 import { WebVitals } from "@/components/analytics/WebVitals";
 import { NextIntlClientProvider } from 'next-intl';
 import { getLocale, getMessages } from 'next-intl/server';
-import { safeJsonLd } from "@/src/lib/security/safe-json-ld";
+import { sanitizeJsonLd } from "@/src/lib/security/safe-json-ld";
 import { ScrollRestoration } from "@/components/utils/ScrollRestoration";
 
 // ═══ Lean typography stack — perf-first ═══
@@ -122,15 +122,20 @@ export default async function RootLayout({
   const locale = await getLocale();
   const messages = await getMessages();
 
+  // Arabic-first defaults: render dir="rtl" lang="ar" for the default locale,
+  // switching to dir="ltr" lang="en" only when the user explicitly chose English.
+  const htmlLang = locale === 'en' ? 'en' : 'ar';
+  const htmlDir = locale === 'en' ? 'ltr' : 'rtl';
+
   return (
-    <html lang={locale} dir={locale === 'ar' ? 'rtl' : 'ltr'} className={cn(plexArabic.variable, plusJakarta.variable)} suppressHydrationWarning data-scroll-behavior="smooth">
+    <html lang={htmlLang} dir={htmlDir} className={cn(plexArabic.variable, plusJakarta.variable)} suppressHydrationWarning data-scroll-behavior="smooth" data-default-lang="ar" data-default-dir="rtl">
       <head>
         {/* Performance: pre-warm only origins used on first paint. Firebase preconnects moved to AuthProvider on demand. */}
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <script
           type="application/ld+json"
           // nosemgrep: typescript.react.security.audit.react-dangerouslysetinnerhtml.react-dangerouslysetinnerhtml -- safeJsonLd escapes </script and HTML entities; required for SEO JSON-LD per schema.org guidelines
-          dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}
+          dangerouslySetInnerHTML={{ __html: sanitizeJsonLd(jsonLd) }}
         />
       </head>
       <body className="antialiased bg-[#04060B] text-[#F8FAFC] selection:bg-indigo-500/40">

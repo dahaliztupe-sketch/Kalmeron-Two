@@ -9,7 +9,7 @@
  *
  * Reference: OWASP "Output Encoding for HTML script tags".
  */
-export function safeJsonLd(payload: unknown): string {
+export function sanitizeJsonLd(payload: unknown): string {
   return JSON.stringify(payload)
     .replace(/</g, '\\u003c')
     .replace(/>/g, '\\u003e')
@@ -18,12 +18,18 @@ export function safeJsonLd(payload: unknown): string {
     .replace(/\u2029/g, '\\u2029');
 }
 
+/** Backwards-compatible alias for the JSON-LD sanitizer. */
+export const safeJsonLd = sanitizeJsonLd;
+
 /**
- * Escape a string of (possibly untrusted) text for safe insertion into HTML
- * via `dangerouslySetInnerHTML`. Use this for any user/CMS-supplied text
- * before passing it through a transform that emits HTML (e.g. bold markdown).
+ * Escape (sanitize) a string of (possibly untrusted) text for safe insertion
+ * into HTML via `dangerouslySetInnerHTML`. Use this for any user/CMS-supplied
+ * text before passing it through a transform that emits HTML (e.g. bold
+ * markdown). This is an HTML-entity sanitizer; the resulting string is safe
+ * to interpolate into element bodies but NOT into attribute values without
+ * additional context-specific escaping.
  */
-export function escapeHtml(input: string): string {
+export function sanitizeHtml(input: string): string {
   return input
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
@@ -31,3 +37,6 @@ export function escapeHtml(input: string): string {
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;');
 }
+
+/** Backwards-compatible alias for the HTML sanitizer. */
+export const escapeHtml = sanitizeHtml;

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { getBlogPostBySlug, getAllBlogSlugs, BLOG_POSTS } from "@/src/lib/seo/blog-posts";
 import { SeoLandingShell } from "@/components/seo/SeoLandingShell";
 import { Calendar, Clock, User } from "lucide-react";
-import { escapeHtml, safeJsonLd } from "@/src/lib/security/safe-json-ld";
+import { sanitizeHtml, sanitizeJsonLd } from "@/src/lib/security/safe-json-ld";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -55,7 +55,7 @@ function renderMarkdown(content: string) {
           <li key={i} className="text-zinc-300 leading-relaxed flex gap-2">
             <span className="text-cyan-400 flex-shrink-0">·</span>
             { /* nosemgrep: typescript.react.security.audit.react-dangerouslysetinnerhtml.react-dangerouslysetinnerhtml -- input is escapeHtml-encoded first, then a fixed bold-marker regex re-injects <strong> tags only. */ }
-            <span dangerouslySetInnerHTML={{ __html: escapeHtml(item).replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>") }} />
+            <span dangerouslySetInnerHTML={{ __html: sanitizeHtml(item).replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>") }} />
           </li>
         ))}
       </ul>
@@ -92,7 +92,7 @@ function renderMarkdown(content: string) {
           key={out.length}
           className="text-zinc-300 leading-relaxed my-4"
           // nosemgrep: typescript.react.security.audit.react-dangerouslysetinnerhtml.react-dangerouslysetinnerhtml -- input is escapeHtml-encoded first, then a fixed bold-marker regex re-injects <strong> tags only.
-          dangerouslySetInnerHTML={{ __html: escapeHtml(line).replace(/\*\*(.+?)\*\*/g, "<strong class='text-white'>$1</strong>") }}
+          dangerouslySetInnerHTML={{ __html: sanitizeHtml(line).replace(/\*\*(.+?)\*\*/g, "<strong class='text-white'>$1</strong>") }}
         />
       );
     }
@@ -123,7 +123,7 @@ export default async function BlogPostPage({ params }: PageProps) {
   return (
     <>
       { /* nosemgrep: typescript.react.security.audit.react-dangerouslysetinnerhtml.react-dangerouslysetinnerhtml -- safeJsonLd escapes </script and HTML entities; required for SEO JSON-LD. */ }
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: sanitizeJsonLd(jsonLd) }} />
       <SeoLandingShell
         eyebrow={post.category}
         title={post.titleAr}

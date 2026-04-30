@@ -5,7 +5,7 @@ import { getExpertBySlug, getAllExpertSlugs, EXPERTS } from "@/src/lib/seo/exper
 import { getUseCaseBySlug } from "@/src/lib/seo/use-cases";
 import { SeoLandingShell, FeatureCheck } from "@/components/seo/SeoLandingShell";
 import { MessageSquare, Sparkles } from "lucide-react";
-import { safeJsonLd } from "@/src/lib/security/safe-json-ld";
+import { sanitizeJsonLd } from "@/src/lib/security/safe-json-ld";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -69,7 +69,7 @@ export default async function ExpertPage({ params }: PageProps) {
       <script
         type="application/ld+json"
         // nosemgrep: typescript.react.security.audit.react-dangerouslysetinnerhtml.react-dangerouslysetinnerhtml -- safeJsonLd escapes </script and HTML entities; required for SEO JSON-LD per schema.org guidelines
-        dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: sanitizeJsonLd(jsonLd) }}
       />
       <SeoLandingShell
         eyebrow={`${expert.emoji} ${expert.roleAr}`}

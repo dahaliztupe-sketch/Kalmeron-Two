@@ -7,13 +7,13 @@
  */
 import { NextRequest, NextResponse } from 'next/server';
 import { getMetricsSnapshot } from '@/src/ai/organization/compliance/monitor';
-import { requirePlatformAdmin } from '@/src/lib/security/require-admin';
+import { requireAuth } from '@/src/lib/security/require-admin';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 export async function GET(req: NextRequest) {
-  const admin = await requirePlatformAdmin(req);
+  const admin = await requireAuth(req);
   if (admin instanceof Response) return admin;
   return NextResponse.json(getMetricsSnapshot(), {
     headers: { 'Cache-Control': 'private, no-store' },

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef, useCallback, Suspense } from "react";
+import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { AppShell } from "@/components/layout/AppShell";
@@ -157,10 +158,8 @@ function EmptyState({ onSuggestion }: { onSuggestion: (s: string) => void }) {
       >
         <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-cyan-500/30 via-indigo-500/30 to-fuchsia-500/30 blur-2xl logo-halo" />
         <div className="relative w-20 h-20 rounded-3xl border border-white/10 bg-[#070A18]/80 backdrop-blur-md flex items-center justify-center shadow-xl overflow-hidden">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
+          <Image alt="Kalmeron AI"
             src="/brand/kalmeron-mark.svg"
-            alt="Kalmeron AI"
             width={64}
             height={64}
             className="w-[78%] h-[78%] object-contain"
@@ -209,10 +208,8 @@ function MessageBubble({ m, isStreaming, activePhases }: { m: ChatMessage; isStr
           <AvatarFallback className="bg-indigo-500/20 text-indigo-300 font-semibold text-sm">أ</AvatarFallback>
         ) : (
           <div className="w-full h-full bg-[#070A18] flex items-center justify-center">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
+            <Image alt="Kalmeron AI"
               src="/brand/kalmeron-mark.svg"
-              alt="Kalmeron AI"
               width={32}
               height={32}
               className="w-[78%] h-[78%] object-contain"
@@ -573,10 +570,8 @@ function ChatPageContent() {
             <div className="flex items-center gap-2.5 flex-1">
               <Avatar className="h-8 w-8 border border-cyan-500/30 overflow-hidden">
                 <div className="w-full h-full bg-[#070A18] flex items-center justify-center">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
+                  <Image alt="Kalmeron AI"
                     src="/brand/kalmeron-mark.svg"
-                    alt="Kalmeron AI"
                     width={32}
                     height={32}
                     className="w-[78%] h-[78%] object-contain"
@@ -654,7 +649,7 @@ function ChatPageContent() {
               </div>
             )}
 
-            <input type="file" ref={fileInputRef} onChange={handleFileUpload} className="hidden" accept=".pdf" />
+            <input aria-label="رفع ملف" type="file" ref={fileInputRef} onChange={handleFileUpload} className="hidden" accept=".pdf" />
 
             <form onSubmit={onFormSubmit}
               className="relative flex items-end gap-2 bg-white/[0.04] border border-white/10 rounded-2xl p-2 focus-within:border-indigo-500/40 transition-all shadow-lg"

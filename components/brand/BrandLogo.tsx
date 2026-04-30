@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { cn } from "@/src/lib/utils";
 
@@ -45,10 +46,8 @@ export function BrandLogo({
         )}
         style={{ width: size, height: size }}
       >
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
+        <Image alt="Kalmeron AI"
           src="/brand/kalmeron-mark.svg"
-          alt="Kalmeron AI"
           width={size}
           height={size}
           className="w-full h-full object-contain"

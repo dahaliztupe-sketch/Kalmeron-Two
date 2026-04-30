@@ -1,3 +1,10 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "سجلات الذكاء الاصطناعي",
+  description: "تتبّع كافة طلبات وردود نماذج الذكاء الاصطناعي",
+};
+
 /**
  * AI Logs Dashboard — reads real `cost_events` from Firestore via the
  * admin SDK. Falls back to a clear empty-state when no events exist yet.

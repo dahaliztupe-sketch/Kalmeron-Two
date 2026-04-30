@@ -1,3 +1,10 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "حالة النظام",
+  description: "حالة خدمات Kalmeron AI ووقت التشغيل",
+};
+
 /**
  * Public status page — surfaces the latest health-probe results so customers
  * can self-serve "is Kalmeron down?" without contacting support.

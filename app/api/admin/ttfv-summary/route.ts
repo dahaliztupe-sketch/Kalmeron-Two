@@ -9,12 +9,12 @@
  */
 import { NextRequest, NextResponse } from 'next/server';
 import { getTtfvSummary } from '@/src/lib/analytics/ttfv';
-import { requirePlatformAdmin } from '@/src/lib/security/require-admin';
+import { requireAuth } from '@/src/lib/security/require-admin';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET(req: NextRequest) {
-  const admin = await requirePlatformAdmin(req);
+  const admin = await requireAuth(req);
   if (admin instanceof Response) return admin;
   try {
     const summary = await getTtfvSummary();

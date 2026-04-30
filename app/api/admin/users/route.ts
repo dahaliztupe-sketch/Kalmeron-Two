@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { adminAuth, adminDb } from '@/src/lib/firebase-admin';
-import { requirePlatformAdmin } from '@/src/lib/security/require-admin';
+import { requireAuth } from '@/src/lib/security/require-admin';
 import { toErrorMessage } from '@/src/lib/errors/to-message';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 export async function GET(req: NextRequest) {
-  const guard = await requirePlatformAdmin(req);
+  const guard = await requireAuth(req);
   if (guard instanceof Response) return guard;
 
   if (!adminDb?.collection) {
@@ -33,7 +33,7 @@ export async function GET(req: NextRequest) {
 }
 
 export async function DELETE(req: NextRequest) {
-  const guard = await requirePlatformAdmin(req);
+  const guard = await requireAuth(req);
   if (guard instanceof Response) return guard;
 
   const { uid } = await req.json().catch(() => ({ uid: null }));

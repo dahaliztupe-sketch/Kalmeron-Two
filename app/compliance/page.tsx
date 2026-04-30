@@ -1,3 +1,10 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "الامتثال القانوني",
+  description: "حالة الامتثال للوائح المصرية و GDPR",
+};
+
 import { PublicShell } from "@/components/layout/PublicShell";
 
 export default function CompliancePage() {

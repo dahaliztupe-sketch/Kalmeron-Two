@@ -28,9 +28,8 @@ export function PricingHero({ billing, setBilling }: Props) {
         >
           <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/40 via-indigo-500/30 to-fuchsia-500/30 blur-2xl rounded-full logo-halo" />
           <div className="relative w-20 h-20 md:w-24 md:h-24 rounded-2xl border border-white/10 bg-[#0B1020]/70 backdrop-blur-xl p-3 flex items-center justify-center">
-            <Image
+            <Image alt="Kalmeron AI"
               src="/brand/kalmeron-mark.svg"
-              alt="Kalmeron AI"
               width={96}
               height={96}
               className="w-full h-full object-contain"

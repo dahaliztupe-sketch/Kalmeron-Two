@@ -84,9 +84,8 @@ export function Sidebar() {
           <div className="relative">
             <div className="absolute -inset-1 rounded-2xl bg-gradient-to-br from-cyan-500/50 via-indigo-500/40 to-fuchsia-500/40 blur-md opacity-70 group-hover:opacity-100 transition-opacity" />
             <div className="relative w-11 h-11 rounded-2xl border border-white/10 bg-[#070A18]/80 backdrop-blur-sm flex items-center justify-center overflow-hidden">
-              <Image
+              <Image alt="Kalmeron AI"
                 src="/brand/kalmeron-mark.svg"
-                alt="Kalmeron AI"
                 width={44}
                 height={44}
                 className="w-[78%] h-[78%] object-contain"

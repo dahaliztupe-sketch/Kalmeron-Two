@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 export default function Loading() {
   return (
     <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#04060B]" aria-label="جارٍ التحميل">
@@ -13,13 +15,12 @@ export default function Loading() {
         {/* Brand mark */}
         <div className="relative w-16 h-16 rounded-2xl border border-white/10 bg-[#070A18]/80 backdrop-blur-md flex items-center justify-center overflow-hidden">
           <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-cyan-500/20 via-indigo-500/20 to-fuchsia-500/20 blur-xl animate-pulse" />
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
+          <Image alt="Kalmeron AI"
             src="/brand/kalmeron-mark.svg"
-            alt="Kalmeron AI"
             width={48}
             height={48}
             className="relative w-[72%] h-[72%] object-contain"
+            priority
           />
         </div>
         {/* Progress bar only — no text to avoid flash of Arabic on every navigation */}

@@ -86,6 +86,28 @@ export async function proxy(request: NextRequest) {
   else if (country === 'AE') response.headers.set('x-kalmeron-currency', 'AED');
   else response.headers.set('x-kalmeron-currency', 'EGP');
 
+  // 2.5 Locale detection from Accept-Language header (Stripe/Notion pattern).
+  //     We parse the browser-preferred language list and surface the best
+  //     match as `x-kalmeron-locale-detect` so the UI can offer a one-click
+  //     "Switch to English" / "العربية" suggestion when it diverges from the
+  //     default Arabic locale.
+  const acceptLang = request.headers.get('Accept-Language') || '';
+  const preferred = acceptLang
+    .split(',')
+    .map((tag) => {
+      const [lang, qPart] = tag.trim().split(';');
+      const q = qPart?.startsWith('q=') ? Number(qPart.slice(2)) : 1;
+      return { lang: (lang || '').toLowerCase().split('-')[0], q: Number.isFinite(q) ? q : 1 };
+    })
+    .filter((t) => t.lang)
+    .sort((a, b) => b.q - a.q)[0]?.lang;
+  if (preferred) {
+    response.headers.set(
+      'x-kalmeron-locale-detect',
+      preferred === 'ar' ? 'ar' : preferred === 'en' ? 'en' : preferred,
+    );
+  }
+
   // 3. Authentication Guard for protected routes (dashboard, profile, billing,
   //    admin, ideas/analyze, settings, inbox, operations, onboarding).
   //    The marker cookie `kal_session` is set client-side by AuthContext when

@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { buildFleetDriftReport, recordDriftSample } from '@/src/lib/observability/drift-detector';
-import { requirePlatformAdmin } from '@/src/lib/security/require-admin';
+import { requireAuth } from '@/src/lib/security/require-admin';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 export async function GET(req: NextRequest) {
-  const guard = await requirePlatformAdmin(req);
+  const guard = await requireAuth(req);
   if (guard instanceof Response) return guard;
 
   const url = new URL(req.url);
@@ -32,7 +32,7 @@ export async function GET(req: NextRequest) {
  * فحص الإدارة لأنها تكتب بيانات قياسية حسّاسة.
  */
 export async function POST(req: NextRequest) {
-  const guard = await requirePlatformAdmin(req);
+  const guard = await requireAuth(req);
   if (guard instanceof Response) return guard;
 
   interface DriftSampleBody {

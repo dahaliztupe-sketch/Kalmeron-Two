@@ -24,7 +24,7 @@
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 import { adminDb } from '@/src/lib/firebase-admin';
-import { requirePlatformAdmin } from '@/src/lib/security/require-admin';
+import { requireAuth } from '@/src/lib/security/require-admin';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -84,7 +84,7 @@ async function countDistinctUsersByEvent(
 }
 
 export async function GET(req: NextRequest) {
-  const admin = await requirePlatformAdmin(req);
+  const admin = await requireAuth(req);
   if (admin instanceof Response) return admin;
 
   const now = Date.now();

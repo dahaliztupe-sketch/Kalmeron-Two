@@ -28,7 +28,7 @@ export default function RealEstateAnalyzer() {
          </header>
 
          <form onSubmit={analyzeDeal} className="bg-neutral-900 border border-neutral-800 rounded-2xl p-6 mb-8 flex gap-4">
-           <input 
+           <input aria-label="حقل إدخال" 
              type="text" 
              value={location} 
              onChange={e=>setLocation(e.target.value)} 

@@ -9,7 +9,7 @@ import {
 import { SeoLandingShell } from "@/components/seo/SeoLandingShell";
 import { localBusinessSchema, breadcrumbSchema } from "@/src/lib/seo/schema";
 import {TrendingUp, Building2, Trophy } from "lucide-react";
-import { safeJsonLd } from "@/src/lib/security/safe-json-ld";
+import { sanitizeJsonLd } from "@/src/lib/security/safe-json-ld";
 
 interface PageProps {
   params: Promise<{ city: string }>;
@@ -62,7 +62,7 @@ export default async function CityPage({ params }: PageProps) {
       <script
         type="application/ld+json"
         // nosemgrep: typescript.react.security.audit.react-dangerouslysetinnerhtml.react-dangerouslysetinnerhtml -- safeJsonLd escapes </script and HTML entities; required for SEO JSON-LD per schema.org guidelines
-        dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: sanitizeJsonLd(jsonLd) }}
       />
       <SeoLandingShell
         eyebrow={`📍 ${c.countryAr}`}

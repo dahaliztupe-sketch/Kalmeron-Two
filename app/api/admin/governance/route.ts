@@ -3,13 +3,13 @@ import { observe } from '@/src/ai/admin/observer.agent';
 import { analyze } from '@/src/ai/admin/analyst.agent';
 import { plan } from '@/src/ai/admin/planner.agent';
 import { buildFleetDriftReport } from '@/src/lib/observability/drift-detector';
-import { requirePlatformAdmin } from '@/src/lib/security/require-admin';
+import { requireAuth } from '@/src/lib/security/require-admin';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 export async function GET(req: NextRequest) {
-  const guard = await requirePlatformAdmin(req);
+  const guard = await requireAuth(req);
   if (guard instanceof Response) return guard;
 
   const [report, drift] = await Promise.all([observe(), buildFleetDriftReport(7)]);

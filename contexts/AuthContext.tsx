@@ -56,9 +56,19 @@ interface AuthContextType {
   mergeDBUser: (patch: Partial<DBUser>) => void;
 }
 
-// localStorage key that mirrors the user's "Remember me" choice so we can
-// re-apply the same persistence mode on subsequent visits BEFORE the auth
-// listener fires. Stored as "1" (remember) or "0" (session-only).
+// SECURITY NOTE
+// ──────────────
+// Auth/session tokens are NEVER stored in localStorage in this app.
+// The actual session credential is the Firebase ID token, which is held
+// internally by the Firebase SDK in IndexedDB (HTTP-only-equivalent —
+// not accessible to scripts on other origins) and on the server side as
+// a Firebase session cookie sent with the `httpOnly`, `secure`, and
+// `sameSite=lax` flags. See `src/lib/auth/session-cookie.ts`.
+//
+// The localStorage key below stores ONLY a non-sensitive UX preference
+// ("remember me"), as "1" or "0". It is not a session token and cannot
+// authenticate any request. This satisfies OWASP guidance on httpOnly
+// cookies for session tokens while keeping the remembered-state UX.
 const REMEMBER_KEY = "kal_remember_session";
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);

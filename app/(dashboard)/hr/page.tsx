@@ -30,7 +30,7 @@ export default function HRDashboard() {
         <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-6 mb-8 flex flex-col md:flex-row gap-4 items-end">
            <div className="flex-1 w-full">
              <label className="block text-sm text-neutral-400 mb-2">المسمى الوظيفي المستهدف</label>
-             <input type="text" value={jobTitle} onChange={e=>setJobTitle(e.target.value)} placeholder="مثال: مدير عمليات المبيعات" className="w-full bg-neutral-950 border border-neutral-800 rounded-lg p-3 text-white outline-none" required />
+             <input aria-label="مثال: مدير عمليات المبيعات" type="text" value={jobTitle} onChange={e=>setJobTitle(e.target.value)} placeholder="مثال: مدير عمليات المبيعات" className="w-full bg-neutral-950 border border-neutral-800 rounded-lg p-3 text-white outline-none" required />
            </div>
            <button onClick={startHRCrew} disabled={isRunning} className="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-bold py-3 px-8 rounded-lg flex items-center gap-2 shrink-0 h-[50px]">
              {isRunning ? 'جاري مراجعة السير...' : 'تشغيل فرقة التوظيف'} <PlusCircle className="w-5 h-5" />

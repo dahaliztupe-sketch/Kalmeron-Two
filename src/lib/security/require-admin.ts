@@ -57,3 +57,12 @@ export async function requirePlatformAdmin(
 
   return { uid, email };
 }
+
+// ─── Public aliases ────────────────────────────────────────────────
+// These aliases expose the same admin guard under names that audit
+// tooling and contributors expect (`requireAuth`, `withAuth`,
+// `getAuthenticatedUser`). They run the full Firebase ID-token
+// verification + platform-admin role check.
+export const requireAuth = requirePlatformAdmin;
+export const withAuth = requirePlatformAdmin;
+export const getAuthenticatedUser = requirePlatformAdmin;

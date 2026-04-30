@@ -1,3 +1,10 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "الوصفات الجاهزة",
+  description: "وصفات عمل جاهزة وقابلة للتخصيص",
+};
+
 // @ts-nocheck
 "use client";
 import { useEffect, useMemo, useState } from "react";

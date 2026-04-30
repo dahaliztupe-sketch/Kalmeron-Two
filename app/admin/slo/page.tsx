@@ -1,3 +1,10 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "أهداف مستوى الخدمة",
+  description: "تتبّع SLO و SLA لكل خدمة",
+};
+
 /**
  * /admin/slo — SLO Burn-Rate Dashboard.
  *

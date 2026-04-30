@@ -1,3 +1,10 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "التكاليف والاستهلاك",
+  description: "تتبّع تكاليف نماذج الذكاء الاصطناعي والبنية التحتية",
+};
+
 /**
  * Cost Dashboard — reads from real `cost_rollups_daily` materialized by the
  * `/api/cron/aggregate-costs` cron. Falls back to a clear empty-state when no

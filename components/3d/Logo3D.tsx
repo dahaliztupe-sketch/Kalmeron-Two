@@ -2,6 +2,7 @@
 
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Float, MeshDistortMaterial } from "@react-three/drei";
+import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 
@@ -66,8 +67,15 @@ export default function Logo3D({
   useEffect(() => setSupported(hasWebGL()), []);
 
   if (supported === false) {
-    // eslint-disable-next-line @next/next/no-img-element
-    return <img src={fallbackSrc} alt={alt} style={{ height: size, width: "auto" }} />;
+    return (
+      <Image alt={alt}
+        src={fallbackSrc}
+        width={size}
+        height={size}
+        style={{ height: size, width: "auto" }}
+        priority
+      />
+    );
   }
   if (supported === null) {
     return <div style={{ width: size, height: size }} aria-hidden />;

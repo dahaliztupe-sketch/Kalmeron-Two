@@ -44,15 +44,15 @@ export default function SalesMarketingPage() {
         <form onSubmit={startSalesCrew} className="bg-neutral-900 border border-neutral-800 rounded-2xl p-6 mb-8 grid md:grid-cols-3 gap-6">
            <div className="col-span-1">
              <label className="block text-sm font-medium text-neutral-400 mb-2">الصناعة المستهدفة</label>
-             <input type="text" value={industry} onChange={e=>setIndustry(e.target.value)} placeholder="مثال: عقارات، تقنية صحية" className="w-full bg-neutral-950 border border-neutral-800 rounded-lg p-3 text-white focus:border-blue-500 outline-none" required />
+             <input aria-label="مثال: عقارات، تقنية صحية" type="text" value={industry} onChange={e=>setIndustry(e.target.value)} placeholder="مثال: عقارات، تقنية صحية" className="w-full bg-neutral-950 border border-neutral-800 rounded-lg p-3 text-white focus:border-blue-500 outline-none" required />
            </div>
            <div className="col-span-1">
              <label className="block text-sm font-medium text-neutral-400 mb-2">الدور الوظيفي المستهدف</label>
-             <input type="text" value={role} onChange={e=>setRole(e.target.value)} placeholder="مثال: مديري التسويق، المؤسسين" className="w-full bg-neutral-950 border border-neutral-800 rounded-lg p-3 text-white focus:border-blue-500 outline-none" required />
+             <input aria-label="مثال: مديري التسويق، المؤسسين" type="text" value={role} onChange={e=>setRole(e.target.value)} placeholder="مثال: مديري التسويق، المؤسسين" className="w-full bg-neutral-950 border border-neutral-800 rounded-lg p-3 text-white focus:border-blue-500 outline-none" required />
            </div>
            <div className="col-span-1">
              <label className="block text-sm font-medium text-neutral-400 mb-2">عرض القيمة (Value Proposition)</label>
-             <input type="text" value={valueProp} onChange={e=>setValueProp(e.target.value)} placeholder="مثال: تخفيض التكاليف بنسبة 30%" className="w-full bg-neutral-950 border border-neutral-800 rounded-lg p-3 text-white focus:border-blue-500 outline-none" required />
+             <input aria-label="مثال: تخفيض التكاليف بنسبة 30%" type="text" value={valueProp} onChange={e=>setValueProp(e.target.value)} placeholder="مثال: تخفيض التكاليف بنسبة 30%" className="w-full bg-neutral-950 border border-neutral-800 rounded-lg p-3 text-white focus:border-blue-500 outline-none" required />
            </div>
            
            <div className="md:col-span-3 flex justify-end mt-4">
