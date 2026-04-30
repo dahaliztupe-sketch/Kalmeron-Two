@@ -1,6 +1,6 @@
 {
-  "id": "audit_1777564273942",
-  "timestamp": "2026-04-30T15:51:19.506Z",
+  "id": "audit_1777564160477",
+  "timestamp": "2026-04-30T15:49:22.950Z",
   "projectName": "Kalmeron AI",
   "overallScore": 100,
   "grade": "A",
@@ -10,7 +10,7 @@
       "category": "security",
       "score": 100,
       "findings": [],
-      "duration": 178,
+      "duration": 762,
       "passed": 10,
       "failed": 0
     },
@@ -19,7 +19,7 @@
       "category": "authentication",
       "score": 100,
       "findings": [],
-      "duration": 29,
+      "duration": 121,
       "passed": 10,
       "failed": 0
     },
@@ -28,7 +28,7 @@
       "category": "frontend",
       "score": 100,
       "findings": [],
-      "duration": 4728,
+      "duration": 329,
       "passed": 10,
       "failed": 0
     },
@@ -37,7 +37,7 @@
       "category": "storage",
       "score": 100,
       "findings": [],
-      "duration": 0,
+      "duration": 2,
       "passed": 10,
       "failed": 0
     },
@@ -46,7 +46,7 @@
       "category": "accessibility",
       "score": 100,
       "findings": [],
-      "duration": 169,
+      "duration": 440,
       "passed": 10,
       "failed": 0
     },
@@ -55,7 +55,7 @@
       "category": "i18n",
       "score": 100,
       "findings": [],
-      "duration": 103,
+      "duration": 213,
       "passed": 10,
       "failed": 0
     },
@@ -64,7 +64,7 @@
       "category": "benchmarks",
       "score": 100,
       "findings": [],
-      "duration": 352,
+      "duration": 602,
       "passed": 10,
       "failed": 0
     }

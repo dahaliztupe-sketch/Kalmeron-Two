@@ -1,6 +1,7 @@
 import { execSync } from 'child_process';
 import { readFileSync, existsSync } from 'fs';
 import type { AuditFinding } from '../types';
+import { config } from '../config';
 
 function safeExec(cmd: string): string {
   try {
@@ -162,6 +163,41 @@ export async function auditFrontend(): Promise<AuditFinding[]> {
       fix: 'أضف export const metadata: Metadata لكل صفحة عامة',
       autoFixable: false,
     });
+  }
+
+  // ── Open Graph image endpoint health (one ping per type) ──
+  if (existsSync('app/api/og/route.tsx') || existsSync('app/api/og/route.ts')) {
+    const ogTypes = ['default', 'use-case', 'compare', 'industry', 'blog'];
+    const broken: { type: string; status: number | string }[] = [];
+    await Promise.all(
+      ogTypes.map(async (t) => {
+        const url = `${config.baseUrl.replace(/\/$/, '')}/api/og?title=${encodeURIComponent('فحص')}&type=${t}`;
+        try {
+          const ctrl = new AbortController();
+          const timer = setTimeout(() => ctrl.abort(), 8000);
+          const res = await fetch(url, { signal: ctrl.signal });
+          clearTimeout(timer);
+          const ct = res.headers.get('content-type') ?? '';
+          if (!res.ok || !ct.startsWith('image/')) {
+            broken.push({ type: t, status: `${res.status} ${ct || 'no-content-type'}` });
+          }
+        } catch (err: any) {
+          broken.push({ type: t, status: err?.name === 'AbortError' ? 'timeout' : 'network-error' });
+        }
+      })
+    );
+    if (broken.length > 0) {
+      findings.push({
+        id: 'FE-009',
+        category: 'frontend',
+        severity: 'high',
+        title: `${broken.length} نوع OG image لا يردّ بصورة صالحة`,
+        description: `الأنواع المعطّلة: ${broken.map(b => `${b.type} (${b.status})`).join(', ')}. روابط المشاركة الاجتماعية ستظهر بدون معاينة.`,
+        location: 'app/api/og/route.tsx',
+        fix: 'تحقّق من أن /api/og يردّ Content-Type: image/* لجميع قيم type. شغّل الخادم قبل الفحص.',
+        autoFixable: false,
+      });
+    }
   }
 
   // ── Cookie consent banner ──
