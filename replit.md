@@ -547,6 +547,35 @@ npm run diag:gaps    # فجوات فقط
 
 ---
 
+## Recent Major Updates (Session 2026-04-30 — Tracks B/C/D Closeout: Cron + Public Tool + Tests)
+**Why:** بعد إنجاز Track A و B1 في الجزء الأوّل من الجلسة، طلب المستخدم إكمال باقي الخطّة في جلسة واحدة. اخترنا أعلى ٣ بنود قيمة:
+
+**B2 — Daily runway-alerts cron (`app/api/cron/runway-alerts/route.ts`):**
+- يقرأ كلّ مستندات `runway_snapshots` في Firestore، يحسب الـ runway لكلّ مستخدم، ويرسل إيميل عربي مع ٣ توصيات أولويّة فقط حين:
+  - `result.belowThreshold === true` (تحت العتبة المحدّدة).
+  - `dismissedUntil` غير ساري.
+  - وجود إيميل في `users/{uid}`.
+- يُسجّل `lastAlertAt` في اللقطة لتجنّب الإغراق.
+- محمي بـ `x-cron-secret` + يحترم `isEmailEnabled()`.
+- مُسجَّل في `vercel.json` بجدول `0 7 * * *` (07:00 UTC = 09:00 القاهرة).
+- يُصدِّر `formatRunwayEmail` كدالّة نقيّة لاختبارها بمعزل عن Firestore.
+
+**C — Public free-tool entry point (`app/free-tools/cash-runway`):**
+- صفحة عامّة (لا تتطلّب تسجيل دخول) تستخدم نفس `computeRunway` و `buildRecommendations`.
+- SEO meta عربي + canonical + OG.
+- العمليّة تتمّ محليّاً في المتصفّح — لا إرسال أرقام للخادم.
+- CTA «فعّل التنبيه مجاناً» في أسفل الصفحة يأخذ الزائر إلى `/auth/signup?next=/cash-runway` لربط القيمة بالتسجيل.
+- شريط علوي بشعار كلميرون + زرّ «ابدأ مجاناً».
+- أُضيف بلاط «حاسبة Cash Runway» (مع شارة «مجاني») في صدر `TRENDING_TOOLS` بصفحة الهبوط الرئيسيّة، مع توسعة الـ click-handler ليدعم `tool.href` للروابط المباشرة بدلاً من إجبار الـ signup.
+
+**D — Tests (`test/runway-alerts-formatter.test.ts`):**
+- ٥ اختبارات لـ `formatRunwayEmail`: العنوان العربي + الترحيب الديناميكي + الترحيب المحايد عند غياب الاسم + RTL container + CTA + عتبة المستخدم في النصّ + ٣ توصيات بالضبط.
+- مع اختبارات الجلسة السابقة: 17/17 PASS.
+
+**Verification:** typecheck ✅ — lint ✅ — runway tests 17/17 ✅ — لقطة `/free-tools/cash-runway` نظيفة بلا أخطاء hydration بعد إصلاح nested `<a>` (إزالة `Link` الخارجيّ حول `BrandLogo`).
+
+---
+
 ## Recent Major Updates (Session 2026-04-30 — Track A Quick Fixes + Cash Runway Alarm)
 **Why:** المستخدم طلب تنفيذ خطّة شاملة من ٤ مسارات. اخترنا في هذه الجلسة المسار A (إصلاحات سريعة + خطّ أساس نظيف) + أوّل ميزة من المسار B (تنبيه نفاد النقد) لأنّها قابلة للإنجاز بحلقة واحدة وتفتح الباب لباقي المسارات.
 

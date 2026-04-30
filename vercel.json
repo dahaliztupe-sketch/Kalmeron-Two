@@ -10,7 +10,8 @@
     { "path": "/api/cron/consolidate-skills", "schedule": "0 3 * * *" },
     { "path": "/api/cron/health-probe", "schedule": "0 1 * * *" },
     { "path": "/api/cron/firestore-backup", "schedule": "0 4 * * *" },
-    { "path": "/api/cron/aggregate-costs", "schedule": "0 5 * * *" }
+    { "path": "/api/cron/aggregate-costs", "schedule": "0 5 * * *" },
+    { "path": "/api/cron/runway-alerts", "schedule": "0 7 * * *" }
   ],
   "headers": [
     {

@@ -65,6 +65,18 @@ const DEPARTMENTS = [
 
 const TRENDING_TOOLS = [
   {
+    emoji: "⏳",
+    title: "حاسبة Cash Runway",
+    desc: "كم شهر يكفي رصيدك؟ مجاناً",
+    badge: "مجاني",
+    badgeClass: "bg-emerald-500/15 text-emerald-300 border-emerald-500/30",
+    time: "٣٠ ثانية",
+    gradient: "from-emerald-500/20 to-indigo-500/10",
+    border: "border-emerald-500/25 hover:border-emerald-400/50",
+    query: "",
+    href: "/free-tools/cash-runway",
+  },
+  {
     emoji: "📊",
     title: "خطة أعمال كاملة",
     desc: "من الفكرة للخطة في دقائق",
@@ -335,7 +347,13 @@ function TrendingToolsSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.05 }}
-              onClick={() => router.push(`/auth/signup?q=${encodeURIComponent(tool.query)}`)}
+              onClick={() =>
+                router.push(
+                  "href" in tool && tool.href
+                    ? tool.href
+                    : `/auth/signup?q=${encodeURIComponent(tool.query)}`,
+                )
+              }
               className={`snap-start shrink-0 w-[200px] sm:w-[220px] rounded-2xl border bg-gradient-to-br ${tool.gradient} ${tool.border} p-4 text-right flex flex-col gap-3 hover:-translate-y-1 transition-all duration-200 active:scale-95 group`}
             >
               {/* Top: emoji + badge */}
