@@ -54,20 +54,20 @@
 <div class="header">
   <div>
     <h1>تقرير الفحص الشامل — كلميرون AI</h1>
-    <p style="font-size:13px;color:#888;margin-top:4px">٣٠‏/٤‏/٢٠٢٦، ٤:٥٣:٠٤ ص</p>
-    <p style="font-size:13px;margin-top:6px">⚠️ 1 مشكلة حرجة — النقاط: 66/100</p>
+    <p style="font-size:13px;color:#888;margin-top:4px">٣٠‏/٤‏/٢٠٢٦، ٤:٥١:٥٣ ص</p>
+    <p style="font-size:13px;margin-top:6px">⚠️ 1 مشكلة حرجة — النقاط: 64/100</p>
   </div>
   <div class="score-circle">
-    <span class="num">66</span>
-    <span class="grade">C</span>
+    <span class="num">64</span>
+    <span class="grade">D</span>
   </div>
 </div>
 
 <div class="grid">
   <div class="stat"><div class="stat-n" style="color:#A32D2D">1</div><div class="stat-l">مشاكل حرجة</div></div>
   <div class="stat"><div class="stat-n" style="color:#854F0B">14</div><div class="stat-l">عالية الخطورة</div></div>
-  <div class="stat"><div class="stat-n" style="color:#185FA5">9</div><div class="stat-l">متوسطة</div></div>
-  <div class="stat"><div class="stat-n" style="color:#3B6D11">5</div><div class="stat-l">قابلة للإصلاح التلقائي</div></div>
+  <div class="stat"><div class="stat-n" style="color:#185FA5">11</div><div class="stat-l">متوسطة</div></div>
+  <div class="stat"><div class="stat-n" style="color:#3B6D11">6</div><div class="stat-l">قابلة للإصلاح التلقائي</div></div>
 </div>
 
 <div class="section">
@@ -77,43 +77,43 @@
       <div class="module-card" style="border-right: 3px solid #A32D2D">
         <div class="module-score" style="color: #A32D2D">0/100</div>
         <div class="module-name">الأمان (OWASP)</div>
-        <div style="font-size:10px;color:#888;margin-top:2px">10 مشكلة · 484ms</div>
+        <div style="font-size:10px;color:#888;margin-top:2px">10 مشكلة · 405ms</div>
       </div>
     
       <div class="module-card" style="border-right: 3px solid #3B6D11">
         <div class="module-score" style="color: #3B6D11">83/100</div>
         <div class="module-name">المصادقة</div>
-        <div style="font-size:10px;color:#888;margin-top:2px">2 مشكلة · 55ms</div>
+        <div style="font-size:10px;color:#888;margin-top:2px">2 مشكلة · 36ms</div>
       </div>
     
       <div class="module-card" style="border-right: 3px solid #A32D2D">
         <div class="module-score" style="color: #A32D2D">39/100</div>
         <div class="module-name">الواجهة الأمامية</div>
-        <div style="font-size:10px;color:#888;margin-top:2px">8 مشكلة · 150ms</div>
+        <div style="font-size:10px;color:#888;margin-top:2px">8 مشكلة · 175ms</div>
       </div>
     
       <div class="module-card" style="border-right: 3px solid #3B6D11">
         <div class="module-score" style="color: #3B6D11">100/100</div>
         <div class="module-name">التخزين (Firestore)</div>
-        <div style="font-size:10px;color:#888;margin-top:2px">0 مشكلة · 1ms</div>
+        <div style="font-size:10px;color:#888;margin-top:2px">0 مشكلة · 4ms</div>
       </div>
     
-      <div class="module-card" style="border-right: 3px solid #3B6D11">
-        <div class="module-score" style="color: #3B6D11">86/100</div>
+      <div class="module-card" style="border-right: 3px solid #854F0B">
+        <div class="module-score" style="color: #854F0B">76/100</div>
         <div class="module-name">إمكانية الوصول (WCAG)</div>
-        <div style="font-size:10px;color:#888;margin-top:2px">2 مشكلة · 224ms</div>
+        <div style="font-size:10px;color:#888;margin-top:2px">4 مشكلة · 261ms</div>
       </div>
     
       <div class="module-card" style="border-right: 3px solid #3B6D11">
         <div class="module-score" style="color: #3B6D11">100/100</div>
         <div class="module-name">التدويل (ar/en)</div>
-        <div style="font-size:10px;color:#888;margin-top:2px">0 مشكلة · 219ms</div>
+        <div style="font-size:10px;color:#888;margin-top:2px">0 مشكلة · 131ms</div>
       </div>
     
       <div class="module-card" style="border-right: 3px solid #A32D2D">
         <div class="module-score" style="color: #A32D2D">53/100</div>
         <div class="module-name">مقارنة بالمنصات النموذجية</div>
-        <div style="font-size:10px;color:#888;margin-top:2px">9 مشكلة · 643ms</div>
+        <div style="font-size:10px;color:#888;margin-top:2px">9 مشكلة · 515ms</div>
       </div>
     
   </div>
@@ -363,20 +363,6 @@
                   
                 </div>
                 <p class="finding-desc">استخدام dangerouslySetInnerHTML بدون تنظيف المحتوى — خطر XSS</p>
-                <p class="finding-loc">📁 app/ai-experts/[slug]/page.tsx</p>
-                <pre class="finding-evidence">app/ai-experts/[slug]/page.tsx:72:        dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}</pre>
-                <pre class="finding-fix">→ استخدم DOMPurify.sanitize() أو xss(...) قبل تمرير المحتوى</pre>
-                <p style="font-size:10px;margin-top:4px"><a href="https://owasp.org/www-community/attacks/xss/" target="_blank" rel="noopener">📖 مرجع</a></p>
-              </div>
-            
-              <div class="finding">
-                <div class="finding-header">
-                  <span class="badge" style="background:#854F0B">high</span>
-                  <span class="finding-title">dangerouslySetInnerHTML بدون sanitization</span>
-                  
-                  
-                </div>
-                <p class="finding-desc">استخدام dangerouslySetInnerHTML بدون تنظيف المحتوى — خطر XSS</p>
                 <p class="finding-loc">📁 app/blog/[slug]/page.tsx</p>
                 <pre class="finding-evidence">app/blog/[slug]/page.tsx:58:            &lt;span dangerouslySetInnerHTML={{ __html: escapeHtml(item).replace(/\*\*(.+?)\*\*/g, &quot;&lt;strong&gt;$1&lt;/strong&gt;&quot;) }} /&gt;</pre>
                 <pre class="finding-fix">→ استخدم DOMPurify.sanitize() أو xss(...) قبل تمرير المحتوى</pre>
@@ -407,6 +393,20 @@
                 <p class="finding-desc">استخدام dangerouslySetInnerHTML بدون تنظيف المحتوى — خطر XSS</p>
                 <p class="finding-loc">📁 app/blog/[slug]/page.tsx</p>
                 <pre class="finding-evidence">app/blog/[slug]/page.tsx:126:      &lt;script type=&quot;application/ld+json&quot; dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }} /&gt;</pre>
+                <pre class="finding-fix">→ استخدم DOMPurify.sanitize() أو xss(...) قبل تمرير المحتوى</pre>
+                <p style="font-size:10px;margin-top:4px"><a href="https://owasp.org/www-community/attacks/xss/" target="_blank" rel="noopener">📖 مرجع</a></p>
+              </div>
+            
+              <div class="finding">
+                <div class="finding-header">
+                  <span class="badge" style="background:#854F0B">high</span>
+                  <span class="finding-title">dangerouslySetInnerHTML بدون sanitization</span>
+                  
+                  
+                </div>
+                <p class="finding-desc">استخدام dangerouslySetInnerHTML بدون تنظيف المحتوى — خطر XSS</p>
+                <p class="finding-loc">📁 app/ai-experts/[slug]/page.tsx</p>
+                <pre class="finding-evidence">app/ai-experts/[slug]/page.tsx:72:        dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}</pre>
                 <pre class="finding-fix">→ استخدم DOMPurify.sanitize() أو xss(...) قبل تمرير المحتوى</pre>
                 <p style="font-size:10px;margin-top:4px"><a href="https://owasp.org/www-community/attacks/xss/" target="_blank" rel="noopener">📖 مرجع</a></p>
               </div>
@@ -597,10 +597,24 @@
   
     <details style="margin-bottom:8px">
       <summary>
-        إمكانية الوصول (WCAG) — 86/100 — 2 نتيجة
+        إمكانية الوصول (WCAG) — 76/100 — 4 نتيجة
       </summary>
       <div class="findings" style="border-top-left-radius:0;border-top-right-radius:0">
         
+              <div class="finding">
+                <div class="finding-header">
+                  <span class="badge" style="background:#185FA5">medium</span>
+                  <span class="finding-title">Skip-to-content link مفقود</span>
+                  
+                  
+                </div>
+                <p class="finding-desc">مستخدمو لوحة المفاتيح يحتاجون رابط &quot;تخطي إلى المحتوى&quot; قبل القائمة الرئيسية</p>
+                <p class="finding-loc">📁 app/layout.tsx</p>
+                
+                <pre class="finding-fix">→ أضف &lt;a href=&quot;#main&quot; class=&quot;skip-link&quot;&gt;تخطي إلى المحتوى&lt;/a&gt; كأول عنصر في &lt;body&gt;</pre>
+                <p style="font-size:10px;margin-top:4px"><a href="https://www.w3.org/WAI/WCAG21/Techniques/general/G1" target="_blank" rel="noopener">📖 مرجع</a></p>
+              </div>
+            
               <div class="finding">
                 <div class="finding-header">
                   <span class="badge" style="background:#854F0B">high</span>
@@ -627,6 +641,20 @@
                 
                 <pre class="finding-fix">→ أضف أيقونة أو نص لكل حالة (✓ نجاح، ✗ فشل) بجوار اللون</pre>
                 <p style="font-size:10px;margin-top:4px"><a href="https://www.w3.org/WAI/WCAG21/Understanding/use-of-color.html" target="_blank" rel="noopener">📖 مرجع</a></p>
+              </div>
+            
+              <div class="finding">
+                <div class="finding-header">
+                  <span class="badge" style="background:#185FA5">medium</span>
+                  <span class="finding-title">لا يوجد أداة فحص آلي لـ a11y (axe / jsx-a11y)</span>
+                  <span style="font-size:10px;color:#3B6D11">🔧 تلقائي</span>
+                  
+                </div>
+                <p class="finding-desc">أدوات الفحص الآلي تكتشف ~57% من مشاكل WCAG قبل الإطلاق</p>
+                
+                
+                <pre class="finding-fix">→ npm i -D eslint-plugin-jsx-a11y @axe-core/playwright وأضفهم للـ pipeline</pre>
+                <p style="font-size:10px;margin-top:4px"><a href="https://github.com/dequelabs/axe-core" target="_blank" rel="noopener">📖 مرجع</a></p>
               </div>
             
       </div>
@@ -779,7 +807,7 @@
 </div>
 
 <p style="font-size:11px;color:#888;text-align:center;margin-top:2rem">
-  تم التوليد بواسطة <strong>Kalmeron Audit System</strong> · audit_1777524782446
+  تم التوليد بواسطة <strong>Kalmeron Audit System</strong> · audit_1777524712457
 </p>
 
 </body>

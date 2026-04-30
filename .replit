@@ -35,6 +35,22 @@ args = "Egypt Calc"
 task = "workflow.run"
 args = "LLM Judge"
 
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "lint"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "typecheck"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "test"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "audit-fast"
+
 [[workflows.workflow]]
 name = "Start application"
 author = "agent"
@@ -94,6 +110,50 @@ outputType = "console"
 task = "shell.exec"
 args = "cd services/llm-judge && ([ ! -d .venv ] && uv venv .venv >/dev/null 2>&1 && source .venv/bin/activate && uv pip install -q -r requirements.txt >/dev/null 2>&1; source .venv/bin/activate && uvicorn main:app --host 0.0.0.0 --port 8080 --log-level info)"
 waitForPort = 8080
+
+[[workflows.workflow]]
+name = "lint"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm run lint"
+
+[workflows.workflow.metadata]
+isValidation = true
+
+[[workflows.workflow]]
+name = "typecheck"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm run typecheck"
+
+[workflows.workflow.metadata]
+isValidation = true
+
+[[workflows.workflow]]
+name = "test"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm test"
+
+[workflows.workflow.metadata]
+isValidation = true
+
+[[workflows.workflow]]
+name = "audit-fast"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm run audit:fast"
+
+[workflows.workflow.metadata]
+isValidation = true
 
 [[ports]]
 localPort = 5000

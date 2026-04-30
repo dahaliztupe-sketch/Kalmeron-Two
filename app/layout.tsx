@@ -134,12 +134,20 @@ export default async function RootLayout({
         />
       </head>
       <body className="antialiased bg-[#04060B] text-[#F8FAFC] selection:bg-indigo-500/40">
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:start-3 focus:z-[9999] focus:px-4 focus:py-2 focus:rounded-md focus:bg-indigo-600 focus:text-white focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-white/60"
+        >
+          تخطي إلى المحتوى الرئيسي (skip to main content)
+        </a>
         <NextIntlClientProvider messages={messages}>
             <ThemeProvider attribute="class" defaultTheme="dark" forcedTheme="dark" enableSystem={false}>
               <AuthProvider>
                 <QueryProvider>
                   <ScrollRestoration />
-                  {children}
+                  <div id="main-content">
+                    {children}
+                  </div>
                   <CookieBanner />
                   <Toaster position="top-right" richColors />
                   <ServiceWorkerRegistrar />

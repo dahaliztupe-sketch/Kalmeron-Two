@@ -1,9 +1,9 @@
 {
-  "id": "audit_1777524782446",
-  "timestamp": "2026-04-30T04:53:04.226Z",
+  "id": "audit_1777524712457",
+  "timestamp": "2026-04-30T04:51:53.989Z",
   "projectName": "Kalmeron AI",
-  "overallScore": 66,
-  "grade": "C",
+  "overallScore": 64,
+  "grade": "D",
   "modules": [
     {
       "module": "الأمان (OWASP)",
@@ -81,20 +81,6 @@
           ]
         },
         {
-          "id": "SEC-XSS-app/ai-experts/[slug]/page.tsx",
-          "category": "security",
-          "severity": "high",
-          "title": "dangerouslySetInnerHTML بدون sanitization",
-          "description": "استخدام dangerouslySetInnerHTML بدون تنظيف المحتوى — خطر XSS",
-          "location": "app/ai-experts/[slug]/page.tsx",
-          "evidence": "app/ai-experts/[slug]/page.tsx:72:        dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}",
-          "fix": "استخدم DOMPurify.sanitize() أو xss(...) قبل تمرير المحتوى",
-          "autoFixable": false,
-          "references": [
-            "https://owasp.org/www-community/attacks/xss/"
-          ]
-        },
-        {
           "id": "SEC-XSS-app/blog/[slug]/page.tsx",
           "category": "security",
           "severity": "high",
@@ -137,6 +123,20 @@
           ]
         },
         {
+          "id": "SEC-XSS-app/ai-experts/[slug]/page.tsx",
+          "category": "security",
+          "severity": "high",
+          "title": "dangerouslySetInnerHTML بدون sanitization",
+          "description": "استخدام dangerouslySetInnerHTML بدون تنظيف المحتوى — خطر XSS",
+          "location": "app/ai-experts/[slug]/page.tsx",
+          "evidence": "app/ai-experts/[slug]/page.tsx:72:        dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}",
+          "fix": "استخدم DOMPurify.sanitize() أو xss(...) قبل تمرير المحتوى",
+          "autoFixable": false,
+          "references": [
+            "https://owasp.org/www-community/attacks/xss/"
+          ]
+        },
+        {
           "id": "SEC-CSRF-001",
           "category": "security",
           "severity": "medium",
@@ -149,7 +149,7 @@
           ]
         }
       ],
-      "duration": 484,
+      "duration": 405,
       "passed": 0,
       "failed": 10
     },
@@ -180,7 +180,7 @@
           "autoFixable": false
         }
       ],
-      "duration": 55,
+      "duration": 36,
       "passed": 8,
       "failed": 2
     },
@@ -270,7 +270,7 @@
           "autoFixable": false
         }
       ],
-      "duration": 150,
+      "duration": 175,
       "passed": 2,
       "failed": 8
     },
@@ -279,15 +279,28 @@
       "category": "storage",
       "score": 100,
       "findings": [],
-      "duration": 1,
+      "duration": 4,
       "passed": 10,
       "failed": 0
     },
     {
       "module": "إمكانية الوصول (WCAG)",
       "category": "accessibility",
-      "score": 86,
+      "score": 76,
       "findings": [
+        {
+          "id": "A11Y-001",
+          "category": "accessibility",
+          "severity": "medium",
+          "title": "Skip-to-content link مفقود",
+          "description": "مستخدمو لوحة المفاتيح يحتاجون رابط \"تخطي إلى المحتوى\" قبل القائمة الرئيسية",
+          "location": "app/layout.tsx",
+          "fix": "أضف <a href=\"#main\" class=\"skip-link\">تخطي إلى المحتوى</a> كأول عنصر في <body>",
+          "autoFixable": false,
+          "references": [
+            "https://www.w3.org/WAI/WCAG21/Techniques/general/G1"
+          ]
+        },
         {
           "id": "A11Y-004",
           "category": "accessibility",
@@ -308,18 +321,30 @@
           "references": [
             "https://www.w3.org/WAI/WCAG21/Understanding/use-of-color.html"
           ]
+        },
+        {
+          "id": "A11Y-010",
+          "category": "accessibility",
+          "severity": "medium",
+          "title": "لا يوجد أداة فحص آلي لـ a11y (axe / jsx-a11y)",
+          "description": "أدوات الفحص الآلي تكتشف ~57% من مشاكل WCAG قبل الإطلاق",
+          "fix": "npm i -D eslint-plugin-jsx-a11y @axe-core/playwright وأضفهم للـ pipeline",
+          "autoFixable": true,
+          "references": [
+            "https://github.com/dequelabs/axe-core"
+          ]
         }
       ],
-      "duration": 224,
-      "passed": 8,
-      "failed": 2
+      "duration": 261,
+      "passed": 6,
+      "failed": 4
     },
     {
       "module": "التدويل (ar/en)",
       "category": "i18n",
       "score": 100,
       "findings": [],
-      "duration": 219,
+      "duration": 131,
       "passed": 10,
       "failed": 0
     },
@@ -509,14 +534,14 @@
           }
         }
       ],
-      "duration": 643,
+      "duration": 515,
       "passed": 1,
       "failed": 9
     }
   ],
   "criticalCount": 1,
-  "autoFixCount": 5,
-  "manualFixCount": 26,
+  "autoFixCount": 6,
+  "manualFixCount": 27,
   "topPriorities": [
     {
       "id": "SEC-XSS-app/layout.tsx",
@@ -589,20 +614,6 @@
       ]
     },
     {
-      "id": "SEC-XSS-app/ai-experts/[slug]/page.tsx",
-      "category": "security",
-      "severity": "high",
-      "title": "dangerouslySetInnerHTML بدون sanitization",
-      "description": "استخدام dangerouslySetInnerHTML بدون تنظيف المحتوى — خطر XSS",
-      "location": "app/ai-experts/[slug]/page.tsx",
-      "evidence": "app/ai-experts/[slug]/page.tsx:72:        dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}",
-      "fix": "استخدم DOMPurify.sanitize() أو xss(...) قبل تمرير المحتوى",
-      "autoFixable": false,
-      "references": [
-        "https://owasp.org/www-community/attacks/xss/"
-      ]
-    },
-    {
       "id": "SEC-XSS-app/blog/[slug]/page.tsx",
       "category": "security",
       "severity": "high",
@@ -638,6 +649,20 @@
       "description": "استخدام dangerouslySetInnerHTML بدون تنظيف المحتوى — خطر XSS",
       "location": "app/blog/[slug]/page.tsx",
       "evidence": "app/blog/[slug]/page.tsx:126:      <script type=\"application/ld+json\" dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }} />",
+      "fix": "استخدم DOMPurify.sanitize() أو xss(...) قبل تمرير المحتوى",
+      "autoFixable": false,
+      "references": [
+        "https://owasp.org/www-community/attacks/xss/"
+      ]
+    },
+    {
+      "id": "SEC-XSS-app/ai-experts/[slug]/page.tsx",
+      "category": "security",
+      "severity": "high",
+      "title": "dangerouslySetInnerHTML بدون sanitization",
+      "description": "استخدام dangerouslySetInnerHTML بدون تنظيف المحتوى — خطر XSS",
+      "location": "app/ai-experts/[slug]/page.tsx",
+      "evidence": "app/ai-experts/[slug]/page.tsx:72:        dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}",
       "fix": "استخدم DOMPurify.sanitize() أو xss(...) قبل تمرير المحتوى",
       "autoFixable": false,
       "references": [
@@ -722,7 +747,7 @@
       }
     }
   ],
-  "summary": "⚠️ 1 مشكلة حرجة — النقاط: 66/100",
+  "summary": "⚠️ 1 مشكلة حرجة — النقاط: 64/100",
   "benchmarks": [
     {
       "competitor": "OpenAI",
