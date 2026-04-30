@@ -10,6 +10,17 @@
 # Honors $TOKEN_METER_PORT (default 9000).
 set -euo pipefail
 
+# Ensure cargo is on PATH when installed via rustup in the user's home.
+if ! command -v cargo >/dev/null 2>&1 && [[ -f "$HOME/.cargo/env" ]]; then
+  # shellcheck disable=SC1091
+  source "$HOME/.cargo/env"
+fi
+
+# Workaround for "cannot allocate memory in static TLS block" raised when
+# rustc/cargo from rustup is loaded on Nix glibc. Enlarging the optional
+# static TLS budget gives librustc_driver room to initialise.
+export GLIBC_TUNABLES="${GLIBC_TUNABLES:-glibc.rtld.optional_static_tls=2000000}"
+
 cd "$(dirname "$0")"
 
 if [[ ! -x target/debug/token-meter || src/main.rs -nt target/debug/token-meter ]]; then
