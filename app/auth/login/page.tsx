@@ -17,17 +17,18 @@ export default function LoginPage() {
   const [signingIn, setSigningIn] = useState(false);
   // Default the checkbox from whatever the user picked last time, falling back
   // to "true" (remember me). This way returning users see their previous
-  // preference reflected in the UI.
-  const [remember, setRemember] = useState(true);
-
-  useEffect(() => {
+  // preference reflected in the UI. Using a lazy initialiser avoids the
+  // setState-in-effect anti-pattern (cascading renders); on the server
+  // `window` is undefined so we just return the default.
+  const [remember, setRemember] = useState<boolean>(() => {
+    if (typeof window === "undefined") return true;
     try {
-      const stored = window.localStorage.getItem(REMEMBER_KEY);
-      if (stored === "0") setRemember(false);
+      return window.localStorage.getItem(REMEMBER_KEY) !== "0";
     } catch {
       /* localStorage may be unavailable in private mode — keep default */
+      return true;
     }
-  }, []);
+  });
 
   // Prefetch the dashboard bundle on mount so the post-login navigation feels
   // instant once the Firebase user resolves.

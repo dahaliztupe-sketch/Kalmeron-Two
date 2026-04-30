@@ -77,3 +77,6 @@ firestore-debug.log
 ui-debug.log
 *-debug.log
 .runtimeconfig.json
+
+# Pre-compiled fuzz target bundles (built by scripts/build-fuzz.mjs)
+dist-fuzz/

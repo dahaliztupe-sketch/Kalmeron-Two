@@ -30,10 +30,11 @@ function PreviewRenderer({
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    // NOTE: we deliberately do NOT call `setComponent(null)` / `setError(null)`
+    // here — that would be a setState-in-effect anti-pattern (cascading
+    // renders). Instead, the parent passes `key={componentPath}` so this
+    // component remounts cleanly with fresh state whenever the path changes.
     let cancelled = false;
-
-    setComponent(null);
-    setError(null);
 
     async function loadComponent(): Promise<void> {
       const key = `./components/mockups/${componentPath}.tsx`;
@@ -134,6 +135,7 @@ function App() {
   if (previewPath) {
     return (
       <PreviewRenderer
+        key={previewPath}
         componentPath={previewPath}
         modules={discoveredModules}
       />

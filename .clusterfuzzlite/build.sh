@@ -7,7 +7,12 @@ cd "$SRC/kalmeron-two"
 
 # Install only what the fuzz targets need (avoid heavy framework deps).
 npm install --no-audit --no-fund --silent \
-  @jazzer.js/core@^2.1.0
+  @jazzer.js/core@^2.1.0 \
+  esbuild@^0.25.0
+
+# Pre-compile the TypeScript modules referenced by the fuzz targets into
+# CommonJS bundles under `dist-fuzz/`. Jazzer.js cannot load .ts files.
+node scripts/build-fuzz.mjs
 
 # Compile each fuzz target.
 for fuzz_target in tests/fuzz/fuzz_*.js; do
