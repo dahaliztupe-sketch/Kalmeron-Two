@@ -102,9 +102,9 @@ export function PricingDesktop({
                   )}
                 />
               </div>
-              <h3 className="font-display text-2xl font-extrabold text-white mb-1">
+              <h2 className="font-display text-2xl font-extrabold text-white mb-1">
                 {plan.nameAr}
-              </h3>
+              </h2>
               <p className="text-xs text-text-secondary leading-relaxed h-10">
                 {plan.taglineAr}
               </p>

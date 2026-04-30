@@ -4,7 +4,7 @@ import { PublicShell } from "@/components/layout/PublicShell";
 
 export const metadata = {
   title: "لماذا عربي أصيل؟ — كلميرون",
-  description: "كلميرون يفكّر بالعربية لأنه مدرَّب على شركات وأسواق المنطقة، وليس مجرّد ترجمة.",
+  description: "كلميرون يفكّر بالعربية الأصيلة لأنه مدرَّب على شركات وأسواق المنطقة — يفهم اللهجات، القوانين المحلية، وأعراف التفاوض، وليس مجرّد ترجمة آلية لأدوات غربية.",
 };
 
 const ITEMS: { title: string; desc: string }[] = [

@@ -163,9 +163,9 @@ export function PricingMobile({
                     )}
                   />
                 </div>
-                <h3 className="font-display text-2xl font-extrabold text-white">
+                <h2 className="font-display text-2xl font-extrabold text-white">
                   {plan.nameAr}
-                </h3>
+                </h2>
                 <p className="text-xs text-text-secondary leading-relaxed mt-1.5">
                   {plan.taglineAr}
                 </p>

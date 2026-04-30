@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import PageClient from "./_page-client";
 
 export const metadata: Metadata = {
-  title: "الفرص",
-  description: "استكشف فرصاً جاهزة في السوق المصري",
+  title: "فرص الأعمال — Kalmeron AI",
+  description: "استكشف فرصاً تجارية جاهزة في السوق المصري والعربي. تحليل ذكي للفرصة، وحجم السوق، والمنافسين، وخطوات التنفيذ — كل ذلك بالعربية الأصيلة.",
 };
 
 export default function Page() {

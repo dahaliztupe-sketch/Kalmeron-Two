@@ -1,5 +1,6 @@
 'use client';
 
+import Link from "next/link";
 import { AppShell } from "@/components/layout/AppShell";
 import { DownloadCloud, Star, Store, Verified } from 'lucide-react';
 import { motion } from 'motion/react';
@@ -48,6 +49,7 @@ export default function MarketplacePage() {
           </p>
         </header>
 
+        <h2 className="text-lg font-semibold text-neutral-400 mb-4">المساعدون المتاحون</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {MOCK_TEMPLATES.map((item, idx) => (
              <motion.div 
@@ -85,6 +87,16 @@ export default function MarketplacePage() {
                 </div>
              </motion.div>
           ))}
+        </div>
+
+        <div className="mt-12 text-center">
+          <p className="text-neutral-400 text-sm mb-4">هل تحتاج مساعدة في اختيار المساعد المناسب؟</p>
+          <Link
+            href="/chat?q=أنصحني بأفضل مساعد ذكي يناسب مشروعي"
+            className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold px-6 py-3 rounded-xl transition-colors text-sm"
+          >
+            استشر كلميرون الآن
+          </Link>
         </div>
       </div>
     </AppShell>

@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import RecipesClient from "./_recipes-client";
 
 export const metadata: Metadata = {
-  title: "الوصفات الجاهزة",
-  description: "وصفات عمل جاهزة وقابلة للتخصيص",
+  title: "وصفات الأعمال الجاهزة | نماذج عمل قابلة للتطبيق",
+  description: "مكتبة من وصفات الأعمال الجاهزة والمختبرة: لصياغة عروض القيمة، بناء نماذج الإيرادات، التخطيط للمنتج، والتسويق — كلها قابلة للتخصيص وتناسب السوق العربي.",
 };
 
 export default function Page() {

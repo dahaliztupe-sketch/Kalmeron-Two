@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Kalmeron API — توثيق المطورين',
-  description: 'مرجع REST API الرسمي لمنصة كلميرون. مفاتيح API وWebhooks وOpenAPI 3.1.',
+  description: 'مرجع REST API الرسمي لمنصة Kalmeron AI: مفاتيح API، Webhooks، OpenAPI 3.1، حدود المعدل، هياكل الأخطاء، وأمثلة التكامل بالكود للمطورين.',
 };
 
 export const dynamic = 'force-static';

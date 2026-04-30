@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "حالة النظام",
-  description: "حالة خدمات Kalmeron AI ووقت التشغيل",
+  title: "حالة النظام | توافر خدمات Kalmeron AI",
+  description: "تابع حالة خدمات Kalmeron AI في الوقت الفعلي: توافر API، المساعدون الذكيون، قواعد البيانات، وخدمة المصادقة. سجل الحوادث والأداء التاريخي.",
 };
 
 /**

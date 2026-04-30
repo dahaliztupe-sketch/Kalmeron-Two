@@ -3,7 +3,7 @@ import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "وثائق API | Kalmeron AI",
-  description: "وثائق API الرسمية لمنصة كلميرون — نقاط النهاية، المصادقة، حدود المعدل، والأمثلة.",
+  description: "وثائق API الرسمية لمنصة Kalmeron AI: دليل نقاط النهاية، المصادقة بـ Firebase Token، حدود المعدل، هيكل الأخطاء، وأمثلة تكامل جاهزة بالـ cURL وJavaScript وPython.",
   alternates: { canonical: "/docs" },
 };
 

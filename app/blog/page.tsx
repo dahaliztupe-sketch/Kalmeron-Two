@@ -5,8 +5,8 @@ import { SeoLandingShell } from "@/components/seo/SeoLandingShell";
 import { Clock, Calendar } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "المدونة | استراتيجيات لرواد الأعمال العرب",
-  description: "مقالات، أدلة، وقصص نجاح لرواد الأعمال في المنطقة العربية. كل أسبوع محتوى جديد.",
+  title: "مدونة كلميرون | استراتيجيات ريادة الأعمال العربية",
+  description: "مقالات عملية، أدلة شاملة، وقصص نجاح لرواد الأعمال في مصر والعالم العربي. نشر أسبوعي في التسويق، التمويل، بناء الفرق، وتطوير المنتج بالعربية.",
   alternates: { canonical: "/blog" },
 };
 

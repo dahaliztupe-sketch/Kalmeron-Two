@@ -1,6 +1,9 @@
 import type { MetadataRoute } from 'next';
 
-const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://kalmeron.app';
+const rawUrl = process.env.NEXT_PUBLIC_APP_URL;
+const siteUrl = (!rawUrl || rawUrl.includes('replit.dev') || rawUrl.includes('localhost'))
+  ? 'https://kalmeron.app'
+  : rawUrl;
 
 export default function robots(): MetadataRoute.Robots {
   return {

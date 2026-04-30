@@ -8,6 +8,9 @@ export const metadata: Metadata = {
   description:
     "تواصل مع فريق كلميرون عبر البريد الإلكتروني أو واتساب — للمبيعات، الدعم الفنّي، الشراكات، والاستفسارات العامّة.",
   alternates: { canonical: "/contact" },
+  openGraph: {
+    url: "/contact",
+  },
 };
 
 const SALES_EMAIL = "sales@kalmeron.com";

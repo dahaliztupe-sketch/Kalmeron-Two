@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "الامتثال القانوني",
-  description: "حالة الامتثال للوائح المصرية و GDPR",
+  title: "الامتثال القانوني | معايير كلميرون للخصوصية والأمان",
+  description: "تعرّف على معايير الامتثال في Kalmeron AI: حماية البيانات وفق GDPR، اللوائح المصرية، معالجة البيانات، سياسة الاحتفاظ، والتزاماتنا القانونية تجاه مستخدمينا.",
 };
 
 import { PublicShell } from "@/components/layout/PublicShell";

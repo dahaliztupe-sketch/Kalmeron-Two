@@ -3,7 +3,7 @@ import Link from "next/link";
 
 export const metadata = {
   title: "سياسة الخصوصية | كلميرون",
-  description: "سياسة الخصوصية وحماية البيانات الشخصية وفق قانون رقم 151 لسنة 2020",
+  description: "سياسة خصوصية Kalmeron AI: كيف نجمع بياناتك ونستخدمها ونحميها وفق قانون حماية البيانات رقم 151 لسنة 2020 وLGPD. حقوقك في الوصول، التصحيح، والمحو.",
 };
 
 export default function PrivacyPage() {

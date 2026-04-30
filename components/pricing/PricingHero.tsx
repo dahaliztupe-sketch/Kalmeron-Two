@@ -32,6 +32,7 @@ export function PricingHero({ billing, setBilling }: Props) {
               src="/brand/kalmeron-mark.svg"
               width={96}
               height={96}
+              priority
               className="w-full h-full object-contain"
             />
           </div>

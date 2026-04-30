@@ -121,7 +121,6 @@ export default function LoginPage() {
           </button>
 
           <label
-            htmlFor="remember-me"
             className="flex items-center justify-center gap-2.5 text-sm text-neutral-300 cursor-pointer select-none hover:text-white transition-colors"
           >
             <span className="relative inline-flex">

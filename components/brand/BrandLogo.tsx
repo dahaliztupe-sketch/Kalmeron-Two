@@ -76,7 +76,7 @@ export function BrandLogo({
 
   if (!href) return inner;
   return (
-    <Link href={href} className="inline-flex items-center" aria-label="Kalmeron AI">
+    <Link href={href} className="inline-flex items-center" aria-label="Kalmeron AI Studio">
       {inner}
     </Link>
   );

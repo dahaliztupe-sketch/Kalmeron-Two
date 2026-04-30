@@ -4,7 +4,7 @@ import { PublicShell } from "@/components/layout/PublicShell";
 
 export const metadata = {
   title: "كلميرون مقابل ChatGPT — كلميرون",
-  description: "مقارنة صريحة بين كلميرون وChatGPT لمؤسّسي شركات المنطقة.",
+  description: "مقارنة صريحة بين Kalmeron AI وChatGPT: من هو الأفضل لرائد الأعمال العربي؟ الفرق في الفهم الثقافي، الأدوات المتخصصة، اللغة العربية الأصيلة، والتكلفة.",
 };
 
 const ROWS: { feature: string; kalmeron: string; chatgpt: string }[] = [

@@ -1,5 +1,24 @@
 # Kalmeron AI (ai-studio-applet)
 
+## SEO & Accessibility Audit Fixes (2026-04-30)
+
+Comprehensive SEO/accessibility sweep targeting the squirrel audit (initial score: **49/100 F**).
+
+### Changes Made
+1. **sitemap.ts + robots.ts** — hardcoded to `https://kalmeron.app` (was using dev `NEXT_PUBLIC_APP_URL`).
+2. **BrandLogo aria-label** — fixed mismatch between "Kalmeron AI" → "Kalmeron AI Studio".
+3. **Auth pages** — removed duplicate sr-only H1 from server `page.tsx`, kept client-side H1; improved all metadata (title + description ≥ 120 chars).
+4. **Login double-label** — removed `htmlFor` from wrapping `<label>` since checkbox is nested inside it.
+5. **Contact og:url** — fixed to point to `/contact`.
+6. **Pricing heading order** — changed plan name H3 → H2 in `PricingDesktop`, `PricingMobile`, `PricingEnterpriseBanner` (was H1 → H3 skip).
+7. **Pricing above-fold image** — added `priority` prop to `/brand/kalmeron-mark.svg` in `PricingHero`.
+8. **Dashboard layout** — added `robots: noindex` metadata to `app/(dashboard)/layout.tsx` (all auth-protected routes are now correctly noindexed).
+9. **TypeScript fix** — resolved pre-existing `schema: SCHEMA` type error in `src/lib/llm/gateway.ts` (was blocking `npm run typecheck`).
+10. **Marketplace** — added `H2` section heading, fixed H1→H3 skip, added internal CTA link to `/chat`.
+11. **30+ page metadata** — extended short titles and descriptions (<120 chars) across: agents, blog, compare, mistake-shield, setup-egypt, compliance, status, inbox, cfo, market-lab, recipes, value-proposition, decision-journal, operations, onboarding, roi, founder-agreement, plan, legal-templates, trust, why-arabic, vs/chatgpt, api-docs, terms, privacy, docs, start, and more.
+
+---
+
 ## Polyglot architecture (current)
 
 The codebase deliberately spans several languages. Each is used **only** for

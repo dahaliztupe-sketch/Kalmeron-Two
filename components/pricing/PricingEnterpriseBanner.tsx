@@ -36,9 +36,9 @@ export function PricingEnterpriseBanner({ plan }: Props) {
               </span>
             </div>
 
-            <h3 className="font-display text-2xl md:text-3xl font-extrabold text-white mb-2">
+            <h2 className="font-display text-2xl md:text-3xl font-extrabold text-white mb-2">
               {plan.nameAr}
-            </h3>
+            </h2>
             <p className="text-text-secondary text-sm md:text-base leading-relaxed mb-5 max-w-2xl">
               {plan.taglineAr}
             </p>

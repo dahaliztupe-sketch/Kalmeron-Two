@@ -632,7 +632,7 @@ export async function safeGenerateObjectSmart<SCHEMA extends z.ZodType>(
         throw new Error(`budget_exceeded: ${decision.reason}`);
       }
       const model = await getModelInstance(chosen.provider, chosen.id);
-      const out = await safeGenerateObject<SCHEMA>({ ...args, model }, ctx);
+      const out = await safeGenerateObject<SCHEMA>({ ...args, model } as SafeGenerateObjectArgs<SCHEMA>, ctx);
       const realCost = approxCostUsd(chosen.id, rawPrompt.length, JSON.stringify(out.result.object ?? {}).length);
       recordSpend(chosen.id, realCost);
       return { ...out, modelId: chosen.id };

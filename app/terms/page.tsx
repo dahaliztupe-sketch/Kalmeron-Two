@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "شروط الاستخدام | كلميرون",
-  description: "اقرأ شروط وأحكام استخدام منصة كلميرون للذكاء الاصطناعي لرواد الأعمال المصريين.",
+  description: "شروط وأحكام استخدام منصة Kalmeron AI: حقوق المستخدم، الاشتراكات، سياسة الاسترداد، الملكية الفكرية، والتزامات مزود الخدمة. محدّثة ومتوافقة مع القانون المصري.",
 };
 
 export default function TermsPage() {

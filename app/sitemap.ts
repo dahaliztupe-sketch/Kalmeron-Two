@@ -8,7 +8,11 @@ import { getAllTemplateSlugs } from '@/src/lib/seo/templates';
 import { getAllGlossarySlugs } from '@/src/lib/seo/glossary';
 import { getAllCitySlugs } from '@/src/lib/seo/cities';
 
-const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://kalmeron.app';
+// Always use the production domain in sitemap — never the Replit dev URL
+const rawUrl = process.env.NEXT_PUBLIC_APP_URL;
+const siteUrl = (!rawUrl || rawUrl.includes('replit.dev') || rawUrl.includes('localhost'))
+  ? 'https://kalmeron.app'
+  : rawUrl;
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();

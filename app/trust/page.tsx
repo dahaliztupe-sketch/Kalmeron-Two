@@ -16,7 +16,7 @@ import { PublicShell } from '@/components/layout/PublicShell';
 
 export const metadata = {
   title: 'مركز الثقة — كلميرون',
-  description: 'الأمن، الخصوصية، والامتثال في منصّة كلميرون.',
+  description: 'مركز ثقة كلميرون: تشفير AES-256، GDPR، PDPL مصر، مصادقة Firebase، سجل تدقيق غير قابل للتعديل، وحماية ضد هجمات Prompt Injection — كل ما يهم أمان بياناتك.',
 };
 
 interface Control {
