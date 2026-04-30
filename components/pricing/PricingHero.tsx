@@ -4,7 +4,7 @@ import Image from "next/image";
 import { motion } from "motion/react";
 import { Sparkles, Zap } from "lucide-react";
 import { cn } from "@/src/lib/utils";
-import type { BillingCycle } from "@/app/pricing/page";
+import type { BillingCycle } from "@/app/pricing/_page-client";
 
 interface Props {
   billing: BillingCycle;

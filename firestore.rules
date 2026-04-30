@@ -89,6 +89,14 @@ service cloud.firestore {
     }
 
     // ============================================================
+    // Cash Runway Alarm — single doc per user keyed by uid.
+    // Stores cash / income / burn / threshold + dismissal state.
+    // ============================================================
+    match /runway_snapshots/{userId} {
+      allow read, write: if isOwner(userId);
+    }
+
+    // ============================================================
     // Top-level user-owned business data (legacy shape: each doc
     // carries a userId field). Kept for backward compatibility with
     // older API routes that write to top-level collections.

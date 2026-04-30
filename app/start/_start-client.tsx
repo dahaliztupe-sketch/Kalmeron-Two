@@ -71,7 +71,7 @@ export default function StartClient() {
     return "مساء الخير";
   })();
 
-  const name = dbUser?.display_name || user?.displayName?.split(" ")[0] || "";
+  const name = dbUser?.name || user?.displayName?.split(" ")[0] || "";
 
   useEffect(() => {
     inputRef.current?.focus();

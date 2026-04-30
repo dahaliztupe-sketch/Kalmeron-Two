@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
     system:
       body.system ??
       'أنت مساعد كلميرون الذكي. أجب بالعربية الفصحى الواضحة بشكل موجز ومفيد.',
-    messages: convertToModelMessages(messages),
+    messages: await convertToModelMessages(messages),
   });
 
   return result.toUIMessageStreamResponse();

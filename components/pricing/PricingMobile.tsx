@@ -6,7 +6,7 @@ import { Check, Crown, Loader2, Rocket, Sparkles, Building2, ChevronLeft, Chevro
 import { Button } from "@/components/ui/button";
 import { cn } from "@/src/lib/utils";
 import type { Plan, PlanId } from "@/src/lib/billing/plans";
-import type { BillingCycle } from "@/app/pricing/page";
+import type { BillingCycle } from "@/app/pricing/_page-client";
 import { PlanPriceDisplay } from "./PlanPriceDisplay";
 
 interface Props {

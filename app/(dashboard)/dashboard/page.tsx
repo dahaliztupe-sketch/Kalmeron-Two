@@ -13,6 +13,7 @@ import {
   Flame, Mic,
 } from "lucide-react";
 import { NotificationPermissionBanner } from "@/components/ui/NotificationPermissionBanner";
+import { RunwayAlarmBanner } from "@/components/runway/RunwayAlarmBanner";
 import { SmartHubSection } from "@/src/components/dashboard/SmartHubSection";
 import { KalmeronAreaChart } from "@/src/components/charts";
 import Link from "next/link";
@@ -149,6 +150,8 @@ export default function DashboardPage() {
         </div>
 
         <NotificationPermissionBanner userId={user?.uid} className="mb-5" />
+
+        <RunwayAlarmBanner />
 
         <SmartHubSection />
 

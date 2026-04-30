@@ -547,6 +547,33 @@ npm run diag:gaps    # فجوات فقط
 
 ---
 
+## Recent Major Updates (Session 2026-04-30 — Track A Quick Fixes + Cash Runway Alarm)
+**Why:** المستخدم طلب تنفيذ خطّة شاملة من ٤ مسارات. اخترنا في هذه الجلسة المسار A (إصلاحات سريعة + خطّ أساس نظيف) + أوّل ميزة من المسار B (تنبيه نفاد النقد) لأنّها قابلة للإنجاز بحلقة واحدة وتفتح الباب لباقي المسارات.
+
+**A — Baseline cleanup:**
+- Repaired 8 TypeScript errors blocking `typecheck`:
+  - `app/api/chat/feedback/route.ts` و `app/api/chat/stream/route.ts`: تصحيح توقيع `rateLimit` (`scope` بدل `key`) و إضافة `await` لـ `convertToModelMessages`.
+  - `app/market-lab/results/[experimentId]/page.tsx`: حذف props كانت تُمرَّر لمكوّن لا يقبلها.
+  - `app/start/_start-client.tsx`: استبدال `display_name` بـ `name` (واجهة DBUser).
+  - 4× `components/pricing/*.tsx`: تصحيح مسار استيراد `BillingCycle` (`_page-client` بدل `page`).
+- النتيجة: `typecheck` و `lint` ينظفان بـ 0 أخطاء.
+
+**B1 — Cash Runway Alarm (ميزة جديدة):**
+- **النواة الحسابية** (`src/lib/runway/calc.ts`): دالة `computeRunway` ترجع نوعاً مميّزاً (`infinite` / `healthy` / `warning` / `noCash` / `noBurn`) + `buildRecommendations` تُولِّد توصيات حسب الحالة (تخفيض burn، تجميد توظيف، تسريع تحصيل، إعادة استثمار).
+- **التخزين** (`src/lib/runway/storage.ts`): مجموعة Firestore `runway_snapshots/{uid}` تحفظ آخر إدخال + عتبة + حالة الإسكات.
+- **Hook** (`hooks/useRunwaySnapshot.ts`): يُحضّر من localStorage فوراً ثم يُزامن مع Firestore، يُعرّض `shouldAlarm` و `dismiss(days)` و `save()`. مكتوب بأسلوب نقي يحترم React Compiler (lazy initializer، state-driven `now`، deps دقيقة).
+- **API** (`app/api/runway/check/route.ts`): POST يتحقّق من Firebase ID token ويُحدّث اللقطة مع `rateLimit({ scope: "runway-check" })`.
+- **UI**:
+  - صفحة `/cash-runway` أُعيدت كتابتها لاستخدام الـ hook + شريط تمرير للعتبة (1–24 شهر) + قسم توصيات.
+  - `RunwayAlarmBanner` ركّب أعلى لوحة القيادة، يظهر فقط حين ينزل الـ runway تحت العتبة وغير مُسكَت، قابل للإسكات ٧ أيّام.
+- **الأمن**: قاعدة Firestore جديدة `match /runway_snapshots/{userId} { allow read,write: if isOwner(userId); }`.
+- **الترجمات**: مفاتيح جديدة `alarmThresholdLabel/Hint`، `monthsShort`، `activateAlarm`، `updateAlarm` في `messages/ar.json` و `messages/en.json`.
+- **اختبارات**: `test/runway-calc.test.ts` يغطّي ٤ حالات للحساب + ٣ سيناريوهات للتوصيات + ٣ حالات للتنسيق (12 PASS).
+
+**Verification:** typecheck ✅ — lint ✅ — runway tests 12/12 ✅ — `Start application` يرتدّ بسلاسة مع HMR نظيف.
+
+---
+
 ## Recent Major Updates (Session 2026-04-25 — Instructional Fabric + ADRs + Agent Governance)
 **Why:** المستخدم طلب 3 مهام في جلسة واحدة: (1) بناء «النسيج التوجيهي» الذي تقرأه أدوات الـ AI تلقائيّاً، (2) سدّ فجوات الهندسة (ADRs، أمن، موثوقيّة، حوكمة وكلاء)، (3) تحسين جودة البرومبتات. الهدف: تقليل وقت التشغيل واستهلاك الرموز عبر إعطاء كل وكيل دستوراً ملزِماً قبل أيّ تعديل.
 

@@ -17,7 +17,7 @@ const FeedbackSchema = z.object({
 });
 
 export async function POST(req: NextRequest) {
-  const limited = rateLimit(req, { key: "chat-feedback", limit: 30, windowMs: 60_000 });
+  const limited = rateLimit(req, { scope: "chat-feedback", limit: 30, windowMs: 60_000 });
   if (!limited.success) return rateLimitResponse();
 
   let userId: string | null = null;

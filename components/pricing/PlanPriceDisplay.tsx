@@ -2,7 +2,7 @@
 
 import { motion, AnimatePresence } from "motion/react";
 import type { Plan } from "@/src/lib/billing/plans";
-import type { BillingCycle } from "@/app/pricing/page";
+import type { BillingCycle } from "@/app/pricing/_page-client";
 
 interface Props {
   plan: Plan;

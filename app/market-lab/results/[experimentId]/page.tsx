@@ -6,11 +6,6 @@ export const metadata: Metadata = {
   description: "تفاصيل تجارب السوق التي أجريتها",
 };
 
-interface PageProps {
-  params: Promise<{ experimentId: string }>;
-  searchParams?: Promise<Record<string, string | string[] | undefined>>;
-}
-
-export default function Page(props: PageProps) {
-  return <PageClient {...props} />;
+export default function Page() {
+  return <PageClient />;
 }

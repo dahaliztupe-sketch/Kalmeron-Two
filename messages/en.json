@@ -372,7 +372,12 @@
     "warning": "Warning: less than 6 months — review your financial model.",
     "healthy": "Healthy state — keep growing.",
     "infinite": "Your cash is growing — you are in a stable position.",
-    "noBurn": "Enter a valid burn value to compute the runway."
+    "noBurn": "Enter a valid burn value to compute the runway.",
+    "alarmThresholdLabel": "Send me a daily alert when runway drops below",
+    "alarmThresholdHint": "An alert will appear on your dashboard only when your balance falls below this threshold. Set it to 6 months for a useful action window.",
+    "monthsShort": "mo",
+    "activateAlarm": "Activate alarm",
+    "updateAlarm": "Update alarm"
   },
   "Wellbeing": {
     "title": "Founder Energy Quotient (MEQ)",
