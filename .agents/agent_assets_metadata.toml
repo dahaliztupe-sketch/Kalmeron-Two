@@ -18,3 +18,9 @@ id = "G4ZpNBM7U-KEl9CssXeSc"
 uri = "file://UX_AUDIT_REPORT.md"
 type = "text"
 title = "تقرير تدقيق تجربة المستخدم — كلميرون"
+
+[[outputs]]
+id = "hFIxqT9MnQbQeJAPXhEJq"
+uri = "file://docs/plans/LEARNINGS_FROM_EMERGENT_2026-04-30.md"
+type = "text"
+title = "دروس من Emergent.sh — خطة تطوير لكلميرون"
