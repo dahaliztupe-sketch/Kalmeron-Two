@@ -2,16 +2,53 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 const SESSION_COOKIE = 'kal_session';
+
+// All routes that require authentication — includes every route under
+// app/(dashboard)/ plus top-level protected pages. Unauthenticated requests
+// are redirected to /auth/login with a `next` param so the user lands back
+// here after signing in. This runs BEFORE Next.js renders the page, so the
+// AuthGuard client component is never reached by unauthenticated SSR, which
+// prevents the "dashboard route returns 404" problem.
 const PROTECTED_PREFIXES = [
+  // Top-level protected pages
   '/dashboard',
   '/profile',
   '/billing',
   '/admin',
-  '/ideas/analyze',
   '/settings',
   '/inbox',
   '/operations',
   '/onboarding',
+  // All (dashboard) group routes
+  '/chat',
+  '/company-builder',
+  '/brand-voice',
+  '/investor',
+  '/lab',
+  '/ideas',
+  '/brain',
+  '/cash-runway',
+  '/daily-brief',
+  '/departments',
+  '/experts',
+  '/hr',
+  '/launchpad',
+  '/learned-skills',
+  '/meetings',
+  '/notifications',
+  '/okr',
+  '/org-chart',
+  '/real-estate',
+  '/roadmap',
+  '/sales',
+  '/skills',
+  '/supply-chain',
+  '/system-health',
+  '/trending-tools',
+  '/usage',
+  '/virtual-office',
+  '/wellbeing',
+  '/workflows-runner',
 ];
 
 function isProtectedPath(pathname: string): boolean {

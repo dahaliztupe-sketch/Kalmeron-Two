@@ -20,8 +20,14 @@ export const google = createGoogleGenerativeAI({ apiKey, ...(baseURL ? { baseURL
  * Kalmeron AI Model Tiers — using real Gemini model IDs.
  * Aliased so we can swap to preview models when they GA without touching call sites.
  */
+// When using Replit AI Integrations (AI_INTEGRATIONS_GEMINI_BASE_URL is set),
+// only these models are available: gemini-3.1-pro-preview, gemini-3-flash-preview,
+// gemini-2.5-pro, gemini-2.5-flash, gemini-2.5-flash-image.
+// "gemini-2.5-flash-lite" and "gemini-embedding-001" are NOT supported via the proxy.
+// We default to gemini-2.5-flash for all tiers that would use unsupported models.
+const _usingReplitProxy = !!process.env.AI_INTEGRATIONS_GEMINI_BASE_URL;
 export const MODEL_IDS = {
-    LITE: process.env.MODEL_LITE || "gemini-2.5-flash-lite",
+    LITE: process.env.MODEL_LITE || (_usingReplitProxy ? "gemini-2.5-flash" : "gemini-2.5-flash"),
     FLASH: process.env.MODEL_FLASH || "gemini-2.5-flash",
     PRO: process.env.MODEL_PRO || "gemini-2.5-pro",
     EMBEDDING: process.env.MODEL_EMBEDDING || "gemini-embedding-001",
@@ -69,4 +75,12 @@ const _legacyApiKey =
 if (!_legacyApiKey) {
   console.warn('[gemini] Missing GEMINI_API_KEY / GOOGLE_GENERATIVE_AI_API_KEY for legacy `ai` client');
 }
-export const ai = new GoogleGenAI({ apiKey: _legacyApiKey || '' });
+const _legacyBaseUrl = process.env.AI_INTEGRATIONS_GEMINI_BASE_URL;
+export const ai = new GoogleGenAI({
+  apiKey: _legacyApiKey || '',
+  ...(
+    _legacyBaseUrl
+      ? { httpOptions: { apiVersion: '', baseUrl: _legacyBaseUrl } }
+      : {}
+  ),
+});

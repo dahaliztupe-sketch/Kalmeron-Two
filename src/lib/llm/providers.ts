@@ -56,8 +56,8 @@ const TEXT_STREAM_ONLY: ProviderCapabilities = { vision: false, json: false, too
  */
 const PROVIDER_TIERS: Record<ProviderId, Record<TaskTier, ProviderModel>> = {
   gemini: {
-    trivial:  { provider: 'gemini', id: 'gemini-2.5-flash-lite', approxCostPerMTokens: { input: 0.10, output: 0.40 }, capabilities: FULL },
-    simple:   { provider: 'gemini', id: 'gemini-2.5-flash-lite', approxCostPerMTokens: { input: 0.10, output: 0.40 }, capabilities: FULL },
+    trivial:  { provider: 'gemini', id: 'gemini-2.5-flash', approxCostPerMTokens: { input: 0.15, output: 0.60 }, capabilities: FULL },
+    simple:   { provider: 'gemini', id: 'gemini-2.5-flash', approxCostPerMTokens: { input: 0.15, output: 0.60 }, capabilities: FULL },
     medium:   { provider: 'gemini', id: 'gemini-2.5-flash',      approxCostPerMTokens: { input: 0.30, output: 2.50 },  capabilities: FULL },
     complex:  { provider: 'gemini', id: 'gemini-2.5-flash',      approxCostPerMTokens: { input: 0.30, output: 2.50 },  capabilities: FULL },
     critical: { provider: 'gemini', id: 'gemini-2.5-pro',        approxCostPerMTokens: { input: 1.25, output: 10.00 }, capabilities: FULL },

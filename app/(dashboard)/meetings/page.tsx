@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { AppShell } from "@/components/layout/AppShell";
 
 const DEPARTMENTS = ["marketing", "product", "finance", "sales", "support", "hr", "legal", "monitoring"];
 
@@ -38,7 +39,8 @@ export default function MeetingsPage() {
   }
 
   return (
-    <div className="p-6 max-w-5xl mx-auto">
+    <AppShell>
+    <div className="p-6 max-w-5xl mx-auto" dir="rtl">
       <h1 className="text-2xl font-bold mb-1">الاجتماعات الافتراضية</h1>
       <p className="text-sm text-gray-500 mb-6">تنسيق جماعي بين مساعدين الأقسام</p>
 
@@ -103,5 +105,6 @@ export default function MeetingsPage() {
         )}
       </div>
     </div>
+    </AppShell>
   );
 }

@@ -1,5 +1,36 @@
 # Kalmeron AI (ai-studio-applet)
 
+## جلسة إصلاح الـ 404 + Gemini Integration — 2026-05-01 (أحدث تحديث)
+
+### الإصلاحات الجوهرية في هذه الجلسة
+| التغيير | التفاصيل |
+|---------|----------|
+| **إصلاح 404 صفحات Dashboard** | `proxy.ts` — أُضيف جميع مسارات `app/(dashboard)/` إلى `PROTECTED_PREFIXES`. الآن /chat, /company-builder, /investor, /brand-voice, /lab وغيرها تُعيد 307 redirect بدل 404 |
+| **Gemini AI Integration** | تم ربط `AI_INTEGRATIONS_GEMINI_API_KEY` + `AI_INTEGRATIONS_GEMINI_BASE_URL` عبر Replit AI Integrations. الآن `llmProviders: configured` في `/api/health` |
+| **نماذج Gemini المدعومة** | تم تغيير `gemini-2.5-flash-lite` → `gemini-2.5-flash` في `src/lib/gemini.ts` و `src/lib/llm/providers.ts` (flash-lite غير مدعوم عبر Replit proxy) |
+| **Legacy Gemini Client** | `ai` (GoogleGenAI) في `gemini.ts` يُمرّر الآن `httpOptions.baseUrl` عند استخدام Replit integration |
+| **صفحة /ideas** | أُنشئت `app/(dashboard)/ideas/page.tsx` كـ redirect إلى `/ideas/analyze` |
+| **Meetings Page** | أُضيف `AppShell` wrapper المفقود في `app/(dashboard)/meetings/page.tsx` |
+
+### حالة الصفحات بعد الإصلاح
+- ✅ جميع 32 صفحة `(dashboard)` تُعيد 307 redirect للمستخدمين غير المسجّلين
+- ✅ `/api/health` يُعيد 200 مع حالة كل الخدمات
+- ✅ Gemini مُفعَّل عبر Replit AI Integrations (بدون GEMINI_API_KEY خارجي)
+- ✅ 4 Python sidecars تعمل (PDF Worker, Egypt Calc, LLM Judge, Embeddings Worker)
+
+### النماذج المدعومة عبر Replit AI Integrations
+| النموذج | الاستخدام |
+|---------|-----------|
+| `gemini-2.5-flash` | الوكلاء العامة (trivial, simple, medium, complex) |
+| `gemini-2.5-pro` | المهام الحرجة (critical tier) |
+| `gemini-3.1-pro-preview` | أعقد مهام الـ agentic workflow |
+| `gemini-3-flash-preview` | مهام يومية عالية الحجم |
+| `gemini-2.5-flash-image` | توليد الصور |
+
+**ملاحظة**: embeddings و Live API غير مدعومين عبر Replit proxy.
+
+---
+
 ## جلسة Replit Migration + Health & Monitoring — 2026-05-01 (آخر تحديث)
 
 ### ما تم في هذه الجلسة
