@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Microsoft Agent Governance Toolkit (Agent OS) concept implementation.
  *

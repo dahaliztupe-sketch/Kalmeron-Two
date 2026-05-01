@@ -1,4 +1,3 @@
-// @ts-nocheck
 // src/lib/security/tool-guard.ts
 export class ToolGuard {
   private allowedTools: Map<string, string[]> = new Map([

@@ -1,4 +1,3 @@
-// @ts-nocheck
 export const AGENT_IDENTITIES: Record<string, { id: string; role: string; allowedTools: string[] }> = {
   'idea-validator': { id: 'agent-001', role: 'validator', allowedTools: ['analyze_market', 'search_competitors'] },
   'plan-builder': { id: 'agent-002', role: 'builder', allowedTools: ['generate_plan', 'create_financial_model'] },

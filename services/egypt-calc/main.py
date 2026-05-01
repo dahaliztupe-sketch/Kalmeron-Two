@@ -24,9 +24,14 @@ from pydantic import BaseModel, Field
 
 from taxes import (
     AS_OF,
+    STANDARD_VAT_RATE,
+    REDUCED_VAT_RATE,
     income_tax,
     social_insurance,
     total_cost,
+    vat,
+    fawry_fee,
+    instapay_fee,
 )
 
 logging.basicConfig(level=logging.INFO,
@@ -60,9 +65,34 @@ class TotalCostIn(BaseModel):
     months: Literal[12, 13, 14] = 12
 
 
+class VATIn(BaseModel):
+    amount: float = Field(..., ge=0, description="Amount in EGP")
+    rate: float = Field(STANDARD_VAT_RATE, gt=0, lt=1, description="VAT rate (e.g. 0.14 for 14%)")
+    inclusive: bool = Field(False, description="True if amount already includes VAT")
+
+
+class FawryFeeIn(BaseModel):
+    transaction_amount: float = Field(..., ge=0, description="Transaction amount in EGP")
+    merchant_discount_rate: float = Field(0.015, ge=0, lt=1,
+                                          description="Merchant discount rate (default 1.5%)")
+
+
+class InstapayFeeIn(BaseModel):
+    transaction_amount: float = Field(..., ge=0, description="Transaction amount in EGP")
+
+
 @app.get("/health")
 def health() -> dict:
-    return {"ok": True, "service": "egypt-calc", "version": app.version, "asOf": AS_OF}
+    return {
+        "ok": True,
+        "service": "egypt-calc",
+        "version": app.version,
+        "asOf": AS_OF,
+        "endpoints": [
+            "/income-tax", "/social-insurance", "/total-cost",
+            "/vat", "/fawry-fee", "/instapay-fee",
+        ],
+    }
 
 
 @app.post("/income-tax")
@@ -85,5 +115,43 @@ def calc_social_insurance(body: SocialInsuranceIn) -> dict:
 def calc_total_cost(body: TotalCostIn) -> dict:
     try:
         return asdict(total_cost(body.monthly_gross, body.months))
+    except ValueError as e:
+        raise HTTPException(400, str(e)) from e
+
+
+@app.post("/vat")
+def calc_vat(body: VATIn) -> dict:
+    """حساب ضريبة القيمة المضافة المصرية (14% أو 5% للسلع المخففة)"""
+    try:
+        return asdict(vat(body.amount, body.rate, body.inclusive))
+    except ValueError as e:
+        raise HTTPException(400, str(e)) from e
+
+
+@app.get("/vat/rates")
+def vat_rates() -> dict:
+    return {
+        "standard": STANDARD_VAT_RATE,
+        "reduced": REDUCED_VAT_RATE,
+        "currency": "EGP",
+        "law": "Law 67/2016",
+        "asOf": AS_OF,
+    }
+
+
+@app.post("/fawry-fee")
+def calc_fawry_fee(body: FawryFeeIn) -> dict:
+    """حساب رسوم فوري للعميل والتاجر"""
+    try:
+        return asdict(fawry_fee(body.transaction_amount, body.merchant_discount_rate))
+    except ValueError as e:
+        raise HTTPException(400, str(e)) from e
+
+
+@app.post("/instapay-fee")
+def calc_instapay_fee(body: InstapayFeeIn) -> dict:
+    """حساب رسوم إنستاباي / ميزة"""
+    try:
+        return asdict(instapay_fee(body.transaction_amount))
     except ValueError as e:
         raise HTTPException(400, str(e)) from e

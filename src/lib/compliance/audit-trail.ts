@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { db } from '@/src/lib/firebase';
 import { Timestamp } from 'firebase-admin/firestore';
 import { createHash } from 'crypto';

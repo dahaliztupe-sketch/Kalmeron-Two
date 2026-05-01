@@ -1,4 +1,3 @@
-// @ts-nocheck
 export type RunwayInput = {
   cashOnHand: number;
   monthlyRevenue: number;

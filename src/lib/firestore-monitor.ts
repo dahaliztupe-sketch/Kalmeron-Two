@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Firestore Usage Monitor (AI Studio 2026 Simulation)
  * Helps track quotas and manage costs.

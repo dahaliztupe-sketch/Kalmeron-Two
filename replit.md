@@ -1,5 +1,20 @@
 # Kalmeron AI (ai-studio-applet)
 
+## جلسة 2 — تحسينات الروادماب الكاملة — 2026-05-01 (آخر تحديث)
+
+### ما تم إنجازه في الجلسة 2
+| التحسين | التفاصيل |
+|---------|----------|
+| **Egypt Calc — VAT + Fawry/InstaPay** | 3 endpoints جديدة: `/vat`, `/fawry-fee`, `/instapay-fee` + نماذج بيانات كاملة في `taxes.py` |
+| **Billing UI** | `BillingTab.tsx` مُحسَّن: مقارنة الخطط، تاريخ المعاملات، تصميم جديد |
+| **`/api/billing/transactions`** | Endpoint جديد لجلب آخر 5-50 معاملة من Firestore |
+| **Agent Prompts** | تحسين جذري لـ `success-museum/prompt.ts` + نموذج `idea-validator/prompt.ts` جديد |
+| **Opportunities API** | `/api/opportunities` — 8 بيانات بذرية مع Firestore fallback |
+| **TypeScript cleanup** | إزالة @ts-nocheck من: 6 ملفات security، embeddings، edge-config، firebase-admin، runway، wellbeing، cost-alerts، audit-trail، firestore-monitor، cost-tracker |
+| **بيانات inbox/opportunities** | صفحات موجودة بالفعل في `app/inbox/` و`app/opportunities/` — الـ APIs تدعمها الآن |
+
+---
+
 ## جلسة إصلاح TypeScript والأداء — 2026-05-01 (آخر تحديث)
 
 ### الملفات التي تم إصلاحها (إزالة @ts-nocheck + أخطاء TypeScript)
