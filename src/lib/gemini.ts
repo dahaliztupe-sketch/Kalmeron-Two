@@ -5,13 +5,16 @@ const apiKey =
     process.env.GEMINI_API_KEY ||
     process.env.GOOGLE_GENERATIVE_AI_API_KEY ||
     process.env.GOOGLE_API_KEY ||
+    process.env.AI_INTEGRATIONS_GEMINI_API_KEY ||
     "";
+
+const baseURL = process.env.AI_INTEGRATIONS_GEMINI_BASE_URL || undefined;
 
 if (!apiKey && typeof window === "undefined") {
     console.warn("[gemini] GEMINI_API_KEY غير موجود — وكلاء كلميرون لن يعملوا.");
 }
 
-export const google = createGoogleGenerativeAI({ apiKey });
+export const google = createGoogleGenerativeAI({ apiKey, ...(baseURL ? { baseURL } : {}) });
 
 /**
  * Kalmeron AI Model Tiers — using real Gemini model IDs.
@@ -59,7 +62,10 @@ export async function compressText(text: string): Promise<string> {
 // ──────────────────────────────────────────────────────────────────────────
 import { GoogleGenAI } from '@google/genai';
 
-const _legacyApiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_GENERATIVE_AI_API_KEY;
+const _legacyApiKey =
+  process.env.GEMINI_API_KEY ||
+  process.env.GOOGLE_GENERATIVE_AI_API_KEY ||
+  process.env.AI_INTEGRATIONS_GEMINI_API_KEY;
 if (!_legacyApiKey) {
   console.warn('[gemini] Missing GEMINI_API_KEY / GOOGLE_GENERATIVE_AI_API_KEY for legacy `ai` client');
 }
