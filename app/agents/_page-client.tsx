@@ -5,368 +5,546 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "motion/react";
 import { AppShell } from "@/components/layout/AppShell";
 import {
-  Search, Sparkles, ArrowLeft, Star, CheckCircle2,
-  Brain, FlaskConical, Scale, Radar, Shield, MessageSquare,
+  Search, Sparkles, MessageSquare, Star, CheckCircle2,
+  Brain, FlaskConical, Scale, Radar, Shield,
   TrendingUp, BarChart3, PieChart, Lightbulb, Target,
   Users, Globe2, FileText, Calculator, Rocket,
-  Building2, Briefcase, Coins, Lock, Cpu, LineChart, Receipt, Banknote, ClipboardList, ChevronDown,
-  AlertTriangle,
+  Building2, Briefcase, Coins, Lock, Cpu, LineChart,
+  Receipt, Banknote, ClipboardList, AlertTriangle,
+  ChevronLeft, Layers, Zap, Crown, ArrowRight,
 } from "lucide-react";
 import { cn } from "@/src/lib/utils";
 
-type Dept = "all" | "idea" | "cfo" | "legal" | "market" | "radar" | "shield" | "brain";
+type Stage = "all" | "idea" | "startup" | "growth" | "scale";
 
 interface Agent {
   id: string;
   name: string;
   nameEn: string;
-  dept: Dept;
+  stage: Stage;
   desc: string;
   capabilities: string[];
   icon: React.ComponentType<{ className?: string; size?: number }>;
-  color: string;
   popular?: boolean;
-  new?: boolean;
+  isNew?: boolean;
+  live?: boolean;
 }
 
-const DEPARTMENTS: { id: Dept; label: string; icon: React.ComponentType<{ className?: string; size?: number }>; color: string; desc: string }[] = [
-  { id: "all", label: "جميع المساعدين", icon: Sparkles, color: "white", desc: "عرض الكل" },
-  { id: "idea", label: "مُحقّق الأفكار", icon: Lightbulb, color: "cyan", desc: "تحليل وتقييم الفكرة" },
-  { id: "cfo", label: "المدير المالي", icon: BarChart3, color: "emerald", desc: "النمذجة المالية" },
-  { id: "legal", label: "المرشد القانوني", icon: Scale, color: "amber", desc: "الامتثال القانوني" },
-  { id: "market", label: "مختبر السوق", icon: FlaskConical, color: "fuchsia", desc: "بحث وتجارب سوقية" },
-  { id: "radar", label: "رادار الفرص", icon: Radar, color: "indigo", desc: "فرص التمويل والنمو" },
-  { id: "shield", label: "درع الأخطاء", icon: Shield, color: "rose", desc: "مخاطر ووقاية" },
-  { id: "brain", label: "الدماغ المشترك", icon: Brain, color: "violet", desc: "ذاكرة وتنسيق" },
+const STAGES: {
+  id: Stage;
+  label: string;
+  labelEn: string;
+  icon: React.ComponentType<{ className?: string; size?: number }>;
+  color: string;
+  bg: string;
+  border: string;
+  text: string;
+  glow: string;
+  desc: string;
+  question: string;
+}[] = [
+  {
+    id: "idea",
+    label: "الفكرة",
+    labelEn: "Idea",
+    icon: Lightbulb,
+    color: "cyan",
+    bg: "bg-cyan-500/10",
+    border: "border-cyan-500/30",
+    text: "text-cyan-400",
+    glow: "shadow-cyan-500/20",
+    desc: "اكتشف وتحقق من فكرتك",
+    question: "هل فكرتي تستحق المتابعة؟",
+  },
+  {
+    id: "startup",
+    label: "الإطلاق",
+    labelEn: "Startup",
+    icon: Rocket,
+    color: "violet",
+    bg: "bg-violet-500/10",
+    border: "border-violet-500/30",
+    text: "text-violet-400",
+    glow: "shadow-violet-500/20",
+    desc: "ابنِ وأطلق شركتك",
+    question: "كيف أبني شركتي وأسجّلها؟",
+  },
+  {
+    id: "growth",
+    label: "النمو",
+    labelEn: "Growth",
+    icon: TrendingUp,
+    color: "emerald",
+    bg: "bg-emerald-500/10",
+    border: "border-emerald-500/30",
+    text: "text-emerald-400",
+    glow: "shadow-emerald-500/20",
+    desc: "كبّر إيراداتك وفريقك",
+    question: "كيف أكبّر إيراداتي وأتوسع؟",
+  },
+  {
+    id: "scale",
+    label: "التوسع",
+    labelEn: "Scale",
+    icon: Crown,
+    color: "amber",
+    bg: "bg-amber-500/10",
+    border: "border-amber-500/30",
+    text: "text-amber-400",
+    glow: "shadow-amber-500/20",
+    desc: "ابنِ إمبراطوريتك",
+    question: "كيف أبني إمبراطوريتي؟",
+  },
 ];
 
 const AGENTS: Agent[] = [
-  // Idea Validator
-  { id: "idea-1", name: "مقيّم الفكرة", nameEn: "Idea Scorer", dept: "idea", icon: Star, color: "cyan",
-    desc: "يعطيك نقطة من 100 لفكرتك مع تحليل تفصيلي لنقاط القوة والضعف وفرص التحسين.",
-    capabilities: ["تقييم رقمي للفكرة", "تحليل نقاط القوة والضعف", "تقديم توصيات التحسين", "مقارنة بالسوق الحالي"],
-    popular: true },
-  { id: "idea-2", name: "محلل المنافسين", nameEn: "Competitor Intel", dept: "idea", icon: Target, color: "cyan",
-    desc: "يحلل المنافسين في سوقك ويجد لك الفجوة التي يجب أن تملأها أنت.",
-    capabilities: ["تحليل المنافسين المباشرين", "اكتشاف الفجوات السوقية", "تحليل نقاط الضعف لدى المنافسين", "اقتراح نقطة التميز"] },
-  { id: "idea-3", name: "صانع العرض التقديمي", nameEn: "Pitch Builder", dept: "idea", icon: Rocket, color: "cyan",
-    desc: "يبني لك عرضاً تقديمياً احترافياً جاهزاً للمستثمرين خلال دقائق.",
-    capabilities: ["هيكل Pitch Deck متكامل", "قصة مقنعة للمستثمر", "عرض الفرصة والسوق والنمو", "توقعات مالية مبسطة"],
-    popular: true },
-  { id: "idea-4", name: "محلل الجمهور المستهدف", nameEn: "Persona Analyzer", dept: "idea", icon: Users, color: "cyan",
-    desc: "يبني شخصية العميل المثالي (Persona) بعمق — ديموغرافياً، نفسياً، وسلوكياً.",
-    capabilities: ["بناء Buyer Persona تفصيلية", "تحليل احتياجات العميل", "تحديد نقاط الألم", "خريطة رحلة العميل"] },
-  { id: "idea-5", name: "مُختبر الافتراضات", nameEn: "Assumption Tester", dept: "idea", icon: FlaskConical, color: "cyan",
+  // ─── IDEA ───────────────────────────────────────────────────────────────
+  {
+    id: "idea-1", name: "مُحلّل الأفكار", nameEn: "Idea Validator", stage: "idea",
+    icon: Star, popular: true, live: true,
+    desc: "تقييم شامل لفكرتك مع تقرير SWOT وتحليل الجدوى للسوق المصري.",
+    capabilities: ["تقييم SWOT متكامل", "جدوى السوق المصري", "نقاط القوة والضعف", "توصيات التحسين"],
+  },
+  {
+    id: "idea-2", name: "محلل المنافسين", nameEn: "Competitor Intel", stage: "idea",
+    icon: Target, live: true,
+    desc: "يحلل المنافسين ويكتشف الفجوات التي تستطيع استغلالها للتميز.",
+    capabilities: ["تحليل المنافسين المباشرين", "اكتشاف الفجوات السوقية", "نقاط ضعف المنافسين", "اقتراح نقطة التميز"],
+  },
+  {
+    id: "idea-3", name: "باحث السوق", nameEn: "Market Researcher", stage: "idea",
+    icon: Globe2, live: true,
+    desc: "يحلل حجم السوق (TAM/SAM/SOM) والاتجاهات والشرائح الأكثر نمواً.",
+    capabilities: ["حساب TAM/SAM/SOM", "اتجاهات السوق المصري", "الشرائح الأعلى قيمة", "توصيات دخول السوق"],
+  },
+  {
+    id: "idea-4", name: "مُصمّم شخصيات العملاء", nameEn: "Persona Designer", stage: "idea",
+    icon: Users, popular: true,
+    desc: "يبني 5-20 شخصية عميل افتراضية واقعية تمثل شرائح السوق المختلفة.",
+    capabilities: ["شخصيات عميل واقعية", "ديموغرافيات وسلوكيات", "محاكاة ردود الفعل", "مقارنة الشرائح"],
+  },
+  {
+    id: "idea-5", name: "مُجري المقابلات الافتراضية", nameEn: "Virtual Interviewer", stage: "idea",
+    icon: MessageSquare,
+    desc: "يُجري مقابلات عمق مع عملاء افتراضيين يُجيبون كما لو أنهم حقيقيون.",
+    capabilities: ["مقابلات عمق افتراضية", "أسئلة مخصصة لمنتجك", "ردود واقعية مفصلة", "استخلاص أنماط مشتركة"],
+  },
+  {
+    id: "idea-6", name: "مُختبر الافتراضات", nameEn: "Assumption Tester", stage: "idea",
+    icon: FlaskConical,
     desc: "يحدد افتراضاتك الخطيرة ويصمم أبسط تجربة لاختبارها قبل الاستثمار.",
-    capabilities: ["تحديد الافتراضات الجوهرية", "تصميم تجارب الاختبار", "تفسير النتائج", "قرار المضي أو التوقف"] },
-  { id: "idea-6", name: "مُصمّم النموذج التجاري", nameEn: "Business Model Designer", dept: "idea", icon: PieChart, color: "cyan",
-    desc: "يُساعدك في بناء نموذج عمل مستدام من خلال Business Model Canvas تفاعلي.",
-    capabilities: ["Business Model Canvas كامل", "تحليل مصادر الإيرادات", "تحديد الشركاء الرئيسيين", "تقييم قابلية التوسع"],
-    new: true },
+    capabilities: ["تحديد الافتراضات الجوهرية", "تصميم تجارب الاختبار", "تفسير النتائج", "قرار المضي أو التوقف"],
+  },
+  {
+    id: "idea-7", name: "مُصمّم النموذج التجاري", nameEn: "Business Model Designer", stage: "idea",
+    icon: PieChart, isNew: true,
+    desc: "يُساعدك في بناء Business Model Canvas تفاعلي ونموذج عمل مستدام.",
+    capabilities: ["Business Model Canvas كامل", "مصادر الإيرادات", "الشركاء الرئيسيون", "قابلية التوسع"],
+  },
 
-  // CFO
-  { id: "cfo-1", name: "نمذجة التدفق النقدي", nameEn: "Cash Flow Modeler", dept: "cfo", icon: LineChart, color: "emerald",
-    desc: "يبني نموذج تدفق نقدي لـ 12 و36 شهراً بناءً على افتراضاتك — ويحذرك من نقطة الانهيار.",
-    capabilities: ["توقعات Cash Flow 3 سنوات", "تحليل Break-even", "سيناريوهات متعددة", "تنبيه نقطة الخطر"],
-    popular: true },
-  { id: "cfo-2", name: "محلل الميزانية", nameEn: "Budget Analyzer", dept: "cfo", icon: Calculator, color: "emerald",
-    desc: "يحلل ميزانيتك ويقترح توزيعاً مثالياً للمصروفات حسب مرحلتك وقطاعك.",
-    capabilities: ["تحليل البنود المالية", "مقارنة بالمعايير الصناعية", "اقتراح توزيع مثالي", "تحديد التسريبات المالية"] },
-  { id: "cfo-3", name: "حاسبة الوحدة الاقتصادية", nameEn: "Unit Economics", dept: "cfo", icon: Receipt, color: "emerald",
-    desc: "يحسب LTV وCAC وPayback Period ويقارنها بالمعايير العالمية لقطاعك.",
-    capabilities: ["حساب LTV/CAC", "تحليل Payback Period", "مقارنة بالمعيار الصناعي", "توصيات تحسين الربحية"],
-    popular: true },
-  { id: "cfo-4", name: "مُقيّم سعر الحصة", nameEn: "Equity Valuator", dept: "cfo", icon: PieChart, color: "emerald",
-    desc: "يُقدّر قيمة شركتك باستخدام 3 طرق مختلفة ويشرح لك كيف تتفاوض على حصتك.",
-    capabilities: ["تقييم DCF وComps والمضاعفات", "شرح طرق التقييم", "نصائح التفاوض مع المستثمر", "حساب الحصة المثالية"] },
-  { id: "cfo-5", name: "مُعد الخطة المالية للمستثمر", nameEn: "Investor Financial Pack", dept: "cfo", icon: FileText, color: "emerald",
-    desc: "يُعد الملف المالي الكامل للمستثمر: P&L متوقع، ميزانية عمومية، وجدول cap table.",
-    capabilities: ["P&L توقعي 3 سنوات", "ميزانية عمومية", "Cap Table جاهز", "نموذج Term Sheet"],
-    new: true },
-  { id: "cfo-6", name: "مُحلل الفجوة التمويلية", nameEn: "Funding Gap Analyzer", dept: "cfo", icon: Banknote, color: "emerald",
-    desc: "يحدد بدقة كم تحتاج من تمويل ولأي غرض، ويُنظّم لك جدول الإنفاق.",
-    capabilities: ["حساب الاحتياج التمويلي", "تفصيل بنود الإنفاق", "توقيت جولات التمويل", "أولويات الصرف"] },
+  // ─── STARTUP ─────────────────────────────────────────────────────────────
+  {
+    id: "startup-1", name: "بنّاء خطة العمل", nameEn: "Plan Builder", stage: "startup",
+    icon: FileText, popular: true, live: true,
+    desc: "يبني خطة عمل تفصيلية ودراسة جدوى مع توقعات مالية واقعية.",
+    capabilities: ["خطة عمل 30+ صفحة", "توقعات مالية 3 سنوات", "تحليل الجدوى", "ملحق للمستثمرين"],
+  },
+  {
+    id: "startup-2", name: "المدير المالي", nameEn: "CFO Agent", stage: "startup",
+    icon: BarChart3, popular: true, live: true,
+    desc: "النمذجة المالية، تحليل السيناريوهات، التنبؤ بالتدفق النقدي، وتقييم الاستثمارات.",
+    capabilities: ["نمذجة مالية تفصيلية", "توقع التدفق النقدي", "تحليل سيناريوهات", "تقييم الاستثمارات"],
+  },
+  {
+    id: "startup-3", name: "المرشد القانوني", nameEn: "Legal Guide", stage: "startup",
+    icon: Scale, popular: true, live: true,
+    desc: "مرشد قانوني متخصص في التشريعات المصرية: تأسيس، عقود، ضرائب.",
+    capabilities: ["اختيار الكيان القانوني", "خطوات التسجيل GAFI", "مراجعة العقود", "الالتزامات الضريبية"],
+  },
+  {
+    id: "startup-4", name: "حارس الأخطاء", nameEn: "Mistake Shield", stage: "startup",
+    icon: Shield, live: true,
+    desc: "يحميك من الأخطاء عبر تحذيرات استباقية مبنية على السياق والمرحلة.",
+    capabilities: ["تحذيرات استباقية", "أخطاء السوق المصري", "تحليل المخاطر", "خطة الوقاية"],
+  },
+  {
+    id: "startup-5", name: "مستشار التوظيف", nameEn: "Hiring Advisor", stage: "startup",
+    icon: Users, isNew: true, live: true,
+    desc: "يساعدك على بناء فريقك الأول باختيار الأدوار المناسبة وأسعار السوق المصري.",
+    capabilities: ["الوصف الوظيفي المناسب", "أسعار السوق المصري", "جذب أفضل المواهب", "بدائل اقتصادية"],
+  },
+  {
+    id: "startup-6", name: "بنّاء العلامة التجارية", nameEn: "Brand Builder", stage: "startup",
+    icon: Sparkles, isNew: true, live: true,
+    desc: "يبني هوية علامة تجارية متماسكة: رسالة، قيم، شخصية، وموضع تنافسي.",
+    capabilities: ["رسالة العلامة التجارية", "قيم وشخصية العلامة", "الموضع التنافسي", "أمثلة من السوق العربي"],
+  },
+  {
+    id: "startup-7", name: "دليل التأسيس القانوني", nameEn: "Legal Formation", stage: "startup",
+    icon: Building2,
+    desc: "يُرشدك خطوة بخطوة لتأسيس شركتك في مصر مع الأوراق والتكاليف.",
+    capabilities: ["نوع الكيان القانوني", "قائمة الأوراق المطلوبة", "تسجيل GAFI", "تقدير التكاليف"],
+  },
 
-  // Legal
-  { id: "legal-1", name: "دليل التأسيس القانوني", nameEn: "Legal Formation Guide", dept: "legal", icon: Building2, color: "amber",
-    desc: "يُرشدك خطوة بخطوة لتأسيس شركتك في مصر: نوع الكيان، الأوراق المطلوبة، والتكاليف.",
-    capabilities: ["اختيار نوع الكيان القانوني", "قائمة الأوراق المطلوبة", "خطوات التسجيل في GAFI", "تقدير التكاليف والوقت"],
-    popular: true },
-  { id: "legal-2", name: "مُدقّق العقود", nameEn: "Contract Reviewer", dept: "legal", icon: FileText, color: "amber",
-    desc: "يقرأ عقودك ويُنبّهك على البنود الخطيرة والحقوق الضائعة بلغة مبسطة.",
-    capabilities: ["مراجعة بنود العقد", "تحديد المخاطر القانونية", "اقتراح تعديلات", "شرح بلغة مبسطة"] },
-  { id: "legal-3", name: "باحث براءات الاختراع", nameEn: "IP Researcher", dept: "legal", icon: Lock, color: "amber",
-    desc: "يُساعدك في حماية ملكيتك الفكرية وفهم كيفية تسجيل العلامة التجارية في مصر والخليج.",
-    capabilities: ["فهم أنواع الحماية الفكرية", "خطوات تسجيل العلامة التجارية", "حماية البرمجيات والمحتوى", "الفرق بين مصر والدول المختلفة"] },
-  { id: "legal-4", name: "مُعد اتفاقية المساهمين", nameEn: "SHA Drafter", dept: "legal", icon: ClipboardList, color: "amber",
-    desc: "يُساعدك في صياغة اتفاقية المساهمين (SHA) بأحكام واضحة تحمي حصتك.",
-    capabilities: ["هيكل اتفاقية المساهمين", "بنود Vesting وأحكام الخروج", "آليات حل النزاعات", "حقوق التصويت والإدارة"] },
-  { id: "legal-5", name: "مُرشد قانون العمل", nameEn: "Labor Law Guide", dept: "legal", icon: Users, color: "amber",
-    desc: "يشرح قانون العمل المصري بالعامية ويُساعدك في صياغة عقود موظفين سليمة.",
-    capabilities: ["شرح قانون العمل المصري", "نماذج عقود موظفين", "الأحكام الإلزامية", "كيفية إنهاء العقود بشكل قانوني"] },
-  { id: "legal-6", name: "مُدقّق الامتثال الضريبي", nameEn: "Tax Compliance Checker", dept: "legal", icon: Receipt, color: "amber",
-    desc: "يُساعدك في فهم التزاماتك الضريبية في مصر: ضريبة الدخل، الأرباح، وضريبة القيمة المضافة.",
-    capabilities: ["حساب الالتزامات الضريبية", "مواعيد تقديم الإقرارات", "اشتراطات ضريبة القيمة المضافة", "نصائح التخطيط الضريبي"],
-    new: true },
-
-  // Market Lab
-  { id: "market-1", name: "مُصمّم شخصيات العملاء", nameEn: "Persona Designer", dept: "market", icon: Users, color: "fuchsia",
-    desc: "يبني 5-20 شخصية عميل افتراضية واقعية تمثل شرائح السوق المختلفة لمنتجك.",
-    capabilities: ["بناء شخصيات عميل واقعية", "تحليل الديموغرافيات والسلوكيات", "محاكاة ردود الفعل", "مقارنة الشرائح"],
-    popular: true },
-  { id: "market-2", name: "مُجري المقابلات الافتراضية", nameEn: "Virtual Interviewer", dept: "market", icon: MessageSquare, color: "fuchsia",
-    desc: "يُجري مقابلات عمق مع عملاء افتراضيين يُجيبون كما لو أنهم عملاء حقيقيون في السوق.",
-    capabilities: ["مقابلات عمق افتراضية", "أسئلة مخصصة لمنتجك", "ردود واقعية ومفصلة", "استخلاص الأنماط المشتركة"] },
-  { id: "market-3", name: "محلل رؤى السوق", nameEn: "Insight Analyst", dept: "market", icon: Lightbulb, color: "fuchsia",
-    desc: "يُحول بيانات التجارب والمقابلات إلى رؤى استراتيجية وقرارات واضحة.",
-    capabilities: ["تحليل نتائج التجارب", "استخلاص الأنماط المهمة", "توصيات استراتيجية", "قرار Pivot أو Persevere"] },
-  { id: "market-4", name: "باحث حجم السوق", nameEn: "TAM/SAM/SOM Researcher", dept: "market", icon: Globe2, color: "fuchsia",
-    desc: "يُحسب حجم السوق الكلي والقابل للخدمة والمستهدف لمشروعك بطرق منهجية.",
-    capabilities: ["حساب TAM/SAM/SOM", "مصادر بيانات السوق", "طرق Bottom-up وTop-down", "مقارنة بالأسواق المماثلة"],
-    new: true },
-  { id: "market-5", name: "مُصمّم اختبار A/B", nameEn: "A/B Test Designer", dept: "market", icon: FlaskConical, color: "fuchsia",
-    desc: "يُصمّم لك اختبارات A/B دقيقة لتسعيرك ورسائلك وأفكارك التسويقية.",
-    capabilities: ["تصميم اختبارات A/B", "تحديد المتغيرات المُختبَرة", "حجم العينة الكافي", "قراءة نتائج الاختبار"] },
-
-  // Radar
-  { id: "radar-1", name: "ماسح فرص التمويل", nameEn: "Funding Scanner", dept: "radar", icon: Coins, color: "indigo",
-    desc: "يبحث عن فرص التمويل المناسبة لمرحلتك وقطاعك — منح، قروض، مستثمرين ملائكيين.",
-    capabilities: ["قاعدة بيانات فرص التمويل", "تطابق مع مرحلتك وقطاعك", "خطوات التقديم", "نصائح زيادة فرص القبول"],
-    popular: true },
-  { id: "radar-2", name: "باحث الشركاء الاستراتيجيين", nameEn: "Partner Finder", dept: "radar", icon: Building2, color: "indigo",
-    desc: "يُحدد الشركاء الاستراتيجيين الأنسب لمشروعك وكيف تصل إليهم.",
-    capabilities: ["تحديد الشركاء المحتملين", "استراتيجية التواصل", "نموذج اتفاقية الشراكة", "معايير تقييم الشراكة"] },
-  { id: "radar-3", name: "مُتتبع الاتجاهات", nameEn: "Trend Tracker", dept: "radar", icon: TrendingUp, color: "indigo",
-    desc: "يتابع أحدث اتجاهات السوق في قطاعك ويُخبرك بالتوقيت الأمثل للتحرك.",
-    capabilities: ["رصد اتجاهات السوق", "تحليل التوقيت", "فرص التبكير", "تحليل Emerging Technologies"] },
-  { id: "radar-4", name: "مُحلل مسرّعات الأعمال", nameEn: "Accelerator Matcher", dept: "radar", icon: Rocket, color: "indigo",
-    desc: "يقارن برامج التسريع والحاضنات المتاحة ويُنصحك بالأنسب لمرحلتك.",
-    capabilities: ["قاعدة بيانات الحاضنات والمسرّعات", "معايير القبول", "مقارنة البرامج", "خطة التقديم الناجحة"] },
-  { id: "radar-5", name: "مُرشد علاقات المستثمرين", nameEn: "Investor Relations Guide", dept: "radar", icon: Briefcase, color: "indigo",
-    desc: "يُعلّمك كيف تبني علاقة طويلة الأمد مع المستثمرين قبل وبعد جولة التمويل.",
-    capabilities: ["استراتيجية بناء علاقات المستثمرين", "متى وكيف تتواصل", "نموذج تقرير شهري للمستثمر", "إدارة توقعات المستثمرين"],
-    new: true },
-
-  // Shield
-  { id: "shield-1", name: "محلل المخاطر", nameEn: "Risk Analyzer", dept: "shield", icon: Shield, color: "rose",
-    desc: "يُحلل المخاطر الأعلى احتمالاً في مشروعك ويُقدّم خطة وقاية لكل منها.",
-    capabilities: ["تحديد المخاطر الجوهرية", "تقييم احتمالية وأثر كل خطر", "خطة التخفيف لكل مخاطرة", "مصفوفة المخاطر"],
-    popular: true },
-  { id: "shield-2", name: "مُتحدي الافتراضات الخطيرة", nameEn: "Assumption Challenger", dept: "shield", icon: AlertTriangle, color: "rose",
-    desc: "يُجادلك في كل افتراض تبنيه عن السوق والعملاء — ليُقوّي فكرتك قبل الإطلاق.",
-    capabilities: ["تحديد الافتراضات المخفية", "مجادلة كل افتراض", "اختبارات للتحقق السريع", "قائمة الأسئلة الصعبة"] },
-  { id: "shield-3", name: "مُراقب التدفق النقدي", nameEn: "Cash Burn Monitor", dept: "shield", icon: Calculator, color: "rose",
-    desc: "يحسب Runway الحالي ويُنذرك مبكراً عند اقتراب نفاد السيولة.",
-    capabilities: ["حساب Cash Burn Rate", "توقع Runway", "إنذار مبكر", "سيناريوهات توفير التكاليف"] },
-  { id: "shield-4", name: "محلل فجوات الامتثال", nameEn: "Compliance Gap Analyzer", dept: "shield", icon: CheckCircle2, color: "rose",
-    desc: "يُراجع امتثالك القانوني والتنظيمي ويُحدد الفجوات قبل أن تُكلّفك غرامات.",
-    capabilities: ["قائمة متطلبات الامتثال", "تحديد الفجوات", "أولويات المعالجة", "جدول زمني للامتثال"] },
-
-  // Brain
-  { id: "brain-1", name: "ذاكرة المشروع", nameEn: "Project Memory", dept: "brain", icon: Brain, color: "violet",
+  // ─── GROWTH ──────────────────────────────────────────────────────────────
+  {
+    id: "growth-1", name: "رادار الفرص", nameEn: "Opportunity Radar", stage: "growth",
+    icon: Radar, popular: true, live: true,
+    desc: "يبحث عن فرص تمويل، مسابقات، هاكاثونات، وحاضنات أعمال مناسبة لقطاعك.",
+    capabilities: ["فرص تمويل مناسبة", "مسابقات وهاكاثونات", "حاضنات الأعمال", "خطة التقديم"],
+  },
+  {
+    id: "growth-2", name: "مدرب المبيعات", nameEn: "Sales Coach", stage: "growth",
+    icon: Briefcase, isNew: true, live: true,
+    desc: "يصمم استراتيجية مبيعات فعّالة وسكريبت البيع وتقنيات إغلاق الصفقة.",
+    capabilities: ["استراتيجية مبيعات", "سكريبت البيع بالعربي", "تقنيات إغلاق الصفقة", "KPIs المبيعات"],
+  },
+  {
+    id: "growth-3", name: "استراتيجي التسويق", nameEn: "Marketing Strategist", stage: "growth",
+    icon: TrendingUp, isNew: true, live: true,
+    desc: "يضع خطة تسويق شاملة: قنوات، محتوى، ميزانية، وخطة 90 يوم للسوق المصري.",
+    capabilities: ["خطة تسويق 90 يوم", "توزيع الميزانية", "خطة محتوى عربي", "Facebook/TikTok/Instagram"],
+  },
+  {
+    id: "growth-4", name: "مدير العمليات", nameEn: "Operations Manager", stage: "growth",
+    icon: Layers, isNew: true, live: true,
+    desc: "يشخّص التحديات التشغيلية ويقترح أنظمة وأدوات لتحسين الكفاءة وتقليل التكاليف.",
+    capabilities: ["تشخيص التحديات التشغيلية", "أنظمة العمل SOPs", "أدوات اقتصادية", "مؤشرات الكفاءة KPIs"],
+  },
+  {
+    id: "growth-5", name: "متحف النجاح", nameEn: "Success Museum", stage: "growth",
+    icon: Lightbulb, live: true,
+    desc: "يحلل قصص نجاح الشركات المصرية والعالمية ويستخلص الدروس القابلة للتطبيق.",
+    capabilities: ["قصص نجاح مشابهة", "دروس قابلة للتطبيق", "مقارنة مع حالتك", "استراتيجيات مجربة"],
+  },
+  {
+    id: "growth-6", name: "ذاكرة المشروع", nameEn: "Project Memory", stage: "growth",
+    icon: Brain, popular: true,
     desc: "يحفظ كل شيء عن مشروعك ويُذكّرك بالقرارات السابقة في كل محادثة جديدة.",
-    capabilities: ["حفظ سياق المشروع", "ربط المحادثات السابقة", "استرجاع القرارات", "تتبع التطور عبر الزمن"],
-    popular: true },
-  { id: "brain-2", name: "مُلخّص الاجتماعات", nameEn: "Meeting Summarizer", dept: "brain", icon: FileText, color: "violet",
-    desc: "يُلخّص اجتماعاتك ويستخلص action items ومواعيدها ومسؤوليها.",
-    capabilities: ["تلخيص اجتماعات تفصيلي", "استخلاص Action Items", "تعيين المسؤوليات", "متابعة التنفيذ"] },
-  { id: "brain-3", name: "مُنسّق فريق العمل", nameEn: "Team Coordinator", dept: "brain", icon: Users, color: "violet",
-    desc: "يُساعد في تنسيق مهام الفريق وتوزيع المسؤوليات بشكل واضح وقابل للقياس.",
-    capabilities: ["هيكلة مهام الفريق", "توزيع المسؤوليات", "متابعة التقدم", "حل تعارضات الأولويات"] },
-  { id: "brain-4", name: "مُرتّب استراتيجية الأهداف", nameEn: "OKR Builder", dept: "brain", icon: Target, color: "violet",
+    capabilities: ["حفظ سياق المشروع", "ربط المحادثات السابقة", "استرجاع القرارات", "تتبع التطور"],
+  },
+  {
+    id: "growth-7", name: "مُرتّب الأهداف OKR", nameEn: "OKR Builder", stage: "growth",
+    icon: Target, isNew: true,
     desc: "يُساعدك في بناء OKRs واضحة وقابلة للقياس لربعك القادم.",
-    capabilities: ["صياغة Objectives وKey Results", "مؤشرات قياس الأداء", "ربط OKRs بالاستراتيجية", "متابعة شهرية"],
-    new: true },
+    capabilities: ["صياغة Objectives + Key Results", "مؤشرات الأداء", "ربط OKRs بالاستراتيجية", "متابعة شهرية"],
+  },
+
+  // ─── SCALE ───────────────────────────────────────────────────────────────
+  {
+    id: "scale-1", name: "مستشار الاستثمار", nameEn: "Investment Advisor", stage: "scale",
+    icon: Coins, isNew: true, live: true,
+    desc: "يقيّم شركتك ويصمم استراتيجية جذب المستثمرين مع فهم Term Sheets والتفاوض.",
+    capabilities: ["تقييم الشركة بـ 3 طرق", "استراتيجية جذب مستثمرين", "فهم Term Sheets", "التفاوض على الحصص"],
+  },
+  {
+    id: "scale-2", name: "مخطط التوسع", nameEn: "Expansion Planner", stage: "scale",
+    icon: Globe2, isNew: true, live: true,
+    desc: "يضع خطة توسع مدروسة لأسواق جديدة مع تحليل المخاطر واستراتيجية الدخول.",
+    capabilities: ["تقييم جاهزية التوسع", "تحليل السوق الجديد", "استراتيجية الدخول", "متطلبات قانونية"],
+  },
+  {
+    id: "scale-3", name: "مستشار مجلس الإدارة", nameEn: "Board Advisor", stage: "scale",
+    icon: Crown, isNew: true, live: true,
+    desc: "يقدم توجيهاً استراتيجياً رفيع المستوى لقرارات المصير: اندماج، تمويل، توسع.",
+    capabilities: ["تحليل القرارات الاستراتيجية", "سيناريوهات وخيارات", "توصية واضحة", "خطوات تنفيذية"],
+  },
+  {
+    id: "scale-4", name: "خبير العقارات", nameEn: "Real Estate Expert", stage: "scale",
+    icon: Building2, live: true,
+    desc: "خبير عقارات استثمارية مصرية: حساب ROI، تقييم الصفقات، تحليل أسواق المدن.",
+    capabilities: ["حساب ROI العقاري", "تقييم الصفقات", "تحليل أسواق المدن", "مقارنة الاستثمارات"],
+  },
+  {
+    id: "scale-5", name: "مُعد الملف المالي للمستثمر", nameEn: "Investor Financial Pack", stage: "scale",
+    icon: Banknote, isNew: true,
+    desc: "يُعد الملف المالي الكامل للمستثمر: P&L متوقع، ميزانية عمومية، وجدول cap table.",
+    capabilities: ["P&L توقعي 3 سنوات", "ميزانية عمومية", "Cap Table", "نموذج Term Sheet"],
+  },
+  {
+    id: "scale-6", name: "باحث الشركاء الاستراتيجيين", nameEn: "Partner Finder", stage: "scale",
+    icon: Briefcase,
+    desc: "يُحدد الشركاء الاستراتيجيين الأنسب لشركتك وكيف تصل إليهم بفعالية.",
+    capabilities: ["تحديد الشركاء المحتملين", "استراتيجية التواصل", "نموذج الشراكة", "معايير التقييم"],
+  },
 ];
 
+const stageColorMap = {
+  idea:    { text: "text-cyan-400",    bg: "bg-cyan-500/10",    border: "border-cyan-500/30",    badge: "bg-cyan-500/20 text-cyan-300",    dot: "bg-cyan-400" },
+  startup: { text: "text-violet-400",  bg: "bg-violet-500/10",  border: "border-violet-500/30",  badge: "bg-violet-500/20 text-violet-300",  dot: "bg-violet-400" },
+  growth:  { text: "text-emerald-400", bg: "bg-emerald-500/10", border: "border-emerald-500/30", badge: "bg-emerald-500/20 text-emerald-300", dot: "bg-emerald-400" },
+  scale:   { text: "text-amber-400",   bg: "bg-amber-500/10",   border: "border-amber-500/30",   badge: "bg-amber-500/20 text-amber-300",    dot: "bg-amber-400" },
+  all:     { text: "text-white",       bg: "bg-white/5",        border: "border-white/10",       badge: "bg-white/10 text-white",            dot: "bg-white" },
+};
+
 export default function AgentsPage() {
-  const [activeDept, setActiveDept] = useState<Dept>("all");
+  const [activeStage, setActiveStage] = useState<Stage>("all");
   const [search, setSearch] = useState("");
-  const [showAll, setShowAll] = useState(false);
 
   const filtered = useMemo(() => {
     return AGENTS.filter((a) => {
-      const matchDept = activeDept === "all" || a.dept === activeDept;
-      const matchSearch = !search || a.name.includes(search) || a.desc.includes(search) || a.nameEn.toLowerCase().includes(search.toLowerCase());
-      return matchDept && matchSearch;
+      const matchStage = activeStage === "all" || a.stage === activeStage;
+      const matchSearch = !search ||
+        a.name.includes(search) ||
+        a.desc.includes(search) ||
+        a.nameEn.toLowerCase().includes(search.toLowerCase());
+      return matchStage && matchSearch;
     });
-  }, [activeDept, search]);
+  }, [activeStage, search]);
 
-  const displayed = showAll ? filtered : filtered.slice(0, 12);
+  const stagesWithCounts = useMemo(() =>
+    STAGES.map(s => ({ ...s, count: AGENTS.filter(a => a.stage === s.id).length })),
+    []
+  );
 
-  const colorMap: Record<string, string> = {
-    cyan: "from-cyan-500 to-indigo-500",
-    emerald: "from-emerald-500 to-teal-500",
-    amber: "from-amber-500 to-orange-500",
-    fuchsia: "from-fuchsia-500 to-pink-500",
-    indigo: "from-indigo-500 to-violet-500",
-    rose: "from-rose-500 to-red-500",
-    violet: "from-violet-500 to-purple-500",
-    white: "from-white/20 to-white/10",
-  };
-
-  const bgColorMap: Record<string, string> = {
-    cyan: "bg-cyan-500/10 border-cyan-500/20 hover:border-cyan-400/40",
-    emerald: "bg-emerald-500/10 border-emerald-500/20 hover:border-emerald-400/40",
-    amber: "bg-amber-500/10 border-amber-500/20 hover:border-amber-400/40",
-    fuchsia: "bg-fuchsia-500/10 border-fuchsia-500/20 hover:border-fuchsia-400/40",
-    indigo: "bg-indigo-500/10 border-indigo-500/20 hover:border-indigo-400/40",
-    rose: "bg-rose-500/10 border-rose-500/20 hover:border-rose-400/40",
-    violet: "bg-violet-500/10 border-violet-500/20 hover:border-violet-400/40",
-  };
-
-  const textColorMap: Record<string, string> = {
-    cyan: "text-cyan-400", emerald: "text-emerald-400", amber: "text-amber-400",
-    fuchsia: "text-fuchsia-400", indigo: "text-indigo-400", rose: "text-rose-400", violet: "text-violet-400",
-  };
+  const activeStageInfo = STAGES.find(s => s.id === activeStage);
+  const colors = stageColorMap[activeStage];
 
   return (
     <AppShell>
-      <div dir="rtl" className="max-w-6xl mx-auto space-y-8">
+      <div dir="rtl" className="max-w-6xl mx-auto space-y-8 pb-16">
+
         {/* Header */}
         <motion.div initial={{ opacity: 0, y: -12 }} animate={{ opacity: 1, y: 0 }}>
-          <div className="flex items-center gap-2 mb-2">
+          <div className="flex items-center gap-2 mb-3">
             <Cpu className="w-4 h-4 text-brand-cyan" />
-            <span className="text-xs text-brand-cyan font-medium uppercase tracking-wide">AI Agents</span>
+            <span className="text-xs text-brand-cyan font-medium uppercase tracking-widest">AI Agents</span>
           </div>
-          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          <div className="flex flex-col md:flex-row items-start md:items-end justify-between gap-4">
             <div>
-              <h1 className="font-display text-3xl md:text-4xl font-extrabold text-white mb-1.5">
-                عرض المساعدين الذكيين
+              <h1 className="font-display text-3xl md:text-4xl font-extrabold text-white mb-2">
+                وكلاء كلميرون الذكيون
               </h1>
-              <p className="text-text-secondary max-w-xl">
-                <span className="brand-gradient-text font-bold">{AGENTS.length}+ مساعد ذكي</span> متخصص في 7 أقسام — جاهزون لمساعدتك في كل جانب من رحلتك الريادية.
+              <p className="text-text-secondary max-w-2xl leading-relaxed">
+                <span className="brand-gradient-text font-bold">{AGENTS.length}+ وكيل ذكي</span> منظّمون حسب رحلتك —
+                من أول فكرة حتى بناء إمبراطوريتك.
               </p>
             </div>
-            <Link href="/chat"
+            <Link
+              href="/chat"
               className="btn-primary flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold shrink-0"
             >
-              <MessageSquare className="w-4 h-4" /> تحدث مع مساعد الآن
+              <MessageSquare className="w-4 h-4" />
+              تحدث مع وكيل الآن
             </Link>
           </div>
         </motion.div>
 
-        {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          {[
-            { v: `${AGENTS.length}+`, l: "مساعد ذكي" },
-            { v: "7", l: "أقسام متخصصة" },
-            { v: AGENTS.filter(a => a.popular).length + "+", l: "مساعد شائع" },
-            { v: AGENTS.filter(a => a.new).length + "+", l: "مساعد جديد" },
-          ].map((s, i) => (
-            <motion.div key={s.l} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.07 }}
-              className="glass-panel rounded-2xl p-4 text-center"
-            >
-              <div className="font-display text-2xl font-extrabold brand-gradient-text">{s.v}</div>
-              <div className="text-[11px] text-text-secondary mt-0.5">{s.l}</div>
-            </motion.div>
-          ))}
-        </div>
+        {/* Stage Pipeline */}
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="relative"
+        >
+          {/* Pipeline connector line */}
+          <div className="absolute top-8 right-[10%] left-[10%] h-0.5 bg-gradient-to-l from-amber-500/30 via-emerald-500/30 via-violet-500/30 to-cyan-500/30 hidden md:block" />
 
-        {/* Department Filter */}
-        <div className="space-y-3">
-          <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
-            {DEPARTMENTS.map((dept) => {
-              const Icon = dept.icon;
-              const deptColor = textColorMap[dept.color] || "text-white";
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            {stagesWithCounts.map((stage, i) => {
+              const Icon = stage.icon;
+              const isActive = activeStage === stage.id;
               return (
-                <button key={dept.id} onClick={() => setActiveDept(dept.id)}
+                <motion.button
+                  key={stage.id}
+                  onClick={() => setActiveStage(isActive ? "all" : stage.id)}
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.05 * i }}
                   className={cn(
-                    "flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium border whitespace-nowrap transition-all shrink-0",
-                    activeDept === dept.id
-                      ? "bg-white/10 border-white/25 text-white"
-                      : "bg-white/5 border-white/10 text-neutral-300 hover:border-white/20"
+                    "relative flex flex-col items-center gap-2 p-4 rounded-2xl border transition-all text-center group cursor-pointer",
+                    isActive
+                      ? cn(stage.bg, stage.border, "shadow-lg", stage.glow)
+                      : "bg-white/[0.03] border-white/8 hover:border-white/20 hover:bg-white/[0.05]"
                   )}
                 >
-                  <Icon className={cn("w-3.5 h-3.5", activeDept === dept.id ? deptColor : "text-neutral-400")} />
-                  {dept.label}
-                  <span className="text-[10px] bg-white/10 px-1.5 py-0.5 rounded-full">
-                    {dept.id === "all" ? AGENTS.length : AGENTS.filter(a => a.dept === dept.id).length}
-                  </span>
-                </button>
+                  {/* Stage number */}
+                  <div className={cn(
+                    "absolute -top-2 -right-2 w-5 h-5 rounded-full text-[10px] font-bold flex items-center justify-center",
+                    isActive ? cn(stage.bg, stage.text, "border", stage.border) : "bg-white/10 text-white/40"
+                  )}>
+                    {i + 1}
+                  </div>
+
+                  <div className={cn(
+                    "w-10 h-10 rounded-xl flex items-center justify-center transition-all",
+                    isActive ? cn(stage.bg, "border", stage.border) : "bg-white/5"
+                  )}>
+                    <Icon className={cn("w-5 h-5", isActive ? stage.text : "text-neutral-500 group-hover:text-neutral-300")} />
+                  </div>
+
+                  <div>
+                    <div className={cn("font-bold text-sm transition-colors", isActive ? stage.text : "text-white/70")}>
+                      {stage.label}
+                    </div>
+                    <div className="text-[10px] text-neutral-500 mt-0.5">{stage.labelEn}</div>
+                  </div>
+
+                  <div className={cn(
+                    "text-[11px] px-2 py-0.5 rounded-full border transition-all",
+                    isActive ? cn(stageColorMap[stage.id].badge, stage.border) : "bg-white/5 border-white/10 text-neutral-500"
+                  )}>
+                    {stage.count} وكيل
+                  </div>
+
+                  <p className={cn(
+                    "text-[11px] leading-tight transition-colors hidden md:block",
+                    isActive ? "text-neutral-300" : "text-neutral-600"
+                  )}>
+                    {stage.question}
+                  </p>
+                </motion.button>
               );
             })}
           </div>
+        </motion.div>
 
-          {/* Search */}
-          <div className="relative">
+        {/* "All" pill + Search */}
+        <div className="flex flex-col sm:flex-row gap-3">
+          <button
+            onClick={() => setActiveStage("all")}
+            className={cn(
+              "flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium border transition-all shrink-0",
+              activeStage === "all"
+                ? "bg-white/10 border-white/25 text-white"
+                : "bg-white/[0.03] border-white/10 text-neutral-400 hover:border-white/20"
+            )}
+          >
+            <Sparkles className="w-3.5 h-3.5" />
+            جميع الوكلاء
+            <span className="text-[10px] bg-white/10 px-1.5 py-0.5 rounded-full">{AGENTS.length}</span>
+          </button>
+
+          <div className="relative flex-1">
             <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-500" />
-            <input aria-label="بحث" value={search} onChange={(e) => setSearch(e.target.value)}
-              placeholder="ابحث عن مساعد بالاسم أو الوظيفة..."
-              className="w-full bg-white/[0.04] border border-white/10 rounded-2xl pr-10 pl-4 py-3 text-sm text-white placeholder-neutral-600 outline-none focus:border-white/20 transition-all"
+            <input
+              aria-label="بحث في الوكلاء"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="ابحث عن وكيل بالاسم أو الوظيفة..."
+              className="w-full bg-white/[0.04] border border-white/10 rounded-xl pr-10 pl-4 py-2.5 text-sm text-white placeholder-neutral-600 outline-none focus:border-white/20 transition-all"
             />
           </div>
         </div>
 
+        {/* Active stage banner */}
+        <AnimatePresence mode="wait">
+          {activeStage !== "all" && activeStageInfo && (
+            <motion.div
+              key={activeStage}
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              className={cn("rounded-2xl border p-4 flex items-center gap-4", activeStageInfo.bg, activeStageInfo.border)}
+            >
+              <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center shrink-0", activeStageInfo.bg, "border", activeStageInfo.border)}>
+                {(() => { const Icon = activeStageInfo.icon; return <Icon className={cn("w-5 h-5", activeStageInfo.text)} />; })()}
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className={cn("font-bold text-sm", activeStageInfo.text)}>{activeStageInfo.label} — {activeStageInfo.labelEn}</div>
+                <div className="text-xs text-neutral-400 mt-0.5">{activeStageInfo.question}</div>
+              </div>
+              <div className={cn("text-xs px-3 py-1 rounded-full border", stageColorMap[activeStage].badge, activeStageInfo.border)}>
+                {filtered.length} وكيل
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         {/* Agents Grid */}
         <div>
           <div className="flex items-center justify-between mb-4">
-            <p className="text-sm text-text-secondary">عرض <span className="text-white font-bold">{filtered.length}</span> مساعد</p>
-            {activeDept !== "all" && (
-              <button onClick={() => setActiveDept("all")} className="text-xs text-brand-cyan hover:underline">
-                عرض الكل
-              </button>
-            )}
+            <p className="text-sm text-text-secondary">
+              عرض <span className="text-white font-bold">{filtered.length}</span> وكيل
+              {search && <span className="text-neutral-500"> لـ "{search}"</span>}
+            </p>
           </div>
 
           <AnimatePresence mode="wait">
             <motion.div
-              key={activeDept + search}
+              key={activeStage + search}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
               className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
             >
-              {displayed.map((agent, i) => {
+              {filtered.map((agent, i) => {
                 const Icon = agent.icon;
-                const deptInfo = DEPARTMENTS.find(d => d.id === agent.dept)!;
+                const sc = stageColorMap[agent.stage as keyof typeof stageColorMap];
+                const stageInfo = STAGES.find(s => s.id === agent.stage);
                 return (
-                  <motion.div key={agent.id}
-                    initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}
+                  <motion.div
+                    key={agent.id}
+                    initial={{ opacity: 0, y: 16 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: Math.min(i * 0.04, 0.3) }}
+                    className={cn(
+                      "group relative glass-panel rounded-2xl p-5 border cursor-pointer transition-all hover:scale-[1.01]",
+                      "hover:border-white/20 hover:shadow-lg"
+                    )}
                   >
-                    <Link href={`/chat?q=${encodeURIComponent(`تحدث معي كمساعد ${agent.name}: ${agent.desc}`)}`}
-                      className={cn("block glass-panel rounded-3xl p-5 h-full border transition-all card-lift group", bgColorMap[agent.color] || "border-white/10 hover:border-white/20")}
-                    >
-                      {/* Top row */}
-                      <div className="flex items-start justify-between mb-3">
-                        <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${colorMap[agent.color]} flex items-center justify-center shadow-md shrink-0`}>
-                          <Icon className="w-5 h-5 text-white" />
-                        </div>
-                        <div className="flex items-center gap-1.5">
-                          {agent.new && <span className="text-[9px] bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 px-1.5 py-0.5 rounded-full font-bold uppercase">جديد</span>}
-                          {agent.popular && <span className="text-[9px] bg-amber-500/20 text-amber-300 border border-amber-500/30 px-1.5 py-0.5 rounded-full font-bold flex items-center gap-0.5"><Star className="w-2.5 h-2.5" />شائع</span>}
-                        </div>
-                      </div>
+                    {/* Badges */}
+                    <div className="absolute top-3 left-3 flex gap-1.5">
+                      {agent.popular && (
+                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-brand-cyan/15 text-brand-cyan border border-brand-cyan/20 font-medium">
+                          شائع
+                        </span>
+                      )}
+                      {agent.isNew && (
+                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-violet-500/15 text-violet-400 border border-violet-500/20 font-medium">
+                          جديد
+                        </span>
+                      )}
+                      {agent.live && (
+                        <span className="flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-medium">
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                          مُفعّل
+                        </span>
+                      )}
+                    </div>
 
-                      {/* Dept label */}
-                      <div className={cn("text-[10px] font-medium mb-1.5 flex items-center gap-1", textColorMap[agent.color])}>
-                        <deptInfo.icon className="w-3 h-3" />
-                        {deptInfo.label}
-                      </div>
-
-                      <h3 className="font-bold text-white text-base mb-1.5 leading-snug group-hover:text-brand-cyan transition-colors">
-                        {agent.name}
-                      </h3>
-                      <p className="text-xs text-text-secondary leading-relaxed mb-4 line-clamp-2">{agent.desc}</p>
-
-                      {/* Capabilities */}
-                      <ul className="space-y-1 mb-4">
-                        {agent.capabilities.slice(0, 3).map((cap) => (
-                          <li key={cap} className="flex items-center gap-1.5 text-[11px] text-neutral-400">
-                            <CheckCircle2 className="w-3 h-3 text-emerald-500/60 shrink-0" />
-                            {cap}
-                          </li>
-                        ))}
-                      </ul>
-
-                      <div className="flex items-center justify-between">
-                        <span className="text-[10px] text-neutral-600 font-mono">{agent.nameEn}</span>
-                        <span className={cn("flex items-center gap-1 text-xs font-medium", textColorMap[agent.color])}>
-                          استخدم المساعد
-                          <ArrowLeft className="w-3 h-3 group-hover:translate-x-[-3px] transition-transform" />
+                    {/* Stage badge top-right */}
+                    {activeStage === "all" && stageInfo && (
+                      <div className="absolute top-3 right-3">
+                        <span className={cn("text-[9px] px-1.5 py-0.5 rounded-full border font-medium", sc.badge, sc.border)}>
+                          {stageInfo.label}
                         </span>
                       </div>
+                    )}
+
+                    <div className="flex items-start gap-3 mt-5">
+                      <div className={cn(
+                        "w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border transition-all",
+                        sc.bg, sc.border, "group-hover:scale-110"
+                      )}>
+                        <Icon className={cn("w-5 h-5", sc.text)} />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-bold text-white text-sm leading-tight">{agent.name}</h3>
+                        <p className="text-[10px] text-neutral-500 mt-0.5">{agent.nameEn}</p>
+                      </div>
+                    </div>
+
+                    <p className="text-xs text-neutral-400 mt-3 leading-relaxed line-clamp-2">{agent.desc}</p>
+
+                    <div className="mt-3 flex flex-wrap gap-1.5">
+                      {agent.capabilities.slice(0, 3).map((cap) => (
+                        <span key={cap} className="text-[10px] px-2 py-0.5 rounded-full bg-white/5 text-neutral-500 border border-white/8">
+                          {cap}
+                        </span>
+                      ))}
+                    </div>
+
+                    <Link href="/chat"
+                      className={cn(
+                        "mt-4 w-full flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-bold border transition-all",
+                        "opacity-0 group-hover:opacity-100 translate-y-1 group-hover:translate-y-0",
+                        sc.bg, sc.border, sc.text,
+                        "hover:brightness-110"
+                      )}
+                    >
+                      <MessageSquare className="w-3.5 h-3.5" />
+                      ابدأ محادثة
                     </Link>
                   </motion.div>
                 );
@@ -374,40 +552,66 @@ export default function AgentsPage() {
             </motion.div>
           </AnimatePresence>
 
-          {/* Show more */}
-          {!showAll && filtered.length > 12 && (
-            <div className="text-center mt-6">
-              <button onClick={() => setShowAll(true)}
-                className="flex items-center gap-2 mx-auto px-6 py-3 rounded-full border border-white/15 bg-white/5 text-sm text-neutral-300 hover:bg-white/10 hover:text-white transition-all"
-              >
-                عرض {filtered.length - 12} مساعد إضافي
-                <ChevronDown className="w-4 h-4" />
-              </button>
-            </div>
-          )}
-
           {filtered.length === 0 && (
-            <div className="glass-panel rounded-3xl p-12 text-center">
-              <div className="text-4xl mb-4">🤖</div>
-              <h3 className="text-white font-bold mb-2">لا توجد نتائج</h3>
-              <p className="text-text-secondary text-sm">جرّب بحثاً مختلفاً أو اختر قسماً آخر</p>
+            <div className="text-center py-20 text-neutral-500">
+              <Search className="w-8 h-8 mx-auto mb-3 opacity-40" />
+              <p>لم يُوجد وكيل يطابق بحثك</p>
             </div>
           )}
         </div>
 
-        {/* CTA */}
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }}
-          className="glass-panel rounded-3xl p-6 md:p-8 flex flex-col md:flex-row items-center gap-5 justify-between border-brand-cyan/20 bg-cyan-500/5"
+        {/* Journey CTA */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+          className="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-l from-violet-900/20 via-indigo-900/20 to-cyan-900/20 p-8"
         >
-          <div>
-            <h3 className="text-xl font-bold text-white mb-1.5">مش عارف من أين تبدأ؟</h3>
-            <p className="text-text-secondary text-sm">اسأل كلميرون مباشرة وهو يختار لك المساعد الأنسب لمشكلتك.</p>
+          <div className="relative z-10">
+            <div className="flex items-center gap-2 mb-3">
+              <Zap className="w-4 h-4 text-brand-cyan" />
+              <span className="text-xs text-brand-cyan font-medium">رحلتك الريادية</span>
+            </div>
+            <h2 className="font-display text-2xl font-extrabold text-white mb-2">
+              من فكرة إلى إمبراطورية — في 4 مراحل
+            </h2>
+            <p className="text-neutral-400 text-sm mb-6 max-w-xl">
+              كلميرون معك في كل خطوة. ابدأ بتحليل فكرتك، وأطلق شركتك، وكبّر إيراداتك، وتوسّع في أسواق جديدة.
+            </p>
+
+            {/* Mini pipeline */}
+            <div className="flex items-center gap-2 flex-wrap">
+              {STAGES.map((s, i) => {
+                const Icon = s.icon;
+                return (
+                  <div key={s.id} className="flex items-center gap-2">
+                    <button
+                      onClick={() => setActiveStage(s.id)}
+                      className={cn(
+                        "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border transition-all hover:scale-105",
+                        s.bg, s.border, s.text
+                      )}
+                    >
+                      <Icon className="w-3 h-3" />
+                      {s.label}
+                    </button>
+                    {i < STAGES.length - 1 && (
+                      <ChevronLeft className="w-3 h-3 text-neutral-600 shrink-0" />
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+
+            <Link href="/chat" className="mt-6 inline-flex items-center gap-2 btn-primary px-6 py-3 rounded-xl text-sm font-bold">
+              ابدأ رحلتك الآن
+              <ArrowRight className="w-4 h-4" />
+            </Link>
           </div>
-          <Link href="/chat"
-            className="btn-primary flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-bold shrink-0"
-          >
-            <Sparkles className="w-4 h-4" /> تحدث مع كلميرون الآن
-          </Link>
+
+          {/* BG decoration */}
+          <div className="absolute top-0 left-0 w-64 h-64 bg-violet-600/5 rounded-full blur-3xl" />
+          <div className="absolute bottom-0 right-20 w-48 h-48 bg-cyan-600/5 rounded-full blur-3xl" />
         </motion.div>
       </div>
     </AppShell>

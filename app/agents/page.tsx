@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 import PageClient from "./_page-client";
 
 export const metadata: Metadata = {
-  title: "مساعدو Kalmeron الذكيون | 16 خبيراً لشركتك",
-  description: "استكشف 16 مساعداً ذكياً متخصصاً يعملون كفريقك: CFO افتراضي، مستشار قانوني، مدير مبيعات، محلل تسويق، رادار فرص، وأكثر — كلهم يتحدثون العربية.",
+  title: "وكلاء Kalmeron الذكيون | من الفكرة إلى الإمبراطورية",
+  description: "استكشف 27+ وكيلاً ذكياً منظّمين في 4 مراحل: الفكرة، الإطلاق، النمو، والتوسع — فريقك الريادي الكامل يتحدث العربية ويفهم السوق المصري.",
+  robots: "noindex",
 };
 
 export default function Page() {
