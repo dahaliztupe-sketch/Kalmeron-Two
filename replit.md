@@ -1,5 +1,27 @@
 # Kalmeron AI (ai-studio-applet)
 
+## PHASE 2 COMPREHENSIVE IMPROVEMENTS — 2026-05-01
+
+### Changes Made
+| File | Change |
+|------|--------|
+| `app/about/page.tsx` | Complete redesign: stats strip, story/vision cards, values grid, CTA |
+| `components/layout/MobileBottomNav.tsx` | Updated routes (/departments→/company-builder, /lab→/ideas/analyze), improved design |
+| `app/profile/_page-client.tsx` | Full redesign: avatar strip, info rows, quick links, achievements, danger zone |
+| `src/components/dashboard/SmartHubSection.tsx` | Cleaned up: removed capabilities section, improved metric cards, better visual |
+| `components/layout/Sidebar.tsx` | Added live pending count badge for /inbox (fetched every 60s), animated dot badges |
+| `app/(dashboard)/lab/page.tsx` | Fixed ALL broken hrefs: replaced with /chat?q=... pre-filled queries, removed /templates /marketplace etc. |
+| `app/globals.css` | Added brand-gold (#F59E0B) and brand-emerald (#10B981) CSS tokens |
+
+### Key Features Added
+- **Live pending count** in Sidebar on Inbox nav item — red badge with count, refreshes every 60s
+- **Lab page** — all 16 tools now link to real pages or /chat with pre-filled queries (zero 404s)
+- **About page** — premium redesign with Arabic localization, stats strip, values grid
+- **Profile page** — modern card layout with achievements, quick links, danger zone
+- **brand-gold + brand-emerald** — new Tailwind color tokens available as `text-brand-gold` etc.
+
+---
+
 ## RADICAL UI/UX REDESIGN — 2026-05-01
 
 ### Overview

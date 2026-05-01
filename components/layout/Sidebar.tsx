@@ -4,10 +4,11 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/src/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
-import { motion } from "motion/react";
+import { motion, AnimatePresence } from "motion/react";
 import { LogOut, Sparkles, ChevronRight } from "lucide-react";
 import { NAV_SECTIONS, isActive, type NavItem } from "@/src/lib/navigation";
 import { BrandLogo } from "@/components/brand/BrandLogo";
+import { useEffect, useState } from "react";
 
 const BADGE_STYLES: Record<string, string> = {
   cyan:    "bg-cyan-400/10 text-cyan-300 border-cyan-400/25",
@@ -24,10 +25,19 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
   );
 }
 
-function NavLink({ item, pathname }: { item: NavItem; pathname: string }) {
+function NavLink({
+  item,
+  pathname,
+  liveCount,
+}: {
+  item: NavItem;
+  pathname: string;
+  liveCount?: number;
+}) {
   const Icon = item.icon;
   const active = isActive(pathname, item.href, item.exact);
   const badgeStyle = BADGE_STYLES[item.badgeColor ?? "cyan"] ?? BADGE_STYLES.cyan;
+  const showLiveCount = typeof liveCount === "number" && liveCount > 0;
 
   return (
     <div className="relative">
@@ -50,27 +60,48 @@ function NavLink({ item, pathname }: { item: NavItem; pathname: string }) {
       >
         <span
           className={cn(
-            "flex items-center justify-center w-[28px] h-[28px] rounded-lg transition-all duration-200 shrink-0",
+            "flex items-center justify-center w-[28px] h-[28px] rounded-lg transition-all duration-200 shrink-0 relative",
             active
               ? "bg-brand-indigo/80 text-white shadow-[0_0_16px_-2px_rgba(79,70,229,0.6)]"
               : "bg-white/[0.03] text-white/25 group-hover:bg-white/[0.06] group-hover:text-white/55"
           )}
         >
           <Icon className="w-3.5 h-3.5" />
+          {showLiveCount && (
+            <span className="absolute -top-1.5 -end-1.5 min-w-[16px] h-4 px-1 rounded-full bg-rose-500 text-white text-[9px] font-black flex items-center justify-center border-2 border-[#060818] shadow-[0_0_8px_rgba(244,63,94,0.6)]">
+              {liveCount > 9 ? "9+" : liveCount}
+            </span>
+          )}
         </span>
 
         <span className="truncate flex-1 font-semibold">{item.label}</span>
 
-        {item.badge && (
-          <span className={cn(
-            "text-[9px] font-bold px-1.5 py-0.5 rounded-full border shrink-0",
-            badgeStyle
-          )}>
+        {showLiveCount && (
+          <AnimatePresence>
+            <motion.span
+              key="live-badge"
+              initial={{ opacity: 0, scale: 0.7 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.7 }}
+              className="text-[9px] font-black px-1.5 py-0.5 rounded-full bg-rose-500/15 text-rose-300 border border-rose-500/30 shrink-0"
+            >
+              {liveCount} معلّق
+            </motion.span>
+          </AnimatePresence>
+        )}
+
+        {!showLiveCount && item.badge && (
+          <span
+            className={cn(
+              "text-[9px] font-bold px-1.5 py-0.5 rounded-full border shrink-0",
+              badgeStyle
+            )}
+          >
             {item.badge}
           </span>
         )}
 
-        {active && (
+        {active && !showLiveCount && (
           <ChevronRight className="w-3 h-3 text-white/30 shrink-0" />
         )}
       </Link>
@@ -85,6 +116,36 @@ export function Sidebar() {
   const firstName = displayName.split(" ")[0] || "مؤسّس";
   const initial = firstName.charAt(0).toUpperCase();
   const industry = (dbUser as { industry?: string } | null)?.industry;
+
+  const [pendingCount, setPendingCount] = useState<number>(0);
+
+  useEffect(() => {
+    if (!user) return;
+    let cancelled = false;
+    const fetchPending = async () => {
+      try {
+        const token = await user.getIdToken().catch(() => null);
+        if (!token) return;
+        const res = await fetch("/api/operations/feed?limit=1", {
+          headers: { Authorization: `Bearer ${token}` },
+          cache: "no-store",
+        });
+        if (!res.ok) return;
+        const data = await res.json();
+        if (!cancelled) {
+          setPendingCount(data?.summary?.pending ?? 0);
+        }
+      } catch {
+        // silent
+      }
+    };
+    fetchPending();
+    const interval = setInterval(fetchPending, 60_000);
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+    };
+  }, [user]);
 
   return (
     <aside
@@ -102,7 +163,10 @@ export function Sidebar() {
 
       {/* ── Brand header ── */}
       <div className="relative px-4 pt-5 pb-4 border-b border-white/[0.05] shrink-0">
-        <Link href="/dashboard" className="flex items-center gap-3 group outline-none focus-visible:ring-2 focus-visible:ring-brand-indigo/50 rounded-xl">
+        <Link
+          href="/dashboard"
+          className="flex items-center gap-3 group outline-none focus-visible:ring-2 focus-visible:ring-brand-indigo/50 rounded-xl"
+        >
           <BrandLogo size={36} iconOnly showWordmark={false} />
           <div className="leading-none min-w-0">
             <p className="font-display font-black text-[15px] tracking-tight text-white group-hover:text-cyan-50 transition-colors">
@@ -122,15 +186,18 @@ export function Sidebar() {
           <Link
             href="/profile"
             className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl border transition-all duration-200 group outline-none focus-visible:ring-2 focus-visible:ring-brand-indigo/50"
-            style={{ background: "rgba(255,255,255,0.025)", borderColor: "rgba(255,255,255,0.06)" }}
+            style={{
+              background: "rgba(255,255,255,0.025)",
+              borderColor: "rgba(255,255,255,0.06)",
+            }}
           >
-            {/* Avatar */}
             <div className="relative shrink-0">
               <div
                 className="w-8 h-8 rounded-lg flex items-center justify-center text-white font-black text-[12px]"
                 style={{
                   background: "linear-gradient(135deg, #4F46E5 0%, #8B5CF6 100%)",
-                  boxShadow: "inset 0 1px 0 rgba(255,255,255,0.2), 0 2px 8px -2px rgba(79,70,229,0.5)",
+                  boxShadow:
+                    "inset 0 1px 0 rgba(255,255,255,0.2), 0 2px 8px -2px rgba(79,70,229,0.5)",
                 }}
               >
                 {initial}
@@ -141,15 +208,15 @@ export function Sidebar() {
               />
             </div>
 
-            {/* Name + role */}
             <div className="min-w-0 flex-1">
-              <p className="text-[12.5px] font-bold text-white/90 truncate leading-tight">{firstName}</p>
+              <p className="text-[12.5px] font-bold text-white/90 truncate leading-tight">
+                {firstName}
+              </p>
               <p className="text-[9.5px] text-white/30 uppercase tracking-[0.18em] mt-0.5 truncate">
                 {industry || "مؤسّس"}
               </p>
             </div>
 
-            {/* Online indicator */}
             <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0" />
           </Link>
         </div>
@@ -166,7 +233,12 @@ export function Sidebar() {
             <SectionLabel>{section.heading}</SectionLabel>
             <div className="space-y-0.5">
               {section.items.map((it) => (
-                <NavLink key={it.href} item={it} pathname={pathname} />
+                <NavLink
+                  key={it.href}
+                  item={it}
+                  pathname={pathname}
+                  liveCount={it.href === "/inbox" ? pendingCount : undefined}
+                />
               ))}
             </div>
           </div>

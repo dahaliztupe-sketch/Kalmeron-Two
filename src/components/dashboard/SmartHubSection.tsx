@@ -3,10 +3,11 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
-  Activity, ChefHat, Sun, Sparkles, ArrowLeft, ShieldCheck, Zap,
-  Brain, Search, Calculator, FileText, Image as ImageIcon,
+  Activity, ChefHat, Sun, Sparkles, ArrowLeft,
+  ShieldCheck, Zap, Clock, CheckCircle,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { cn } from "@/src/lib/utils";
 
 interface OpsFeed {
   summary?: { pending?: number; executed?: number; failed?: number };
@@ -27,13 +28,56 @@ interface Brief {
   signals?: { pendingApprovals: number; actionsLast24h: number; activeRecipes: number; topPriority?: string };
 }
 
-const CAPABILITIES = [
-  { icon: Search, label: "بحث ويب حقيقي", desc: "كل وكيل يبحث ويستشهد" },
-  { icon: Calculator, label: "حسابات دقيقة", desc: "بدل تخمينات الـLLM" },
-  { icon: FileText, label: "قراءة PDF", desc: "عقود، فواتير، سير ذاتية" },
-  { icon: ImageIcon, label: "تحليل صور", desc: "مراجعة الإعلانات" },
-  { icon: Brain, label: "نقد ذاتي", desc: "كل قرار يُراجَع قبل التنفيذ" },
-  { icon: Sparkles, label: "اقتراحات استباقية", desc: "بعد كل إنجاز، الخطوة التالية" },
+const METRIC_CARDS = (pending: number, executed: number, recipesLen: number, briefReady: boolean, briefLoading: boolean) => [
+  {
+    href: "/operations",
+    label: "بانتظار موافقتك",
+    value: pending,
+    sub: "طلب يحتاج قرارك",
+    color: "amber",
+    icon: Clock,
+    urgent: pending > 0,
+    gradient: "from-amber-500/10 to-orange-500/5",
+    border: "border-amber-500/25",
+    textColor: "text-amber-200",
+    valueColor: "text-amber-100",
+  },
+  {
+    href: "/operations",
+    label: "مكتمل اليوم",
+    value: executed,
+    sub: "إجراء نُفّذ",
+    color: "emerald",
+    icon: CheckCircle,
+    gradient: "from-emerald-500/10 to-teal-500/5",
+    border: "border-emerald-500/25",
+    textColor: "text-emerald-200",
+    valueColor: "text-emerald-100",
+  },
+  {
+    href: "/recipes",
+    label: "وصفات جاهزة",
+    value: recipesLen,
+    sub: "بضغطة واحدة",
+    color: "violet",
+    icon: ChefHat,
+    gradient: "from-violet-500/10 to-purple-500/5",
+    border: "border-violet-500/25",
+    textColor: "text-violet-200",
+    valueColor: "text-violet-100",
+  },
+  {
+    href: "/daily-brief",
+    label: "إيجاز اليوم",
+    value: briefReady ? "جاهز" : briefLoading ? "…" : "—",
+    sub: "قرار + تحليل",
+    color: "cyan",
+    icon: Sun,
+    gradient: "from-cyan-500/10 to-sky-500/5",
+    border: "border-cyan-500/25",
+    textColor: "text-cyan-200",
+    valueColor: "text-cyan-100",
+  },
 ];
 
 export function SmartHubSection() {
@@ -44,12 +88,14 @@ export function SmartHubSection() {
   const [briefLoading, setBriefLoading] = useState(false);
 
   useEffect(() => {
-    fetch("/api/recipes/list").then((r) => r.json()).then((j) => setRecipes(j.recipes || [])).catch(() => {});
+    fetch("/api/recipes/list")
+      .then((r) => r.json())
+      .then((j) => setRecipes(j.recipes || []))
+      .catch(() => {});
   }, []);
 
   useEffect(() => {
     if (!user) return;
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional: triggers async fetch on user change
     setBriefLoading(true);
     user.getIdToken().then((token) => {
       fetch("/api/operations/feed?limit=8", { headers: { Authorization: `Bearer ${token}` } })
@@ -64,117 +110,140 @@ export function SmartHubSection() {
   const decision = brief?.blocks?.find((b) => b.type === "decision");
   const pendingApprovals = ops?.summary?.pending ?? brief?.signals?.pendingApprovals ?? 0;
   const executed = ops?.summary?.executed ?? 0;
+  const metrics = METRIC_CARDS(pendingApprovals, executed, recipes.length, !!brief, briefLoading);
 
   return (
-    <div className="rounded-3xl border border-white/[0.08] bg-gradient-to-br from-cyan-500/[0.08] via-violet-500/[0.05] to-amber-500/[0.06] p-6 md:p-7 mb-5">
-      <div className="flex items-center justify-between mb-5 flex-wrap gap-3">
-        <div className="flex items-center gap-3">
-          <div className="rounded-xl bg-gradient-to-br from-cyan-500 to-violet-500 p-2.5 text-white">
-            <Sparkles className="w-5 h-5" />
+    <div
+      className="rounded-3xl p-5 md:p-6 mb-5"
+      style={{
+        background: "linear-gradient(135deg, rgba(56,189,248,0.05) 0%, rgba(99,102,241,0.04) 50%, rgba(245,158,11,0.04) 100%)",
+        border: "1px solid rgba(255,255,255,0.07)",
+      }}
+    >
+      {/* Header */}
+      <div className="flex items-center justify-between mb-5 flex-wrap gap-2">
+        <div className="flex items-center gap-2.5">
+          <div
+            className="w-9 h-9 rounded-xl flex items-center justify-center"
+            style={{ background: "linear-gradient(135deg, #38BDF8, #8B5CF6)" }}
+          >
+            <Sparkles className="w-4 h-4 text-white" />
           </div>
           <div>
-            <p className="text-[11px] uppercase tracking-wider text-cyan-300 font-semibold mb-0.5">
-              المركز الذكي · جديد
+            <p className="text-[10px] uppercase tracking-widest text-cyan-300/70 font-bold">
+              مركز العمليات
             </p>
-            <h2 className="text-xl font-bold text-white">كل التحديثات في مكان واحد</h2>
+            <h2 className="text-[15px] font-bold text-white leading-none mt-0.5">
+              كل التحديثات في مكان واحد
+            </h2>
           </div>
         </div>
-        <div className="flex items-center gap-2 text-xs">
-          <Link href="/operations" className="rounded-lg bg-white/[0.06] hover:bg-white/[0.12] px-3 py-1.5 text-neutral-200 inline-flex items-center gap-1.5">
-            <Activity className="w-3.5 h-3.5" /> غرفة العمليات
+        <div className="flex items-center gap-1.5">
+          <Link
+            href="/operations"
+            className="text-[11px] font-medium rounded-lg px-2.5 py-1.5 transition-colors text-neutral-300 hover:text-white"
+            style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)" }}
+          >
+            <span className="flex items-center gap-1"><Activity className="w-3 h-3" /> العمليات</span>
           </Link>
-          <Link href="/recipes" className="rounded-lg bg-white/[0.06] hover:bg-white/[0.12] px-3 py-1.5 text-neutral-200 inline-flex items-center gap-1.5">
-            <ChefHat className="w-3.5 h-3.5" /> الوصفات
+          <Link
+            href="/recipes"
+            className="text-[11px] font-medium rounded-lg px-2.5 py-1.5 transition-colors text-neutral-300 hover:text-white"
+            style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)" }}
+          >
+            <span className="flex items-center gap-1"><ChefHat className="w-3 h-3" /> الوصفات</span>
           </Link>
         </div>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
-        <Link href="/operations" className="rounded-2xl bg-amber-500/10 border border-amber-500/30 p-3 hover:bg-amber-500/15 transition">
-          <p className="text-[10px] text-amber-200 uppercase tracking-wider">بانتظار موافقتك</p>
-          <p className="text-2xl font-bold text-amber-100 mt-1">{pendingApprovals}</p>
-          <p className="text-[10px] text-amber-200/70 mt-0.5">طلب يحتاج قرارك</p>
-        </Link>
-        <Link href="/operations" className="rounded-2xl bg-emerald-500/10 border border-emerald-500/30 p-3 hover:bg-emerald-500/15 transition">
-          <p className="text-[10px] text-emerald-200 uppercase tracking-wider">نُفّذ فعلاً</p>
-          <p className="text-2xl font-bold text-emerald-100 mt-1">{executed}</p>
-          <p className="text-[10px] text-emerald-200/70 mt-0.5">إجراء مكتمل</p>
-        </Link>
-        <Link href="/recipes" className="rounded-2xl bg-violet-500/10 border border-violet-500/30 p-3 hover:bg-violet-500/15 transition">
-          <p className="text-[10px] text-violet-200 uppercase tracking-wider">وصفات جاهزة</p>
-          <p className="text-2xl font-bold text-violet-100 mt-1">{recipes.length}</p>
-          <p className="text-[10px] text-violet-200/70 mt-0.5">تدفّق بضغطة واحدة</p>
-        </Link>
-        <Link href="/daily-brief" className="rounded-2xl bg-cyan-500/10 border border-cyan-500/30 p-3 hover:bg-cyan-500/15 transition">
-          <p className="text-[10px] text-cyan-200 uppercase tracking-wider">إيجاز اليوم</p>
-          <p className="text-2xl font-bold text-cyan-100 mt-1 flex items-center gap-1">
-            <Sun className="w-5 h-5" /> {brief ? "جاهز" : briefLoading ? "..." : "—"}
-          </p>
-          <p className="text-[10px] text-cyan-200/70 mt-0.5">قرار + رسالة + 5 دقائق</p>
-        </Link>
+      {/* Metric cards */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5 mb-4">
+        {metrics.map((m) => {
+          const Icon = m.icon;
+          return (
+            <Link
+              key={m.label}
+              href={m.href}
+              className={cn(
+                "rounded-2xl p-3.5 transition-all hover:scale-[1.02] group",
+                `bg-gradient-to-br ${m.gradient}`,
+                m.border,
+                "border"
+              )}
+            >
+              <div className={cn("flex items-center gap-1.5 mb-2", m.textColor)}>
+                <Icon className="w-3 h-3" />
+                <span className="text-[10px] font-semibold uppercase tracking-wider">{m.label}</span>
+              </div>
+              <p className={cn("text-2xl font-black leading-none mb-1", m.valueColor)}>
+                {m.value}
+              </p>
+              <p className={cn("text-[10px] opacity-70", m.textColor)}>{m.sub}</p>
+            </Link>
+          );
+        })}
       </div>
 
+      {/* Decision of the day */}
       {decision && (
-        <div className="rounded-2xl border border-cyan-500/30 bg-cyan-500/[0.06] p-4 mb-5">
-          <div className="flex items-center gap-2 mb-1">
-            <Sun className="w-4 h-4 text-cyan-300" />
-            <p className="text-[11px] uppercase tracking-wider text-cyan-300 font-semibold">قرار اليوم المقترح</p>
+        <div
+          className="rounded-2xl p-4 mb-4"
+          style={{
+            background: "rgba(56,189,248,0.06)",
+            border: "1px solid rgba(56,189,248,0.2)",
+          }}
+        >
+          <div className="flex items-center gap-2 mb-2">
+            <Sun className="w-3.5 h-3.5 text-cyan-300" />
+            <p className="text-[10px] uppercase tracking-wider text-cyan-300 font-bold">
+              قرار اليوم المقترح
+            </p>
           </div>
-          <p className="text-white font-bold text-base mb-1">{decision.title}</p>
-          <p className="text-neutral-200 text-sm leading-relaxed line-clamp-2">{decision.body}</p>
-          <Link href="/daily-brief" className="text-cyan-300 hover:text-cyan-200 text-xs inline-flex items-center gap-1 mt-2">
+          <p className="text-white font-bold text-sm mb-1">{decision.title}</p>
+          <p className="text-neutral-300 text-xs leading-relaxed line-clamp-2">
+            {decision.body}
+          </p>
+          <Link
+            href="/daily-brief"
+            className="text-cyan-300 hover:text-cyan-200 text-xs inline-flex items-center gap-1 mt-2 transition-colors"
+          >
             افتح الإيجاز كاملاً <ArrowLeft className="w-3 h-3" />
           </Link>
         </div>
       )}
 
+      {/* Top recipes */}
       {topRecipes.length > 0 && (
-        <div className="mb-5">
-          <p className="text-[11px] uppercase tracking-wider text-neutral-300 font-semibold mb-2 flex items-center gap-1.5">
-            <ChefHat className="w-3.5 h-3.5" /> وصفات شائعة
+        <div>
+          <p className="text-[10px] uppercase tracking-widest text-neutral-400 font-bold mb-2 flex items-center gap-1.5">
+            <ChefHat className="w-3 h-3" /> وصفات شائعة
           </p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
             {topRecipes.map((r) => (
               <Link
                 key={r.id}
                 href="/recipes"
-                className="rounded-xl border border-white/[0.08] bg-white/[0.02] hover:bg-white/[0.05] hover:border-white/[0.15] p-3 transition group"
+                className="rounded-xl p-3 flex items-center gap-2.5 transition-all hover:bg-white/[0.05] group"
+                style={{
+                  background: "rgba(255,255,255,0.02)",
+                  border: "1px solid rgba(255,255,255,0.06)",
+                }}
               >
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="text-lg">{r.emoji}</span>
-                  <p className="text-white text-sm font-medium group-hover:text-cyan-200">{r.title}</p>
-                </div>
-                <div className="flex items-center gap-2 text-[10px] text-neutral-400">
-                  <Zap className="w-3 h-3" />{r.steps.length} خطوات
-                  <ShieldCheck className="w-3 h-3 mr-1" />موافقتك أوّلاً
+                <span className="text-lg shrink-0">{r.emoji}</span>
+                <div className="min-w-0">
+                  <p className="text-white text-xs font-semibold truncate group-hover:text-cyan-200 transition-colors">
+                    {r.title}
+                  </p>
+                  <div className="flex items-center gap-1.5 mt-0.5 text-[10px] text-neutral-400">
+                    <Zap className="w-2.5 h-2.5" />{r.steps.length} خطوة
+                    <ShieldCheck className="w-2.5 h-2.5 mr-1" />موافقتك أولاً
+                  </div>
                 </div>
               </Link>
             ))}
           </div>
         </div>
       )}
-
-      <div>
-        <p className="text-[11px] uppercase tracking-wider text-neutral-300 font-semibold mb-2 flex items-center gap-1.5">
-          <Brain className="w-3.5 h-3.5" /> قدرات الوكلاء الجديدة (يستخدمونها تلقائيّاً)
-        </p>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-          {CAPABILITIES.map((c) => {
-            const Icon = c.icon;
-            return (
-              <div key={c.label} className="rounded-xl bg-white/[0.03] border border-white/[0.06] p-2.5 flex items-center gap-2">
-                <div className="rounded-lg bg-white/[0.06] p-1.5 text-cyan-300 shrink-0">
-                  <Icon className="w-3.5 h-3.5" />
-                </div>
-                <div className="min-w-0">
-                  <p className="text-white text-xs font-medium truncate">{c.label}</p>
-                  <p className="text-neutral-400 text-[10px] truncate">{c.desc}</p>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
     </div>
   );
 }

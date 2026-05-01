@@ -3,14 +3,17 @@
 import { AppShell } from "@/components/layout/AppShell";
 import { AuthGuard } from "@/components/auth/AuthGuard";
 import { useAuth } from "@/contexts/AuthContext";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Settings, User, Briefcase, MapPin, Building, LogOut } from "lucide-react";
+import {
+  User, Briefcase, MapPin, Building2, Mail, LogOut,
+  Trash2, Crown, ChevronLeft, Shield, Star,
+} from "lucide-react";
 import { motion } from "motion/react";
 import { Button } from "@/components/ui/button";
-
 import { useState } from "react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { cn } from "@/src/lib/utils";
 
 export default function ProfilePage() {
   return (
@@ -24,108 +27,300 @@ function ProfilePageContent() {
   const { dbUser, signOut: logout, user } = useAuth();
   const [isDeleting, setIsDeleting] = useState(false);
   const router = useRouter();
-  const dir = "rtl";
 
   const handleDeleteAccount = async () => {
-      const confirmText = "هل أنت متأكد تماماً من رغبتك في حذف حسابك؟ هذا الإجراء سيقوم بمسح كل محادثاتك، أفكارك، وخطط العمل نهائياً ولا يمكن الرجوع عنه.";
-      if (!window.confirm(confirmText)) return;
-
-      setIsDeleting(true);
-      try {
-          const idToken = user ? await user.getIdToken() : null;
-          if (!idToken) {
-              throw new Error("لم يتم العثور على جلسة تسجيل دخول صالحة.");
-          }
-          const res = await fetch('/api/user/delete', {
-              method: 'POST',
-              headers: {
-                  'Content-Type': 'application/json',
-                  'Authorization': `Bearer ${idToken}`,
-              },
-              body: JSON.stringify({})
-          });
-
-          if (res.ok) {
-              toast.success("تم حذف بياناتك بنجاح. نتمنى رؤيتك قريباً.");
-              await logout();
-              router.push('/');
-          } else {
-              throw new Error("فشل في حذف البيانات");
-          }
-      } catch (err) {
-          toast.error("حدث خطأ أثناء محاولة حذف الحساب. حاول مرة أخرى.");
-          console.error(err);
-      } finally {
-          setIsDeleting(false);
+    const confirmText =
+      "هل أنت متأكد تماماً من رغبتك في حذف حسابك؟ هذا الإجراء لا يمكن الرجوع عنه.";
+    if (!window.confirm(confirmText)) return;
+    setIsDeleting(true);
+    try {
+      const idToken = user ? await user.getIdToken() : null;
+      if (!idToken) throw new Error("لم يتم العثور على جلسة تسجيل دخول.");
+      const res = await fetch("/api/user/delete", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${idToken}`,
+        },
+        body: JSON.stringify({}),
+      });
+      if (res.ok) {
+        toast.success("تم حذف بياناتك بنجاح.");
+        await logout();
+        router.push("/");
+      } else {
+        throw new Error("فشل في حذف البيانات");
       }
+    } catch {
+      toast.error("حدث خطأ أثناء محاولة حذف الحساب.");
+    } finally {
+      setIsDeleting(false);
+    }
   };
+
+  const initials = dbUser?.name
+    ? dbUser.name.split(" ").map((w: string) => w[0]).join("").slice(0, 2)
+    : "ك";
+
+  const INFO_ROWS = [
+    { icon: User, label: "الاسم الكامل", value: dbUser?.name },
+    { icon: Mail, label: "البريد الإلكتروني", value: user?.email },
+    { icon: Building2, label: "المجال الصناعي", value: dbUser?.industry },
+    { icon: Briefcase, label: "مرحلة الشركة", value: dbUser?.startup_stage },
+    { icon: MapPin, label: "المحافظة", value: dbUser?.governorate },
+  ];
 
   return (
     <AppShell>
-      <div className="max-w-4xl mx-auto space-y-10 p-4 text-white" dir={dir}>
-        <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}>
-          <h1 className="text-4xl font-black tracking-tight mb-4 flex items-center gap-3 text-white">
-            <Settings className="h-10 w-10 text-neutral-500" />
-            الإعدادات والملف الشخصي
-          </h1>
-          <p className="text-neutral-400 text-xl leading-relaxed">
-            التحكم في بياناتك كرائد أعمال وتخصيص تفضيلاتك داخل كلميرون.
-          </p>
+      <div dir="rtl" className="max-w-2xl mx-auto py-8 px-4 space-y-5">
+
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: -12 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex items-center gap-2 mb-6"
+        >
+          <Link
+            href="/dashboard"
+            className="flex items-center gap-1.5 text-sm text-neutral-400 hover:text-white transition-colors"
+          >
+            <ChevronLeft className="w-4 h-4" />
+            لوحة التحكم
+          </Link>
         </motion.div>
 
-        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.1 }}>
-            <Card className="glass border-neutral-700/50 shadow-2xl rounded-3xl overflow-hidden relative">
-            <CardHeader className="bg-[#16161D]/80 border-b border-neutral-800 p-8">
-                <CardTitle className="text-2xl text-white flex items-center gap-2">
-                    <User className="h-6 w-6 text-[rgb(var(--brand-cyan))]" /> 
-                    المعلومات الأساسية
-                </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6 flex flex-col p-8 bg-[#0A0A0F]/50">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <div className="space-y-2 text-lg">
-                        <LabelText icon={<User className="h-5 w-5" />} label="الاسم الكامل" />
-                        <p className="font-bold text-white text-xl">{dbUser?.name || "رائد أعمال مجهول"}</p>
-                    </div>
-                    <div className="space-y-2 text-lg">
-                        <LabelText icon={<Building className="h-5 w-5" />} label="المجال الصناعي" />
-                        <p className="font-bold text-white text-xl">{dbUser?.industry || "غير محدد"}</p>
-                    </div>
-                    <div className="space-y-2 text-lg">
-                        <LabelText icon={<Briefcase className="h-5 w-5" />} label="مرحلة الشركة" />
-                        <p className="font-bold text-white text-xl">{dbUser?.startup_stage || "غير محدد"}</p>
-                    </div>
-                    <div className="space-y-2 text-lg">
-                        <LabelText icon={<MapPin className="h-5 w-5" />} label="المحافظة" />
-                        <p className="font-bold text-white text-xl">{dbUser?.governorate || "غير محدد"}</p>
-                    </div>
+        {/* Profile card */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.05 }}
+          className="rounded-3xl overflow-hidden"
+          style={{
+            background: "rgba(255,255,255,0.025)",
+            border: "1px solid rgba(255,255,255,0.07)",
+          }}
+        >
+          {/* Avatar strip */}
+          <div
+            className="relative p-8 pb-6"
+            style={{
+              background:
+                "linear-gradient(135deg, rgba(79,70,229,0.15) 0%, rgba(139,92,246,0.10) 50%, rgba(56,189,248,0.08) 100%)",
+              borderBottom: "1px solid rgba(255,255,255,0.06)",
+            }}
+          >
+            <div className="flex items-center gap-5">
+              {/* Avatar */}
+              <div
+                className="w-16 h-16 rounded-2xl flex items-center justify-center font-display font-black text-xl text-white shadow-lg shrink-0"
+                style={{
+                  background:
+                    "linear-gradient(135deg, #4F46E5 0%, #8B5CF6 100%)",
+                }}
+              >
+                {initials}
+              </div>
+              <div className="flex-1 min-w-0">
+                <h1 className="text-xl font-bold text-white truncate">
+                  {dbUser?.name || "رائد أعمال"}
+                </h1>
+                <p className="text-sm text-neutral-400 mt-0.5 truncate">
+                  {user?.email}
+                </p>
+                <div className="flex items-center gap-2 mt-2">
+                  <div
+                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold text-amber-300"
+                    style={{
+                      background: "rgba(245,158,11,0.12)",
+                      border: "1px solid rgba(245,158,11,0.2)",
+                    }}
+                  >
+                    <Crown className="w-3 h-3" />
+                    Pro
+                  </div>
+                  <div
+                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold text-emerald-300"
+                    style={{
+                      background: "rgba(16,185,129,0.10)",
+                      border: "1px solid rgba(16,185,129,0.18)",
+                    }}
+                  >
+                    <Shield className="w-3 h-3" />
+                    حساب محمي
+                  </div>
                 </div>
-            </CardContent>
-            </Card>
+              </div>
+              <Link
+                href="/settings"
+                className="shrink-0 text-xs text-neutral-400 hover:text-white border border-white/10 hover:border-white/20 rounded-xl px-3 py-2 transition-all"
+              >
+                تعديل
+              </Link>
+            </div>
+          </div>
+
+          {/* Info rows */}
+          <div className="p-6 space-y-1">
+            {INFO_ROWS.map((row, i) => {
+              const Icon = row.icon;
+              return (
+                <div
+                  key={i}
+                  className={cn(
+                    "flex items-center gap-3 py-3 px-1",
+                    i < INFO_ROWS.length - 1
+                      ? "border-b border-white/[0.04]"
+                      : ""
+                  )}
+                >
+                  <Icon className="w-4 h-4 text-neutral-500 shrink-0" />
+                  <span className="text-xs text-neutral-500 w-32 shrink-0">
+                    {row.label}
+                  </span>
+                  <span className="text-sm text-white font-medium truncate">
+                    {row.value || (
+                      <span className="text-neutral-600 font-normal">
+                        غير محدد
+                      </span>
+                    )}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
         </motion.div>
 
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }} className="flex flex-col md:flex-row justify-end gap-4 mt-8">
-            <Button 
-                onClick={handleDeleteAccount} 
-                className="h-14 px-8 text-lg rounded-2xl bg-neutral-800 text-neutral-400 hover:bg-neutral-700 transition-all font-medium"
-                disabled={isDeleting}
+        {/* Quick links */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="grid grid-cols-2 gap-3"
+        >
+          {[
+            {
+              href: "/settings",
+              label: "الإعدادات",
+              icon: "⚙️",
+              desc: "الخصوصية والإشعارات",
+            },
+            {
+              href: "/settings/usage",
+              label: "الاستخدام",
+              icon: "📊",
+              desc: "نسبة استهلاك الخطة",
+            },
+            {
+              href: "/settings/api-keys",
+              label: "مفاتيح API",
+              icon: "🔑",
+              desc: "الوصول البرمجي",
+            },
+            {
+              href: "/opportunities",
+              label: "الفرص",
+              icon: "🚀",
+              desc: "تمويل ومسابقات",
+            },
+          ].map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className="rounded-2xl p-4 flex gap-3 items-center hover:bg-white/[0.04] transition-colors"
+              style={{
+                background: "rgba(255,255,255,0.02)",
+                border: "1px solid rgba(255,255,255,0.06)",
+              }}
             >
-                {isDeleting ? "جاري الحذف..." : "حذف حسابي (الحق في النسيان)"}
+              <span className="text-xl">{link.icon}</span>
+              <div className="min-w-0">
+                <div className="text-sm font-semibold text-white">
+                  {link.label}
+                </div>
+                <div className="text-[11px] text-neutral-500 truncate">
+                  {link.desc}
+                </div>
+              </div>
+            </Link>
+          ))}
+        </motion.div>
+
+        {/* Achievements strip */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.15 }}
+          className="rounded-2xl p-5"
+          style={{
+            background: "rgba(255,255,255,0.02)",
+            border: "1px solid rgba(255,255,255,0.06)",
+          }}
+        >
+          <div className="flex items-center gap-2 mb-4">
+            <Star className="w-4 h-4 text-amber-400" />
+            <span className="text-sm font-semibold text-white">
+              إنجازاتك
+            </span>
+          </div>
+          <div className="grid grid-cols-3 gap-3">
+            {[
+              { emoji: "🚀", label: "أول فكرة", unlocked: true },
+              { emoji: "📝", label: "خطة عمل", unlocked: false },
+              { emoji: "💡", label: "١٠ جلسات", unlocked: false },
+            ].map((badge) => (
+              <div
+                key={badge.label}
+                className={cn(
+                  "flex flex-col items-center gap-1.5 p-3 rounded-xl transition-opacity",
+                  badge.unlocked ? "opacity-100" : "opacity-30"
+                )}
+                style={{ background: "rgba(255,255,255,0.03)" }}
+              >
+                <span className="text-2xl">{badge.emoji}</span>
+                <span className="text-[10px] text-neutral-400 text-center">
+                  {badge.label}
+                </span>
+              </div>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* Danger zone */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.2 }}
+          className="rounded-2xl p-5"
+          style={{
+            background: "rgba(239,68,68,0.04)",
+            border: "1px solid rgba(239,68,68,0.12)",
+          }}
+        >
+          <p className="text-xs text-neutral-500 font-semibold uppercase tracking-wider mb-4">
+            منطقة الخطر
+          </p>
+          <div className="flex flex-col sm:flex-row gap-3">
+            <Button
+              onClick={() => logout()}
+              variant="ghost"
+              className="flex-1 h-11 rounded-xl border border-white/10 text-neutral-300 hover:bg-white/[0.05] text-sm gap-2"
+            >
+              <LogOut className="w-4 h-4" />
+              تسجيل الخروج
             </Button>
-            <Button onClick={logout} variant="destructive" className="h-14 px-8 text-lg rounded-2xl bg-red-500/20 text-rose-500 hover:bg-red-500 hover:text-white border border-red-500/30 transition-all font-bold">
-                تسجيل الخروج <LogOut className="mr-3 h-5 w-5" />
+            <Button
+              onClick={handleDeleteAccount}
+              disabled={isDeleting}
+              variant="ghost"
+              className="flex-1 h-11 rounded-xl border border-red-500/25 text-red-400 hover:bg-red-500/10 text-sm gap-2"
+            >
+              <Trash2 className="w-4 h-4" />
+              {isDeleting ? "جاري الحذف…" : "حذف الحساب"}
             </Button>
+          </div>
         </motion.div>
 
       </div>
     </AppShell>
   );
-}
-
-function LabelText({ icon, label }: { icon: React.ReactNode, label: string }) {
-    return (
-        <div className="flex items-center gap-2 text-neutral-400 font-medium">
-            {icon} {label}
-        </div>
-    )
 }

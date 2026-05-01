@@ -5,9 +5,9 @@ import Link from "next/link";
 import { motion } from "motion/react";
 import {
   FlaskConical, Radar, BarChart3, Calculator, Building2,
-  ShieldAlert, Trophy, Layers, FileText, Store,
+  ShieldAlert, Trophy, Layers, FileText, MessageSquare,
   Mic, BookOpen, Scale, AlertTriangle, Compass,
-  ChefHat, ArrowLeft, Sparkles,
+  ChefHat, ArrowLeft, Sparkles, TrendingUp,
 } from "lucide-react";
 import { cn } from "@/src/lib/utils";
 
@@ -19,17 +19,21 @@ interface Tool {
   color: string;
   bg: string;
   category: string;
+  badge?: string;
 }
+
+const q = (text: string) => `/chat?q=${encodeURIComponent(text)}`;
 
 const TOOLS: Tool[] = [
   {
-    href: "/market-lab",
-    label: "مختبر السوق",
+    href: "/ideas/analyze",
+    label: "مختبر الأفكار",
     desc: "اختبر فرضياتك التجارية بإطار علمي قبل أي استثمار",
     icon: FlaskConical,
     color: "text-violet-400",
     bg: "bg-violet-500/10 border-violet-500/20 hover:border-violet-400/40",
     category: "أبحاث السوق",
+    badge: "جديد",
   },
   {
     href: "/opportunities",
@@ -41,7 +45,16 @@ const TOOLS: Tool[] = [
     category: "أبحاث السوق",
   },
   {
-    href: "/cfo",
+    href: q("حلّل لي السوق المستهدف لشركتي وحدّد أكبر 5 فرص غير مستغلّة"),
+    label: "تحليل السوق",
+    desc: "دراسة عمق السوق والمنافسين وفرص الدخول",
+    icon: TrendingUp,
+    color: "text-violet-400",
+    bg: "bg-violet-500/10 border-violet-500/20 hover:border-violet-400/40",
+    category: "أبحاث السوق",
+  },
+  {
+    href: "/investor",
     label: "المدير المالي الذكي",
     desc: "تحليل مالي عميق، نمذجة التدفقات وUnit Economics",
     icon: BarChart3,
@@ -50,7 +63,7 @@ const TOOLS: Tool[] = [
     category: "المالية",
   },
   {
-    href: "/roi",
+    href: q("احسب لي ROI لقرار هذا الاستثمار واشرح هل يستحق"),
     label: "حاسبة ROI",
     desc: "احسب العائد على الاستثمار لأي قرار عمل",
     icon: Calculator,
@@ -59,7 +72,7 @@ const TOOLS: Tool[] = [
     category: "المالية",
   },
   {
-    href: "/cash-runway",
+    href: "/investor",
     label: "تنبيه نزيف النقد",
     desc: "راقب السيولة النقدية واحصل على تنبيهات قبل نفاد التمويل",
     icon: AlertTriangle,
@@ -77,7 +90,7 @@ const TOOLS: Tool[] = [
     category: "التخطيط",
   },
   {
-    href: "/value-proposition",
+    href: q("ساعدني في بناء Value Proposition Canvas لمنتجي وحدّد الميزة التنافسية الحقيقية"),
     label: "قماش عرض القيمة",
     desc: "صمّم وصقّل عرض القيمة لمنتجك أو خدمتك",
     icon: Compass,
@@ -86,7 +99,16 @@ const TOOLS: Tool[] = [
     category: "التخطيط",
   },
   {
-    href: "/setup-egypt",
+    href: "/plan",
+    label: "الأهداف والخطة",
+    desc: "ضع أهداف OKR احترافية وتتبّع التقدم خطوة بخطوة",
+    icon: Layers,
+    color: "text-indigo-400",
+    bg: "bg-indigo-500/10 border-indigo-500/20 hover:border-indigo-400/40",
+    category: "التخطيط",
+  },
+  {
+    href: q("اشرح لي خطوات تأسيس شركة ذات مسؤولية محدودة في مصر مع التكاليف والمتطلبات القانونية"),
     label: "تأسيس شركة في مصر",
     desc: "دليل شامل لتأسيس شركتك القانونية في مصر خطوة بخطوة",
     icon: Scale,
@@ -95,7 +117,7 @@ const TOOLS: Tool[] = [
     category: "قانوني",
   },
   {
-    href: "/legal-templates",
+    href: q("اعمل لي نموذج عقد خدمات احترافي متوافق مع القانون المصري"),
     label: "نماذج قانونية",
     desc: "عقود وامتثال قانوني جاهزة للسوق المصري والعربي",
     icon: FileText,
@@ -104,7 +126,7 @@ const TOOLS: Tool[] = [
     category: "قانوني",
   },
   {
-    href: "/founder-agreement",
+    href: q("ساعدني في صياغة اتفاقية مؤسسين تحمي حقوق كل شريك وتحدد الصلاحيات والحصص"),
     label: "اتفاقية المؤسسين",
     desc: "احمِ شركتك بصياغة اتفاقية مؤسسين واضحة",
     icon: BookOpen,
@@ -113,7 +135,7 @@ const TOOLS: Tool[] = [
     category: "قانوني",
   },
   {
-    href: "/mistake-shield",
+    href: q("ما أكثر الأخطاء القاتلة التي يقع فيها رواد الأعمال المصريون في مرحلة التأسيس وكيف أتجنبها؟"),
     label: "درع الأخطاء",
     desc: "تعلّم من أخطاء المؤسسين الآخرين قبل أن تقع فيها",
     icon: ShieldAlert,
@@ -122,31 +144,13 @@ const TOOLS: Tool[] = [
     category: "الحكمة المكتسبة",
   },
   {
-    href: "/success-museum",
-    label: "متحف النجاح",
+    href: q("أعطني قصص نجاح مؤسسين عرب ومصريين مع أبرز الدروس المستفادة من تجربة كل منهم"),
+    label: "قصص النجاح العربية",
     desc: "قصص نجاح مؤسسين عرب ومصريين تلهمك وتعلّمك",
     icon: Trophy,
     color: "text-rose-400",
     bg: "bg-rose-500/10 border-rose-500/20 hover:border-rose-400/40",
     category: "الحكمة المكتسبة",
-  },
-  {
-    href: "/recipes",
-    label: "وصفات الأعمال",
-    desc: "قوالب عملية لأكثر التحديات شيوعاً في رحلة الشركات الناشئة",
-    icon: ChefHat,
-    color: "text-fuchsia-400",
-    bg: "bg-fuchsia-500/10 border-fuchsia-500/20 hover:border-fuchsia-400/40",
-    category: "القوالب",
-  },
-  {
-    href: "/templates",
-    label: "مكتبة القوالب",
-    desc: "مئات القوالب الجاهزة لكل مرحلة من مراحل شركتك",
-    icon: Layers,
-    color: "text-fuchsia-400",
-    bg: "bg-fuchsia-500/10 border-fuchsia-500/20 hover:border-fuchsia-400/40",
-    category: "القوالب",
   },
   {
     href: "/brand-voice",
@@ -158,18 +162,9 @@ const TOOLS: Tool[] = [
     category: "التسويق",
   },
   {
-    href: "/marketplace",
-    label: "السوق",
-    desc: "اكتشف وكلاء وأدوات متخصصة من مجتمع كلميرون",
-    icon: Store,
-    color: "text-sky-400",
-    bg: "bg-sky-500/10 border-sky-500/20 hover:border-sky-400/40",
-    category: "التسويق",
-  },
-  {
-    href: "/trending-tools",
-    label: "أدوات AI الرائجة",
-    desc: "أفضل أدوات الذكاء الاصطناعي التي يستخدمها المؤسسون اليوم",
+    href: q("ساعدني في كتابة استراتيجية تسويقية شاملة لإطلاق منتجي الجديد في السوق المصري"),
+    label: "استراتيجية الإطلاق",
+    desc: "خطة تسويقية متكاملة لدخول السوق بقوة",
     icon: Sparkles,
     color: "text-sky-400",
     bg: "bg-sky-500/10 border-sky-500/20 hover:border-sky-400/40",
@@ -183,7 +178,6 @@ const CATEGORIES = [
   "التخطيط",
   "قانوني",
   "الحكمة المكتسبة",
-  "القوالب",
   "التسويق",
 ];
 
@@ -193,7 +187,6 @@ const CATEGORY_ICONS: Record<string, React.ComponentType<{ className?: string }>
   "التخطيط": Building2,
   "قانوني": Scale,
   "الحكمة المكتسبة": Trophy,
-  "القوالب": Layers,
   "التسويق": Mic,
 };
 
@@ -217,7 +210,7 @@ export default function LabPage() {
             مختبر الأعمال
           </h1>
           <p className="text-text-secondary text-sm md:text-base max-w-2xl leading-relaxed">
-            كل الأدوات الاستراتيجية والمالية والقانونية التي تحتاجها في مكان واحد — من أبحاث السوق إلى التأسيس القانوني.
+            كل الأدوات الاستراتيجية والمالية والقانونية في مكان واحد — من أبحاث السوق إلى التأسيس القانوني.
           </p>
         </motion.div>
 
@@ -241,11 +234,12 @@ export default function LabPage() {
                 <div className="flex-1 h-px bg-white/[0.06]" />
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-                {tools.map((tool, ti) => {
+                {tools.map((tool) => {
                   const Icon = tool.icon;
+                  const isChatLink = tool.href.startsWith("/chat");
                   return (
                     <Link
-                      key={tool.href}
+                      key={`${tool.href}-${tool.label}`}
                       href={tool.href}
                       className={cn(
                         "group rounded-2xl border p-4 transition-all duration-200 hover:-translate-y-0.5",
@@ -257,8 +251,18 @@ export default function LabPage() {
                           <Icon className={cn("w-4 h-4", tool.color)} />
                         </div>
                         <div className="min-w-0 flex-1">
-                          <p className="text-sm font-bold text-white leading-tight">{tool.label}</p>
-                          <p className="text-xs text-text-secondary mt-1 leading-relaxed">{tool.desc}</p>
+                          <div className="flex items-center gap-1.5 mb-0.5">
+                            <p className="text-sm font-bold text-white leading-tight">{tool.label}</p>
+                            {tool.badge && (
+                              <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
+                                {tool.badge}
+                              </span>
+                            )}
+                            {isChatLink && (
+                              <MessageSquare className="w-2.5 h-2.5 text-white/20 shrink-0" />
+                            )}
+                          </div>
+                          <p className="text-xs text-text-secondary leading-relaxed">{tool.desc}</p>
                         </div>
                         <ArrowLeft className="w-3.5 h-3.5 text-white/20 group-hover:text-white/60 transition-colors shrink-0 mt-1" />
                       </div>
@@ -282,9 +286,14 @@ export default function LabPage() {
           </div>
           <div className="flex-1">
             <p className="text-sm font-bold text-white">لا تجد ما تبحث عنه؟</p>
-            <p className="text-xs text-text-secondary mt-0.5">المساعد الذكي يمكنه مساعدتك في أي مهمة تجارية، حتى لو لم تكن مدرجة هنا.</p>
+            <p className="text-xs text-text-secondary mt-0.5">
+              المساعد الذكي يمكنه مساعدتك في أي مهمة تجارية، حتى لو لم تكن مدرجة هنا.
+            </p>
           </div>
-          <Link href="/chat" className="shrink-0 flex items-center gap-2 bg-brand-indigo hover:bg-brand-indigo/90 text-white text-sm font-bold px-4 py-2 rounded-xl transition-colors shadow-[0_4px_16px_-4px_rgba(79,70,229,0.6)]">
+          <Link
+            href="/chat"
+            className="shrink-0 flex items-center gap-2 bg-brand-indigo hover:bg-brand-indigo/90 text-white text-sm font-bold px-4 py-2 rounded-xl transition-colors shadow-[0_4px_16px_-4px_rgba(79,70,229,0.6)]"
+          >
             <span>اسأل المساعد</span>
             <ArrowLeft className="w-3.5 h-3.5" />
           </Link>
