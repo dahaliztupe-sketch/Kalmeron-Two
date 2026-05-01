@@ -1,6 +1,6 @@
 {
-  "id": "audit_1777606341366",
-  "timestamp": "2026-05-01T03:32:22.741Z",
+  "id": "audit_1777604603098",
+  "timestamp": "2026-05-01T03:03:24.233Z",
   "projectName": "Kalmeron AI",
   "overallScore": 98,
   "grade": "A",
@@ -10,7 +10,7 @@
       "category": "security",
       "score": 100,
       "findings": [],
-      "duration": 434,
+      "duration": 318,
       "passed": 10,
       "failed": 0
     },
@@ -19,7 +19,7 @@
       "category": "authentication",
       "score": 100,
       "findings": [],
-      "duration": 43,
+      "duration": 36,
       "passed": 10,
       "failed": 0
     },
@@ -39,7 +39,7 @@
           "autoFixable": false
         }
       ],
-      "duration": 157,
+      "duration": 108,
       "passed": 9,
       "failed": 1
     },
@@ -57,7 +57,7 @@
       "category": "accessibility",
       "score": 100,
       "findings": [],
-      "duration": 197,
+      "duration": 166,
       "passed": 10,
       "failed": 0
     },
@@ -66,7 +66,7 @@
       "category": "i18n",
       "score": 100,
       "findings": [],
-      "duration": 128,
+      "duration": 86,
       "passed": 10,
       "failed": 0
     },
@@ -75,7 +75,7 @@
       "category": "benchmarks",
       "score": 100,
       "findings": [],
-      "duration": 410,
+      "duration": 416,
       "passed": 10,
       "failed": 0
     }
