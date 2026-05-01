@@ -159,6 +159,14 @@ const nextConfig: NextConfig = {
     // (الذي يستخدم --stack-size=8192) كحارس قبل البناء/النشر.
     ignoreBuildErrors: true,
   },
+  async rewrites() {
+    return [
+      {
+        source: '/__mockup/:path*',
+        destination: 'http://localhost:23636/__mockup/:path*',
+      },
+    ];
+  },
   async headers() {
     return [
       {
