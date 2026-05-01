@@ -15,11 +15,11 @@ import {
 export const metadata: Metadata = {
   title: "للمستثمرين | كلميرون AI — نظام تشغيل الشركات الناشئة العربية",
   description:
-    "كلميرون AI — منصة SaaS عربية تضم 16 وكيلاً ذكياً لرواد الأعمال في مصر والسعودية والإمارات. نبحث عن شركاء استثماريين لجولة Seed.",
+    "كلميرون AI — منصة SaaS عربية تضم ٥٧ وكيلاً ذكياً لرواد الأعمال في مصر والسعودية والإمارات. نبحث عن شركاء استثماريين لجولة Seed.",
   openGraph: {
     title: "كلميرون AI للمستثمرين",
     description:
-      "سوق +15 مليار دولار، 16 مساعد ذكي، تقنية متقدمة، متوافق قانونياً.",
+      "سوق +15 مليار دولار، ٥٧ مساعداً ذكياً، تقنية متقدمة، متوافق قانونياً.",
     siteName: "كلميرون AI",
     locale: "ar_EG",
     type: "website",
@@ -43,7 +43,7 @@ const techHighlights = [
 ];
 
 const roadmap = [
-  { quarter: "Q2 2026", title: "إطلاق MVP", body: "16 مساعد ذكي + Stripe + Fawry" },
+  { quarter: "Q2 2026", title: "إطلاق MVP", body: "٥٧ مساعداً ذكياً + Stripe + Fawry" },
   { quarter: "Q3 2026", title: "تطبيق موبايل + WhatsApp", body: "iOS, Android, واتساب أعمال" },
   { quarter: "Q4 2026", title: "Teams & Workspaces", body: "تعاون داخل الشركة + RBAC" },
   { quarter: "Q1 2027", title: "API للمطورين", body: "Webhooks + Marketplace" },
@@ -62,7 +62,7 @@ export default function InvestorsPage() {
             نظام تشغيل الشركات الناشئة العربية
           </h1>
           <p className="text-xl md:text-2xl text-neutral-300 leading-relaxed max-w-3xl mx-auto mb-10">
-            16 مساعداً ذكياً يعملون يومياً مع رواد الأعمال في مصر، السعودية،
+            ٥٧ مساعداً ذكياً يعملون يومياً مع رواد الأعمال في مصر، السعودية،
             والإمارات — بأقل من 5% من تكلفة المستشارين التقليديين.
           </p>
           <div className="flex flex-wrap gap-4 justify-center">
@@ -122,7 +122,7 @@ export default function InvestorsPage() {
           <div className="glass rounded-3xl p-8 border-l-4 border-[rgb(var(--brand-cyan))]/60">
             <h3 className="text-2xl font-bold text-white mb-4">الحل</h3>
             <p className="text-neutral-300 leading-relaxed text-lg">
-              <strong className="text-white">16 مساعداً ذكياً متخصصاً</strong>{" "}
+              <strong className="text-white">٥٧ مساعداً ذكياً متخصصاً</strong>{" "}
               يعملون 24/7 بالعربية الفصحى، بدءاً من{" "}
               <strong className="text-white">199 جنيهاً شهرياً</strong> — مع
               فهم كامل لقانون 151، التأمينات الاجتماعية، ضرائب الدخل، وتفاصيل

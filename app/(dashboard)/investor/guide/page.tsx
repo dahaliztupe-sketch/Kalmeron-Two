@@ -19,7 +19,7 @@ const SECTIONS: Section[] = [
     title: "ما الذي نقدّمه في سطر واحد",
     body: (
       <p className="text-white/85 leading-relaxed">
-        Kalmeron AI هو غرفة عمليات ذكية لرائد الأعمال المصري — 16 وكيلًا متخصّصًا
+        Kalmeron AI هو غرفة عمليات ذكية لرائد الأعمال المصري — ٥٧ وكيلًا متخصّصًا
         (مالي، قانوني، تسويق، عقارات، إلخ.) يعملون مع المستخدم باللغة العربية
         ويحوّلون فكرة في سطرين إلى خطة عمل قابلة للتنفيذ خلال أقل من 10 دقائق.
       </p>
@@ -153,7 +153,7 @@ export default function InvestorGuidePage() {
           <div className="text-sm text-amber-100/90">
             <p className="font-semibold mb-1">قاعدة ذهبية للعرض</p>
             <p>
-              لا تشرح كل الـ 16 مساعدًا — اعرض المسار الموصى به (6 مساعدين) من{" "}
+              لا تشرح كل الـ ٥٧ مساعدًا — اعرض المسار الموصى به (6 مساعدين) من{" "}
               <Link href="/investor" className="underline hover:text-white">
                 نبضة المنصّة
               </Link>

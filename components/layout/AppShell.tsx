@@ -78,8 +78,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
             <p className="text-[15px] md:text-lg text-neutral-300/90 max-w-xl mx-auto leading-[1.85]">
               {language === "ar"
-                ? "سبعة أقسام وستة عشر مساعداً ذكياً متخصّصاً يعملون كفريقك المؤسّس على مدار الساعة."
-                : "7 departments and 16 specialized AI assistants working as your full-time founding team."}
+                ? "سبعة أقسام وسبعة وخمسون مساعداً ذكياً متخصّصاً يعملون كفريقك المؤسّس على مدار الساعة."
+                : "7 departments and 57 specialized AI assistants working as your full-time founding team."}
             </p>
           </motion.div>
 

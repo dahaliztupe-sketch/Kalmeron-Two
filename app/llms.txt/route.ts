@@ -21,10 +21,10 @@ export async function GET() {
   const lines: string[] = [];
   lines.push('# Kalmeron AI');
   lines.push('');
-  lines.push('> مقرّ عمليات ذكي لرواد الأعمال في المنطقة العربية، يضم 16 مساعداً متخصصاً عبر 7 أقسام يعملون كفريق التأسيس الخاص بك.');
+  lines.push('> مقرّ عمليات ذكي لرواد الأعمال في المنطقة العربية، يضم ٥٧ مساعداً متخصصاً عبر ٧ أقسام يعملون كفريق التأسيس الخاص بك.');
   lines.push('');
   lines.push(
-    'Kalmeron AI is an Arabic-first AI studio for entrepreneurs in MENA. It bundles 16 specialized assistants across 7 departments (CFO, legal advisor, marketing manager, opportunity radar, mistake shield, etc.) trained on the Egyptian and Gulf markets.'
+    'Kalmeron AI is an Arabic-first AI studio for entrepreneurs in MENA. It bundles 57 specialized assistants across 7 departments (CFO, legal advisor, marketing manager, opportunity radar, mistake shield, etc.) trained on the Egyptian and Gulf markets.'
   );
   lines.push('');
   lines.push('## Core pages');

@@ -11,7 +11,7 @@ import { ReferralCapture, attributeReferralIfAny } from "@/components/auth/Refer
 
 const PERKS = [
   "وصول مجاني للأبد للأفكار الأولى",
-  "16 مساعداً ذكياً متخصصاً عبر 7 أقسام",
+  "٥٧ مساعداً ذكياً متخصصاً عبر ٧ أقسام",
   "تحليل أسواق وخطط مالية جاهزة",
   "بدون بطاقة ائتمان",
 ];

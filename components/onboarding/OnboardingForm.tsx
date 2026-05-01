@@ -48,13 +48,13 @@ const GOALS = [
 ];
 
 const STEPS = [
-  { id: "welcome",  title: "مرحباً بك في كلميرون!", subtitle: "رحلتك نحو النجاح تبدأ هنا" },
+  { id: "welcome",  title: "فريقك المؤسّس جاهز!", subtitle: "٥٧ مساعداً ذكياً يعملون من أجلك — دعنا نخصّصهم لمشروعك" },
   { id: "name",     title: "ما اسمك؟", subtitle: "سنناديك به في كل محادثة" },
-  { id: "company",  title: "ما اسم مشروعك أو شركتك؟", subtitle: "إن لم يكن لديك اسم بعد، اكتب وصفاً مختصراً" },
-  { id: "stage",    title: "في أي مرحلة أنت؟", subtitle: "هذا يساعدنا نخصص لك أفضل المساعدين" },
-  { id: "industry", title: "ما مجال مشروعك؟", subtitle: "وكلاؤنا خبراء في مجالك" },
-  { id: "location", title: "من أي محافظة؟", subtitle: "نحلل لك السوق المحلي بدقة" },
-  { id: "goals",    title: "ماذا تريد تحقيقه؟", subtitle: "اختر كل ما ينطبق عليك" },
+  { id: "company",  title: "ما اسم مشروعك أو شركتك؟", subtitle: "لا يهم إن لم يكن لديك اسم بعد — اكتب وصفاً مختصراً" },
+  { id: "stage",    title: "في أي مرحلة أنت الآن؟", subtitle: "سنفعّل المساعدين الأنسب لمرحلتك تحديداً" },
+  { id: "industry", title: "ما مجال مشروعك؟", subtitle: "٥٧ مساعداً مدرّبون على تفاصيل مجالك في السوق المصري" },
+  { id: "location", title: "من أي محافظة؟", subtitle: "سنحلل لك ديناميكيات السوق المحلي بدقة" },
+  { id: "goals",    title: "ماذا تريد تحقيقه؟", subtitle: "اختر كل ما ينطبق عليك — يمكنك تغييره لاحقاً" },
 ];
 
 export function OnboardingForm() {
@@ -230,10 +230,10 @@ export function OnboardingForm() {
                   </div>
                   <div className="space-y-3 text-sm text-neutral-300">
                     {[
-                      { icon: "🤖", text: "16 مساعداً ذكياً في خدمتك عبر 7 أقسام" },
-                      { icon: "📊", text: "خطط عمل وتحليلات مالية فورية" },
-                      { icon: "⚖️", text: "إرشاد قانوني متوافق مع قانون مصر" },
-                      { icon: "🎯", text: "فرص تمويل مخصصة لمرحلتك" },
+                      { icon: "🤖", text: "٥٧ مساعداً ذكياً في ٧ أقسام — بالعربية الأصيلة" },
+                      { icon: "📊", text: "خطط عمل ونمذجة مالية فورية للسوق المصري" },
+                      { icon: "⚖️", text: "إرشاد قانوني متوافق مع قانون الشركات المصري" },
+                      { icon: "🎯", text: "رادار فرص تمويل ومنح مخصص لمرحلتك" },
                     ].map((item) => (
                       <div key={item.text} className="flex items-center gap-3 bg-white/[0.04] rounded-xl px-4 py-3 text-right border border-white/[0.06]">
                         <span className="text-xl">{item.icon}</span>

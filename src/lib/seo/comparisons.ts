@@ -33,7 +33,7 @@ export const COMPARISONS: Comparison[] = [
     competitorTagline: 'مساعد AI عام من OpenAI',
     metaDescriptionAr: 'كلميرون vs ChatGPT: أيهما أفضل لرواد الأعمال في مصر والمنطقة العربية؟ مقارنة تفصيلية في 12 محور.',
     metaDescriptionEn: 'Kalmeron vs ChatGPT: which is better for Arab entrepreneurs? Detailed 12-dimension comparison.',
-    heroIntroAr: 'ChatGPT مساعد ممتاز للأسئلة العامة. كلميرون فريق متكامل من 16 مساعداً ذكياً متخصصاً في الأعمال والسوق المصري. أيهما أنسب لك؟',
+    heroIntroAr: 'ChatGPT مساعد ممتاز للأسئلة العامة. كلميرون فريق متكامل من ٥٧ مساعداً ذكياً متخصصاً في الأعمال والسوق المصري. أيهما أنسب لك؟',
     bestForKalmeron: [
       'رواد أعمال في مصر/المنطقة العربية',
       'تأسيس شركة من الصفر',
@@ -76,7 +76,7 @@ export const COMPARISONS: Comparison[] = [
     competitorTagline: 'مساعد AI من Anthropic بتركيز على السلامة',
     metaDescriptionAr: 'كلميرون vs Claude: أيهما أفضل لتأسيس شركة وإدارتها؟ مقارنة شاملة.',
     metaDescriptionEn: 'Kalmeron vs Claude: which is better for building and running a startup?',
-    heroIntroAr: 'Claude ممتاز في التحليل والكتابة المتقدمة. كلميرون فريق متخصص بالسوق العربي مع 16 مساعداً ذكياً عبر 7 أقسام. أيهما يناسب احتياجاتك؟',
+    heroIntroAr: 'Claude ممتاز في التحليل والكتابة المتقدمة. كلميرون فريق متخصص بالسوق العربي مع ٥٧ مساعداً ذكياً عبر ٧ أقسام. أيهما يناسب احتياجاتك؟',
     bestForKalmeron: [
       'العمل بالسوق العربي',
       'وكلاء متعددون متخصصون',
@@ -113,7 +113,7 @@ export const COMPARISONS: Comparison[] = [
     competitorTagline: 'وكيل AI ذاتي للمهام المعقدة',
     metaDescriptionAr: 'كلميرون vs Manus AI: مقارنة بين منصتين للوكلاء الذكية. أيهما أفضل لشركتك؟',
     metaDescriptionEn: 'Kalmeron vs Manus AI: comparison between two AI agent platforms. Which fits your startup?',
-    heroIntroAr: 'Manus AI ركّز على الوكلاء الذاتية. كلميرون يجمع 16 مساعداً ذكياً عبر 7 أقسام في إطار مقرّ عمليات متكامل لرواد الأعمال.',
+    heroIntroAr: 'Manus AI ركّز على الوكلاء الذاتية. كلميرون يجمع ٥٧ مساعداً ذكياً عبر ٧ أقسام في إطار مقرّ عمليات متكامل لرواد الأعمال.',
     bestForKalmeron: [
       'تخصص ريادة الأعمال',
       'الواجهة العربية الكاملة',

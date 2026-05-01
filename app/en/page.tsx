@@ -5,7 +5,7 @@ import { BrandLogo } from "@/components/brand/BrandLogo";
 export const metadata = {
   title: "Kalmeron — The AI Operating System for Arab Entrepreneurs",
   description:
-    "16 specialized AI agents (CFO, Legal, Marketing, Operations) speaking authentic Arabic — built for the Egyptian and Gulf markets. PDPL & Egyptian Law 151 compliant.",
+    "57 specialized AI agents (CFO, Legal, Marketing, Operations) speaking authentic Arabic — built for the Egyptian and Gulf markets. PDPL & Egyptian Law 151 compliant.",
   alternates: {
     canonical: "/en",
     languages: {
@@ -16,7 +16,7 @@ export const metadata = {
   openGraph: {
     title: "Kalmeron — The AI Operating System for Arab Entrepreneurs",
     description:
-      "16 specialized AI agents speaking authentic Arabic — for SMBs in Egypt, Saudi Arabia, and the Gulf.",
+      "57 specialized AI agents speaking authentic Arabic — for SMBs in Egypt, Saudi Arabia, and the Gulf.",
     locale: "en_US",
     alternateLocale: "ar_EG",
   },
@@ -40,7 +40,7 @@ export default function EnglishLanding() {
   ];
 
   const proof = [
-    "16 production agents across 7 departments",
+    "57 production agents across 7 departments",
     "Authentic Egyptian Arabic — not a translation",
     "PDPL & Egyptian Law 151 compliant by design",
     "From 9 USD/month — vs 800+ USD/month for human consultants",
@@ -66,7 +66,7 @@ export default function EnglishLanding() {
         <section className="py-16 md:py-24 text-center">
           <div className="inline-flex items-center gap-2 rounded-full border border-cyan-500/30 bg-cyan-500/10 px-4 py-1.5 text-cyan-300 text-xs font-semibold mb-6">
             <CheckCircle2 className="w-3.5 h-3.5" />
-            16 production agents — built for the Arab world
+            57 production agents — built for the Arab world
           </div>
           <h1 className="text-4xl md:text-6xl font-bold tracking-tight leading-[1.1] mb-6">
             <span className="bg-gradient-to-r from-cyan-300 via-indigo-300 to-violet-300 bg-clip-text text-transparent">
@@ -76,7 +76,7 @@ export default function EnglishLanding() {
             for Arab entrepreneurs.
           </h1>
           <p className="text-neutral-300 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
-            A team of 16 specialized AI agents — CFO, Legal, Marketing, Operations — that speaks <strong className="text-white">authentic Arabic</strong> and understands the Egyptian and Gulf SMB context. Replace 800 USD/month of consultants with 9 USD/month.
+            A team of 57 specialized AI agents — CFO, Legal, Marketing, Operations — that speaks <strong className="text-white">authentic Arabic</strong> and understands the Egyptian and Gulf SMB context. Replace 800 USD/month of consultants with 9 USD/month.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center mt-8">
             <Link

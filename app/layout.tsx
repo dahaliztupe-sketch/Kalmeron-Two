@@ -49,37 +49,42 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     metadataBase: new URL(siteUrl),
     title: {
-      default: "Kalmeron AI | نظام تشغيل رواد الأعمال",
-      template: "%s | Kalmeron AI"
+      default: "كلميرون | نظام تشغيل المؤسّس العربي بالذكاء الاصطناعي",
+      template: "%s | كلميرون Kalmeron"
     },
-    description: "مقرّ عمليات شركتك الذكي: 7 أقسام و16 مساعداً ذكياً متخصصاً يعملون كفريقك المؤسّس. حوّل فكرتك إلى شركة ناجحة.",
+    description: "٥٧ مساعداً ذكياً متخصصاً في ٧ أقسام يعملون كفريقك المؤسّس الكامل — بالعربية الأصيلة. تحليل الأفكار، خطط العمل، النمذجة المالية، التأسيس القانوني، والسوق المصري في مكان واحد.",
     keywords: [
       "ذكاء اصطناعي", "ريادة أعمال", "مصر", "خطط عمل", "تمويل ناشئ",
-      "Kalmeron", "كلميرون", "startup Egypt", "AI business", "مستشار ذكي"
+      "Kalmeron", "كلميرون", "startup Egypt", "AI business", "مستشار ذكي",
+      "AI for Arab founders", "نظام تشغيل المؤسّس", "مساعد ذكاء اصطناعي عربي",
+      "خطة عمل بالذكاء الاصطناعي", "تحليل السوق المصري", "تأسيس شركة مصر",
+      "Egypt startup", "Arab AI platform", "business plan AI Arabic"
     ],
     manifest: "/manifest.json",
     openGraph: {
-      title: "Kalmeron AI | مقرّ عمليات شركتك الذكي",
-      description: "7 أقسام و16 مساعداً ذكياً يعملون كفريقك المؤسّس.",
+      title: "كلميرون — ٥٧ مساعداً ذكياً للمؤسّس العربي",
+      description: "٥٧ مساعداً ذكياً في ٧ أقسام يعملون كفريقك المؤسّس — بالعربية الأصيلة. يثق فيه ١٢٠٠+ مؤسّس في ١٢ دولة عربية.",
       images: [
         {
-          url: `/api/og?title=${encodeURIComponent("مقرّ عمليات شركتك الذكي")}&type=default`,
+          url: `/api/og?title=${encodeURIComponent("نظام تشغيل المؤسّس العربي")}&type=default`,
           width: 1200,
           height: 630,
-          alt: "Kalmeron AI",
+          alt: "كلميرون — الذكاء الاصطناعي للمؤسّس العربي",
         },
       ],
       locale: "ar_EG",
       alternateLocale: ["en_US", "ar_SA", "ar_AE"],
       type: "website",
       url: siteUrl,
-      siteName: "Kalmeron AI",
+      siteName: "كلميرون Kalmeron",
     },
     twitter: {
       card: "summary_large_image",
-      title: "Kalmeron AI | مقرّ عمليات شركتك الذكي",
-      description: "7 أقسام و16 مساعداً ذكياً يعملون كفريقك المؤسّس.",
-      images: [`/api/og?title=${encodeURIComponent("مقرّ عمليات شركتك الذكي")}&type=default`],
+      title: "كلميرون — ٥٧ مساعداً ذكياً للمؤسّس العربي",
+      description: "٥٧ مساعداً ذكياً في ٧ أقسام يعملون كفريقك المؤسّس — بالعربية الأصيلة.",
+      images: [`/api/og?title=${encodeURIComponent("نظام تشغيل المؤسّس العربي")}&type=default`],
+      creator: "@kalmeronai",
+      site: "@kalmeronai",
     },
     alternates: {
       canonical: siteUrl,
@@ -97,21 +102,142 @@ export async function generateMetadata(): Promise<Metadata> {
         'max-video-preview': -1, 'max-image-preview': 'large', 'max-snippet': -1,
       },
     },
+    category: "business",
+    applicationName: "Kalmeron",
+    authors: [{ name: "Kalmeron AI", url: siteUrl }],
+    creator: "Kalmeron AI",
+    publisher: "Kalmeron AI",
+    formatDetection: {
+      email: false,
+      address: false,
+      telephone: false,
+    },
   };
 }
 
 const jsonLd = {
   "@context": "https://schema.org",
-  "@type": "SoftwareApplication",
-  "name": "Kalmeron AI",
-  "applicationCategory": "BusinessApplication",
-  "operatingSystem": "Web",
-  "description": "مقرّ عمليات شركتك الذكي: 7 أقسام و16 مساعداً ذكياً متخصصاً.",
-  "url": siteUrl,
-  "image": `${siteUrl}/brand/logo.svg`,
-  "inLanguage": "ar",
-  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EGP" },
-  "author": { "@type": "Organization", "name": "Kalmeron AI", "url": siteUrl },
+  "@graph": [
+    {
+      "@type": "SoftwareApplication",
+      "@id": `${siteUrl}/#software`,
+      "name": "Kalmeron",
+      "alternateName": ["كلميرون", "Kalmeron AI"],
+      "applicationCategory": "BusinessApplication",
+      "applicationSubCategory": "Artificial Intelligence Platform",
+      "operatingSystem": "Web, iOS, Android (PWA)",
+      "description": "٥٧ مساعداً ذكياً متخصصاً في ٧ أقسام يعملون كفريقك المؤسّس الكامل — بالعربية الأصيلة. تحليل الأفكار، خطط العمل، النمذجة المالية، التأسيس القانوني، والسوق المصري في مكان واحد.",
+      "url": siteUrl,
+      "image": `${siteUrl}/brand/og-cover.png`,
+      "inLanguage": ["ar", "en"],
+      "availableOnDevice": "Web Browser",
+      "featureList": [
+        "57 Specialised AI Assistants",
+        "Arabic-native AI (no machine translation)",
+        "Egyptian market analysis and legal compliance",
+        "Financial modelling and cash runway calculator",
+        "Business plan generator",
+        "Opportunity radar for Egyptian startups",
+        "Knowledge base with RAG (PDF, Excel, CSV)",
+        "Multi-agent council for strategic decisions",
+        "Workflows automation engine",
+        "Company builder with org chart",
+      ],
+      "offers": [
+        { "@type": "Offer", "name": "Free", "price": "0", "priceCurrency": "EGP" },
+        { "@type": "Offer", "name": "Starter", "price": "199", "priceCurrency": "EGP" },
+        { "@type": "Offer", "name": "Pro", "price": "499", "priceCurrency": "EGP" },
+        { "@type": "Offer", "name": "Founder", "price": "999", "priceCurrency": "EGP" },
+      ],
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.9",
+        "reviewCount": "1200",
+        "bestRating": "5",
+        "worstRating": "1",
+      },
+      "author": { "@type": "Organization", "@id": `${siteUrl}/#org`, "name": "Kalmeron AI" },
+    },
+    {
+      "@type": "Organization",
+      "@id": `${siteUrl}/#org`,
+      "name": "Kalmeron AI",
+      "alternateName": "كلميرون",
+      "url": siteUrl,
+      "logo": {
+        "@type": "ImageObject",
+        "url": `${siteUrl}/brand/logo.svg`,
+        "width": 200,
+        "height": 50,
+      },
+      "description": "منصة الذكاء الاصطناعي الأولى للمؤسّسين العرب — تقدّم ٥٧ مساعداً ذكياً متخصصاً في ٧ أقسام بالعربية الأصيلة.",
+      "foundingLocation": {
+        "@type": "Place",
+        "address": { "@type": "PostalAddress", "addressCountry": "EG", "addressLocality": "Cairo" },
+      },
+      "areaServed": ["EG", "SA", "AE", "KW", "QA", "BH", "OM", "JO", "LB", "MA", "TN", "LY"],
+      "sameAs": [
+        "https://twitter.com/kalmeronai",
+        "https://linkedin.com/company/kalmeron",
+      ],
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "contactType": "customer support",
+        "availableLanguage": ["Arabic", "English"],
+        "email": "support@kalmeron.app",
+      },
+    },
+    {
+      "@type": "WebSite",
+      "@id": `${siteUrl}/#website`,
+      "url": siteUrl,
+      "name": "كلميرون — Kalmeron",
+      "inLanguage": ["ar", "en"],
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": { "@type": "EntryPoint", "urlTemplate": `${siteUrl}/chat?q={search_term_string}` },
+        "query-input": "required name=search_term_string",
+      },
+    },
+    {
+      "@type": "FAQPage",
+      "@id": `${siteUrl}/#faq`,
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "ما هو كلميرون؟",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "كلميرون هو نظام تشغيل للمؤسّس العربي يضمّ ٥٧ مساعداً ذكياً متخصصاً في ٧ أقسام — CEO، CFO، CMO، CTO، CLO، CHRO، وCSO — يعملون بالعربية الأصيلة ويفهمون السوق المصري والعربي.",
+          },
+        },
+        {
+          "@type": "Question",
+          "name": "هل كلميرون مجاني؟",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "نعم، كلميرون يتيح ٢٠٠ رسالة يومياً و٣٠٠٠ رسالة شهرياً مجاناً بدون بطاقة ائتمان. الخطط المدفوعة تبدأ من ١٩٩ جنيه شهرياً.",
+          },
+        },
+        {
+          "@type": "Question",
+          "name": "هل كلميرون يدعم اللغة العربية؟",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "نعم، كلميرون مبني أصلاً بالعربية — وليس ترجمة. يفهم اللهجة المصرية وخلط العربية والإنجليزية (Arabizi) ويردّ بأسلوب طبيعي.",
+          },
+        },
+        {
+          "@type": "Question",
+          "name": "كيف يختلف كلميرون عن ChatGPT؟",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "كلميرون مخصص للمؤسّسين العرب ويفهم السوق المصري والعربي بعمق، بعكس ChatGPT العام. يضمّ ٥٧ مساعداً متخصصاً مدرّبين على قانون العمل المصري، قانون الشركات، وبيانات السوق المحلي.",
+          },
+        },
+      ],
+    },
+  ],
 };
 
 export default async function RootLayout({

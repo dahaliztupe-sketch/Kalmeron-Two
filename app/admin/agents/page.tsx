@@ -3,7 +3,7 @@ import PageClient from "./_page-client";
 
 export const metadata: Metadata = {
   title: "الوكلاء الذكيون",
-  description: "استكشف 16 مساعداً ذكياً متخصّصاً للأعمال",
+  description: "استكشف ٥٧ مساعداً ذكياً متخصّصاً للأعمال عبر ٧ أقسام",
 };
 
 export default function Page() {
