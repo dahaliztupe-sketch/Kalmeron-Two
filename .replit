@@ -168,8 +168,8 @@ EMBEDDINGS_MODEL = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
 FAWRY_BASE_URL = "https://atfawry.fawrystaging.com"
 JUDGE_MODEL = "gemini-2.5-flash-lite"
 TOKEN_METER_URL = "http://localhost:9000"
-NEXT_PUBLIC_APP_URL = "https://657741d6-bc97-4e6f-9269-291a7ff239c2-00-315j77emxs6mm.kirk.replit.dev"
-NEXT_PUBLIC_BASE_URL = "https://657741d6-bc97-4e6f-9269-291a7ff239c2-00-315j77emxs6mm.kirk.replit.dev"
+NEXT_PUBLIC_APP_URL = "https://e2a206de-3917-4d4e-ba44-e22ce720fda9-00-32n898iqhwypx.janeway.replit.dev"
+NEXT_PUBLIC_BASE_URL = "https://e2a206de-3917-4d4e-ba44-e22ce720fda9-00-32n898iqhwypx.janeway.replit.dev"
 
 [deployment]
 deploymentTarget = "autoscale"
