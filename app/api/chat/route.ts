@@ -14,6 +14,7 @@ import { SystemMessage } from '@langchain/core/messages';
 import { markTtfvStage } from '@/src/lib/analytics/ttfv';
 import { quarantineCorpus } from '@/src/lib/security/context-quarantine';
 import { toErrorDetails } from '@/src/lib/errors/to-message';
+import { runWithLearningContext } from '@/src/lib/learning/context';
 
 export const runtime = 'nodejs';
 
@@ -191,19 +192,26 @@ export async function POST(req: NextRequest) {
       // مرحلة افتتاحية فورية
       send('phase', { id: 'router', label: PHASE_MAP.router });
 
+      // استخرج الرسالة الأخيرة كمهمّة لسياق التعلّم الذاتيّ
+      const learningTask = (messages[messages.length - 1]?.content as string) || '';
+
       try {
-        const eventStream = await intelligentOrchestrator.streamEvents(
-          {
-            messages: langchainMessages,
-            isGuest: !!isGuest,
-            messageCount: isGuest ? messages.length : 0,
-            uiContext: uiContext || {},
-            userId,
-          },
-          {
-            version: 'v2',
-            configurable: { thread_id: threadId || `thread-${userId}` },
-          }
+        // تفعيل دورة التعلّم الذاتيّ لكلّ الوكلاء (load → feedback → extract)
+        const eventStream = await runWithLearningContext(
+          { workspaceId: userId, task: learningTask },
+          () => intelligentOrchestrator.streamEvents(
+            {
+              messages: langchainMessages,
+              isGuest: !!isGuest,
+              messageCount: isGuest ? messages.length : 0,
+              uiContext: uiContext || {},
+              userId,
+            },
+            {
+              version: 'v2',
+              configurable: { thread_id: threadId || `thread-${userId}` },
+            }
+          )
         );
 
         const seenPhases = new Set<string>(['router']);
