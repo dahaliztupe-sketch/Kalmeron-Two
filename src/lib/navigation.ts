@@ -1,8 +1,20 @@
 import type React from "react";
 import {
-  LayoutDashboard, MessageSquareText, Inbox,
-  Building2, ScrollText,
-  FlaskConical, Sparkles, User as UserIcon,
+  LayoutDashboard,
+  MessageSquareText,
+  Inbox,
+  Building2,
+  ScrollText,
+  FlaskConical,
+  Sparkles,
+  User as UserIcon,
+  LineChart,
+  Radar,
+  Settings,
+  Zap,
+  Target,
+  Users,
+  Brain,
 } from "lucide-react";
 
 export type NavItem = {
@@ -11,6 +23,7 @@ export type NavItem = {
   icon: React.ComponentType<{ className?: string; size?: number }>;
   exact?: boolean;
   badge?: string;
+  badgeColor?: "cyan" | "amber" | "emerald" | "violet";
 };
 
 export type NavSection = {
@@ -23,28 +36,33 @@ export const NAV_SECTIONS: NavSection[] = [
     heading: "الرئيسي",
     items: [
       { href: "/dashboard", label: "لوحة القيادة", icon: LayoutDashboard, exact: true },
-      { href: "/chat", label: "المساعد الذكي", icon: MessageSquareText },
-      { href: "/inbox", label: "صندوق الموافقات", icon: Inbox },
+      { href: "/chat", label: "المساعد الذكي", icon: MessageSquareText, badge: "AI", badgeColor: "cyan" },
+      { href: "/inbox", label: "الموافقات", icon: Inbox },
     ],
   },
   {
     heading: "شركتي",
     items: [
-      { href: "/departments", label: "الأقسام", icon: Building2 },
-      { href: "/plan", label: "الخطة والأهداف", icon: ScrollText },
+      { href: "/company-builder", label: "بناء الشركة", icon: Building2 },
+      { href: "/departments", label: "الأقسام", icon: Users },
+      { href: "/plan", label: "الأهداف والخطة", icon: Target },
+      { href: "/investor", label: "لوحة المستثمر", icon: LineChart },
     ],
   },
   {
-    heading: "أدوات",
+    heading: "الأدوات",
     items: [
-      { href: "/lab", label: "مختبر الأعمال", icon: FlaskConical },
+      { href: "/ideas/analyze", label: "مختبر الأفكار", icon: Brain, badge: "جديد", badgeColor: "emerald" },
+      { href: "/opportunities", label: "رادار الفرص", icon: Radar },
+      { href: "/lab", label: "أدوات الأعمال", icon: FlaskConical },
+      { href: "/brand-voice", label: "صوت العلامة", icon: Sparkles },
     ],
   },
   {
     heading: "الحساب",
     items: [
-      { href: "/investor", label: "لوحة المستثمر", icon: Sparkles },
       { href: "/profile", label: "الملف الشخصي", icon: UserIcon },
+      { href: "/settings", label: "الإعدادات", icon: Settings },
     ],
   },
 ];

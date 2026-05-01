@@ -60,7 +60,7 @@ const QUICK_ACTION_KEYS = [
   { key: "ideaAnalyst", icon: Brain, href: "/chat?q=" + encodeURIComponent("حلل فكرتي الجديدة"), color: "from-cyan-500 to-indigo-500", bg: "bg-cyan-500/5 border-cyan-500/20 hover:border-cyan-400/40" },
   { key: "cfo", icon: Briefcase, href: "/chat?q=" + encodeURIComponent("احسب لي نموذج مالي أولي"), color: "from-emerald-500 to-cyan-500", bg: "bg-emerald-500/5 border-emerald-500/20 hover:border-emerald-400/40" },
   { key: "legal", icon: Scale, href: "/chat?q=" + encodeURIComponent("ما الوثائق القانونية اللازمة للتأسيس؟"), color: "from-amber-500 to-orange-500", bg: "bg-amber-500/5 border-amber-500/20 hover:border-amber-400/40" },
-  { key: "marketLab", icon: FlaskConical, href: "/market-lab", color: "from-fuchsia-500 to-pink-500", bg: "bg-fuchsia-500/5 border-fuchsia-500/20 hover:border-fuchsia-400/40" },
+  { key: "marketLab", icon: FlaskConical, href: "/ideas/analyze", color: "from-fuchsia-500 to-pink-500", bg: "bg-fuchsia-500/5 border-fuchsia-500/20 hover:border-fuchsia-400/40" },
   { key: "mistakeShield", icon: Shield, href: "/chat?q=" + encodeURIComponent("ما الأخطاء القاتلة التي يجب تجنبها؟"), color: "from-rose-500 to-red-500", bg: "bg-rose-500/5 border-rose-500/20 hover:border-rose-400/40" },
   { key: "opportunityRadar", icon: Radar, href: "/opportunities", color: "from-violet-500 to-purple-500", bg: "bg-violet-500/5 border-violet-500/20 hover:border-violet-400/40" },
 ] as const;
@@ -391,7 +391,7 @@ export default function DashboardPage() {
                 <Sparkles className="w-4 h-4 text-fuchsia-400" /> {t("discoverMore")}
               </h2>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <Link href="/templates" className="group glass-panel rounded-2xl p-5 hover:border-amber-500/30 transition-all flex items-center gap-4">
+                <Link href="/company-builder" className="group glass-panel rounded-2xl p-5 hover:border-amber-500/30 transition-all flex items-center gap-4">
                   <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/25 flex items-center justify-center flex-shrink-0">
                     <LayoutTemplate className="w-5 h-5 text-amber-400" />
                   </div>
@@ -401,7 +401,7 @@ export default function DashboardPage() {
                   </div>
                   <ArrowLeft className="w-4 h-4 text-neutral-600 group-hover:text-white transition-colors flex-shrink-0" />
                 </Link>
-                <Link href="/trending-tools" className="group glass-panel rounded-2xl p-5 hover:border-rose-500/30 transition-all flex items-center gap-4">
+                <Link href="/ideas/analyze" className="group glass-panel rounded-2xl p-5 hover:border-rose-500/30 transition-all flex items-center gap-4">
                   <div className="w-10 h-10 rounded-xl bg-rose-500/10 border border-rose-500/25 flex items-center justify-center flex-shrink-0">
                     <Flame className="w-5 h-5 text-rose-400" />
                   </div>

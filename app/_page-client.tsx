@@ -114,8 +114,8 @@ function TopNav() {
 
   const links = [
     { href: "#departments", label: t("links.departments") },
-    { href: "#demo", label: t("links.demo") },
     { href: "#compare", label: t("links.compare") },
+    { href: "#testimonials", label: t("links.demo") },
     { href: "/pricing", label: t("links.pricing") },
   ];
 

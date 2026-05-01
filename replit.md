@@ -1,5 +1,40 @@
 # Kalmeron AI (ai-studio-applet)
 
+## RADICAL UI/UX REDESIGN — 2026-05-01
+
+### Overview
+Complete front-end redesign: Arabic-first, dark premium SaaS aesthetic, workspace concept, page consolidation.
+
+### Changed Files
+| File | Change |
+|------|--------|
+| `src/lib/navigation.ts` | 4 sections, 13 nav items, `badgeColor` type added |
+| `components/layout/Sidebar.tsx` | Full redesign: badge colors, cleaner user chip, no footer settings dupe |
+| `components/landing/HomeBelowFold.tsx` | Rewritten 1001→~380 lines: 11 sections → 6 focused sections |
+| `app/(dashboard)/dashboard/page.tsx` | Updated links to consolidated pages |
+| `app/_page-client.tsx` | TopNav hash link fixed (#demo→#testimonials) |
+| `next.config.ts` | 50+ redirects: dead pages → canonical pages |
+
+### Page Architecture (Post-Redesign)
+**Public:** `/` `/pricing` `/blog` `/about` `/privacy` `/terms` `/auth/*` `/onboarding`
+**Dashboard (workspace):** `/dashboard` `/chat` `/inbox` `/company-builder` `/departments` `/plan` `/investor` `/ideas/analyze` `/opportunities` `/lab` `/brand-voice` `/profile` `/settings`
+**Redirected away:** `/brain`→`/chat`, `/hr`→`/company-builder`, `/departments`→`/company-builder`, `/cash-runway`→`/investor`, `/cfo`→`/investor`, `/okr`→`/investor`, `/market-lab`→`/ideas/analyze`, `/vs/chatgpt`→`/`, `/why-arabic`→`/`, 50+ total
+
+### Design Tokens (globals.css)
+- bg: `#04060B` (navy-black)
+- brand-cyan: `#38BDF8`
+- brand-indigo: `#4F46E5`
+- brand-violet: `#8B5CF6`
+- Font: IBM Plex Sans Arabic (RTL) + Plus Jakarta Sans (LTR)
+
+### Navigation Sections
+1. **الرئيسي**: لوحة القيادة, المساعد الذكي (AI badge), الموافقات
+2. **شركتي**: بناء الشركة, الأقسام, الأهداف والخطة, لوحة المستثمر
+3. **الأدوات**: مختبر الأفكار (جديد badge), رادار الفرص, أدوات الأعمال, صوت العلامة
+4. **الحساب**: الملف الشخصي, الإعدادات
+
+---
+
 ## SSE Delegation Tracker + Company Simulator — 2026-05-01
 
 ### 1. Real-Time SSE Delegation Tracker
