@@ -456,7 +456,7 @@ export default function AgentsPage() {
           <div className="flex items-center justify-between mb-4">
             <p className="text-sm text-text-secondary">
               عرض <span className="text-white font-bold">{filtered.length}</span> وكيل
-              {search && <span className="text-neutral-500"> لـ "{search}"</span>}
+              {search && <span className="text-neutral-500"> لـ &ldquo;{search}&rdquo;</span>}
             </p>
           </div>
 

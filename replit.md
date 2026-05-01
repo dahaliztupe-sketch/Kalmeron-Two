@@ -1,5 +1,52 @@
 # Kalmeron AI (ai-studio-applet)
 
+## SSE Delegation Tracker + Company Simulator — 2026-05-01
+
+### 1. Real-Time SSE Delegation Tracker
+
+| File | Purpose |
+|------|---------|
+| `src/ai/organization/delegation/engine.ts` | محرك التفويض — يُطلق 7 أحداث SSE عبر `delegationBus` عند كل خطوة |
+| `app/api/delegate/stream/route.ts` | نقطة SSE `/api/delegate/stream?traceId=&token=` |
+| `src/hooks/useDelegationStream.ts` | React hook للاشتراك في SSE |
+| `src/components/delegation/DelegationTracker.tsx` | مكوّن عرض تقدم التفويض في الوقت الفعلي |
+
+أحداث SSE: `delegation_started` | `agent_selected` | `hop_started` | `hop_completed` | `agent_processing` | `delegation_completed` | `delegation_failed`
+
+### 2. Company Simulator (محاكي الشركات)
+
+#### Data Layer
+| File | Purpose |
+|------|---------|
+| `src/lib/company-builder/types.ts` | أنواع: Company, VirtualEmployee, CompanyDepartment, CompanyTask, CrossDeptTaskResult |
+| `src/lib/company-builder/presets.ts` | 19 preset جاهز: tech_startup, restaurant, marketing_agency, healthcare, ecommerce + 14 آخرين |
+| `src/lib/company-builder/engine.ts` | Firestore CRUD: createCompany, getCompany, listCompaniesByOwner, updateCompany, createTask, updateTaskStatus, listTasks |
+
+#### AI Layer
+| File | Purpose |
+|------|---------|
+| `src/ai/organization/cross-dept/router.ts` | موزّع المهام متعددة الأقسام — LLM analysis → parallel execution → synthesis |
+
+#### API Routes
+| Route | Method | Purpose |
+|-------|--------|---------|
+| `/api/company` | POST | إنشاء شركة جديدة |
+| `/api/company` | GET | قائمة شركات المستخدم |
+| `/api/company/[id]` | GET/PATCH/DELETE | CRUD شركة واحدة |
+| `/api/company/[id]/tasks` | POST/GET | إنشاء/قراءة مهام الشركة |
+
+#### UI Pages
+| Page | Purpose |
+|------|---------|
+| `/company-builder` | قائمة الشركات + نافذة إنشاء شركة (step 1: نوع، step 2: تفاصيل) |
+| `/company-builder/[id]` | تفاصيل الشركة: أقسام، موظفون، مهام، تتبع التفويض |
+
+Firestore Schema:
+- `companies/{companyId}` — وثيقة الشركة مع employees[] + departments[]
+- `companies/{companyId}/tasks/{taskId}` — sub-collection المهام
+
+Navigation: رابط "محاكي الشركات" في `src/lib/navigation.ts` ضمن قسم "الأدوات الإستراتيجية"
+
 ## Department Employee Agents — Full Org Build-Out (2026-05-01)
 
 تم إنشاء وتسجيل **24 وكيل جديد** يمثلون موظفي الأقسام تحت كل مدير تنفيذي.

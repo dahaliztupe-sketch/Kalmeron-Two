@@ -17,6 +17,7 @@
 
 import { z } from 'zod';
 import { generateObject } from 'ai';
+import { EventEmitter } from 'events';
 import {
   ENTERPRISE_EXECUTIVES,
   type ExecutiveRole,
@@ -28,6 +29,34 @@ import { logTrace, type AgentTrace } from '../../meta/tracer';
 
 /** الحد الأقصى لعدد القفزات في سلسلة تفويض واحدة. */
 const MAX_DELEGATION_HOPS = 4;
+
+// ─── SSE Event Bus ───────────────────────────────────────────────────────────
+/** ناقل الأحداث العام لتتبع التفويض في الوقت الفعلي عبر SSE. */
+export const delegationBus = new EventEmitter();
+delegationBus.setMaxListeners(500);
+
+export type DelegationEventType =
+  | 'delegation_started'     // بدأت سلسلة التفويض
+  | 'agent_selected'         // تم اختيار الوكيل المُنفِّذ
+  | 'hop_started'            // بدأت قفزة جديدة
+  | 'hop_completed'          // اكتملت قفزة
+  | 'agent_processing'       // الوكيل يعالج المهمة حالياً
+  | 'delegation_completed'   // اكتملت سلسلة التفويض بالكامل
+  | 'delegation_failed';     // فشلت سلسلة التفويض
+
+export interface DelegationEvent {
+  type: DelegationEventType;
+  traceId: string;
+  timestamp: number;
+  data: Record<string, unknown>;
+}
+
+/** يُطلق حدثاً على الـ bus ويُسجّله للـ SSE. */
+function emit(traceId: string, type: DelegationEventType, data: Record<string, unknown>) {
+  const event: DelegationEvent = { type, traceId, timestamp: Date.now(), data };
+  delegationBus.emit(`trace:${traceId}`, event);
+  delegationBus.emit('all', event);
+}
 
 /** ─── أنواع البيانات ─── */
 
@@ -275,6 +304,7 @@ async function resolveExecutor(
 /**
  * الدالة الرئيسية للتفويض.
  * تُنفِّذ سلسلة التفويض الكاملة وتُعيد النتيجة مع trace كامل.
+ * تُطلق أحداث SSE على `delegationBus` في كل خطوة.
  */
 export async function delegateTask(req: DelegationRequest): Promise<DelegationResult> {
   const traceId = `dlg_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
@@ -283,18 +313,36 @@ export async function delegateTask(req: DelegationRequest): Promise<DelegationRe
   // 1. التحقق من صحة المُفوِّض
   const exec = ENTERPRISE_EXECUTIVES[req.delegatorRole];
   if (!exec) {
-    throw new Error(`الدور ${req.delegatorRole} غير معرَّف في الهيكل التنظيمي`);
+    const err = `الدور ${req.delegatorRole} غير معرَّف في الهيكل التنظيمي`;
+    emit(traceId, 'delegation_failed', { error: err, delegatorRole: req.delegatorRole });
+    throw new Error(err);
   }
+
+  // 🔔 حدث: بدأت سلسلة التفويض
+  emit(traceId, 'delegation_started', {
+    delegatorRole: req.delegatorRole,
+    delegatorNameAr: exec.nameAr,
+    task: req.task.slice(0, 200),
+    allowSubDelegation: req.allowSubDelegation ?? false,
+    userId: req.userId,
+  });
 
   // 2. إذا كان الهدف محدداً، تحقق من الصلاحية
   if (req.targetAgentId) {
     const auth = validateDelegationAuthority(req.delegatorRole, req.targetAgentId);
     if (!auth.valid) {
+      emit(traceId, 'delegation_failed', { error: auth.reason });
       throw new Error(auth.reason);
     }
   }
 
   // 3. حل سلسلة التفويض
+  emit(traceId, 'hop_started', {
+    from: exec.agentId,
+    step: 'resolving_executor',
+    message: `${exec.nameAr} يختار المرؤوس المناسب…`,
+  });
+
   const { executorAgentId, hops } = await resolveExecutor(
     req.delegatorRole,
     req.task,
@@ -304,36 +352,86 @@ export async function delegateTask(req: DelegationRequest): Promise<DelegationRe
     0,
   );
 
-  // 4. بناء سلسلة القفزات مع توقيت كل منها
+  // 🔔 حدث: تم اختيار الوكيل المُنفِّذ
+  emit(traceId, 'agent_selected', {
+    executorAgentId,
+    hops: hops.map(h => ({ from: h.from, to: h.to })),
+    totalHops: hops.length,
+    message: `المهمة ستُنفَّذ بواسطة: ${executorAgentId}`,
+  });
+
+  // 4. بناء سلسلة القفزات مع إطلاق أحداث لكل قفزة
   const delegationChain: DelegationHop[] = [];
-  for (const hop of hops) {
+  for (let i = 0; i < hops.length; i++) {
+    const hop = hops[i];
     const hopStart = Date.now();
+
+    emit(traceId, 'hop_started', {
+      hopIndex: i,
+      from: hop.from,
+      to: hop.to,
+      reasoning: hop.reasoning,
+      message: `${hop.from} → ${hop.to}: ${hop.reasoning}`,
+    });
+
     delegationChain.push({
       from: hop.from,
       to: hop.to,
       reasoning: hop.reasoning,
       latencyMs: Date.now() - hopStart,
     });
+
+    emit(traceId, 'hop_completed', {
+      hopIndex: i,
+      from: hop.from,
+      to: hop.to,
+      latencyMs: delegationChain[i].latencyMs,
+    });
   }
 
   // 5. تنفيذ المهمة على الوكيل النهائي
+  // 🔔 حدث: الوكيل يعالج المهمة
+  emit(traceId, 'agent_processing', {
+    agentId: executorAgentId,
+    message: `⚙️ ${executorAgentId} يعالج المهمة حالياً…`,
+    taskPreview: req.task.slice(0, 150),
+  });
+
   const executionStart = Date.now();
-  const output = await executeOnAgent(
-    executorAgentId,
-    req.task,
-    {
-      delegationChain: hops,
-      initiatedBy: req.delegatorRole,
-      traceId,
-      ...req.context,
-    },
-    req.userId,
-  );
+  let output: string;
+  try {
+    output = await executeOnAgent(
+      executorAgentId,
+      req.task,
+      {
+        delegationChain: hops,
+        initiatedBy: req.delegatorRole,
+        traceId,
+        ...req.context,
+      },
+      req.userId,
+    );
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : 'خطأ في التنفيذ';
+    emit(traceId, 'delegation_failed', { agentId: executorAgentId, error: msg });
+    throw err;
+  }
 
   // تحديث زمن القفزة الأخيرة بالوقت الفعلي للتنفيذ
   if (delegationChain.length > 0) {
     delegationChain[delegationChain.length - 1].latencyMs = Date.now() - executionStart;
   }
+
+  const totalLatencyMs = Date.now() - startTime;
+
+  // 🔔 حدث: اكتملت سلسلة التفويض
+  emit(traceId, 'delegation_completed', {
+    executedByAgent: executorAgentId,
+    initiatedByRole: req.delegatorRole,
+    totalHops: delegationChain.length,
+    totalLatencyMs,
+    outputPreview: output.slice(0, 300),
+  });
 
   // 6. تسجيل الـ trace
   await logTrace({
@@ -344,7 +442,7 @@ export async function delegateTask(req: DelegationRequest): Promise<DelegationRe
     input: { task: req.task, delegatorRole: req.delegatorRole, targetAgentId: req.targetAgentId },
     finalOutput: { output, delegationChain },
     metrics: {
-      totalDuration: Date.now() - startTime,
+      totalDuration: totalLatencyMs,
       tokensUsed: 0,
       costCents: 0,
     },
@@ -354,7 +452,7 @@ export async function delegateTask(req: DelegationRequest): Promise<DelegationRe
     output,
     delegationChain,
     traceId,
-    totalLatencyMs: Date.now() - startTime,
+    totalLatencyMs,
     executedByAgent: executorAgentId,
     initiatedByRole: req.delegatorRole,
   };

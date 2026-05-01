@@ -80,6 +80,7 @@ export const NAV_SECTIONS: NavSection[] = [
     heading: "الأدوات الإستراتيجية",
     items: [
       { href: "/org-chart", label: "الهيكل التنظيمي", icon: Network },
+      { href: "/company-builder", label: "محاكي الشركات", icon: Building2 },
       { href: "/agents", label: "عرض الوكلاء", icon: Cpu },
       { href: "/templates", label: "مكتبة القوالب", icon: LayoutTemplate },
       { href: "/trending-tools", label: "أدوات AI الرائجة", icon: Layers },
