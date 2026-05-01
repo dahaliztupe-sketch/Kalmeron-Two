@@ -1,5 +1,37 @@
 # Kalmeron AI (ai-studio-applet)
 
+## جلسة إصلاح TypeScript والأداء — 2026-05-01 (آخر تحديث)
+
+### الملفات التي تم إصلاحها (إزالة @ts-nocheck + أخطاء TypeScript)
+| الملف | التغييرات |
+|-------|-----------|
+| `app/api/workspaces/route.ts` | إزالة @ts-nocheck، أنواع صحيحة لـ body/errors |
+| `app/api/recipes/list/route.ts` | إزالة @ts-nocheck |
+| `app/api/recipes/run/route.ts` | إزالة @ts-nocheck، تنظيف |
+| `app/api/recipes/instances/route.ts` | إزالة @ts-nocheck، DocumentSnapshot typing |
+| `app/api/operations/feed/route.ts` | إزالة @ts-nocheck، SummaryKey union type، DocumentSnapshot |
+| `app/api/daily-brief/preferences/route.ts` | إزالة @ts-nocheck، bracket notation، معالجة الأخطاء |
+| `app/api/daily-brief/send/route.ts` | إزالة @ts-nocheck |
+| `src/lib/billing/credit-manager.ts` | إزالة @ts-nocheck، getUserPlanId typing صحيح، إضافة tokens param، recordDailyUsage |
+| `src/lib/billing/reset-scheduler.ts` | إزالة @ts-nocheck، QueryDocumentSnapshot typing |
+| `src/lib/billing/usage-tracker.ts` | إزالة @ts-nocheck، lazy dynamic import، guard على OPENMETER_API_KEY |
+| `firestore.indexes.json` | إضافة indexes: chat_history, credit_transactions, action_requests, usage_daily |
+
+### الميزات الجديدة في هذه الجلسة
+| الميزة | التفاصيل |
+|--------|----------|
+| `/api/usage/daily` endpoint | يجلب آخر N يوم من بيانات الاستخدام من `usage_daily` collection |
+| Dashboard chart real data | مخطط الاستهلاك يستخدم الآن بيانات Firestore الحقيقية (مع fallback للأصفار) |
+| Daily usage recording | `CreditManager.consumeCredits()` يُحدّث `usage_daily` عند كل استهلاك |
+| `usage_daily` Firestore schema | `{userId, date, costUsd, tokens, updatedAt}` — مُجمَّع بـ `FieldValue.increment` |
+
+### حالة @ts-nocheck
+- `app/api/` routes: ✅ **0 ملفات متبقية** (كلها نظيفة)
+- `src/lib/billing/`: ✅ **0 ملفات متبقية**
+- `src/lib/` (أخرى): ~265 ملف لا تزال تحتاج معالجة (مرحلة قادمة)
+
+---
+
 ## بيئة التطوير — إصلاحات حرجة (2026-05-01)
 
 ### ما تم إصلاحه اليوم

@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * POST /api/daily-brief/send
  * Body: { channels?: ("whatsapp"|"email")[], dryRun?: boolean }

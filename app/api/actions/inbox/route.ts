@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { NextRequest, NextResponse } from 'next/server';
 import { adminAuth } from '@/src/lib/firebase-admin';
 import { listInbox, decideAction, listActions } from '@/src/ai/actions/registry';
@@ -13,7 +12,13 @@ async function authedUserId(req: NextRequest): Promise<string | null> {
   try {
     const decoded = await adminAuth.verifyIdToken(auth.split(' ')[1]!);
     return decoded.uid || null;
-  } catch { return null; }
+  } catch {
+    return null;
+  }
+}
+
+function errMsg(e: unknown): string {
+  return e instanceof Error ? e.message : 'unknown_error';
 }
 
 export async function GET(req: NextRequest) {
@@ -22,8 +27,10 @@ export async function GET(req: NextRequest) {
 
   const userId = await authedUserId(req);
   if (!userId) return NextResponse.json({ error: 'auth_required' }, { status: 401 });
-  const status = new URL(req.url).searchParams.get('status') || undefined;
-  const items = await listInbox(userId, status as unknown);
+
+  const status = new URL(req.url).searchParams.get('status') ?? undefined;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const items = await listInbox(userId, status as any);
   const safe = items.map((r) => ({
     id: r.id,
     actionId: r.actionId,
@@ -46,11 +53,23 @@ export async function POST(req: NextRequest) {
 
   const userId = await authedUserId(req);
   if (!userId) return NextResponse.json({ error: 'auth_required' }, { status: 401 });
-  let body: unknown; try { body = await req.json(); } catch { return NextResponse.json({ error: 'invalid_json' }, { status: 400 }); }
-  const { actionDocId, decision, editedInput } = body || {};
-  if (!actionDocId || (decision !== 'approve' && decision !== 'reject')) {
+
+  let body: Record<string, unknown>;
+  try {
+    body = await req.json() as Record<string, unknown>;
+  } catch {
+    return NextResponse.json({ error: 'invalid_json' }, { status: 400 });
+  }
+
+  const { actionDocId, decision, editedInput } = body;
+  if (
+    typeof actionDocId !== 'string' ||
+    !actionDocId ||
+    (decision !== 'approve' && decision !== 'reject')
+  ) {
     return NextResponse.json({ error: 'invalid_request' }, { status: 400 });
   }
+
   try {
     const r = await decideAction({ userId, actionDocId, decision, editedInput });
     await recordAudit({
@@ -61,6 +80,6 @@ export async function POST(req: NextRequest) {
     });
     return NextResponse.json({ ok: true, ...r });
   } catch (e: unknown) {
-    return NextResponse.json({ error: e?.message || 'decide_failed' }, { status: 400 });
+    return NextResponse.json({ error: errMsg(e) }, { status: 400 });
   }
 }

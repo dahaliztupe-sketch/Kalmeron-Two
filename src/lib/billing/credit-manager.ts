@@ -1,7 +1,27 @@
-// @ts-nocheck
 import { adminDb } from '@/src/lib/firebase-admin';
-import { Timestamp } from 'firebase-admin/firestore';
+import { Timestamp, FieldValue } from 'firebase-admin/firestore';
 import { PLANS, getPlan, type PlanId } from './plans';
+
+/** Atomically increments today's usage_daily document for a user. */
+async function recordDailyUsage(userId: string, costUsd: number, tokens: number): Promise<void> {
+  if (!adminDb?.collection) return;
+  const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+  const docId = `${userId}_${today}`;
+  try {
+    await adminDb.collection('usage_daily').doc(docId).set(
+      {
+        userId,
+        date: today,
+        costUsd: FieldValue.increment(costUsd),
+        tokens: FieldValue.increment(tokens),
+        updatedAt: Timestamp.now(),
+      },
+      { merge: true },
+    );
+  } catch {
+    // Non-critical — swallow silently
+  }
+}
 
 export interface CreditWallet {
   userId: string;
@@ -42,9 +62,9 @@ function buildInitialWallet(userId: string, planId: PlanId): CreditWallet {
 async function getUserPlanId(userId: string): Promise<PlanId> {
   try {
     const userDoc = await adminDb.collection('users').doc(userId).get();
-    const data = userDoc.data() as unknown;
-    const plan = data?.plan as PlanId | undefined;
-    if (plan && PLANS[plan]) return plan;
+    const data = userDoc.data();
+    const plan = (data?.['plan'] ?? 'free') as string;
+    if (plan && plan in PLANS) return plan as PlanId;
   } catch {}
   return 'free';
 }
@@ -56,11 +76,17 @@ export class CreditManager {
     this.userId = userId;
   }
 
-  async consumeCredits(amount: number, agentName: string, model: string): Promise<{ success: boolean; message: string }> {
+  async consumeCredits(
+    amount: number,
+    agentName: string,
+    model: string,
+    /** Optional actual token count for accurate reporting */
+    tokens = 0,
+  ): Promise<{ success: boolean; message: string }> {
     const walletRef = adminDb.collection('user_credits').doc(this.userId);
     const planId = await getUserPlanId(this.userId);
 
-    return adminDb.runTransaction(async (transaction) => {
+    const result = await adminDb.runTransaction(async (transaction) => {
       const walletDoc = await transaction.get(walletRef);
       const wallet = walletDoc.data() as CreditWallet | undefined;
 
@@ -72,7 +98,6 @@ export class CreditManager {
         createdNew = true;
       } else {
         workingWallet = wallet;
-        // إذا تغيّرت الخطة، حدث الحدود الافتراضية ولكن احتفظ بالأرصدة المتبقية
         if (workingWallet.plan !== planId) {
           const plan = getPlan(planId);
           workingWallet = {
@@ -81,14 +106,12 @@ export class CreditManager {
             dailyLimit: plan.dailyCredits,
             monthlyLimit: plan.monthlyCredits,
             unlimited: plan.unlimited,
-            // امنح المستخدم الأرصدة الجديدة عند الترقية
             dailyBalance: Math.max(workingWallet.dailyBalance, plan.dailyCredits),
             monthlyBalance: Math.max(workingWallet.monthlyBalance, plan.monthlyCredits),
           };
         }
       }
 
-      // المؤسسات: استهلاك غير محدود
       if (workingWallet.unlimited) {
         const updatedFields = {
           plan: workingWallet.plan,
@@ -144,11 +167,13 @@ export class CreditManager {
       }
 
       if (remaining > 0) {
+        const total =
+          workingWallet.dailyBalance +
+          workingWallet.monthlyBalance +
+          workingWallet.rolledOverCredits;
         return {
           success: false,
-          message: `رصيدك غير كافٍ. تحتاج ${amount} رصيدًا، والمتبقي لديك ${
-            workingWallet.dailyBalance + workingWallet.monthlyBalance + workingWallet.rolledOverCredits
-          } رصيدًا.`,
+          message: `رصيدك غير كافٍ. تحتاج ${amount} رصيدًا، والمتبقي لديك ${total} رصيدًا.`,
         };
       }
 
@@ -195,6 +220,14 @@ export class CreditManager {
 
       return { success: true, message: 'تم خصم الأرصدة بنجاح' };
     });
+
+    // Record daily usage outside the transaction (fire-and-forget, non-critical)
+    if (result.success) {
+      // 1 credit ≈ $0.001 USD — rough estimate for chart display
+      void recordDailyUsage(this.userId, +(amount * 0.001).toFixed(4), tokens);
+    }
+
+    return result;
   }
 
   async checkAndNotifyThreshold(): Promise<void> {

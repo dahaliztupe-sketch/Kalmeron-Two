@@ -79,6 +79,7 @@ export default function DashboardPage() {
   const [data, setData] = useState<DashboardData | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [chartData, setChartData] = useState<Array<{ day: string; cost: number; tokens: number }>>([]);
   const reduce = useReducedMotion();
 
   useEffect(() => {
@@ -86,13 +87,18 @@ export default function DashboardPage() {
     const load = async () => {
       try {
         const token = user ? await user.getIdToken().catch(() => null) : null;
-        const r = await fetch("/api/dashboard", {
-          headers: token ? { Authorization: `Bearer ${token}` } : undefined,
-          cache: "no-store",
-        });
+        const headers: Record<string, string> = token ? { Authorization: `Bearer ${token}` } : {};
+        const [r, rc] = await Promise.all([
+          fetch("/api/dashboard", { headers, cache: "no-store" }),
+          fetch("/api/usage/daily?days=7&locale=ar", { headers, cache: "no-store" }),
+        ]);
         if (!r.ok) throw new Error(String(r.status));
         const j = await r.json();
         if (!cancel) { setData(j); setError(null); }
+        if (rc.ok) {
+          const jc = await rc.json();
+          if (!cancel && Array.isArray(jc.chartData)) setChartData(jc.chartData);
+        }
       } catch {
         if (!cancel) setError(t("loadError"));
       } finally {
@@ -365,11 +371,14 @@ export default function DashboardPage() {
                   xKey="day"
                   yKeys={["cost"]}
                   labels={{ cost: "USD" }}
-                  data={(() => {
-                    const today = +(data.metrics.dailyCostUsd || 0).toFixed(2);
-                    const days = ["س", "أ", "ث", "ر", "خ", "ج", "اليوم"];
-                    return days.map((d, i) => ({ day: d, cost: i === days.length - 1 ? today : 0 }));
-                  })()}
+                  data={chartData.length > 0
+                    ? chartData
+                    : (() => {
+                        const today = +(data.metrics.dailyCostUsd || 0).toFixed(2);
+                        const days = ["س", "أ", "ث", "ر", "خ", "ج", "اليوم"];
+                        return days.map((d, i) => ({ day: d, cost: i === days.length - 1 ? today : 0 }));
+                      })()
+                  }
                 />
                 <p className="text-[10px] text-text-secondary/60 mt-2">{t("consumptionFootnote")}</p>
               </motion.div>

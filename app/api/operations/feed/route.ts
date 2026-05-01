@@ -1,10 +1,9 @@
-// @ts-nocheck
 /**
  * Operations Room feed.
  *
  * GET /api/operations/feed?limit=50
  *   Returns: {
- *     integrations: { meta: { configured, pageConfigured } },
+ *     integrations: { meta, all },
  *     summary: { pending, executed, executed_noop, failed, rejected },
  *     pending: [...]      // approval queue
  *     recent: [...]       // last N items (any status), newest first
@@ -14,6 +13,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { adminAuth, adminDb } from '@/src/lib/firebase-admin';
 import { metaIntegrationStatus, integrationsStatus } from '@/src/ai/actions/registry';
 import { rateLimit, rateLimitResponse } from '@/src/lib/security/rate-limit';
+import type { DocumentSnapshot } from 'firebase-admin/firestore';
 
 export const runtime = 'nodejs';
 
@@ -28,15 +28,21 @@ async function authedUserId(req: NextRequest): Promise<string | null> {
   }
 }
 
+interface TimestampLike { _seconds: number }
+
 function toMillis(ts: unknown): number | null {
   if (!ts) return null;
   if (typeof ts === 'number') return ts;
-  if (typeof ts?._seconds === 'number') return ts._seconds * 1000;
+  if (typeof ts === 'object' && ts !== null && typeof (ts as TimestampLike)._seconds === 'number') {
+    return (ts as TimestampLike)._seconds * 1000;
+  }
   return null;
 }
 
+type SummaryKey = 'pending' | 'executed' | 'executed_noop' | 'failed' | 'rejected';
+const SUMMARY_KEYS = new Set<string>(['pending', 'executed', 'executed_noop', 'failed', 'rejected']);
+
 export async function GET(req: NextRequest) {
-  // Live activity feed — clients poll on focus + websocket fallback.
   const rl = rateLimit(req, { limit: 60, windowMs: 60_000 });
   if (!rl.success) return rateLimitResponse();
 
@@ -74,36 +80,33 @@ export async function GET(req: NextRequest) {
     });
   }
 
-  const rows: unknown[] = [];
-  snap.forEach((d: unknown) => rows.push({ id: d.id, ...d.data() }));
+  const summary: Record<SummaryKey, number> = {
+    pending: 0, executed: 0, executed_noop: 0, failed: 0, rejected: 0,
+  };
 
-  const summary = { pending: 0, executed: 0, executed_noop: 0, failed: 0, rejected: 0 };
-  const safe = rows
-    .map((r) => {
-      if (summary[r.status] !== undefined) summary[r.status]++;
-      return {
-        id: r.id,
-        actionId: r.actionId,
-        label: r.label,
-        input: r.input,
-        rationale: r.rationale || null,
-        requestedBy: r.requestedBy || 'agent',
-        status: r.status,
-        result: r.result || null,
-        error: r.error || null,
-        createdAt: toMillis(r.createdAt),
-        decidedAt: toMillis(r.decidedAt),
-        executedAt: toMillis(r.executedAt),
-      };
-    })
-    .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+  const safe: Array<Record<string, unknown>> = [];
+  snap.forEach((d: DocumentSnapshot) => {
+    const r = d.data() ?? {};
+    const status = typeof r['status'] === 'string' ? r['status'] : '';
+    if (SUMMARY_KEYS.has(status)) summary[status as SummaryKey]++;
+    safe.push({
+      id: d.id,
+      actionId: r['actionId'],
+      label: r['label'],
+      input: r['input'],
+      rationale: r['rationale'] || null,
+      requestedBy: r['requestedBy'] || 'agent',
+      status,
+      result: r['result'] || null,
+      error: r['error'] || null,
+      createdAt: toMillis(r['createdAt']),
+      decidedAt: toMillis(r['decidedAt']),
+      executedAt: toMillis(r['executedAt']),
+    });
+  });
 
+  safe.sort((a, b) => ((b.createdAt as number) || 0) - ((a.createdAt as number) || 0));
   const pending = safe.filter((r) => r.status === 'pending');
 
-  return NextResponse.json({
-    integrations,
-    summary,
-    pending,
-    recent: safe.slice(0, limit),
-  });
+  return NextResponse.json({ integrations, summary, pending, recent: safe.slice(0, limit) });
 }
