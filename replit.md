@@ -2572,3 +2572,48 @@ own "Level 4 = 21 hours" estimate that exceeds a single session.
 - المستخدم سيختار variant واحد ثم نستخدم `mockup-graduate` لدمجه في `app/page.tsx`.
 - `presentArtifact` يحتاج `artifactId: "artifacts/mockup-sandbox"` (مع البريفكس)، ليس `"mockup-sandbox"`.
 - مشكلة "port detection failed" على sandbox تنحل بـ restart بسيط — لا تتطلب تعديل vite.config.ts.
+
+## 2026-05-01 — جلسة 3: Delegation API — تفويض المهام متعدد الوكلاء
+
+### الهدف
+إضافة نقطة نهاية `/api/delegate` تُتيح للمديرين التنفيذيين (C-Suite) تفويض المهام إلى مرؤوسيهم المباشرين عبر سلاسل تعاون حقيقية متعددة الوكلاء.
+
+### ما بُني
+
+**1. محرك التفويض — `src/ai/organization/delegation/engine.ts`**
+- `delegateTask(req)` — الدالة الرئيسية: تحل سلسلة التفويض وتُنفِّذها
+- `validateDelegationAuthority(role, agentId)` — يتحقق من أن الهدف هو مرؤوس مباشر فعلي
+- `selectBestSubordinate()` — يختار أفضل مرؤوس عبر LLM (Gemini Flash Lite) أو fallback بالكلمات المفتاحية
+- `resolveExecutor()` — يدعم التفويض متعدد المستويات (CEO→CFO→budget-analyst) مع حد `MAX_DELEGATION_HOPS=4`
+- `getDirectReports(role)` — يُعيد المرؤوسين المباشرين لدور محدد
+- `getDelegationOrgChart()` — يُعيد الهيكل التنظيمي الكامل
+
+**2. API Route — `app/api/delegate/route.ts`**
+- `POST /api/delegate` — تنفيذ سلسلة تفويض (يتطلب Firebase Bearer token)
+- `GET /api/delegate?role=CFO` — استعلام مرؤوسي دور محدد
+- `GET /api/delegate` — الهيكل التنظيمي الكامل للتفويض
+- Rate limiting: 15/min per-IP، 10/min per-user
+- Trace ID كامل لكل سلسلة تفويض
+- تسجيل في `agent_traces` (Firestore)
+
+**3. سلاسل التفويض المدعومة (أمثلة)**
+```
+CEO → CFO → budget-analyst      (تحليل ميزانية)
+CEO → CMO → brand-builder        (هوية بصرية)
+CEO → CTO → code-interpreter     (مهام تقنية)
+CFO → cash-runway                (تدفق نقدي مباشر)
+CMO → competitor-intel           (بحث منافسين)
+CLO → contract-drafter           (صياغة عقد)
+```
+
+### ملاحظات الأمان
+- Auth إلزامي (Firebase ID token) — userId يُستخرج من التوكن وليس من الجسم
+- التحقق من صلاحية التفويض: الهدف يجب أن يكون في `directReports` المُفوِّض
+- XSS sanitization على وصف المهمة
+- حد `MAX_DELEGATION_HOPS=4` لمنع الحلقات اللانهائية
+- `allowSubDelegation=false` افتراضياً
+
+### الملفات المُعدَّلة
+- ADDED `src/ai/organization/delegation/engine.ts`
+- ADDED `app/api/delegate/route.ts`
+- UPDATED `replit.md`
