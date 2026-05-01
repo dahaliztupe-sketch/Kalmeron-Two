@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { NextRequest, NextResponse } from 'next/server';
 import { adminAuth } from '@/src/lib/firebase-admin';
 import { searchUserKnowledge } from '@/src/lib/rag/user-rag';
@@ -21,15 +20,15 @@ export async function POST(req: NextRequest) {
   const rl = rateLimit(req, { limit: 30, windowMs: 60_000, userId, scope: 'rag-search' });
   if (!rl.success) return NextResponse.json({ error: 'rate_limited' }, { status: 429 });
 
-  let body: unknown; try { body = await req.json(); } catch { return NextResponse.json({ error: 'invalid_json' }, { status: 400 }); }
-  const q = String(body?.query || '').trim();
+  let body: Record<string, unknown>; try { body = await req.json(); } catch { return NextResponse.json({ error: 'invalid_json' }, { status: 400 }); }
+  const q = String(body.query || '').trim();
   if (!q) return NextResponse.json({ error: 'query_required' }, { status: 400 });
-  const topK = Math.min(10, Math.max(1, Number(body?.topK || 4)));
+  const topK = Math.min(10, Math.max(1, Number(body.topK || 4)));
 
   try {
     const citations = await searchUserKnowledge({ userId, query: q, topK });
     return NextResponse.json({ citations });
-  } catch (e: unknown) {
-    return NextResponse.json({ error: e?.message || 'search_failed' }, { status: 500 });
+  } catch {
+    return NextResponse.json({ error: 'search_failed' }, { status: 500 });
   }
 }

@@ -26,9 +26,11 @@ interface DBUser {
   uid: string;
   email: string;
   name?: string;
+  company_name?: string;
   startup_stage?: string;
   industry?: string;
   governorate?: string;
+  goals?: string[];
   created_at: any;
   profile_completed: boolean;
 }

@@ -7,6 +7,7 @@ import {
   TrendingUp, ShieldCheck, Globe2, Cpu, DollarSign,
   Languages, Activity, ArrowLeft, Sparkles, Eye,
   CheckCircle2, AlertCircle, Layers,
+  Rocket, FileText, BarChart3, Users, Target,
 } from "lucide-react";
 
 interface MetricsResponse {
@@ -279,6 +280,88 @@ export default function InvestorMetricsPage() {
                       )}
                     </div>
                     <p className="text-xs text-white/60 mt-1">{s.role}</p>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            {/* Pitch Deck & Tools */}
+            <div className="grid md:grid-cols-3 gap-4">
+              {[
+                {
+                  href: "/workflows-runner?workflow=partnership-deck",
+                  icon: FileText,
+                  title: "عرض للمستثمرين",
+                  description: "اصنع pitch deck احترافي بالذكاء الاصطناعي في 5 دقائق",
+                  badge: "مدعوم بـ AI",
+                  gradient: "from-amber-500/15 to-orange-500/5",
+                  border: "border-amber-500/30",
+                  badgeColor: "text-amber-300 bg-amber-500/10 border-amber-500/20",
+                  iconColor: "text-amber-400",
+                  iconBg: "bg-amber-500/10",
+                },
+                {
+                  href: "/cash-runway",
+                  icon: BarChart3,
+                  title: "تحليل الـ Runway",
+                  description: "احسب الوقت المتبقي لاحتياطي النقد وخطة الإنقاذ",
+                  badge: "Excel محسوب",
+                  gradient: "from-emerald-500/15 to-teal-500/5",
+                  border: "border-emerald-500/30",
+                  badgeColor: "text-emerald-300 bg-emerald-500/10 border-emerald-500/20",
+                  iconColor: "text-emerald-400",
+                  iconBg: "bg-emerald-500/10",
+                },
+                {
+                  href: "/workflows-runner?workflow=financial-model",
+                  icon: Target,
+                  title: "نموذج مالي للمستثمر",
+                  description: "توقعات الإيرادات والتكاليف لـ 3 سنوات جاهزة للتقديم",
+                  badge: "قالب متكامل",
+                  gradient: "from-indigo-500/15 to-violet-500/5",
+                  border: "border-indigo-500/30",
+                  badgeColor: "text-indigo-300 bg-indigo-500/10 border-indigo-500/20",
+                  iconColor: "text-indigo-400",
+                  iconBg: "bg-indigo-500/10",
+                },
+              ].map((tool) => (
+                <Link
+                  key={tool.href}
+                  href={tool.href}
+                  className={`rounded-2xl border p-5 hover:scale-[1.01] transition-all group bg-gradient-to-br ${tool.gradient} ${tool.border}`}
+                >
+                  <div className={`w-10 h-10 rounded-xl ${tool.iconBg} flex items-center justify-center mb-3`}>
+                    <tool.icon className={`size-5 ${tool.iconColor}`} />
+                  </div>
+                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${tool.badgeColor} inline-block mb-2`}>
+                    {tool.badge}
+                  </span>
+                  <h3 className="text-white font-bold text-sm mb-1">{tool.title}</h3>
+                  <p className="text-white/60 text-xs leading-relaxed">{tool.description}</p>
+                  <div className="flex items-center gap-1 mt-3 text-xs text-white/40 group-hover:text-white/70 transition-colors">
+                    ابدأ الآن <ArrowLeft className="size-3.5" />
+                  </div>
+                </Link>
+              ))}
+            </div>
+
+            {/* Traction KPIs */}
+            <section className="rounded-2xl border border-white/10 bg-white/[0.02] p-6">
+              <h3 className="text-white font-semibold flex items-center gap-2 mb-4">
+                <Rocket className="size-5 text-fuchsia-400" />
+                قصة النمو — لماذا الآن؟
+              </h3>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                {[
+                  { label: "حصة السوق المستهدفة MENA", value: "+6M", sub: "مؤسس ورائد أعمال" },
+                  { label: "الوقت للقيمة الأولى", value: "<5 دقائق", sub: "من التسجيل" },
+                  { label: "وكلاء AI متخصصون", value: `${data.platform.totalAgentsRegistered}+`, sub: "بالعربية والإنجليزية" },
+                  { label: "نموذج الإيراد", value: "SaaS", sub: "اشتراك شهري / سنوي" },
+                ].map((kpi) => (
+                  <div key={kpi.label} className="rounded-xl border border-white/5 bg-white/[0.03] p-4">
+                    <div className="text-2xl font-black text-white mb-1">{kpi.value}</div>
+                    <div className="text-[10px] text-white/60 leading-snug">{kpi.label}</div>
+                    <div className="text-[10px] text-white/40 mt-1">{kpi.sub}</div>
                   </div>
                 ))}
               </div>

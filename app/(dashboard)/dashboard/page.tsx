@@ -10,11 +10,13 @@ import {
   Hourglass, Loader2, ArrowLeft, CheckCircle2, MapPin,
   LineChart, Zap, MessageSquare, Brain, Scale, Briefcase,
   FlaskConical, Shield, Radar, Sparkles, LayoutTemplate,
-  Flame, Mic,
+  Flame, Mic, Sun,
 } from "lucide-react";
 import { NotificationPermissionBanner } from "@/components/ui/NotificationPermissionBanner";
 import { RunwayAlarmBanner } from "@/components/runway/RunwayAlarmBanner";
 import { SmartHubSection } from "@/src/components/dashboard/SmartHubSection";
+import { CompanyHealthScore } from "@/src/components/dashboard/CompanyHealthScore";
+import { GoalsProgress } from "@/src/components/dashboard/GoalsProgress";
 import { KalmeronAreaChart } from "@/src/components/charts";
 import Link from "next/link";
 import { cn } from "@/src/lib/utils";
@@ -285,6 +287,23 @@ export default function DashboardPage() {
               </motion.div>
 
               <motion.div variants={reduce ? itemVReduced : itemV} className="space-y-4">
+                <Link href="/daily-brief" className="block glass-panel rounded-3xl p-5 group hover:border-amber-500/30 transition-all">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <Sun className="w-4 h-4 text-amber-400" />
+                      <h3 className="text-sm font-bold text-white">{t("dailyBrief")}</h3>
+                    </div>
+                    <ArrowLeft className="w-3.5 h-3.5 text-neutral-500 group-hover:text-amber-400 group-hover:-translate-x-1 transition-all" />
+                  </div>
+                  <p className="text-xs text-text-secondary leading-relaxed">
+                    {t("dailyBriefDesc")}
+                  </p>
+                  <div className="mt-3 flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
+                    <span className="text-[10px] text-amber-400 font-medium">{t("dailyBriefReady")}</span>
+                  </div>
+                </Link>
+
                 <div className="glass-panel rounded-3xl p-5">
                   <div className="flex items-center gap-2 mb-3">
                     <Hourglass className="w-4 h-4 text-amber-400" />
@@ -330,7 +349,12 @@ export default function DashboardPage() {
               </motion.div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
+            {/* Company Health Score + Consumption Chart + Opportunity */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-5">
+              <motion.div variants={reduce ? itemVReduced : itemV}>
+                <CompanyHealthScore />
+              </motion.div>
+
               <motion.div variants={reduce ? itemVReduced : itemV} className="glass-panel rounded-3xl p-6">
                 <div className="flex items-center gap-2 mb-4">
                   <LineChart className="w-4 h-4 text-emerald-400" />
@@ -385,6 +409,11 @@ export default function DashboardPage() {
                 </div>
               </motion.div>
             </div>
+
+            {/* Goals Progress */}
+            <motion.div variants={reduce ? itemVReduced : itemV}>
+              <GoalsProgress />
+            </motion.div>
 
             <motion.div variants={reduce ? itemVReduced : itemV}>
               <h2 className="text-sm font-semibold text-neutral-400 mb-3 flex items-center gap-2">

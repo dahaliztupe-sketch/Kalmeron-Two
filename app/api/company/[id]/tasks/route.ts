@@ -80,7 +80,8 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
   if (!company) return NextResponse.json({ error: 'Company not found' }, { status: 404 });
   if (company.ownerUid !== userId) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 
-  const status = req.nextUrl.searchParams.get('status') as Parameters<typeof listTasks>[1] extends {status?: infer S} ? S : undefined;
+  const rawStatus = req.nextUrl.searchParams.get('status');
+  const status = (rawStatus ?? undefined) as (Parameters<typeof listTasks>[1] extends { status?: infer S } ? S : undefined);
   const limit = parseInt(req.nextUrl.searchParams.get('limit') ?? '20');
 
   const tasks = await listTasks(params.id, { status, limit });

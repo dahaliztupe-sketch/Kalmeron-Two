@@ -46,10 +46,10 @@ function EventCard({ event }: { event: DelegationEvent }) {
       <div className="flex-1 min-w-0">
         <p className={cn('font-medium', meta.color)}>{meta.label}</p>
         <p className="text-gray-300 text-xs mt-0.5 leading-relaxed">{message}</p>
-        {event.data.totalHops && (
+        {!!event.data.totalHops && (
           <p className="text-gray-500 text-xs mt-1">القفزات: {String(event.data.totalHops)}</p>
         )}
-        {event.data.totalLatencyMs && (
+        {!!event.data.totalLatencyMs && (
           <p className="text-gray-500 text-xs">الوقت: {Number(event.data.totalLatencyMs)}ms</p>
         )}
       </div>
@@ -129,7 +129,7 @@ export function DelegationTracker({ traceId, idToken, className, maxHeight = '40
         <div className="text-xs text-gray-500">
           {events.length} حدث
           {isCompleted && <span className="text-green-400 mr-2">• مكتمل</span>}
-          {status.error && <span className="text-red-400 mr-2">• {status.error}</span>}
+          {!!status.error && <span className="text-red-400 mr-2">• {String(status.error)}</span>}
         </div>
       </div>
 
@@ -158,7 +158,7 @@ export function DelegationTracker({ traceId, idToken, className, maxHeight = '40
       </div>
 
       {/* Final output preview */}
-      {isCompleted && lastEvent?.type === 'delegation_completed' && lastEvent.data.outputPreview && (
+      {isCompleted && lastEvent?.type === 'delegation_completed' && !!lastEvent.data.outputPreview && (
         <div className="px-4 py-3 border-t border-white/10 bg-green-900/10">
           <p className="text-xs text-green-400 font-semibold mb-1">✅ مخرجات التفويض:</p>
           <p className="text-xs text-gray-300 leading-relaxed line-clamp-4">

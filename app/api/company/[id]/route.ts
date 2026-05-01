@@ -8,6 +8,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { adminAuth } from '@/src/lib/firebase-admin';
 import { getCompany, updateCompany, deleteCompany } from '@/src/lib/company-builder/engine';
+import type { CompanyStage } from '@/src/lib/company-builder/types';
 
 async function authenticate(req: NextRequest): Promise<string> {
   const h = req.headers.get('authorization');
@@ -57,7 +58,11 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
     const body = await req.json() as unknown;
     const parsed = UpdateSchema.safeParse(body);
     if (!parsed.success) return NextResponse.json({ error: parsed.error.flatten() }, { status: 422 });
-    await updateCompany(params.id, parsed.data);
+    const patch = {
+      ...parsed.data,
+      ...(parsed.data.stage ? { stage: parsed.data.stage as CompanyStage } : {}),
+    } as unknown as Parameters<typeof updateCompany>[1];
+    await updateCompany(params.id, patch);
     return NextResponse.json({ success: true });
   } catch (err) {
     const msg = err instanceof Error ? err.message : 'error';

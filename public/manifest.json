@@ -1,39 +1,55 @@
 {
   "name": "Kalmeron AI — مقرّ عمليات شركتك الذكي",
   "short_name": "Kalmeron",
-  "description": "شريكك المؤسس الافتراضي والذكي لرواد الأعمال.",
-  "start_url": "/chat",
+  "description": "شريكك المؤسس الافتراضي والذكي لرواد الأعمال العرب — 57 وكيل ذكاء اصطناعي متخصص.",
+  "start_url": "/dashboard",
   "scope": "/",
   "display": "standalone",
   "display_override": ["window-controls-overlay", "standalone"],
-  "background_color": "#0A0A0F",
-  "theme_color": "#0A0A0F",
-  "orientation": "portrait",
+  "background_color": "#05070D",
+  "theme_color": "#05070D",
+  "orientation": "portrait-primary",
   "lang": "ar",
   "dir": "rtl",
   "categories": ["productivity", "business", "finance"],
   "icons": [
     { "src": "/icons/icon-192x192.png", "sizes": "192x192", "type": "image/png" },
-    { "src": "/icons/icon-512x512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+    { "src": "/icons/icon-512x512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-512x512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
   ],
   "shortcuts": [
     {
-      "name": "الدردشة",
+      "name": "الدردشة مع المساعد",
       "short_name": "دردشة",
       "url": "/chat",
-      "description": "افتح حواراً جديداً مع المساعد"
+      "description": "حوار مباشر مع 57 مساعد ذكي"
     },
     {
       "name": "الملخّص اليومي",
       "short_name": "اليومي",
       "url": "/daily-brief",
-      "description": "أهمّ شذوذ، قرار، ورسالة لليوم"
+      "description": "أهمّ قرار وتحليل لليوم"
     },
     {
       "name": "لوحة التحكّم",
       "short_name": "اللوحة",
       "url": "/dashboard",
-      "description": "نظرة سريعة على كل المؤشّرات"
+      "description": "كل مؤشراتك في مكان واحد"
+    },
+    {
+      "name": "تحليل الفكرة",
+      "short_name": "تحليل",
+      "url": "/ideas/analyze",
+      "description": "حلّل فكرة مشروعك خطوة بخطوة"
     }
-  ]
+  ],
+  "prefer_related_applications": false,
+  "related_applications": [],
+  "share_target": {
+    "action": "/chat",
+    "method": "GET",
+    "params": {
+      "text": "q"
+    }
+  }
 }

@@ -17,6 +17,7 @@ import {
   Loader2, Send, Paperclip, X, Square, FileText,
   ShieldAlert, Radar, Plus, MessageSquare, Trash2,
   Copy, Check, Brain, Scale, Briefcase, PanelLeftClose, PanelLeftOpen,
+  Download, ThumbsUp, ThumbsDown, Bookmark, BookmarkCheck, Star,
 } from "lucide-react";
 import { cn } from "@/src/lib/utils";
 import ReactMarkdown from "react-markdown";
@@ -55,6 +56,13 @@ type ChatMessage = {
   phases?: Phase[];
   citations?: Citation[];
   timestamp?: Date;
+  feedback?: "good" | "bad" | null;
+};
+
+type SavedPrompt = {
+  id: string;
+  text: string;
+  savedAt: Date;
 };
 
 type Conversation = {
@@ -80,6 +88,86 @@ function CopyButton({ text }: { text: string }) {
     >
       {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
     </button>
+  );
+}
+
+function FeedbackButtons({ messageId, feedback, onFeedback }: {
+  messageId: string;
+  feedback?: "good" | "bad" | null;
+  onFeedback: (id: string, val: "good" | "bad") => void;
+}) {
+  return (
+    <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+      <button
+        onClick={() => onFeedback(messageId, "good")}
+        className={cn(
+          "p-1.5 rounded-lg transition-all",
+          feedback === "good"
+            ? "text-emerald-400 bg-emerald-500/10"
+            : "text-neutral-500 hover:text-emerald-400 hover:bg-emerald-500/10"
+        )}
+        title="إجابة جيدة"
+      >
+        <ThumbsUp className="w-3.5 h-3.5" />
+      </button>
+      <button
+        onClick={() => onFeedback(messageId, "bad")}
+        className={cn(
+          "p-1.5 rounded-lg transition-all",
+          feedback === "bad"
+            ? "text-rose-400 bg-rose-500/10"
+            : "text-neutral-500 hover:text-rose-400 hover:bg-rose-500/10"
+        )}
+        title="إجابة سيئة"
+      >
+        <ThumbsDown className="w-3.5 h-3.5" />
+      </button>
+    </div>
+  );
+}
+
+function SavedPromptsPanel({
+  prompts, onSelect, onDelete, onClose,
+}: {
+  prompts: SavedPrompt[];
+  onSelect: (text: string) => void;
+  onDelete: (id: string) => void;
+  onClose: () => void;
+}) {
+  return (
+    <div className="absolute bottom-full left-0 mb-2 w-80 bg-[#0d1120] border border-white/10 rounded-2xl shadow-2xl z-50 overflow-hidden">
+      <div className="flex items-center justify-between px-4 py-3 border-b border-white/[0.06]">
+        <div className="flex items-center gap-2">
+          <Star className="w-4 h-4 text-amber-400" />
+          <span className="text-sm font-semibold text-white">الأسئلة المحفوظة</span>
+        </div>
+        <button onClick={onClose} className="text-neutral-500 hover:text-white p-1 rounded-lg hover:bg-white/10 transition-all">
+          <X className="w-4 h-4" />
+        </button>
+      </div>
+      <div className="max-h-60 overflow-y-auto scrollbar-thin p-2">
+        {prompts.length === 0 ? (
+          <div className="text-center py-8 text-neutral-600 text-xs">
+            <Bookmark className="w-6 h-6 mx-auto mb-2 opacity-50" />
+            لا توجد أسئلة محفوظة بعد
+          </div>
+        ) : (
+          prompts.map((p) => (
+            <div key={p.id} className="flex items-start gap-2 p-2 hover:bg-white/5 rounded-xl group cursor-pointer transition-all"
+              onClick={() => { onSelect(p.text); onClose(); }}
+            >
+              <p className="flex-1 text-xs text-neutral-300 line-clamp-2">{p.text}</p>
+              <button
+                onClick={(e) => { e.stopPropagation(); onDelete(p.id); }}
+                className="shrink-0 p-1 opacity-0 group-hover:opacity-100 text-neutral-600 hover:text-rose-400 hover:bg-rose-500/10 rounded-lg transition-all"
+              >
+                <Trash2 className="w-3 h-3" />
+              </button>
+            </div>
+          ))
+        )}
+      </div>
+    </div>
   );
 }
 
@@ -196,7 +284,12 @@ function EmptyState({ onSuggestion }: { onSuggestion: (s: string) => void }) {
   );
 }
 
-function MessageBubble({ m, isStreaming, activePhases }: { m: ChatMessage; isStreaming: boolean; activePhases: Phase[] }) {
+function MessageBubble({ m, isStreaming, activePhases, onFeedback }: {
+  m: ChatMessage;
+  isStreaming: boolean;
+  activePhases: Phase[];
+  onFeedback?: (id: string, val: "good" | "bad") => void;
+}) {
   const tChat = useTranslations("Chat");
   const isUser = m.role === "user";
   return (
@@ -268,6 +361,9 @@ function MessageBubble({ m, isStreaming, activePhases }: { m: ChatMessage; isStr
         {!isUser && m.content && !isStreaming && (
           <div className="absolute -bottom-7 left-0 flex items-center gap-1">
             <CopyButton text={m.content} />
+            {onFeedback && (
+              <FeedbackButtons messageId={m.id} feedback={m.feedback} onFeedback={onFeedback} />
+            )}
           </div>
         )}
       </div>
@@ -295,6 +391,8 @@ function ChatPageContent() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [activeConvId, setActiveConvId] = useState<string>("default-chat");
+  const [savedPrompts, setSavedPrompts] = useState<SavedPrompt[]>([]);
+  const [showSavedPrompts, setShowSavedPrompts] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const abortRef = useRef<AbortController | null>(null);
@@ -494,6 +592,30 @@ function ChatPageContent() {
     setMessages((prev) => { void saveChatToFirestore(prev); return prev; });
   }, [saveChatToFirestore]);
 
+  const exportConversation = useCallback(() => {
+    if (messages.length === 0) { toast.error("لا توجد رسائل للتصدير"); return; }
+    const lines: string[] = [
+      `# محادثة كلميرون`,
+      `**التاريخ:** ${new Date().toLocaleDateString("ar-EG")}`,
+      "",
+      "---",
+      "",
+    ];
+    for (const m of messages) {
+      const role = m.role === "user" ? "**أنت:**" : "**كلميرون:**";
+      lines.push(`${role}\n\n${m.content}`);
+      lines.push("\n---\n");
+    }
+    const blob = new Blob([lines.join("\n")], { type: "text/markdown;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `kalmeron-chat-${Date.now()}.md`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast.success("تم تصدير المحادثة");
+  }, [messages]);
+
   const startNewConversation = () => {
     const newId = `chat-${Date.now()}`;
     setActiveConvId(newId);
@@ -508,6 +630,60 @@ function ChatPageContent() {
       if (activeConvId === id) startNewConversation();
     } catch { toast.error(tToasts("genericError")); }
   };
+
+  const loadSavedPrompts = useCallback(async () => {
+    if (!user) return;
+    try {
+      const ref = collection(db, "users", user.uid, "saved_prompts");
+      const snap = await getDocs(query(ref, orderBy("savedAt", "desc"), limit(30)));
+      const items: SavedPrompt[] = [];
+      snap.forEach((d) => {
+        const data = d.data();
+        items.push({ id: d.id, text: data.text, savedAt: data.savedAt?.toDate?.() || new Date() });
+      });
+      setSavedPrompts(items);
+    } catch {}
+  }, [user]);
+
+  useEffect(() => { loadSavedPrompts(); }, [loadSavedPrompts]);
+
+  const saveCurrentPrompt = async () => {
+    if (!user || !input.trim()) return;
+    const id = `sp-${Date.now()}`;
+    const ref = doc(db, "users", user.uid, "saved_prompts", id);
+    await setDoc(ref, { text: input.trim(), savedAt: serverTimestamp() }).catch(() => {});
+    setSavedPrompts((prev) => [{ id, text: input.trim(), savedAt: new Date() }, ...prev]);
+    toast.success("تم حفظ السؤال");
+  };
+
+  const deleteSavedPrompt = async (id: string) => {
+    if (!user) return;
+    await deleteDoc(doc(db, "users", user.uid, "saved_prompts", id)).catch(() => {});
+    setSavedPrompts((prev) => prev.filter((p) => p.id !== id));
+  };
+
+  const onFeedback = useCallback(async (messageId: string, val: "good" | "bad") => {
+    setMessages((prev) => prev.map((m) => m.id === messageId ? { ...m, feedback: val } : m));
+    if (!user) return;
+    try {
+      const chatRef = doc(db, "users", user.uid, "chat_history", activeConvId);
+      const snap = await getDoc(chatRef);
+      if (snap.exists()) {
+        const msgs: ChatMessage[] = (snap.data().messages || []) as ChatMessage[];
+        const updated = msgs.map((m: ChatMessage) => m.id === messageId ? { ...m, feedback: val } : m);
+        await updateDoc(chatRef, { messages: updated });
+      }
+      const fbRef = doc(db, "message_feedback", `${user.uid}_${messageId}`);
+      await setDoc(fbRef, {
+        userId: user.uid,
+        messageId,
+        conversationId: activeConvId,
+        feedback: val,
+        timestamp: serverTimestamp(),
+      });
+    } catch {}
+    toast.success(val === "good" ? "شكراً! سيساعدنا ذلك في التحسين 🎯" : "شكراً على ملاحظتك 🙏");
+  }, [user, activeConvId]);
 
   const onFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -592,6 +768,14 @@ function ChatPageContent() {
               {tCommon("live")}
             </div>
 
+            {messages.length > 0 && (
+              <button onClick={exportConversation}
+                className="flex items-center gap-1.5 text-xs text-neutral-400 hover:text-emerald-300 bg-white/5 hover:bg-emerald-500/10 border border-white/10 hover:border-emerald-500/30 px-2.5 py-1.5 rounded-xl transition-all"
+                title="تصدير المحادثة"
+              >
+                <Download className="w-3.5 h-3.5" />
+              </button>
+            )}
             <button onClick={startNewConversation}
               className="flex items-center gap-1.5 text-xs text-neutral-400 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 px-3 py-1.5 rounded-xl transition-all"
             >
@@ -607,7 +791,7 @@ function ChatPageContent() {
                 const isLast = idx === messages.length - 1;
                 const isAssistantStreaming = isLoading && isLast && m.role === "assistant";
                 return (
-                  <MessageBubble key={m.id} m={m} isStreaming={isAssistantStreaming} activePhases={activePhases} />
+                  <MessageBubble key={m.id} m={m} isStreaming={isAssistantStreaming} activePhases={activePhases} onFeedback={onFeedback} />
                 );
               })
             )}
@@ -651,9 +835,31 @@ function ChatPageContent() {
 
             <input aria-label="رفع ملف" type="file" ref={fileInputRef} onChange={handleFileUpload} className="hidden" accept=".pdf" />
 
+            <div className="relative">
+              {showSavedPrompts && (
+                <SavedPromptsPanel
+                  prompts={savedPrompts}
+                  onSelect={(text) => { setInput(text); textareaRef.current?.focus(); }}
+                  onDelete={deleteSavedPrompt}
+                  onClose={() => setShowSavedPrompts(false)}
+                />
+              )}
+            </div>
+
             <form onSubmit={onFormSubmit}
               className="relative flex items-end gap-2 bg-white/[0.04] border border-white/10 rounded-2xl p-2 focus-within:border-indigo-500/40 transition-all shadow-lg"
             >
+              <Button type="button" variant="ghost" size="icon"
+                className={cn(
+                  "shrink-0 h-9 w-9 rounded-xl transition-all",
+                  showSavedPrompts ? "text-amber-400 bg-amber-500/10" : "text-neutral-500 hover:text-amber-400 hover:bg-amber-500/10"
+                )}
+                onClick={() => setShowSavedPrompts((p) => !p)}
+                title="الأسئلة المحفوظة"
+              >
+                {showSavedPrompts ? <BookmarkCheck className="h-4 w-4" /> : <Bookmark className="h-4 w-4" />}
+              </Button>
+
               <Button type="button" variant="ghost" size="icon" disabled={isUploading || isLoading}
                 className="shrink-0 h-9 w-9 rounded-xl text-neutral-500 hover:text-white hover:bg-white/10"
                 onClick={() => fileInputRef.current?.click()}
@@ -661,6 +867,16 @@ function ChatPageContent() {
               >
                 {isUploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Paperclip className="h-4 w-4" />}
               </Button>
+
+              {input.trim() && (
+                <Button type="button" variant="ghost" size="icon"
+                  className="shrink-0 h-9 w-9 rounded-xl text-neutral-500 hover:text-amber-400 hover:bg-amber-500/10 transition-all"
+                  onClick={saveCurrentPrompt}
+                  title="حفظ هذا السؤال"
+                >
+                  <Star className="h-4 w-4" />
+                </Button>
+              )}
 
               <textarea
                 ref={textareaRef}

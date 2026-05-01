@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { NextRequest, NextResponse } from 'next/server';
 import { adminAuth } from '@/src/lib/firebase-admin';
 import { ingestDocument } from '@/src/lib/rag/user-rag';
@@ -22,14 +21,14 @@ async function authedUserId(req: NextRequest): Promise<string | null> {
 
 async function extractText(file: File): Promise<{ text: string; source: 'pdf' | 'csv' | 'xlsx' | 'text' }> {
   const name = file.name.toLowerCase();
-  const buf = Buffer.from(await file.arrayBuffer());
+  const buf = Buffer.from(await file.arrayBuffer()) as Buffer;
   if (name.endsWith('.pdf')) {
     const r = await pdf(buf);
     return { text: r.text || '', source: 'pdf' };
   }
   if (name.endsWith('.xlsx') || name.endsWith('.xls')) {
     const wb = new ExcelJS.Workbook();
-    await wb.xlsx.load(buf);
+    await wb.xlsx.load(buf as unknown as Parameters<typeof wb.xlsx.load>[0]);
     const parts: string[] = [];
     wb.eachSheet((sheet) => {
       parts.push(`# ${sheet.name}`);

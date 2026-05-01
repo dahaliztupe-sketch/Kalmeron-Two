@@ -227,7 +227,7 @@ function serializeCompany(c: Company): Record<string, unknown> {
 
 function deserializeCompany(data: Record<string, unknown>): Company {
   return {
-    ...(data as Company),
+    ...(data as unknown as Company),
     createdAt: new Date(data.createdAt as string),
     lastActiveAt: new Date(data.lastActiveAt as string),
     employees: ((data.employees as unknown[]) ?? []).map(e => deserializeEmployee(e as Record<string, unknown>)),
@@ -241,7 +241,7 @@ function serializeEmployee(e: VirtualEmployee): Record<string, unknown> {
 }
 
 function deserializeEmployee(data: Record<string, unknown>): VirtualEmployee {
-  return { ...(data as VirtualEmployee), joinedAt: new Date(data.joinedAt as string) };
+  return { ...(data as unknown as VirtualEmployee), joinedAt: new Date(data.joinedAt as string) };
 }
 
 function serializeTask(t: CompanyTask): Record<string, unknown> {
@@ -255,7 +255,7 @@ function serializeTask(t: CompanyTask): Record<string, unknown> {
 
 function deserializeTask(data: Record<string, unknown>): CompanyTask {
   return {
-    ...(data as CompanyTask),
+    ...(data as unknown as CompanyTask),
     createdAt: new Date(data.createdAt as string),
     updatedAt: new Date(data.updatedAt as string),
     dueDate: data.dueDate ? new Date(data.dueDate as string) : undefined,

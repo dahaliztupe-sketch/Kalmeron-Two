@@ -48,12 +48,13 @@ const GOALS = [
 ];
 
 const STEPS = [
-  { id: "welcome", title: "مرحباً بك في كلميرون!", subtitle: "رحلتك نحو النجاح تبدأ هنا" },
-  { id: "name", title: "ما اسمك؟", subtitle: "سنناديك به في كل محادثة" },
-  { id: "stage", title: "في أي مرحلة أنت؟", subtitle: "هذا يساعدنا نخصص لك أفضل المساعدين" },
+  { id: "welcome",  title: "مرحباً بك في كلميرون!", subtitle: "رحلتك نحو النجاح تبدأ هنا" },
+  { id: "name",     title: "ما اسمك؟", subtitle: "سنناديك به في كل محادثة" },
+  { id: "company",  title: "ما اسم مشروعك أو شركتك؟", subtitle: "إن لم يكن لديك اسم بعد، اكتب وصفاً مختصراً" },
+  { id: "stage",    title: "في أي مرحلة أنت؟", subtitle: "هذا يساعدنا نخصص لك أفضل المساعدين" },
   { id: "industry", title: "ما مجال مشروعك؟", subtitle: "وكلاؤنا خبراء في مجالك" },
   { id: "location", title: "من أي محافظة؟", subtitle: "نحلل لك السوق المحلي بدقة" },
-  { id: "goals", title: "ماذا تريد تحقيقه؟", subtitle: "اختر كل ما ينطبق عليك" },
+  { id: "goals",    title: "ماذا تريد تحقيقه؟", subtitle: "اختر كل ما ينطبق عليك" },
 ];
 
 export function OnboardingForm() {
@@ -68,6 +69,7 @@ export function OnboardingForm() {
 
   const [step, setStep] = useState(0);
   const [name, setName] = useState(user?.displayName?.split(" ")[0] || "");
+  const [companyName, setCompanyName] = useState("");
   const [stage, setStage] = useState("");
   const [industry, setIndustry] = useState("");
   const [location, setLocation] = useState("");
@@ -81,10 +83,11 @@ export function OnboardingForm() {
   const canNext = (() => {
     if (step === 0) return true;
     if (step === 1) return name.trim().length >= 2;
-    if (step === 2) return !!stage;
-    if (step === 3) return !!industry;
-    if (step === 4) return !!location;
-    if (step === 5) return goals.length > 0;
+    if (step === 2) return companyName.trim().length >= 2;
+    if (step === 3) return !!stage;
+    if (step === 4) return !!industry;
+    if (step === 5) return !!location;
+    if (step === 6) return goals.length > 0;
     return false;
   })();
 
@@ -117,6 +120,7 @@ export function OnboardingForm() {
     //    sees profile_completed=true immediately and does NOT bounce back here.
     mergeDBUser({
       name,
+      company_name: companyName,
       startup_stage: stage,
       industry,
       governorate: location,
@@ -133,6 +137,7 @@ export function OnboardingForm() {
     const userRef = doc(db, "users", user.uid);
     updateDoc(userRef, {
       name,
+      company_name: companyName,
       startup_stage: stage,
       industry,
       governorate: location,
@@ -255,8 +260,35 @@ export function OnboardingForm() {
                 </div>
               )}
 
-              {/* Step 2: Stage */}
+              {/* Step 2: Company Name */}
               {step === 2 && (
+                <div className="space-y-4">
+                  <input
+                    autoFocus
+                    value={companyName}
+                    onChange={(e) => setCompanyName(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && canNext && goNext()}
+                    placeholder="مثال: تك برو، سوق ماكس، طبيب أونلاين..."
+                    className="w-full bg-white/[0.04] border border-white/10 rounded-2xl px-5 py-4 text-white text-xl text-center placeholder-neutral-600 outline-none focus:border-indigo-400/50 transition-all font-display font-bold"
+                  />
+                  <div className="grid grid-cols-2 gap-2">
+                    {["لم أحدد بعد", "مشروع جديد", "شركة ناشئة", "مشروع تجاري"].map((hint) => (
+                      <button
+                        key={hint}
+                        type="button"
+                        onClick={() => setCompanyName(hint)}
+                        className="text-xs text-neutral-400 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] px-3 py-2 rounded-xl transition-all"
+                      >
+                        {hint}
+                      </button>
+                    ))}
+                  </div>
+                  <p className="text-center text-xs text-neutral-600">يمكنك تغيير اسم مشروعك لاحقاً 🏢</p>
+                </div>
+              )}
+
+              {/* Step 3: Stage */}
+              {step === 3 && (
                 <div className="space-y-2.5">
                   {STAGES.map((s) => (
                     <button key={s.id} onClick={() => setStage(s.id)}
@@ -278,8 +310,8 @@ export function OnboardingForm() {
                 </div>
               )}
 
-              {/* Step 3: Industry */}
-              {step === 3 && (
+              {/* Step 4: Industry */}
+              {step === 4 && (
                 <div className="grid grid-cols-3 gap-2.5">
                   {INDUSTRIES.map((ind) => {
                     const Icon = ind.icon;
@@ -312,8 +344,8 @@ export function OnboardingForm() {
                 </div>
               )}
 
-              {/* Step 4: Location */}
-              {step === 4 && (
+              {/* Step 5: Location */}
+              {step === 5 && (
                 <div>
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-72 overflow-y-auto scrollbar-thin pl-1">
                     {GOVERNORATES.map((gov) => (
@@ -339,8 +371,8 @@ export function OnboardingForm() {
                 </div>
               )}
 
-              {/* Step 5: Goals */}
-              {step === 5 && (
+              {/* Step 6: Goals */}
+              {step === 6 && (
                 <div className="space-y-2">
                   <p className="text-xs text-neutral-500 text-center mb-4">يمكنك اختيار أكثر من هدف</p>
                   <div className="grid grid-cols-2 gap-2.5">

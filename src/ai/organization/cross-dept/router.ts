@@ -69,7 +69,7 @@ ${deptList}
 `.trim();
 
   try {
-    const model = routeModel('fast');
+    const model = routeModel('fast').model;
     const { text } = await generateText({
       model,
       prompt,
@@ -115,11 +115,11 @@ ${subTask}
 
 قدّم إجابة عملية ومختصرة لا تتجاوز 300 كلمة.
       `.trim(),
-      uiContext: `cross-dept-task:${dept.id}`,
+      uiContext: { context: 'cross-dept-task', deptId: dept.id },
       userId: userId ?? 'system',
-      mode: 'focused',
+      mode: 'fast',
     });
-    return { output: result.response ?? result.toString(), latencyMs: Date.now() - start };
+    return { output: result.markdown, latencyMs: Date.now() - start };
   } catch (err) {
     return {
       output: `لم يتمكن قسم ${dept.nameAr} من إتمام المهمة: ${err instanceof Error ? err.message : 'خطأ غير معروف'}`,
@@ -158,7 +158,7 @@ ${r.output}
   `.trim();
 
   try {
-    const model = routeModel('quality');
+    const model = routeModel('complex').model;
     const { text } = await generateText({ model, prompt: summaryPrompt, temperature: 0.3 });
     return text;
   } catch {
