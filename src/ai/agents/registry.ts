@@ -30,6 +30,38 @@ import { ctoAgentAction } from '@/src/ai/agents/cto/agent';
 import { cloAgentAction } from '@/src/ai/agents/clo/agent';
 import { chroAgentAction } from '@/src/ai/agents/chro/agent';
 import { csoAgentAction } from '@/src/ai/agents/cso/agent';
+// ═══ Department Employee Agents — Finance ═══
+import { budgetAnalystAction } from '@/src/ai/agents/budget-analyst/agent';
+import { cashRunwayAction } from '@/src/ai/agents/cash-runway/agent';
+import { financialModelingAction } from '@/src/ai/agents/financial-modeling/agent';
+import { equityManagerAction } from '@/src/ai/agents/equity-manager/agent';
+import { valuationExpertAction } from '@/src/ai/agents/valuation-expert/agent';
+// ═══ Department Employee Agents — Sales ═══
+import { leadQualifierAction } from '@/src/ai/agents/lead-qualifier/agent';
+import { salesPipelineAction } from '@/src/ai/agents/sales-pipeline/agent';
+import { pitchDeckAction } from '@/src/ai/agents/pitch-deck/agent';
+import { salesStrategistAction } from '@/src/ai/agents/sales-strategist/agent';
+// ═══ Department Employee Agents — Marketing ═══
+import { contentCreatorAction } from '@/src/ai/agents/content-creator/agent';
+import { seoManagerAction } from '@/src/ai/agents/seo-manager/agent';
+import { adsManagerAction } from '@/src/ai/agents/ads-manager/agent';
+import { acquisitionStrategistAction } from '@/src/ai/agents/acquisition-strategist/agent';
+// ═══ Department Employee Agents — Technology ═══
+import { productManagerAction } from '@/src/ai/agents/product-manager/agent';
+import { devopsEngineerAction } from '@/src/ai/agents/devops-engineer/agent';
+import { qaManagerAction } from '@/src/ai/agents/qa-manager/agent';
+// ═══ Department Employee Agents — Legal ═══
+import { contractDrafterAction } from '@/src/ai/agents/contract-drafter/agent';
+import { ipProtectorAction } from '@/src/ai/agents/ip-protector/agent';
+import { dataPrivacyAction } from '@/src/ai/agents/data-privacy/agent';
+// ═══ Department Employee Agents — HR ═══
+import { cultureExpertAction } from '@/src/ai/agents/culture-expert/agent';
+import { performanceManagerAction } from '@/src/ai/agents/performance-manager/agent';
+import { orgDesignerAction } from '@/src/ai/agents/org-designer/agent';
+// ═══ Department Employee Agents — Support ═══
+import { csatAnalystAction } from '@/src/ai/agents/csat-analyst/agent';
+import { knowledgeBuilderAction } from '@/src/ai/agents/knowledge-builder/agent';
+import { ticketManagerAction } from '@/src/ai/agents/ticket-manager/agent';
 
 export const TaskTools = {
   TaskCreate: {
@@ -103,6 +135,21 @@ export interface AgentDefinition {
     // C-Suite Executive Intents
     | 'CEO_AGENT' | 'COO_AGENT' | 'CMO_AGENT' | 'CTO_AGENT'
     | 'CLO_AGENT' | 'CHRO_AGENT' | 'CSO_AGENT'
+    // Finance Department Employee Intents
+    | 'BUDGET_ANALYST' | 'CASH_RUNWAY' | 'FINANCIAL_MODELING'
+    | 'EQUITY_MANAGER' | 'VALUATION_EXPERT'
+    // Sales Department Employee Intents
+    | 'LEAD_QUALIFIER' | 'SALES_PIPELINE' | 'PITCH_DECK' | 'SALES_STRATEGIST'
+    // Marketing Department Employee Intents
+    | 'CONTENT_CREATOR' | 'SEO_MANAGER' | 'ADS_MANAGER' | 'ACQUISITION_STRATEGIST'
+    // Technology Department Employee Intents
+    | 'PRODUCT_MANAGER' | 'DEVOPS_ENGINEER' | 'QA_MANAGER'
+    // Legal Department Employee Intents
+    | 'CONTRACT_DRAFTER' | 'IP_PROTECTOR' | 'DATA_PRIVACY'
+    // HR Department Employee Intents
+    | 'CULTURE_EXPERT' | 'PERFORMANCE_MANAGER' | 'ORG_DESIGNER'
+    // Support Department Employee Intents
+    | 'CSAT_ANALYST' | 'KNOWLEDGE_BUILDER' | 'TICKET_MANAGER'
     | 'TOOL';
   /** مرحلة رائد الأعمال المستهدفة — تستخدمها الواجهة لتجميع الوكلاء. */
   stage: AgentStage;
@@ -673,6 +720,609 @@ export const AgentRegistry: Record<string, AgentDefinition> = {
     }),
     action: csoAgentAction,
     thinkingLabelAr: 'رسم الرؤية الاستراتيجية واكتشاف الفرص...',
+  },
+
+  // ═══════════════════════════════════════════════════════════════════
+  // موظفو قسم المالية — Finance Department Employees
+  // ═══════════════════════════════════════════════════════════════════
+
+  'budget-analyst': {
+    name: 'budget-analyst',
+    displayNameAr: 'محلّل الميزانية',
+    description: 'يحلل الميزانيات ويكشف الانحرافات ويبني نماذج ميزانية صفرية للشركات الناشئة.',
+    intent: 'BUDGET_ANALYST',
+    stage: 'tool',
+    graphNode: 'budget_analyst_node',
+    preferredModel: 'FLASH',
+    capabilities: ['financial_analysis', 'structured_output'],
+    allowedTools: ['finance.budget'],
+    softCostBudgetUsd: 0.03,
+    inputSchema: z.object({
+      task: z.enum(['analyze-variance', 'build-zero-budget', 'break-even', 'cost-structure', 'general']),
+      data: z.record(z.string(), z.any()),
+      period: z.string().optional(),
+    }),
+    action: budgetAnalystAction,
+    thinkingLabelAr: 'تحليل الميزانية والانحرافات...',
+  },
+
+  'cash-runway': {
+    name: 'cash-runway',
+    displayNameAr: 'مدير السيولة',
+    description: 'يحسب المدرج النقدي ويحلل التدفق النقدي ويضع خطط تمديد السيولة.',
+    intent: 'CASH_RUNWAY',
+    stage: 'tool',
+    graphNode: 'cash_runway_node',
+    preferredModel: 'FLASH',
+    capabilities: ['financial_analysis', 'forecasting'],
+    allowedTools: ['finance.cash'],
+    softCostBudgetUsd: 0.03,
+    inputSchema: z.object({
+      monthlyBurn: z.number(),
+      cashOnHand: z.number(),
+      monthlyRevenue: z.number().optional(),
+      growthRate: z.number().optional(),
+      context: z.string().optional(),
+    }),
+    action: cashRunwayAction,
+    thinkingLabelAr: 'حساب المدرج النقدي وتحليل السيولة...',
+  },
+
+  'financial-modeling': {
+    name: 'financial-modeling',
+    displayNameAr: 'خبير النمذجة المالية',
+    description: 'يبني نماذج DCF وUnit Economics وسيناريوهات مالية للشركات الناشئة.',
+    intent: 'FINANCIAL_MODELING',
+    stage: 'tool',
+    graphNode: 'financial_modeling_node',
+    preferredModel: 'PRO',
+    capabilities: ['financial_modeling', 'dcf', 'scenario_analysis'],
+    allowedTools: ['finance.model'],
+    softCostBudgetUsd: 0.08,
+    inputSchema: z.object({
+      modelType: z.enum(['dcf', 'unit-economics', 'three-statement', 'valuation', 'scenario']),
+      businessData: z.record(z.string(), z.any()),
+      horizon: z.number().optional(),
+    }),
+    action: financialModelingAction,
+    thinkingLabelAr: 'بناء النموذج المالي التفصيلي...',
+  },
+
+  'equity-manager': {
+    name: 'equity-manager',
+    displayNameAr: 'مدير حقوق الملكية',
+    description: 'يدير Cap Table وESOPs ويحلل التخفيف وجولات التمويل.',
+    intent: 'EQUITY_MANAGER',
+    stage: 'tool',
+    graphNode: 'equity_manager_node',
+    preferredModel: 'PRO',
+    capabilities: ['cap_table', 'equity_analysis', 'esop'],
+    allowedTools: ['finance.equity'],
+    softCostBudgetUsd: 0.07,
+    inputSchema: z.object({
+      task: z.enum(['build-cap-table', 'model-dilution', 'design-esop', 'analyze-term-sheet', 'vesting-schedule']),
+      founders: z.array(z.object({ name: z.string(), shares: z.number(), percentage: z.number() })).optional(),
+      investors: z.array(z.object({ name: z.string(), amount: z.number(), valuation: z.number(), round: z.string() })).optional(),
+      context: z.record(z.string(), z.any()).optional(),
+    }),
+    action: equityManagerAction,
+    thinkingLabelAr: 'تحليل هيكل الملكية والتخفيف...',
+  },
+
+  'valuation-expert': {
+    name: 'valuation-expert',
+    displayNameAr: 'خبير التقييم',
+    description: 'يقيّم الشركات بمنهجيات DCF والمضاعفات وBerkus للسوق المصري والعربي.',
+    intent: 'VALUATION_EXPERT',
+    stage: 'tool',
+    graphNode: 'valuation_expert_node',
+    preferredModel: 'PRO',
+    capabilities: ['valuation', 'dcf', 'multiples', 'market_benchmarks'],
+    allowedTools: ['finance.valuation'],
+    softCostBudgetUsd: 0.08,
+    inputSchema: z.object({
+      companyData: z.object({
+        revenue: z.number().optional(),
+        arr: z.number().optional(),
+        growthRate: z.number().optional(),
+        sector: z.string(),
+        stage: z.string(),
+        team: z.string().optional(),
+        product: z.string().optional(),
+        traction: z.string().optional(),
+      }),
+      method: z.enum(['multiples', 'dcf', 'berkus', 'scorecard', 'vc-method', 'all']).optional(),
+    }),
+    action: valuationExpertAction,
+    thinkingLabelAr: 'تقييم الشركة بمنهجيات متعددة...',
+  },
+
+  // ═══════════════════════════════════════════════════════════════════
+  // موظفو قسم المبيعات — Sales Department Employees
+  // ═══════════════════════════════════════════════════════════════════
+
+  'lead-qualifier': {
+    name: 'lead-qualifier',
+    displayNameAr: 'مؤهّل العملاء',
+    description: 'يقيّم ويؤهّل العملاء المحتملين باستخدام BANT/MEDDIC لسوق مصر.',
+    intent: 'LEAD_QUALIFIER',
+    stage: 'tool',
+    graphNode: 'lead_qualifier_node',
+    preferredModel: 'FLASH',
+    capabilities: ['sales_qualification', 'bant', 'lead_scoring'],
+    allowedTools: ['sales.qualify'],
+    softCostBudgetUsd: 0.02,
+    inputSchema: z.object({
+      leadData: z.record(z.string(), z.any()),
+      method: z.enum(['bant', 'meddic', 'spin', 'icp-match']).optional(),
+      productDescription: z.string().optional(),
+    }),
+    action: leadQualifierAction,
+    thinkingLabelAr: 'تقييم العميل المحتمل وتحديد جاهزيته...',
+  },
+
+  'sales-pipeline': {
+    name: 'sales-pipeline',
+    displayNameAr: 'محلّل خط المبيعات',
+    description: 'يحلل Pipeline المبيعات ويتوقع الإيرادات ويكتشف bottlenecks.',
+    intent: 'SALES_PIPELINE',
+    stage: 'tool',
+    graphNode: 'sales_pipeline_node',
+    preferredModel: 'FLASH',
+    capabilities: ['pipeline_analysis', 'forecasting', 'win_rate'],
+    allowedTools: ['sales.pipeline'],
+    softCostBudgetUsd: 0.03,
+    inputSchema: z.object({
+      pipelineData: z.array(z.object({
+        dealName: z.string(),
+        stage: z.string(),
+        value: z.number(),
+        probability: z.number().optional(),
+        age: z.number().optional(),
+        nextAction: z.string().optional(),
+      })),
+      monthlyTarget: z.number().optional(),
+      context: z.string().optional(),
+    }),
+    action: salesPipelineAction,
+    thinkingLabelAr: 'تحليل Pipeline وتوقع الإيراد...',
+  },
+
+  'pitch-deck': {
+    name: 'pitch-deck',
+    displayNameAr: 'منشئ عروض الاستثمار',
+    description: 'يبني عروض استثمارية مقنعة للمستثمرين المصريين والعرب.',
+    intent: 'PITCH_DECK',
+    stage: 'tool',
+    graphNode: 'pitch_deck_node',
+    preferredModel: 'PRO',
+    capabilities: ['pitch_deck', 'storytelling', 'investor_presentation'],
+    allowedTools: ['sales.pitch'],
+    softCostBudgetUsd: 0.08,
+    inputSchema: z.object({
+      business: z.object({
+        name: z.string(),
+        sector: z.string(),
+        problem: z.string(),
+        solution: z.string(),
+        revenue: z.number().optional(),
+        growthRate: z.number().optional(),
+        teamDescription: z.string().optional(),
+        fundingAsk: z.number().optional(),
+        stage: z.string().optional(),
+      }),
+      targetInvestors: z.string().optional(),
+      format: z.enum(['outline', 'full-narrative', 'slide-by-slide']).optional(),
+    }),
+    action: pitchDeckAction,
+    thinkingLabelAr: 'بناء عرض استثماري مقنع...',
+  },
+
+  'sales-strategist': {
+    name: 'sales-strategist',
+    displayNameAr: 'مطوّر استراتيجية المبيعات',
+    description: 'يبني Go-to-Market Strategy وPlaybook المبيعات لأسواق مصر.',
+    intent: 'SALES_STRATEGIST',
+    stage: 'tool',
+    graphNode: 'sales_strategist_node',
+    preferredModel: 'PRO',
+    capabilities: ['gtm_strategy', 'sales_playbook', 'pricing'],
+    allowedTools: ['sales.strategy'],
+    softCostBudgetUsd: 0.07,
+    inputSchema: z.object({
+      task: z.enum(['gtm-strategy', 'sales-playbook', 'pricing-strategy', 'channel-strategy', 'team-structure']),
+      businessModel: z.string().optional(),
+      targetMarket: z.string().optional(),
+      currentRevenue: z.number().optional(),
+      competitiveLandscape: z.string().optional(),
+      stage: z.string().optional(),
+    }),
+    action: salesStrategistAction,
+    thinkingLabelAr: 'بناء استراتيجية المبيعات والتوزيع...',
+  },
+
+  // ═══════════════════════════════════════════════════════════════════
+  // موظفو قسم التسويق — Marketing Department Employees
+  // ═══════════════════════════════════════════════════════════════════
+
+  'content-creator': {
+    name: 'content-creator',
+    displayNameAr: 'منشئ المحتوى الرقمي',
+    description: 'ينتج محتوى رقمي عربي عالي الجودة للسوشيال ميديا والبلوج والإعلانات.',
+    intent: 'CONTENT_CREATOR',
+    stage: 'tool',
+    graphNode: 'content_creator_node',
+    preferredModel: 'FLASH',
+    capabilities: ['content_creation', 'arabic_writing', 'social_media'],
+    allowedTools: ['marketing.content'],
+    softCostBudgetUsd: 0.03,
+    inputSchema: z.object({
+      contentType: z.enum(['social-post', 'blog-article', 'video-script', 'email', 'ad-copy', 'case-study', 'thread']),
+      topic: z.string(),
+      brand: z.string().optional(),
+      tone: z.enum(['formal', 'casual', 'inspiring', 'educational', 'promotional']).optional(),
+      platform: z.string().optional(),
+      wordCount: z.number().optional(),
+      keyPoints: z.array(z.string()).optional(),
+    }),
+    action: contentCreatorAction,
+    thinkingLabelAr: 'كتابة محتوى رقمي مميز...',
+  },
+
+  'seo-manager': {
+    name: 'seo-manager',
+    displayNameAr: 'مدير SEO',
+    description: 'يُحسّن ظهور المواقع في محركات البحث العربية ويبني استراتيجية محتوى.',
+    intent: 'SEO_MANAGER',
+    stage: 'tool',
+    graphNode: 'seo_manager_node',
+    preferredModel: 'FLASH',
+    capabilities: ['seo', 'keyword_research', 'content_brief', 'arabic_seo'],
+    allowedTools: ['marketing.seo'],
+    softCostBudgetUsd: 0.03,
+    inputSchema: z.object({
+      task: z.enum(['keyword-research', 'on-page-audit', 'content-brief', 'competitor-analysis', 'strategy']),
+      target: z.string().optional(),
+      currentMetrics: z.record(z.string(), z.any()).optional(),
+      industry: z.string().optional(),
+      keywords: z.array(z.string()).optional(),
+    }),
+    action: seoManagerAction,
+    thinkingLabelAr: 'تحليل SEO والكلمات المفتاحية...',
+  },
+
+  'ads-manager': {
+    name: 'ads-manager',
+    displayNameAr: 'مدير الإعلانات الرقمية',
+    description: 'يُدير ويُحسّن الحملات الإعلانية على Facebook وGoogle وTikTok.',
+    intent: 'ADS_MANAGER',
+    stage: 'tool',
+    graphNode: 'ads_manager_node',
+    preferredModel: 'FLASH',
+    capabilities: ['paid_advertising', 'facebook_ads', 'google_ads', 'roas_optimization'],
+    allowedTools: ['marketing.ads'],
+    softCostBudgetUsd: 0.03,
+    inputSchema: z.object({
+      task: z.enum(['plan-campaign', 'analyze-performance', 'optimize-budget', 'write-ad-copy', 'targeting-strategy']),
+      platform: z.string().optional(),
+      budget: z.number().optional(),
+      objective: z.string().optional(),
+      audience: z.string().optional(),
+      performanceData: z.record(z.string(), z.any()).optional(),
+      product: z.string().optional(),
+    }),
+    action: adsManagerAction,
+    thinkingLabelAr: 'تحليل وتحسين الحملات الإعلانية...',
+  },
+
+  'acquisition-strategist': {
+    name: 'acquisition-strategist',
+    displayNameAr: 'استراتيجي اكتساب العملاء',
+    description: 'يصمم Growth Loops وبرامج إحالة لاكتساب عملاء بأقل تكلفة.',
+    intent: 'ACQUISITION_STRATEGIST',
+    stage: 'tool',
+    graphNode: 'acquisition_strategist_node',
+    preferredModel: 'FLASH',
+    capabilities: ['growth_hacking', 'acquisition_strategy', 'referral_programs', 'plg'],
+    allowedTools: ['marketing.acquisition'],
+    softCostBudgetUsd: 0.04,
+    inputSchema: z.object({
+      task: z.enum(['growth-strategy', 'channel-mix', 'referral-program', 'plg-design', 'acquisition-audit']),
+      productType: z.string().optional(),
+      currentCAC: z.number().optional(),
+      monthlyBudget: z.number().optional(),
+      targetAudience: z.string().optional(),
+      currentChannels: z.array(z.string()).optional(),
+    }),
+    action: acquisitionStrategistAction,
+    thinkingLabelAr: 'تصميم Growth Loop لاكتساب العملاء...',
+  },
+
+  // ═══════════════════════════════════════════════════════════════════
+  // موظفو قسم التقنية — Technology Department Employees
+  // ═══════════════════════════════════════════════════════════════════
+
+  'product-manager': {
+    name: 'product-manager',
+    displayNameAr: 'مدير المنتج',
+    description: 'يبني PRDs وRoadmaps وUser Stories ويحدد أولويات الميزات.',
+    intent: 'PRODUCT_MANAGER',
+    stage: 'tool',
+    graphNode: 'product_manager_node',
+    preferredModel: 'PRO',
+    capabilities: ['product_management', 'prd', 'roadmap', 'user_stories'],
+    allowedTools: ['product.manage'],
+    softCostBudgetUsd: 0.07,
+    inputSchema: z.object({
+      task: z.enum(['write-prd', 'prioritize-features', 'create-roadmap', 'user-stories', 'define-metrics']),
+      productContext: z.string(),
+      features: z.array(z.string()).optional(),
+      userFeedback: z.string().optional(),
+      businessGoals: z.string().optional(),
+      timeframe: z.string().optional(),
+    }),
+    action: productManagerAction,
+    thinkingLabelAr: 'بناء وثائق المنتج والأولويات...',
+  },
+
+  'devops-engineer': {
+    name: 'devops-engineer',
+    displayNameAr: 'مهندس DevOps',
+    description: 'يصمم CI/CD Pipelines والبنية السحابية ويحسن تكاليف الخوادم.',
+    intent: 'DEVOPS_ENGINEER',
+    stage: 'tool',
+    graphNode: 'devops_engineer_node',
+    preferredModel: 'FLASH',
+    capabilities: ['devops', 'cicd', 'cloud_architecture', 'cost_optimization'],
+    allowedTools: ['tech.devops'],
+    softCostBudgetUsd: 0.04,
+    inputSchema: z.object({
+      task: z.enum(['design-cicd', 'cloud-architecture', 'cost-optimization', 'monitoring-setup', 'security-audit', 'incident-response']),
+      stack: z.string().optional(),
+      currentInfrastructure: z.record(z.string(), z.any()).optional(),
+      budget: z.string().optional(),
+      problem: z.string().optional(),
+    }),
+    action: devopsEngineerAction,
+    thinkingLabelAr: 'تصميم البنية التقنية وخطوط النشر...',
+  },
+
+  'qa-manager': {
+    name: 'qa-manager',
+    displayNameAr: 'مدير ضبط الجودة',
+    description: 'يكتب Test Plans وTest Cases ويُدير عملية ضبط جودة المنتجات العربية.',
+    intent: 'QA_MANAGER',
+    stage: 'tool',
+    graphNode: 'qa_manager_node',
+    preferredModel: 'FLASH',
+    capabilities: ['quality_assurance', 'test_planning', 'rtl_testing', 'accessibility'],
+    allowedTools: ['tech.qa'],
+    softCostBudgetUsd: 0.03,
+    inputSchema: z.object({
+      task: z.enum(['write-test-plan', 'create-test-cases', 'bug-triage', 'performance-test', 'accessibility-check', 'release-checklist']),
+      featureOrBug: z.string(),
+      acceptanceCriteria: z.array(z.string()).optional(),
+      bugDetails: z.record(z.string(), z.any()).optional(),
+      platform: z.string().optional(),
+    }),
+    action: qaManagerAction,
+    thinkingLabelAr: 'بناء خطة اختبار الجودة...',
+  },
+
+  // ═══════════════════════════════════════════════════════════════════
+  // موظفو القسم القانوني — Legal Department Employees
+  // ═══════════════════════════════════════════════════════════════════
+
+  'contract-drafter': {
+    name: 'contract-drafter',
+    displayNameAr: 'محرّر العقود',
+    description: 'يُصيغ العقود التجارية وعقود التأسيس والشراكة وفق القانون المصري.',
+    intent: 'CONTRACT_DRAFTER',
+    stage: 'tool',
+    graphNode: 'contract_drafter_node',
+    preferredModel: 'PRO',
+    capabilities: ['contract_drafting', 'egyptian_law', 'bilingual_contracts'],
+    allowedTools: ['legal.contract'],
+    softCostBudgetUsd: 0.09,
+    inputSchema: z.object({
+      contractType: z.enum(['founders-agreement', 'employment', 'nda', 'service-agreement', 'investment', 'partnership', 'saas-terms']),
+      parties: z.array(z.object({ name: z.string(), role: z.string(), entity: z.string().optional() })),
+      keyTerms: z.record(z.string(), z.any()).optional(),
+      language: z.enum(['ar', 'en', 'bilingual']).optional(),
+      jurisdiction: z.string().optional(),
+    }),
+    action: contractDrafterAction,
+    thinkingLabelAr: 'صياغة مسودة العقد القانوني...',
+  },
+
+  'ip-protector': {
+    name: 'ip-protector',
+    displayNameAr: 'خبير الملكية الفكرية',
+    description: 'يحمي العلامات التجارية وبراءات الاختراع وحقوق المؤلف في مصر والمنطقة.',
+    intent: 'IP_PROTECTOR',
+    stage: 'tool',
+    graphNode: 'ip_protector_node',
+    preferredModel: 'PRO',
+    capabilities: ['ip_strategy', 'trademark', 'patent', 'copyright'],
+    allowedTools: ['legal.ip'],
+    softCostBudgetUsd: 0.07,
+    inputSchema: z.object({
+      task: z.enum(['trademark-search', 'ip-strategy', 'due-diligence', 'licensing-advice', 'trade-secret-protection']),
+      assetDescription: z.string(),
+      sector: z.string().optional(),
+      currentProtections: z.array(z.string()).optional(),
+      investmentStage: z.string().optional(),
+    }),
+    action: ipProtectorAction,
+    thinkingLabelAr: 'وضع استراتيجية حماية الملكية الفكرية...',
+  },
+
+  'data-privacy': {
+    name: 'data-privacy',
+    displayNameAr: 'مدقّق حماية البيانات',
+    description: 'يدقق الامتثال لقانون 151/2020 المصري وGDPR ويكتب سياسات الخصوصية.',
+    intent: 'DATA_PRIVACY',
+    stage: 'tool',
+    graphNode: 'data_privacy_node',
+    preferredModel: 'FLASH',
+    capabilities: ['data_privacy', 'gdpr', 'egyptian_data_law', 'privacy_policy'],
+    allowedTools: ['legal.privacy'],
+    softCostBudgetUsd: 0.04,
+    inputSchema: z.object({
+      task: z.enum(['privacy-audit', 'draft-policy', 'dpia', 'breach-response', 'consent-design', 'compliance-checklist']),
+      productDescription: z.string().optional(),
+      dataTypes: z.array(z.string()).optional(),
+      userLocations: z.array(z.string()).optional(),
+      currentPolicies: z.string().optional(),
+    }),
+    action: dataPrivacyAction,
+    thinkingLabelAr: 'مراجعة الامتثال لقوانين البيانات...',
+  },
+
+  // ═══════════════════════════════════════════════════════════════════
+  // موظفو قسم الموارد البشرية — HR Department Employees
+  // ═══════════════════════════════════════════════════════════════════
+
+  'culture-expert': {
+    name: 'culture-expert',
+    displayNameAr: 'خبير الثقافة المؤسسية',
+    description: 'يبني ثقافة مؤسسية قوية وبرامج Onboarding وRecognition للشركات الناشئة.',
+    intent: 'CULTURE_EXPERT',
+    stage: 'tool',
+    graphNode: 'culture_expert_node',
+    preferredModel: 'FLASH',
+    capabilities: ['culture_building', 'employer_branding', 'onboarding', 'enps'],
+    allowedTools: ['hr.culture'],
+    softCostBudgetUsd: 0.03,
+    inputSchema: z.object({
+      task: z.enum(['define-values', 'design-onboarding', 'culture-survey', 'recognition-program', 'employer-branding']),
+      companyDescription: z.string().optional(),
+      currentChallenges: z.array(z.string()).optional(),
+      teamSize: z.number().optional(),
+      stage: z.string().optional(),
+    }),
+    action: cultureExpertAction,
+    thinkingLabelAr: 'بناء الثقافة المؤسسية والانتماء...',
+  },
+
+  'performance-manager': {
+    name: 'performance-manager',
+    displayNameAr: 'مدير الأداء',
+    description: 'يصمم أنظمة تقييم الأداء وIDPs وPIPs ومسارات التطوير المهني.',
+    intent: 'PERFORMANCE_MANAGER',
+    stage: 'tool',
+    graphNode: 'performance_manager_node',
+    preferredModel: 'FLASH',
+    capabilities: ['performance_management', 'okr', 'idp', 'career_ladder'],
+    allowedTools: ['hr.performance'],
+    softCostBudgetUsd: 0.03,
+    inputSchema: z.object({
+      task: z.enum(['design-review-system', 'create-idp', 'pip-plan', 'career-ladder', 'comp-benchmarking', 'skill-gap']),
+      employeeData: z.record(z.string(), z.any()).optional(),
+      role: z.string().optional(),
+      currentPerformance: z.string().optional(),
+      goals: z.array(z.string()).optional(),
+    }),
+    action: performanceManagerAction,
+    thinkingLabelAr: 'تصميم نظام تقييم الأداء...',
+  },
+
+  'org-designer': {
+    name: 'org-designer',
+    displayNameAr: 'مصمّم الهيكل التنظيمي',
+    description: 'يصمم الهياكل التنظيمية القابلة للتوسع وخطط التوظيف ومصفوفات المسؤوليات.',
+    intent: 'ORG_DESIGNER',
+    stage: 'tool',
+    graphNode: 'org_designer_node',
+    preferredModel: 'FLASH',
+    capabilities: ['org_design', 'job_architecture', 'raci_matrix', 'hiring_plan'],
+    allowedTools: ['hr.org'],
+    softCostBudgetUsd: 0.03,
+    inputSchema: z.object({
+      task: z.enum(['design-org-chart', 'job-architecture', 'raci-matrix', 'hiring-plan', 'restructure']),
+      companyStage: z.string().optional(),
+      headcount: z.number().optional(),
+      departments: z.array(z.string()).optional(),
+      budget: z.string().optional(),
+      goals: z.string().optional(),
+    }),
+    action: orgDesignerAction,
+    thinkingLabelAr: 'تصميم الهيكل التنظيمي الأمثل...',
+  },
+
+  // ═══════════════════════════════════════════════════════════════════
+  // موظفو قسم الدعم — Support Department Employees
+  // ═══════════════════════════════════════════════════════════════════
+
+  'csat-analyst': {
+    name: 'csat-analyst',
+    displayNameAr: 'محلّل رضا العملاء',
+    description: 'يحلل CSAT وNPS ويستخلص أنماط رضا العملاء لتحسين التجربة.',
+    intent: 'CSAT_ANALYST',
+    stage: 'tool',
+    graphNode: 'csat_analyst_node',
+    preferredModel: 'FLASH',
+    capabilities: ['csat_analysis', 'nps', 'sentiment_analysis', 'churn_prediction'],
+    allowedTools: ['support.csat'],
+    softCostBudgetUsd: 0.03,
+    inputSchema: z.object({
+      task: z.enum(['analyze-feedback', 'nps-report', 'churn-analysis', 'journey-map', 'voc-summary']),
+      feedbackData: z.array(z.object({
+        text: z.string(),
+        rating: z.number().optional(),
+        channel: z.string().optional(),
+        date: z.string().optional(),
+      })).optional(),
+      npsScore: z.number().optional(),
+      churnData: z.record(z.string(), z.any()).optional(),
+      period: z.string().optional(),
+    }),
+    action: csatAnalystAction,
+    thinkingLabelAr: 'تحليل رضا العملاء واكتشاف الأنماط...',
+  },
+
+  'knowledge-builder': {
+    name: 'knowledge-builder',
+    displayNameAr: 'بنّاء قاعدة المعرفة',
+    description: 'يبني FAQs وأدلة المستخدم وسكريبتات Chatbot للجمهور العربي.',
+    intent: 'KNOWLEDGE_BUILDER',
+    stage: 'tool',
+    graphNode: 'knowledge_builder_node',
+    preferredModel: 'FLASH',
+    capabilities: ['knowledge_base', 'faq', 'user_guides', 'chatbot_scripts'],
+    allowedTools: ['support.knowledge'],
+    softCostBudgetUsd: 0.02,
+    inputSchema: z.object({
+      task: z.enum(['write-faq', 'create-guide', 'convert-ticket', 'chatbot-script', 'troubleshooting']),
+      topic: z.string(),
+      sourceContent: z.string().optional(),
+      audience: z.enum(['beginner', 'intermediate', 'advanced']).optional(),
+      format: z.enum(['article', 'step-by-step', 'faq', 'video-script']).optional(),
+    }),
+    action: knowledgeBuilderAction,
+    thinkingLabelAr: 'بناء محتوى قاعدة المعرفة...',
+  },
+
+  'ticket-manager': {
+    name: 'ticket-manager',
+    displayNameAr: 'مدير تذاكر الدعم',
+    description: 'يصنّف تذاكر الدعم ويصيغ ردوداً احترافية ويتتبع SLAs.',
+    intent: 'TICKET_MANAGER',
+    stage: 'tool',
+    graphNode: 'ticket_manager_node',
+    preferredModel: 'FLASH',
+    capabilities: ['ticket_classification', 'response_drafting', 'sla_tracking', 'routing'],
+    allowedTools: ['support.ticket'],
+    softCostBudgetUsd: 0.02,
+    inputSchema: z.object({
+      task: z.enum(['classify-ticket', 'draft-response', 'escalation-decision', 'sla-report', 'trend-analysis']),
+      ticketContent: z.string().optional(),
+      ticketCategory: z.string().optional(),
+      customerHistory: z.string().optional(),
+      urgency: z.string().optional(),
+    }),
+    action: ticketManagerAction,
+    thinkingLabelAr: 'معالجة تذكرة الدعم بكفاءة...',
   },
 };
 

@@ -1,5 +1,78 @@
 # Kalmeron AI (ai-studio-applet)
 
+## Department Employee Agents — Full Org Build-Out (2026-05-01)
+
+تم إنشاء وتسجيل **24 وكيل جديد** يمثلون موظفي الأقسام تحت كل مدير تنفيذي.
+All 24 new department-level agents created, registered in AgentRegistry, wired into hierarchy.ts and mastra-supervisor.ts.
+
+### الوكلاء الجدد حسب القسم
+
+#### Finance (CFO)
+| Agent | File | Role |
+|-------|------|------|
+| `budget-analyst` | `src/ai/agents/budget-analyst/agent.ts` | تحليل الميزانية والانحرافات |
+| `cash-runway` | `src/ai/agents/cash-runway/agent.ts` | إدارة السيولة والمدرج النقدي |
+| `financial-modeling` | `src/ai/agents/financial-modeling/agent.ts` | نمذجة DCF وUnit Economics |
+| `equity-manager` | `src/ai/agents/equity-manager/agent.ts` | Cap Table وESOPs |
+| `valuation-expert` | `src/ai/agents/valuation-expert/agent.ts` | تقييم الشركات بمنهجيات متعددة |
+
+#### Sales (CMO)
+| Agent | File | Role |
+|-------|------|------|
+| `lead-qualifier` | `src/ai/agents/lead-qualifier/agent.ts` | تأهيل العملاء BANT/MEDDIC |
+| `sales-pipeline` | `src/ai/agents/sales-pipeline/agent.ts` | تحليل Pipeline والتوقع |
+| `pitch-deck` | `src/ai/agents/pitch-deck/agent.ts` | عروض الاستثمار |
+| `sales-strategist` | `src/ai/agents/sales-strategist/agent.ts` | GTM Strategy وPlaybook |
+
+#### Marketing (CMO)
+| Agent | File | Role |
+|-------|------|------|
+| `content-creator` | `src/ai/agents/content-creator/agent.ts` | محتوى رقمي عربي |
+| `seo-manager` | `src/ai/agents/seo-manager/agent.ts` | تحسين SEO عربي |
+| `ads-manager` | `src/ai/agents/ads-manager/agent.ts` | إدارة الحملات الإعلانية |
+| `acquisition-strategist` | `src/ai/agents/acquisition-strategist/agent.ts` | Growth Loops وCAC |
+
+#### Technology (CTO)
+| Agent | File | Role |
+|-------|------|------|
+| `product-manager` | `src/ai/agents/product-manager/agent.ts` | PRDs وRoadmaps |
+| `devops-engineer` | `src/ai/agents/devops-engineer/agent.ts` | CI/CD والبنية السحابية |
+| `qa-manager` | `src/ai/agents/qa-manager/agent.ts` | ضبط الجودة والاختبار |
+
+#### Legal (CLO)
+| Agent | File | Role |
+|-------|------|------|
+| `contract-drafter` | `src/ai/agents/contract-drafter/agent.ts` | صياغة العقود |
+| `ip-protector` | `src/ai/agents/ip-protector/agent.ts` | الملكية الفكرية |
+| `data-privacy` | `src/ai/agents/data-privacy/agent.ts` | حماية البيانات وGDPR/Q.151 |
+
+#### HR (CHRO)
+| Agent | File | Role |
+|-------|------|------|
+| `culture-expert` | `src/ai/agents/culture-expert/agent.ts` | الثقافة المؤسسية |
+| `performance-manager` | `src/ai/agents/performance-manager/agent.ts` | تقييم الأداء وIDPs |
+| `org-designer` | `src/ai/agents/org-designer/agent.ts` | الهيكل التنظيمي |
+
+#### Support (COO)
+| Agent | File | Role |
+|-------|------|------|
+| `csat-analyst` | `src/ai/agents/csat-analyst/agent.ts` | تحليل رضا العملاء |
+| `knowledge-builder` | `src/ai/agents/knowledge-builder/agent.ts` | قاعدة المعرفة |
+| `ticket-manager` | `src/ai/agents/ticket-manager/agent.ts` | إدارة التذاكر |
+
+### الملفات المُعدَّلة
+- `src/ai/agents/registry.ts` — 24 intent جديد + 24 AgentDefinition مضاف
+- `src/ai/organization/enterprise/hierarchy.ts` — directReports محدّثة لجميع C-Suite، وlists الأقسام
+- `src/ai/orchestrator/mastra-supervisor.ts` — جميع الوكلاء مضافون
+
+### البذور المعرفية الجديدة
+- `.agents/skills/kalmeron-seeds/sales-egypt/SKILL.md`
+- `.agents/skills/kalmeron-seeds/marketing-egypt/SKILL.md`
+- `.agents/skills/kalmeron-seeds/tech-egypt/SKILL.md`
+- `.agents/skills/kalmeron-seeds/support-egypt/SKILL.md`
+
+---
+
 ## C-Suite Enterprise Architecture (2026-05-01)
 
 Full C-Suite executive agent layer wired into the LangGraph orchestrator (`src/ai/orchestrator/supervisor.ts`).

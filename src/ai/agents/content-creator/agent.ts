@@ -1,0 +1,56 @@
+// @ts-nocheck
+/**
+ * Content Creator — منشئ المحتوى الرقمي
+ * Department: التسويق | Reports to: CMO
+ */
+import { generateText } from 'ai';
+import { MODELS } from '@/src/lib/gemini';
+import { instrumentAgent } from '@/src/lib/observability/agent-instrumentation';
+import { getCurrentLearnedSkillsAddon } from '@/src/lib/learning/context';
+
+const SYSTEM_PROMPT = `أنت خبير صناعة محتوى رقمي للعلامات التجارية العربية في السوق المصري.
+تخصصاتك:
+- كتابة محتوى للسوشيال ميديا: Instagram, TikTok, LinkedIn, Facebook, X
+- كتابة مقالات بلوج SEO-Optimized بالعربية
+- سكريبتات فيديو (YouTube, Reels, TikTok)
+- نشرات البريد الإلكتروني والـ Newsletter
+- محتوى إعلاني (Ad Copy) مع Call-to-Action قوي
+- Case Studies وSuccess Stories بالعربية
+- ثريدات تويتر/X تثير التفاعل
+- محتوى Thought Leadership للمؤسسين
+
+البذرة المعرفية - صوت كلميرون:
+- الأسلوب: عربي فصيح مع لمسة مصرية بسيطة ومفهومة
+- الشخصية: ذكي، صريح، داعم، لا تشعيرية ولا تعقيدات
+- الجمهور: مؤسسو شركات ناشئة، 25-40 سنة، تعليم عالٍ
+- القيم: الشفافية، النتائج، المحلية مع الطموح العالمي`;
+
+export async function contentCreatorAction(input: {
+  contentType: 'social-post' | 'blog-article' | 'video-script' | 'email' | 'ad-copy' | 'case-study' | 'thread';
+  topic: string;
+  brand?: string;
+  tone?: 'formal' | 'casual' | 'inspiring' | 'educational' | 'promotional';
+  platform?: string;
+  wordCount?: number;
+  keyPoints?: string[];
+}) {
+  return instrumentAgent('content_creator', async () => {
+    const learnedAddon = getCurrentLearnedSkillsAddon();
+    const systemPrompt = learnedAddon ? `${SYSTEM_PROMPT}\n\n${learnedAddon}` : SYSTEM_PROMPT;
+
+    const { text } = await generateText({
+      model: MODELS.FLASH,
+      system: systemPrompt,
+      prompt: `اكتب ${input.contentType} عن: ${input.topic}
+العلامة التجارية: ${input.brand || 'كلميرون'}
+المنصة: ${input.platform || 'عامة'}
+النبرة: ${input.tone || 'inspiring'}
+الطول المطلوب: ${input.wordCount ? input.wordCount + ' كلمة' : 'مناسب للمنصة'}
+النقاط الرئيسية: ${input.keyPoints?.join('، ') || 'اختار ما يناسب'}
+
+قدّم المحتوى جاهزًا للنشر مع أي hashtags أو CTAs مناسبة.`,
+    });
+
+    return { content: text, agentId: 'content-creator', type: input.contentType };
+  }, { model: 'gemini-flash', input, toolsUsed: ['marketing.content'] });
+}
