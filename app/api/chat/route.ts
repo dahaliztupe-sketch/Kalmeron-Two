@@ -20,6 +20,7 @@ export const runtime = 'nodejs';
 // خريطة عقد الـ LangGraph إلى نصوص عربية تُعرض في ThoughtChain
 const PHASE_MAP: Record<string, string> = {
   router: 'تحليل نيتك وتوجيه الطلب...',
+  // وكلاء المشاريع المتخصصون
   idea_validator_node: 'تقييم فكرتك من عدة زوايا...',
   plan_builder_node: 'بناء خطة العمل التفصيلية...',
   mistake_shield_node: 'فحص الأخطاء القاتلة في السوق المصري...',
@@ -30,6 +31,14 @@ const PHASE_MAP: Record<string, string> = {
   real_estate_node: 'بحث في بيانات السوق العقاري...',
   admin_node: 'تنفيذ مهمة إدارية...',
   general_chat_node: 'صياغة الرد بأفضل صيغة...',
+  // المجلس التنفيذي C-Suite
+  ceo_agent_node: '🏛️ المدير التنفيذي يُقيّم الموقف الاستراتيجي...',
+  coo_agent_node: '⚙️ مدير العمليات يُحلّل الكفاءة التشغيلية...',
+  cmo_agent_node: '📣 مدير التسويق يبني الاستراتيجية التسويقية...',
+  cto_agent_node: '💻 مدير التقنية يُقيّم البنية التحتية والتقنيات...',
+  clo_agent_node: '⚖️ المستشار القانوني يُحلّل المخاطر والامتثال...',
+  chro_agent_node: '👥 مدير الموارد البشرية يُصمّم استراتيجية الفريق...',
+  cso_agent_node: '🔭 مدير الاستراتيجية يرسم الرؤية بعيدة المدى...',
 };
 
 function sseEncode(event: string, data: unknown) {

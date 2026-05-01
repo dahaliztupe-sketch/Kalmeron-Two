@@ -1,5 +1,42 @@
 # Kalmeron AI (ai-studio-applet)
 
+## C-Suite Enterprise Architecture (2026-05-01)
+
+Full C-Suite executive agent layer wired into the LangGraph orchestrator (`src/ai/orchestrator/supervisor.ts`).
+
+### Agents Added
+| Role | Node | Agent File |
+|------|------|------------|
+| CEO — المدير التنفيذي | `ceo_agent_node` | `src/ai/agents/ceo/agent.ts` |
+| COO — مدير العمليات | `coo_agent_node` | `src/ai/agents/coo/agent.ts` |
+| CMO — مدير التسويق | `cmo_agent_node` | `src/ai/agents/cmo/agent.ts` |
+| CTO — مدير التقنية | `cto_agent_node` | `src/ai/agents/cto/agent.ts` |
+| CLO — المستشار القانوني | `clo_agent_node` | `src/ai/agents/clo/agent.ts` |
+| CHRO — مدير الموارد البشرية | `chro_agent_node` | `src/ai/agents/chro/agent.ts` |
+| CSO — مدير الاستراتيجية | `cso_agent_node` | `src/ai/agents/cso/agent.ts` |
+
+### Files Changed
+- `src/ai/orchestrator/supervisor.ts` — imports, INTENT_CLASSIFIER_PROMPT, heuristicIntent, validIntents, stepMap, 7 node functions, supervisorWorkflow
+- `app/api/chat/route.ts` — PHASE_MAP extended with C-Suite phase labels
+- `src/ai/organization/enterprise/hierarchy.ts` — C-Suite hierarchy definitions
+- `src/ai/agents/registry.ts` — C-Suite intent types registered
+- `components/dashboard/OrgChart.tsx` — org chart visualization
+- `app/(dashboard)/org-chart/page.tsx` — org chart page at `/org-chart`
+- `app/api/org-chart/route.ts` — org chart API endpoint (returns 8 executives, 10 depts, 31 agents)
+- `src/lib/navigation.ts` — "الهيكل التنظيمي" nav link added
+
+### Routing Logic
+Intent classifier now routes to C-Suite when user explicitly asks:
+- CEO for company-wide strategic decisions
+- COO for operational efficiency / OKRs
+- CMO for marketing strategy / brand building
+- CTO for digital transformation / tech stack
+- CLO for legal governance / regulatory compliance
+- CHRO for HR strategy / team building / culture
+- CSO for long-term expansion / M&A / strategic vision
+
+---
+
 ## SEO & Accessibility Audit Fixes (2026-04-30)
 
 Comprehensive SEO/accessibility sweep targeting the squirrel audit (initial score: **49/100 F**).

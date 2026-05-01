@@ -26,6 +26,13 @@ import {
   renderProfileContext,
   extractProfilePatchLLM,
 } from '@/src/ai/memory/founder-profile';
+import { ceoAgentAction } from '@/src/ai/agents/ceo/agent';
+import { cooAgentAction } from '@/src/ai/agents/coo/agent';
+import { cmoAgentAction } from '@/src/ai/agents/cmo/agent';
+import { ctoAgentAction } from '@/src/ai/agents/cto/agent';
+import { cloAgentAction } from '@/src/ai/agents/clo/agent';
+import { chroAgentAction } from '@/src/ai/agents/chro/agent';
+import { csoAgentAction } from '@/src/ai/agents/cso/agent';
 
 /**
  * مفتاح تشغيل "مجلس الإدارة الافتراضي" (Panel of Experts) لكل وكيل.
@@ -127,15 +134,26 @@ export const SupervisorState = Annotation.Root({
 
 const INTENT_CLASSIFIER_PROMPT = `أنت المنسق الذكي لمنصة كلميرون تو. صنّف نية رسالة المستخدم إلى إحدى الفئات التالية فقط وأجب بالكلمة المفتاحية وحدها:
 
+━━ وكلاء المشاريع المتخصصون ━━
 - IDEA_VALIDATOR: عندما يطلب تقييم فكرة مشروع أو تحليل SWOT أو دراسة الجدوى.
 - PLAN_BUILDER: عندما يطلب خطة عمل أو Business Plan أو خطوات تنفيذية.
 - MISTAKE_SHIELD: عندما يسأل عن أخطاء محتملة، تحذيرات، أو مخاطر.
 - SUCCESS_MUSEUM: عندما يسأل عن قصص نجاح شركات أو كيف نجحت شركة معينة.
 - OPPORTUNITY_RADAR: عندما يسأل عن منح، مسابقات، تمويل، أو هاكاثونات.
-- CFO_AGENT: عندما يسأل عن نمذجة مالية، التدفق النقدي، أو توقعات مالية.
+- CFO_AGENT: عندما يسأل عن نمذجة مالية، التدفق النقدي، ضرائب، رواتب، تأمينات، أو توقعات مالية تفصيلية.
 - LEGAL_GUIDE: عندما يسأل عن تأسيس شركة، عقود، أو تشريعات مصرية.
 - REAL_ESTATE: عندما يسأل عن عقارات استثمارية أو حساب ROI أو صفقات عقارية.
 - ADMIN: عندما يسأل عن مراقبة النظام، سجلات، أو لوحة الإدارة.
+
+━━ المجلس التنفيذي C-Suite ━━
+- CEO_AGENT: عندما يطلب رأي الرئيس التنفيذي، قراراً استراتيجياً شاملاً يمسّ الشركة ككل، أو يسأل عن رؤية القيادة العليا.
+- COO_AGENT: عندما يسأل عن تحسين العمليات، الكفاءة التشغيلية، OKRs، تنظيم سير العمل، أو قياس الأداء.
+- CMO_AGENT: عندما يسأل عن استراتيجية التسويق الشاملة، بناء العلامة التجارية، النمو، أو حملات التسويق الرقمي.
+- CTO_AGENT: عندما يسأل عن التحول الرقمي، اختيار التقنيات المناسبة، البنية التحتية، أو تطبيق الذكاء الاصطناعي.
+- CLO_AGENT: عندما يسأل عن الحوكمة القانونية، الامتثال التنظيمي الاستراتيجي، أو المخاطر القانونية على مستوى المنظمة.
+- CHRO_AGENT: عندما يسأل عن استراتيجية الموارد البشرية، بناء الفريق القيادي، أو الثقافة المؤسسية.
+- CSO_AGENT: عندما يسأل عن التوسع الاستراتيجي بعيد المدى، الاستحواذ، أو بناء رؤية الأعمال للمستقبل.
+
 - GENERAL_CHAT: لأي سؤال عام أو دردشة لا تقع تحت التخصصات أعلاه.`;
 
 /**
@@ -145,6 +163,15 @@ const INTENT_CLASSIFIER_PROMPT = `أنت المنسق الذكي لمنصة كل
  */
 function heuristicIntent(message: string): string {
   const m = (message || '').toLowerCase();
+  // C-Suite Executive Agents
+  if (/(رئيس\s+تنفيذي|ceo|قرار\s+استراتيجي\s+كبير|رؤية\s+الشركة|قيادة\s+عليا)/i.test(m)) return 'CEO_AGENT';
+  if (/(عمليات\s+تشغيلية|coo|okr|كفاءة\s+تشغيلية|سير\s+العمل|قياس\s+الأداء)/i.test(m)) return 'COO_AGENT';
+  if (/(استراتيجية\s+تسويق|cmo|علامة\s+تجارية|نمو\s+الشركة|حملة\s+تسويق|تسويق\s+رقمي)/i.test(m)) return 'CMO_AGENT';
+  if (/(تحول\s+رقمي|cto|تقنية\s+مناسبة|بنية\s+تحتية\s+تقنية|ذكاء\s+اصطناعي\s+للشركة)/i.test(m)) return 'CTO_AGENT';
+  if (/(حوكمة\s+قانونية|clo|امتثال\s+تنظيمي|مخاطر\s+قانونية\s+استراتيجية)/i.test(m)) return 'CLO_AGENT';
+  if (/(موارد\s+بشرية\s+استراتيجية|chro|فريق\s+قيادي|ثقافة\s+مؤسسية|استقطاب\s+مواهب)/i.test(m)) return 'CHRO_AGENT';
+  if (/(توسع\s+استراتيجي|cso|استحواذ|اندماج|رؤية\s+مستقبلية|فرص\s+استراتيجية)/i.test(m)) return 'CSO_AGENT';
+  // Specialized Agents
   if (/(مال(ي|ية)?|cash[\s-]?flow|تدفق نقدي|توقعات\s+مالية|breakeven|نقطة\s+التعادل|cfo|الفلوس|إيرادات|تكاليف|ضريب|ضراي?ب|tax|تأمين(ات)?|insurance|راتب|اجر|مرتب|payroll|صافي|اجمالي\s*تكلفة)/i.test(m)) return 'CFO_AGENT';
   if (/(قانون|عقد|تأسيس|شركة|تشريع|legal|محام)/i.test(m)) return 'LEGAL_GUIDE';
   if (/(عقار|إيجار|شقة|أرض|roi|عائد\s+الاستثمار|real\s*estate)/i.test(m)) return 'REAL_ESTATE';
@@ -200,7 +227,10 @@ async function routerNode(state: typeof SupervisorState.State) {
   const validIntents = [
     'IDEA_VALIDATOR', 'PLAN_BUILDER', 'MISTAKE_SHIELD',
     'SUCCESS_MUSEUM', 'OPPORTUNITY_RADAR', 'CFO_AGENT',
-    'LEGAL_GUIDE', 'REAL_ESTATE', 'ADMIN', 'GENERAL_CHAT',
+    'LEGAL_GUIDE', 'REAL_ESTATE', 'ADMIN',
+    'CEO_AGENT', 'COO_AGENT', 'CMO_AGENT', 'CTO_AGENT',
+    'CLO_AGENT', 'CHRO_AGENT', 'CSO_AGENT',
+    'GENERAL_CHAT',
   ];
 
   const matched = validIntents.find(i => cleaned.includes(i)) || 'GENERAL_CHAT';
@@ -215,6 +245,13 @@ async function routerNode(state: typeof SupervisorState.State) {
     LEGAL_GUIDE: 'legal_guide_node',
     REAL_ESTATE: 'real_estate_node',
     ADMIN: 'admin_node',
+    CEO_AGENT: 'ceo_agent_node',
+    COO_AGENT: 'coo_agent_node',
+    CMO_AGENT: 'cmo_agent_node',
+    CTO_AGENT: 'cto_agent_node',
+    CLO_AGENT: 'clo_agent_node',
+    CHRO_AGENT: 'chro_agent_node',
+    CSO_AGENT: 'cso_agent_node',
     GENERAL_CHAT: 'general_chat_node',
   };
 
@@ -481,6 +518,206 @@ async function realEstateNode(state: typeof SupervisorState.State) {
   }
 }
 
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// C-Suite Executive Nodes — المجلس التنفيذي
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+async function ceoAgentNode(state: typeof SupervisorState.State) {
+  const lastMessage = state.messages[state.messages.length - 1]?.content as string;
+  try {
+    const result = await ceoAgentAction({
+      message: lastMessage,
+      context: JSON.stringify(state.uiContext || {}),
+      urgency: 'medium',
+    });
+    const formatted = [
+      `## 🏛️ المدير التنفيذي — التقييم الاستراتيجي\n`,
+      result.executiveSummary ? `**الملخص التنفيذي:** ${result.executiveSummary}\n` : '',
+      result.assessment ? `**التقييم:** ${result.assessment}\n` : '',
+      result.recommendation ? `**التوصية:** ${result.recommendation}\n` : '',
+      result.delegatedTo ? `**التفويض إلى:** ${result.delegatedTo}\n` : '',
+      result.riskFlags?.length ? `**مؤشرات الخطر:** ${result.riskFlags.join('، ')}\n` : '',
+      `**الخطوة التالية:** ${result.nextAction}`,
+    ].filter(Boolean).join('\n');
+    const text = await withCouncil({
+      agentName: 'ceo-agent',
+      agentDisplayNameAr: 'المدير التنفيذي',
+      agentRoleAr: 'الرئيس التنفيذي لمنظومة كلميرون — يُقيّم ويوجّه ويتخذ القرارات الاستراتيجية الكبرى على مستوى المنظمة',
+      userMessage: lastMessage,
+      uiContext: state.uiContext,
+      userId: state.userId,
+      draft: formatted,
+      fallback: formatted,
+    });
+    return { messages: [new AIMessage(text)] };
+  } catch (e) {
+    if (e instanceof PromptInjectionBlockedError) {
+      return { messages: [new AIMessage('تم رفض الطلب: اكتُشفت محاولة حقن أوامر في الرسالة.')] };
+    }
+    throw e;
+  }
+}
+
+async function cooAgentNode(state: typeof SupervisorState.State) {
+  const lastMessage = state.messages[state.messages.length - 1]?.content as string;
+  try {
+    const draft = await cooAgentAction({
+      message: lastMessage,
+      context: JSON.stringify(state.uiContext || {}),
+      focusArea: 'general',
+    });
+    const text = await withCouncil({
+      agentName: 'coo-agent',
+      agentDisplayNameAr: 'مدير العمليات التنفيذي',
+      agentRoleAr: 'الرئيس التنفيذي للعمليات — يحوّل الاستراتيجية لخطوات تشغيلية قابلة للتنفيذ والقياس',
+      userMessage: lastMessage,
+      uiContext: state.uiContext,
+      userId: state.userId,
+      draft,
+      fallback: draft,
+    });
+    return { messages: [new AIMessage(text)] };
+  } catch (e) {
+    if (e instanceof PromptInjectionBlockedError) {
+      return { messages: [new AIMessage('تم رفض الطلب: اكتُشفت محاولة حقن أوامر في الرسالة.')] };
+    }
+    throw e;
+  }
+}
+
+async function cmoAgentNode(state: typeof SupervisorState.State) {
+  const lastMessage = state.messages[state.messages.length - 1]?.content as string;
+  try {
+    const draft = await cmoAgentAction({
+      message: lastMessage,
+      currentStage: 'growth',
+    });
+    const text = await withCouncil({
+      agentName: 'cmo-agent',
+      agentDisplayNameAr: 'مدير التسويق التنفيذي',
+      agentRoleAr: 'الرئيس التنفيذي للتسويق — يبني العلامة التجارية ويصمّم استراتيجيات النمو للسوق العربي',
+      userMessage: lastMessage,
+      uiContext: state.uiContext,
+      userId: state.userId,
+      draft,
+      fallback: draft,
+    });
+    return { messages: [new AIMessage(text)] };
+  } catch (e) {
+    if (e instanceof PromptInjectionBlockedError) {
+      return { messages: [new AIMessage('تم رفض الطلب: اكتُشفت محاولة حقن أوامر في الرسالة.')] };
+    }
+    throw e;
+  }
+}
+
+async function ctoAgentNode(state: typeof SupervisorState.State) {
+  const lastMessage = state.messages[state.messages.length - 1]?.content as string;
+  try {
+    const draft = await ctoAgentAction({
+      message: lastMessage,
+      stage: 'growth',
+    });
+    const text = await withCouncil({
+      agentName: 'cto-agent',
+      agentDisplayNameAr: 'مدير التقنية التنفيذي',
+      agentRoleAr: 'الرئيس التنفيذي للتقنية — يُقيّم التكنولوجيا ويصمّم البنية التحتية ويقود التحول الرقمي',
+      userMessage: lastMessage,
+      uiContext: state.uiContext,
+      userId: state.userId,
+      draft,
+      fallback: draft,
+    });
+    return { messages: [new AIMessage(text)] };
+  } catch (e) {
+    if (e instanceof PromptInjectionBlockedError) {
+      return { messages: [new AIMessage('تم رفض الطلب: اكتُشفت محاولة حقن أوامر في الرسالة.')] };
+    }
+    throw e;
+  }
+}
+
+async function cloAgentNode(state: typeof SupervisorState.State) {
+  const lastMessage = state.messages[state.messages.length - 1]?.content as string;
+  try {
+    const draft = await cloAgentAction({
+      message: lastMessage,
+      context: JSON.stringify(state.uiContext || {}),
+      jurisdiction: 'egypt',
+    });
+    const text = await withCouncil({
+      agentName: 'clo-agent',
+      agentDisplayNameAr: 'المستشار القانوني الأول',
+      agentRoleAr: 'الرئيس التنفيذي للشؤون القانونية — يُحلّل المخاطر القانونية ويضمن الامتثال للقانون المصري والدولي',
+      userMessage: lastMessage,
+      uiContext: state.uiContext,
+      userId: state.userId,
+      draft,
+      fallback: draft,
+    });
+    return { messages: [new AIMessage(text)] };
+  } catch (e) {
+    if (e instanceof PromptInjectionBlockedError) {
+      return { messages: [new AIMessage('تم رفض الطلب: اكتُشفت محاولة حقن أوامر في الرسالة.')] };
+    }
+    throw e;
+  }
+}
+
+async function chroAgentNode(state: typeof SupervisorState.State) {
+  const lastMessage = state.messages[state.messages.length - 1]?.content as string;
+  try {
+    const draft = await chroAgentAction({
+      message: lastMessage,
+      hrChallenge: 'general',
+      stage: 'startup',
+    });
+    const text = await withCouncil({
+      agentName: 'chro-agent',
+      agentDisplayNameAr: 'مدير الموارد البشرية التنفيذي',
+      agentRoleAr: 'الرئيس التنفيذي للموارد البشرية — يستقطب المواهب ويبني ثقافة مؤسسية قوية وهياكل تنظيمية فعّالة',
+      userMessage: lastMessage,
+      uiContext: state.uiContext,
+      userId: state.userId,
+      draft,
+      fallback: draft,
+    });
+    return { messages: [new AIMessage(text)] };
+  } catch (e) {
+    if (e instanceof PromptInjectionBlockedError) {
+      return { messages: [new AIMessage('تم رفض الطلب: اكتُشفت محاولة حقن أوامر في الرسالة.')] };
+    }
+    throw e;
+  }
+}
+
+async function csoAgentNode(state: typeof SupervisorState.State) {
+  const lastMessage = state.messages[state.messages.length - 1]?.content as string;
+  try {
+    const draft = await csoAgentAction({
+      message: lastMessage,
+      horizonYears: 3,
+      focusArea: 'general',
+    });
+    const text = await withCouncil({
+      agentName: 'cso-agent',
+      agentDisplayNameAr: 'مدير الاستراتيجية التنفيذي',
+      agentRoleAr: 'الرئيس التنفيذي للاستراتيجية — يرصد الفرص ويصمّم التوسع ويبني رؤية الأعمال على المدى البعيد',
+      userMessage: lastMessage,
+      uiContext: state.uiContext,
+      userId: state.userId,
+      draft,
+      fallback: draft,
+    });
+    return { messages: [new AIMessage(text)] };
+  } catch (e) {
+    if (e instanceof PromptInjectionBlockedError) {
+      return { messages: [new AIMessage('تم رفض الطلب: اكتُشفت محاولة حقن أوامر في الرسالة.')] };
+    }
+    throw e;
+  }
+}
+
 async function adminNode(state: typeof SupervisorState.State) {
   return {
     messages: [new AIMessage('🔒 وكلاء الإدارة (الأمن، تجربة المستخدم، الامتثال) يراقبون استقرار النظام. يُرجى الانتقال للوحة الإدارة للتفاصيل.')],
@@ -516,6 +753,7 @@ function supervisorRouter(state: typeof SupervisorState.State) {
 
 export const supervisorWorkflow = new StateGraph(SupervisorState)
   .addNode('router', routerNode)
+  // وكلاء المشاريع المتخصصون
   .addNode('idea_validator_node', ideaValidatorNode)
   .addNode('plan_builder_node', planBuilderNode)
   .addNode('mistake_shield_node', mistakeShieldNode)
@@ -526,6 +764,14 @@ export const supervisorWorkflow = new StateGraph(SupervisorState)
   .addNode('real_estate_node', realEstateNode)
   .addNode('admin_node', adminNode)
   .addNode('general_chat_node', generalChatNode)
+  // المجلس التنفيذي C-Suite
+  .addNode('ceo_agent_node', ceoAgentNode)
+  .addNode('coo_agent_node', cooAgentNode)
+  .addNode('cmo_agent_node', cmoAgentNode)
+  .addNode('cto_agent_node', ctoAgentNode)
+  .addNode('clo_agent_node', cloAgentNode)
+  .addNode('chro_agent_node', chroAgentNode)
+  .addNode('cso_agent_node', csoAgentNode)
   .addEdge('__start__', 'router')
   .addConditionalEdges('router', supervisorRouter)
   .addEdge('idea_validator_node', END)
@@ -537,7 +783,14 @@ export const supervisorWorkflow = new StateGraph(SupervisorState)
   .addEdge('legal_guide_node', END)
   .addEdge('real_estate_node', END)
   .addEdge('admin_node', END)
-  .addEdge('general_chat_node', END);
+  .addEdge('general_chat_node', END)
+  .addEdge('ceo_agent_node', END)
+  .addEdge('coo_agent_node', END)
+  .addEdge('cmo_agent_node', END)
+  .addEdge('cto_agent_node', END)
+  .addEdge('clo_agent_node', END)
+  .addEdge('chro_agent_node', END)
+  .addEdge('cso_agent_node', END);
 
 const checkpointer = new MemorySaver();
 export const intelligentOrchestrator = supervisorWorkflow.compile({ checkpointer });
