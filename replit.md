@@ -1,5 +1,46 @@
 # Kalmeron AI (ai-studio-applet)
 
+## بيئة التطوير — إصلاحات حرجة (2026-05-01)
+
+### ما تم إصلاحه اليوم
+| المشكلة | الحل |
+|---------|------|
+| HMR لا يعمل (تغييرات لا تظهر) | إصلاح `allowedDevOrigins` في next.config.ts + إضافة `wss://*.replit.dev` للـ CSP |
+| `NEXT_PUBLIC_APP_URL` قديم (janeway domain) | تحديث للنطاق الحالي (kirk domain) |
+| middleware.ts تعارض مع proxy.ts | حذف middleware.ts (Next.js 16 يستخدم proxy.ts مباشرةً) |
+| .next cache قديم | مسح الـ cache وإعادة البناء |
+
+### حالة المنصة الحالية
+- **HMR:** ✅ يعمل — `[HMR] connected` + `[Fast Refresh] done`
+- **5 Workflows:** ✅ كلها تعمل (Next.js + 4 Python microservices)
+- **Landing page:** ✅ تحمل بشكل صحيح
+- **57+ AI Agents:** ✅ محملة في الـ registry
+- **Firebase Auth:** ✅ مربوط بـ kalmeron-two project
+
+### الأسرار المطلوبة للـ features كاملة
+```
+FIREBASE_SERVICE_ACCOUNT_KEY  → Firebase Admin (required for protected routes)
+GOOGLE_GENERATIVE_AI_API_KEY  → AI Chat (required for real responses)
+STRIPE_SECRET_KEY             → Billing (required for payments)
+STRIPE_WEBHOOK_SECRET         → Stripe webhooks
+LANGFUSE_SECRET_KEY           → LLM observability (optional)
+SENTRY_DSN                    → Error tracking (optional)
+```
+
+### مرجع خطة التطوير
+انظر `docs/DEVELOPMENT_ROADMAP.md` — خطة 30 مرحلة شاملة تغطي:
+- المراحل 1-3: الاستقرار والأمان (P0 — هذا الأسبوع)
+- المراحل 4-11: الميزات الأساسية (P1 — أسابيع 2-6)
+- المراحل 12-19: الأعمال والنمو (P1 — أسابيع 6-10)
+- المراحل 20-30: التقنية المتقدمة والتوسع (P2-P3)
+
+### Next.js 16 — قواعد مهمة
+- **`proxy.ts`** (وليس middleware.ts) هو الـ middleware في Next.js 16
+- **`allowedDevOrigins`** يقبل أسماء النطاقات فقط (بدون `https://`)
+- HMR يعمل عبر WebSocket — يحتاج `wss://` في CSP للبيئات المؤسسية
+
+---
+
 ## PHASE 2 COMPREHENSIVE IMPROVEMENTS — 2026-05-01
 
 ### Changes Made

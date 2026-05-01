@@ -31,7 +31,7 @@ function buildCsp(): string {
       'https://*.langfuse.com',
       'https://generativelanguage.googleapis.com',
       'wss://*.firebaseio.com',
-      ...(isProd ? [] : ['ws://localhost:*', 'http://localhost:*', 'https://localhost:*']),
+      ...(isProd ? [] : ['ws://localhost:*', 'http://localhost:*', 'https://localhost:*', 'wss://*.replit.dev', 'https://*.replit.dev', 'wss://*.kirk.replit.dev', 'wss://*.janeway.replit.dev']),
     ],
     'frame-src': ["'self'", 'https://js.stripe.com', 'https://hooks.stripe.com', 'https://accounts.google.com', 'https://*.firebaseapp.com'],
     'media-src': ["'self'", 'blob:', 'data:'],
@@ -135,8 +135,10 @@ const nextConfig: NextConfig = {
   },
   allowedDevOrigins: process.env.REPLIT_DEV_DOMAIN ? [
     process.env.REPLIT_DEV_DOMAIN,
-    `https://${process.env.REPLIT_DEV_DOMAIN}`,
-  ] : [],
+    `*.replit.dev`,
+    `*.kirk.replit.dev`,
+    `*.janeway.replit.dev`,
+  ] : ['*.replit.dev'],
   experimental: {
     optimizePackageImports: ['lucide-react', '@radix-ui/react-icons'],
     // ملاحظة: cacheComponents معطّل عمداً — يتعارض مع `export const runtime = 'nodejs'`
