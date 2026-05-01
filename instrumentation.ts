@@ -4,6 +4,22 @@
 //   2. Wiring observability: Sentry (always) + OpenLLMetry (opt-in).
 
 export async function register() {
+  // Replit AI Integrations provides Gemini via AI_INTEGRATIONS_GEMINI_API_KEY.
+  // Alias it so the rest of the stack (which looks for GEMINI_API_KEY /
+  // GOOGLE_GENERATIVE_AI_API_KEY) picks it up automatically.
+  const replitGeminiKey = process.env.AI_INTEGRATIONS_GEMINI_API_KEY;
+  if (replitGeminiKey) {
+    if (!process.env.GEMINI_API_KEY) {
+      process.env.GEMINI_API_KEY = replitGeminiKey;
+    }
+    if (!process.env.GOOGLE_GENERATIVE_AI_API_KEY) {
+      process.env.GOOGLE_GENERATIVE_AI_API_KEY = replitGeminiKey;
+    }
+    if (!process.env.GOOGLE_API_KEY) {
+      process.env.GOOGLE_API_KEY = replitGeminiKey;
+    }
+  }
+
   // Make the Gemini key visible to @ai-sdk/google (which expects GOOGLE_GENERATIVE_AI_API_KEY)
   if (process.env.GEMINI_API_KEY && !process.env.GOOGLE_GENERATIVE_AI_API_KEY) {
     process.env.GOOGLE_GENERATIVE_AI_API_KEY = process.env.GEMINI_API_KEY;
