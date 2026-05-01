@@ -6,19 +6,14 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/src/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
 import { motion } from "motion/react";
-import { Settings as SettingsIcon, LogOut, ChevronLeft, Sparkles } from "lucide-react";
-import { NAV_SECTIONS, FOOTER_NAV, isActive, type NavItem } from "@/src/lib/navigation";
-import { WorkspaceSwitcher } from "@/components/workspaces/WorkspaceSwitcher";
+import { Settings as SettingsIcon, LogOut, Sparkles } from "lucide-react";
+import { NAV_SECTIONS, isActive, type NavItem } from "@/src/lib/navigation";
 
-function SectionHeading({ children }: { children: React.ReactNode }) {
+function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
-    <div className="px-3 pt-6 pb-2.5 flex items-center gap-2">
-      <span className="h-px flex-1 bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-      <span className="text-[9.5px] font-bold uppercase tracking-[0.28em] text-cyan-300/60">
-        {children}
-      </span>
-      <span className="h-px flex-1 bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-    </div>
+    <p className="px-3 pt-5 pb-1.5 text-[10px] font-bold uppercase tracking-[0.22em] text-white/20 select-none">
+      {children}
+    </p>
   );
 }
 
@@ -31,31 +26,35 @@ function NavLink({ item, pathname }: { item: NavItem; pathname: string }) {
       {active && (
         <motion.span
           layoutId="sidebarActiveBg"
-          className="absolute inset-0 rounded-xl bg-gradient-to-l from-indigo-500/20 via-cyan-500/12 to-transparent border border-indigo-400/25 shadow-[inset_0_1px_0_rgb(255_255_255/0.05)]"
-          transition={{ type: "spring", stiffness: 380, damping: 30 }}
+          className="absolute inset-0 rounded-xl bg-gradient-to-r from-brand-indigo/25 via-brand-indigo/10 to-transparent border border-brand-indigo/30"
+          transition={{ type: "spring", stiffness: 400, damping: 34 }}
         />
       )}
       <Link
         href={item.href}
         prefetch
         className={cn(
-          "relative group flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13.5px] font-semibold transition-colors duration-200",
-          active ? "text-white" : "text-neutral-400 hover:text-white"
+          "relative group flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13.5px] font-semibold transition-colors duration-150",
+          active
+            ? "text-white"
+            : "text-white/40 hover:text-white/80"
         )}
       >
         <span
           className={cn(
-            "flex items-center justify-center w-7 h-7 rounded-lg transition-all duration-300",
+            "flex items-center justify-center w-7 h-7 rounded-lg transition-all duration-200 shrink-0",
             active
-              ? "bg-gradient-to-br from-cyan-400 via-indigo-500 to-fuchsia-500 text-white shadow-[0_6px_18px_-4px_rgb(79_70_229/0.7),inset_0_1px_0_rgb(255_255_255/0.25)]"
-              : "bg-white/[0.04] text-neutral-400 group-hover:bg-white/[0.08] group-hover:text-cyan-300 group-hover:scale-105"
+              ? "bg-brand-indigo text-white shadow-[0_4px_16px_-2px_rgba(79,70,229,0.55)]"
+              : "bg-white/[0.04] text-white/30 group-hover:bg-white/[0.08] group-hover:text-white/60"
           )}
         >
           <Icon className="w-3.5 h-3.5" />
         </span>
-        <span className="truncate">{item.label}</span>
-        {active && (
-          <ChevronLeft className="ms-auto w-3.5 h-3.5 text-cyan-300/80 icon-flip" />
+        <span className="truncate flex-1">{item.label}</span>
+        {item.badge && (
+          <span className="text-[9px] font-bold bg-brand-cyan/15 text-brand-cyan px-1.5 py-0.5 rounded-full border border-brand-cyan/25">
+            {item.badge}
+          </span>
         )}
       </Link>
     </div>
@@ -65,79 +64,71 @@ function NavLink({ item, pathname }: { item: NavItem; pathname: string }) {
 export function Sidebar() {
   const pathname = usePathname();
   const { signOut, user, dbUser } = useAuth();
+  const firstName = (dbUser?.name || user?.displayName || "").split(" ")[0] || "مؤسّس";
+  const initial = firstName.charAt(0);
 
   return (
-    <aside
-      className={cn(
-        "w-72 hidden md:flex flex-col h-screen fixed top-0 right-0 z-40",
-        // Premium layered surface
-        "bg-[linear-gradient(180deg,#080D1A_0%,#0B1020_50%,#070912_100%)]",
-        "border-l border-white/[0.06]",
-        "shadow-[inset_1px_0_0_rgb(255_255_255/0.03),0_0_60px_-20px_rgb(0_0_0/0.8)]",
-        // Ambient glow accent at top
-        "before:content-[''] before:absolute before:top-0 before:right-0 before:left-0 before:h-32 before:bg-[radial-gradient(ellipse_at_top,rgb(56_189_248/0.10),transparent_60%)] before:pointer-events-none"
-      )}
-    >
-      {/* Brand area */}
-      <div className="relative px-5 pt-5 pb-4 border-b border-white/[0.05]">
+    <aside className="w-64 hidden md:flex flex-col h-screen fixed top-0 right-0 z-40 bg-[#07091A] border-l border-white/[0.05]">
+
+      {/* Top glow */}
+      <div className="absolute top-0 right-0 left-0 h-48 bg-gradient-to-b from-brand-indigo/8 to-transparent pointer-events-none" />
+
+      {/* Brand */}
+      <div className="relative px-5 pt-5 pb-4 border-b border-white/[0.05] shrink-0">
         <Link href="/dashboard" className="flex items-center gap-3 group">
-          <div className="relative">
-            <div className="absolute -inset-1 rounded-2xl bg-gradient-to-br from-cyan-500/50 via-indigo-500/40 to-fuchsia-500/40 blur-md opacity-70 group-hover:opacity-100 transition-opacity" />
-            <div className="relative w-11 h-11 rounded-2xl border border-white/10 bg-[#070A18]/80 backdrop-blur-sm flex items-center justify-center overflow-hidden">
-              <Image alt="Kalmeron AI"
+          <div className="relative shrink-0">
+            <div className="absolute -inset-1 rounded-xl bg-brand-indigo/30 blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <div className="relative w-9 h-9 rounded-xl bg-white/[0.04] border border-white/[0.08] flex items-center justify-center overflow-hidden">
+              <Image
+                alt="Kalmeron"
                 src="/brand/kalmeron-mark.svg"
-                width={44}
-                height={44}
-                className="w-[78%] h-[78%] object-contain"
+                width={36}
+                height={36}
+                className="w-[72%] h-[72%] object-contain"
+                priority
               />
             </div>
           </div>
-          <div className="leading-none">
-            <p className="font-display font-extrabold text-[1.05rem] tracking-tight text-white">
+          <div className="leading-none min-w-0">
+            <p className="font-display font-extrabold text-[1rem] tracking-tight text-white">
               KALMERON
             </p>
-            <p className="text-[9.5px] uppercase tracking-[0.34em] text-cyan-300/70 mt-1.5 flex items-center gap-1">
-              <Sparkles className="w-2.5 h-2.5" />
+            <p className="text-[9px] uppercase tracking-[0.28em] text-brand-cyan/60 mt-1 flex items-center gap-1">
+              <Sparkles className="w-2 h-2" />
               AI Studio
             </p>
           </div>
         </Link>
       </div>
 
-      {/* Mini profile chip — refined glass */}
+      {/* User chip */}
       {user && (
-        <div className="mx-3 mt-3 mb-1">
-          <div className="rounded-2xl bg-[linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0.01))] border border-white/[0.06] p-3 flex items-center gap-3 transition-all hover:border-white/[0.12] hover:bg-white/[0.05]">
+        <div className="px-4 pt-3 pb-1 shrink-0">
+          <Link
+            href="/profile"
+            className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl bg-white/[0.03] border border-white/[0.05] hover:bg-white/[0.05] hover:border-white/[0.10] transition-all group"
+          >
             <div className="relative shrink-0">
-              <div className="absolute -inset-0.5 rounded-xl bg-gradient-to-br from-cyan-400 via-indigo-500 to-fuchsia-500 opacity-70 blur-[2px]" />
-              <div className="relative w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-fuchsia-600 flex items-center justify-center text-white font-bold text-sm">
-                {(dbUser?.name || user.displayName)?.charAt(0) || "U"}
+              <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-brand-indigo to-brand-violet flex items-center justify-center text-white font-bold text-[11px] shadow-[inset_0_1px_0_rgba(255,255,255,0.2)]">
+                {initial}
               </div>
-              <span className="absolute -bottom-0.5 -end-0.5 w-3 h-3 rounded-full bg-emerald-400 border-2 border-[#0B1020]" />
+              <span className="absolute -bottom-0.5 -end-0.5 w-2.5 h-2.5 rounded-full bg-emerald-400 border-2 border-[#07091A]" />
             </div>
-            <div className="min-w-0 leading-tight">
-              <p className="text-[13px] font-bold text-white truncate">
-                {dbUser?.name || user.displayName || "مؤسّس"}
-              </p>
-              <p className="text-[10px] text-cyan-300/70 uppercase tracking-[0.18em] truncate mt-0.5">
-                {(dbUser as { industry?: string } | null | undefined)?.industry || "مؤسّس"}
+            <div className="min-w-0 flex-1">
+              <p className="text-[12px] font-semibold text-white/90 truncate leading-tight">{firstName}</p>
+              <p className="text-[9.5px] text-white/30 uppercase tracking-[0.15em] mt-0.5 truncate">
+                {(dbUser as { industry?: string } | null)?.industry || "مؤسّس"}
               </p>
             </div>
-          </div>
+          </Link>
         </div>
       )}
 
-      {/* Workspace switcher */}
-      <div className="px-3 pt-3">
-        <WorkspaceSwitcher />
-      </div>
-
-      {/* Nav — plain semantic <nav>; the previous Framer-motion stagger was
-          delaying first paint of every link by 100-200ms on every render.   */}
-      <nav className="flex-1 overflow-y-auto scrollbar-thin px-3 pb-4">
+      {/* Nav */}
+      <nav className="flex-1 overflow-y-auto px-3 pb-3 scrollbar-thin mt-1" aria-label="القائمة الرئيسية">
         {NAV_SECTIONS.map((section) => (
           <div key={section.heading}>
-            <SectionHeading>{section.heading}</SectionHeading>
+            <SectionLabel>{section.heading}</SectionLabel>
             <div className="space-y-0.5">
               {section.items.map((it) => (
                 <NavLink key={it.href} item={it} pathname={pathname} />
@@ -148,43 +139,24 @@ export function Sidebar() {
       </nav>
 
       {/* Footer */}
-      <div className="p-3 border-t border-white/[0.05] space-y-0.5 bg-gradient-to-b from-transparent to-black/30">
-        {FOOTER_NAV.map((it) => {
-          const Icon = it.icon;
-          const active = isActive(pathname, it.href);
-          return (
-            <Link
-              key={it.href}
-              href={it.href}
-              className={cn(
-                "flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-semibold transition-all duration-200",
-                active
-                  ? "text-white bg-white/[0.06]"
-                  : "text-neutral-400 hover:text-white hover:bg-white/[0.04]"
-              )}
-            >
-              <Icon className="w-4 h-4 shrink-0" />
-              <span>{it.label}</span>
-            </Link>
-          );
-        })}
+      <div className="px-3 pb-4 pt-2 border-t border-white/[0.05] space-y-0.5 shrink-0">
         <Link
           href="/settings"
           className={cn(
-            "flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-semibold transition-all duration-200",
+            "flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-semibold transition-colors duration-150",
             pathname.startsWith("/settings")
               ? "text-white bg-white/[0.06]"
-              : "text-neutral-400 hover:text-white hover:bg-white/[0.04]"
+              : "text-white/40 hover:text-white/70 hover:bg-white/[0.04]"
           )}
         >
-          <SettingsIcon className="w-4 h-4 shrink-0" />
+          <SettingsIcon className="w-3.5 h-3.5 shrink-0" />
           <span>الإعدادات</span>
         </Link>
         <button
           onClick={() => signOut()}
-          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-semibold text-rose-300/80 hover:text-rose-200 hover:bg-rose-500/10 transition-all duration-200"
+          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-semibold text-rose-400/60 hover:text-rose-300 hover:bg-rose-500/[0.06] transition-colors duration-150"
         >
-          <LogOut className="w-4 h-4 shrink-0" />
+          <LogOut className="w-3.5 h-3.5 shrink-0" />
           <span>تسجيل الخروج</span>
         </button>
       </div>

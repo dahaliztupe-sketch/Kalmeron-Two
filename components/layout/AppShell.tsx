@@ -145,7 +145,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         id="kalmeron-main"
         className={cn(
           "flex-1 flex flex-col w-full min-w-0 transition-all duration-300",
-          dir === "rtl" ? "md:mr-72" : "md:ml-72"
+          dir === "rtl" ? "md:mr-64" : "md:ml-64"
         )}
       >
         {/* Premium glass-toolbar Header */}

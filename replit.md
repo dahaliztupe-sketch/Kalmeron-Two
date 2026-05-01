@@ -2664,3 +2664,37 @@ CLO → contract-drafter           (صياغة عقد)
 - ADDED `src/ai/organization/delegation/engine.ts`
 - ADDED `app/api/delegate/route.ts`
 - UPDATED `replit.md`
+
+---
+
+## إعادة التصميم الشاملة v3 — مايو 2026
+
+### الأهداف المنجزة
+
+#### المرحلة الأولى: تبسيط التنقل
+- **`src/lib/navigation.ts`** — تقليص القائمة من 44 عنصراً إلى 8 عناصر في 4 أقسام
+- **`components/layout/Sidebar.tsx`** — إعادة تصميم شاملة: عرض w-64، نمط indigo للعناصر النشطة، مربع المستخدم المبسَّط
+- **`components/layout/MobileBottomNav.tsx`** — 5 عناصر محورية (لوحة القيادة، الأقسام، المساعد، المختبر، المزيد)
+- **`components/layout/AppShell.tsx`** — تحديث offset إلى `md:mr-64`
+
+#### المرحلة الثانية: صفحات Hub الجديدة
+- **`app/(dashboard)/lab/page.tsx`** — مختبر الأعمال: 17 أداة في 7 تصنيفات
+- **`app/(dashboard)/departments/page.tsx`** — محور الأقسام: 7 أقسام مع إحصائيات
+- **`app/plan/_page-client.tsx`** — صفحة الخطة والأهداف: hub مدمج (OKRs + Roadmap + Ideas + Brain)
+
+### بنية التنقل الجديدة
+```
+الرئيسي:  لوحة القيادة | المساعد الذكي | صندوق الموافقات
+شركتي:    الأقسام | الخطة والأهداف
+أدوات:    مختبر الأعمال
+الحساب:   لوحة المستثمر | الملف الشخصي
+```
+
+### الملفات المُعدَّلة/المضافة
+- UPDATED `src/lib/navigation.ts`
+- UPDATED `components/layout/Sidebar.tsx`
+- UPDATED `components/layout/MobileBottomNav.tsx`
+- UPDATED `components/layout/AppShell.tsx`
+- ADDED `app/(dashboard)/lab/page.tsx`
+- ADDED `app/(dashboard)/departments/page.tsx`
+- UPDATED `app/plan/_page-client.tsx`

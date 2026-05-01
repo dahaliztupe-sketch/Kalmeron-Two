@@ -1,12 +1,8 @@
 import type React from "react";
 import {
-  LayoutDashboard, MessageSquareText, Map, Megaphone, TrendingUp,
-  Settings as SettingsIcon, Wallet, Users as UsersIcon, Heart, Scale,
-  FlaskConical, Trophy, ShieldAlert, Radar, FileText,
-  Building2, ScrollText, Lightbulb, Store, User as UserIcon,
-  Target, Brain, CreditCard, Inbox as InboxIcon, Sparkles, Cpu,
-  BarChart3, Calculator, LayoutTemplate, Layers, Mic, Eye, ShieldCheck, BookOpen,
-  AlertTriangle, HandHeart, Compass, Activity, ChefHat, Network,
+  LayoutDashboard, MessageSquareText, Inbox,
+  Building2, ScrollText,
+  FlaskConical, Sparkles, User as UserIcon,
 } from "lucide-react";
 
 export type NavItem = {
@@ -14,6 +10,7 @@ export type NavItem = {
   label: string;
   icon: React.ComponentType<{ className?: string; size?: number }>;
   exact?: boolean;
+  badge?: string;
 };
 
 export type NavSection = {
@@ -25,84 +22,36 @@ export const NAV_SECTIONS: NavSection[] = [
   {
     heading: "الرئيسي",
     items: [
-      { href: "/dashboard", label: "مركز القيادة", icon: LayoutDashboard, exact: true },
-      { href: "/chat", label: "المساعد", icon: MessageSquareText },
-      { href: "/okr", label: "أهداف الأسبوع", icon: Target },
-      { href: "/brain", label: "الدماغ المشترك", icon: Brain },
-      { href: "/learned-skills", label: "المهارات المُتعلَّمة", icon: Sparkles },
-      { href: "/roadmap", label: "المخطط", icon: Map },
-      { href: "/plan", label: "خطة العمل", icon: ScrollText },
-      { href: "/ideas/analyze", label: "تحليل الأفكار", icon: Lightbulb },
-      { href: "/operations", label: "غرفة العمليات", icon: Activity },
-      { href: "/recipes", label: "وصفات الأعمال", icon: ChefHat },
-      { href: "/inbox", label: "صندوق الموافقات", icon: InboxIcon },
+      { href: "/dashboard", label: "لوحة القيادة", icon: LayoutDashboard, exact: true },
+      { href: "/chat", label: "المساعد الذكي", icon: MessageSquareText },
+      { href: "/inbox", label: "صندوق الموافقات", icon: Inbox },
     ],
   },
   {
-    heading: "الأقسام السبعة",
+    heading: "شركتي",
     items: [
-      { href: "/departments/marketing", label: "التسويق", icon: Megaphone },
-      { href: "/departments/sales", label: "المبيعات", icon: TrendingUp },
-      { href: "/departments/operations", label: "العمليات", icon: SettingsIcon },
-      { href: "/departments/finance", label: "المالية", icon: Wallet },
-      { href: "/departments/hr", label: "الموارد البشرية", icon: UsersIcon },
-      { href: "/departments/support", label: "خدمة العملاء", icon: Heart },
-      { href: "/departments/legal", label: "القانونية", icon: Scale },
+      { href: "/departments", label: "الأقسام", icon: Building2 },
+      { href: "/plan", label: "الخطة والأهداف", icon: ScrollText },
     ],
   },
   {
-    heading: "إعدادات العلامة التجارية",
+    heading: "أدوات",
     items: [
-      { href: "/brand-voice", label: "صوت العلامة التجارية", icon: Mic },
+      { href: "/lab", label: "مختبر الأعمال", icon: FlaskConical },
     ],
   },
   {
-    heading: "للمستثمرين",
+    heading: "الحساب",
     items: [
-      { href: "/investor", label: "نبضة المنصّة", icon: Sparkles, exact: true },
-      { href: "/investor/health", label: "فحص جاهزية العرض", icon: ShieldCheck },
-      { href: "/investor/demo-mode", label: "وضع العرض", icon: Eye },
-      { href: "/investor/guide", label: "دليل المتحدّث", icon: BookOpen },
-    ],
-  },
-  {
-    heading: "أدوات المؤسّس الجديدة",
-    items: [
-      { href: "/cash-runway", label: "تنبيه نزيف النقد", icon: AlertTriangle },
-      { href: "/founder-agreement", label: "اتّفاقيّة المؤسّسين", icon: Scale },
-      { href: "/wellbeing", label: "مدرّب الصحّة النفسيّة", icon: HandHeart },
-      { href: "/decision-journal", label: "دفتر القرارات", icon: BookOpen },
-      { href: "/setup-egypt", label: "تأسيس شركة في مصر", icon: Building2 },
-      { href: "/value-proposition", label: "قماش عرض القيمة", icon: Compass },
-    ],
-  },
-  {
-    heading: "الأدوات الإستراتيجية",
-    items: [
-      { href: "/org-chart", label: "الهيكل التنظيمي", icon: Network },
-      { href: "/company-builder", label: "محاكي الشركات", icon: Building2 },
-      { href: "/agents", label: "عرض الوكلاء", icon: Cpu },
-      { href: "/templates", label: "مكتبة القوالب", icon: LayoutTemplate },
-      { href: "/trending-tools", label: "أدوات AI الرائجة", icon: Layers },
-      { href: "/market-lab", label: "مختبر السوق", icon: FlaskConical },
-      { href: "/opportunities", label: "رادار الفرص", icon: Radar },
-      { href: "/cfo", label: "المدير المالي", icon: BarChart3 },
-      { href: "/roi", label: "حاسبة ROI", icon: Calculator },
-      { href: "/success-museum", label: "متحف النجاح", icon: Trophy },
-      { href: "/mistake-shield", label: "درع الأخطاء", icon: ShieldAlert },
-      { href: "/real-estate", label: "العقارات", icon: Building2 },
-      { href: "/legal-templates", label: "نماذج قانونية", icon: FileText },
-      { href: "/marketplace", label: "السوق", icon: Store },
-      { href: "/pricing", label: "الخطط والأسعار", icon: CreditCard },
+      { href: "/investor", label: "لوحة المستثمر", icon: Sparkles },
+      { href: "/profile", label: "الملف الشخصي", icon: UserIcon },
     ],
   },
 ];
 
 export const FLAT_NAV: NavItem[] = NAV_SECTIONS.flatMap((s) => s.items);
 
-export const FOOTER_NAV: NavItem[] = [
-  { href: "/profile", label: "حسابي", icon: UserIcon },
-];
+export const FOOTER_NAV: NavItem[] = [];
 
 export function isActive(pathname: string, href: string, exact?: boolean): boolean {
   if (exact) return pathname === href;
