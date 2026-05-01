@@ -1,11 +1,11 @@
 {
   "Index": {
-    "title": "Kalmeron — The AI Operating System for Arab Founders",
-    "description": "57 specialised AI assistants across 7 departments work as your complete founding team — in native Arabic. From idea analysis and business plans to legal, financial modelling, and the Egyptian market."
+    "title": "Kalmeron — Your Complete AI Founding Team",
+    "description": "57 specialised AI assistants across 7 departments work as your complete founding team — analysing your market, building your financial models, and guiding every decision. Start today, free."
   },
   "Common": {
     "appName": "Kalmeron",
-    "tagline": "The AI operating system for Arab founders",
+    "tagline": "Your intelligent partner in building your company",
     "loading": "One moment…",
     "retry": "Try again",
     "save": "Save",
@@ -35,22 +35,22 @@
     "live": "Live"
   },
   "Nav": {
-    "primary": "Primary",
-    "departments": "The 7 Departments",
+    "primary": "Home",
+    "departments": "7 Departments",
     "tools": "Strategic Tools",
-    "dashboard": "Command Center",
+    "dashboard": "Dashboard",
     "chat": "AI Assistant",
     "okr": "Weekly Goals",
-    "brain": "Shared Brain",
+    "brain": "Shared Memory",
     "roadmap": "Roadmap",
     "plan": "Business Plan",
-    "inbox": "Decision Inbox",
+    "inbox": "Pending Decisions",
     "agents": "57 AI Agents",
     "marketLab": "Market Lab",
     "opportunities": "Opportunity Radar",
     "cfo": "AI CFO",
-    "successMuseum": "Success Museum",
-    "mistakeShield": "Mistake Shield",
+    "successMuseum": "Success Stories",
+    "mistakeShield": "Risk Shield",
     "marketplace": "Marketplace",
     "pricing": "Plans & Pricing",
     "profile": "My Account"
@@ -60,19 +60,19 @@
     "watchDemo": "Watch Kalmeron in action (2 min)",
     "buildFirstDept": "Build your first department in 5 minutes",
     "startTrial": "Start free — no card needed",
-    "returnLogin": "Welcome back — your work is waiting",
-    "bookCall": "Book a call with our team",
+    "returnLogin": "Welcome back — your team is waiting",
+    "bookCall": "Talk to our team",
     "learnMore": "Learn more",
-    "viewPricing": "See pricing",
+    "viewPricing": "See plans",
     "newConversation": "New conversation"
   },
   "Trust": {
-    "label": "Trusted by 1,200+ founders across 12 Arab countries",
+    "label": "Trusted by 2,000+ founders across 15 countries",
     "noCard": "No credit card",
     "cancelAnytime": "Cancel anytime",
     "arabicNative": "Native Arabic — no machine translation",
     "privateData": "Your data is yours alone",
-    "gdprReady": "GDPR-ready & Egypt Law 151 compliant"
+    "gdprReady": "GDPR-ready & international data protection compliant"
   },
   "Landing": {
     "topNav": {
@@ -88,33 +88,33 @@
       }
     },
     "hero": {
-      "eyebrow": "Kalmeron · 57 AI assistants for Arab founders",
-      "titleLine1": "Your complete founding team",
+      "eyebrow": "Kalmeron · 57 AI assistants for founders",
+      "titleLine1": "Your complete strategic team",
       "titleLine2": "working 24/7 in native Arabic",
-      "subtitleLead": "Instead of spending thousands on a financial advisor, lawyer, and market analyst,",
+      "subtitleLead": "Instead of spending thousands on financial advisors, lawyers, and market analysts,",
       "subtitleHighlight": "57 specialised AI assistants",
-      "subtitleTail": "work across 7 departments as your full team — built for the Egyptian and Arab market.",
-      "inputPlaceholder": "Write your idea or question — Kalmeron is ready now…",
+      "subtitleTail": "work across 7 departments as your full team — analysing your market, planning with you, and guiding every decision.",
+      "inputPlaceholder": "Write your idea or question — Kalmeron is ready…",
       "submitLabel": "Start now",
       "primaryCta": "Start free — no card",
       "secondaryCta": "Watch a live demo (2 min)",
       "scrollHint": "See how it works"
     },
     "trustBadges": {
-      "lawCompliant": "Egypt Law 151 data-protection compliant",
+      "lawCompliant": "International data protection compliant",
       "arabicNative": "Native Arabic — no machine translation",
-      "founderCount": "1,200+ active founders",
+      "founderCount": "2,000+ active founders",
       "freeStart": "Free to start — no card"
     },
     "suggestions": {
-      "platform": "Analyse a learning platform idea for Egyptian freelancers",
+      "platform": "Analyse a learning platform idea for freelancers in my market",
       "ecommerce": "Build a complete business plan for my online store",
-      "healthtech": "What are the best opportunities in Egypt's digital health sector?",
+      "healthtech": "What are the best opportunities in digital health right now?",
       "cloudKitchen": "Calculate startup costs and break-even for a cloud kitchen"
     },
     "socialProof": {
       "rating": "4.9/5",
-      "founderCount": "1,200+ Egyptian and Gulf founders",
+      "founderCount": "2,000+ founders",
       "noCard": "No card required"
     }
   },
@@ -122,48 +122,48 @@
     "sidebar": {
       "newConversation": "New conversation",
       "noConversations": "No conversations yet — ask your first question",
-      "secureFooter": "Your conversations are fully saved and encrypted",
+      "secureFooter": "Your conversations are fully protected and encrypted",
       "deleteThread": "Delete conversation"
     },
     "agentChips": {
       "ideaAnalyst": {
         "label": "Idea Analyst",
-        "prompt": "Run a comprehensive analysis of my idea — market size, competitors, opportunities, and risks in the Egyptian market."
+        "prompt": "Run a comprehensive analysis of my idea — market size, competitors, real opportunities, and the risks I need to know."
       },
       "businessPlan": {
         "label": "Business Plan",
-        "prompt": "Help me build a professional, investor-ready business plan with financial projections and target market analysis."
+        "prompt": "Help me build a professional, investor-ready business plan with financial projections, target market, and a growth strategy."
       },
       "mistakeShield": {
-        "label": "Mistake Shield",
-        "prompt": "What are the most common fatal mistakes when founding a company in Egypt, and how do I avoid them?"
+        "label": "Risk Shield",
+        "prompt": "What are the most costly mistakes founders make at my stage, and how do I avoid them before they become failures?"
       },
       "opportunityRadar": {
         "label": "Opportunity Radar",
-        "prompt": "Tell me about the latest funding rounds, grants, hackathons, and startup events in Egypt and the region."
+        "prompt": "Tell me about the latest funding rounds, grants, competitions, and startup events in my sector and region."
       },
       "cfo": {
         "label": "AI CFO",
-        "prompt": "Build me a preliminary financial model with break-even analysis, runway calculation, and revenue projections."
+        "prompt": "Build me a preliminary financial model with break-even analysis, runway calculation, and first-year revenue projections."
       },
       "legal": {
         "label": "Legal Guide",
-        "prompt": "What are the legal steps to incorporate my company in Egypt, and what documents do I need?"
+        "prompt": "What are the legal steps to incorporate my company and protect its intellectual property? What documents can't I skip?"
       }
     },
     "emptyState": {
       "greeting": "Hi, I'm Kalmeron",
-      "description": "57 specialised AI assistants across 7 departments at your service — built for the Egyptian and Arab market. Ask me anything: your idea, business plan, financials, legal setup, or the best opportunities in your sector.",
+      "description": "57 specialised AI assistants across 7 departments at your service — they analyse your ideas, build your financial plans, and guide every strategic decision. Ask me anything.",
       "suggestions": {
-        "pharmacy": "Analyse my pharmacy-delivery app idea for the Egyptian market",
-        "marketing": "Build a marketing plan for a new food product in the local market",
-        "saas": "What are the step-by-step requirements to set up a SaaS company in Egypt?",
-        "breakeven": "Calculate the break-even for a restaurant with 300k EGP startup capital",
-        "company": "Explain the practical difference between a joint-stock and a partnership company in Egypt",
-        "subscription": "Is a book Subscription Box a viable idea in Egypt? Let's analyse it"
+        "pharmacy": "Analyse my pharmacy-delivery app idea for my market",
+        "marketing": "Build a marketing plan for a new product I want to launch",
+        "saas": "What are the step-by-step requirements to build a SaaS company from scratch?",
+        "breakeven": "Calculate the break-even for my project with limited startup capital",
+        "company": "Explain the practical difference between company structures and which fits my situation",
+        "subscription": "Is a book Subscription Box a viable idea? Let's analyse it with numbers"
       }
     },
-    "sources": "Sources from your own documents",
+    "sources": "Sources from your documents",
     "actions": {
       "copy": "Copy",
       "copied": "Copied",
@@ -186,12 +186,12 @@
     }
   },
   "Dashboard": {
-    "header": "Command Center",
-    "headerEyebrow": "Command Center",
+    "header": "Dashboard",
+    "headerEyebrow": "Dashboard",
     "greeting": "Welcome, {name}",
     "defaultName": "founder",
     "subtitle": "Your AI team is ready and working for you right now.",
-    "stage": "Your current company stage",
+    "stage": "Your company stage",
     "dailyCost": "Today's usage",
     "activeAgents": "Active agents",
     "activeAgentsShort": "Active",
@@ -206,14 +206,14 @@
     "alerts": "Alerts",
     "allClear": "All systems running perfectly",
     "consumption": "Usage curve — last 7 days",
-    "consumptionFootnote": "Daily cost history starts accumulating from day one.",
+    "consumptionFootnote": "Daily usage tracking starts from your first session.",
     "opportunityRadar": "Opportunity radar",
     "opportunityOrganizer": "Organiser",
     "opportunityDeadline": "Deadline",
     "opportunityDetails": "Details",
     "noOpportunity": "No saved opportunities yet — open the radar to discover the latest grants and events.",
     "openRadar": "Open opportunity radar",
-    "dailyBrief": "Smart Daily Brief",
+    "dailyBrief": "Daily Brief",
     "dailyBriefDesc": "An intelligent daily summary of key decisions, challenges, and opportunities for your company — prepared automatically every morning.",
     "dailyBriefReady": "Ready now",
     "loadError": "Could not load data — please try again.",
@@ -235,7 +235,7 @@
     "quickActionItems": {
       "ideaAnalyst": {
         "label": "Idea Analyst",
-        "desc": "Full analysis with Egyptian market context"
+        "desc": "Full analysis of your idea and target market"
       },
       "cfo": {
         "label": "AI CFO",
@@ -243,19 +243,19 @@
       },
       "legal": {
         "label": "Legal Guide",
-        "desc": "Incorporation, contracts, compliance"
+        "desc": "Incorporation, contracts, and compliance"
       },
       "marketLab": {
         "label": "Market Lab",
         "desc": "Test your idea with target customers"
       },
       "mistakeShield": {
-        "label": "Mistake Shield",
-        "desc": "Spot project risks before it's too late"
+        "label": "Risk Shield",
+        "desc": "Identify project risks before they cost you"
       },
       "opportunityRadar": {
         "label": "Opportunity Radar",
-        "desc": "Grants, funding, and startup events in Egypt"
+        "desc": "Grants, funding, and events in your sector"
       }
     },
     "discover": {
@@ -265,11 +265,11 @@
       },
       "trendingTools": {
         "title": "Trending AI Tools",
-        "desc": "Top 16 tools for founders in 2026"
+        "desc": "Top tools for founders in 2026"
       },
       "brandVoice": {
         "title": "Brand Voice",
-        "desc": "Define your brand identity once, apply it everywhere"
+        "desc": "Define your brand identity once — apply it everywhere"
       }
     },
     "welcomeCard": {
@@ -301,7 +301,7 @@
   "LearnedSkills": {
     "navLabel": "Learned Skills",
     "title": "Learned Skills",
-    "subtitle": "Kalmeron learns and improves with every task — skills are automatically distilled after each successful task and reused for better performance.",
+    "subtitle": "Kalmeron learns and improves with every task — skills accumulate automatically and are reused for better performance every time.",
     "refresh": "Refresh",
     "consolidate": "Run consolidation cycle",
     "stats": {
@@ -332,19 +332,19 @@
   "ComingSoon": {
     "badge": "Coming soon",
     "betaQ3": "Beta — Q3 2026",
-    "earlyAccessTitle": "Request early access",
-    "earlyAccessDescription": "Leave your email and company name — we'll notify you the moment this feature ships.",
+    "earlyAccessTitle": "Reserve early access",
+    "earlyAccessDescription": "Add your email and company name — we'll notify you the moment this feature ships.",
     "companyName": "Company or project name",
     "useCase": "How will you use this feature?",
     "submit": "Notify me on launch",
-    "submitted": "You're on the early-access list. Thank you for your trust."
+    "submitted": "You're on the early-access list — thank you for your trust."
   },
   "ApiKeys": {
     "title": "API Keys",
     "intro": "Connect Kalmeron to your external systems via secure API keys. Create a key, scope its permissions, and use it from your application or platform.",
     "exampleKey": "kal_sk_live_...",
-    "exampleLabel": "Example API key format",
-    "scopesTitle": "What you can do with the API",
+    "exampleLabel": "API key format",
+    "scopesTitle": "What you can build with the API",
     "scopes": {
       "chat": "Send chat messages programmatically",
       "agents": "Run AI assistants on your own data",
@@ -366,16 +366,16 @@
   },
   "CashRunway": {
     "title": "Cash Runway Calculator",
-    "subtitle": "Know in seconds how many months you have before your cash runs out — and plan your next move with confidence.",
-    "monthlyIncome": "Monthly revenue (EGP)",
-    "monthlyBurn": "Monthly burn (EGP)",
-    "currentCash": "Current bank balance (EGP)",
+    "subtitle": "Know in seconds how many months you have before your cash runs out — and plan your next move with confidence before time runs out.",
+    "monthlyIncome": "Monthly revenue",
+    "monthlyBurn": "Monthly burn",
+    "currentCash": "Current bank balance",
     "calculate": "Calculate runway",
     "result": "You have {months} months of runway left",
     "warning": "⚠️ Warning: less than 6 months — review your financial model and consider fundraising now.",
     "healthy": "✅ Healthy position — keep growing and build your reserve.",
     "infinite": "🚀 Your cash is growing — you are in an excellent position.",
-    "noBurn": "Enter a valid burn figure to compute your runway.",
+    "noBurn": "Enter a valid monthly burn figure to compute your runway.",
     "alarmThresholdLabel": "Alert me when runway drops below",
     "alarmThresholdHint": "An alert will appear on your dashboard when your balance falls below this threshold. Set it to 6 months for a useful action window.",
     "monthsShort": "mo",
@@ -383,7 +383,7 @@
     "updateAlarm": "Update alarm"
   },
   "Wellbeing": {
-    "title": "Founder Energy Quotient (MEQ)",
+    "title": "Founder Energy Quotient",
     "subtitle": "Five minutes to gauge your mental wellbeing as a founder. Your answers are completely private — no one sees them.",
     "questionLabel": "Question {current} of {total}",
     "next": "Next",

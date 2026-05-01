@@ -42,7 +42,7 @@ const ROWS: ComparisonRow[] = [
   { category: "الأعمال", feature: "رادار الفرص والتمويل", kalmeron: true, consultants: false, chatgpt: false, notion: false, note: "تنبيهات فورية بالفرص المناسبة لك" },
   { category: "القانون والامتثال", feature: "عقود قانونية جاهزة للتخصيص", kalmeron: true, consultants: true, chatgpt: false, notion: false },
   { category: "القانون والامتثال", feature: "متوافق مع قانون 151 المصري", kalmeron: true, consultants: true, chatgpt: false, notion: false },
-  { category: "القانون والامتثال", feature: "إرشادات التأسيس والضرائب المصرية", kalmeron: true, consultants: true, chatgpt: "partial", notion: false },
+  { category: "القانون والامتثال", feature: "إرشادات التأسيس والامتثال القانوني", kalmeron: true, consultants: true, chatgpt: "partial", notion: false },
   { category: "الحماية والمخاطر", feature: "حارس الأخطاء الاستباقي", kalmeron: true, consultants: "partial", chatgpt: false, notion: false, note: "يحذرك من الأخطاء قبل وقوعها" },
   { category: "الحماية والمخاطر", feature: "تحليل المخاطر القانونية والمالية", kalmeron: true, consultants: true, chatgpt: "partial", notion: false },
   { category: "الإنتاجية", feature: "متاح 24/7 بدون انتظار", kalmeron: true, consultants: false, chatgpt: true, notion: true },
@@ -51,11 +51,11 @@ const ROWS: ComparisonRow[] = [
 ];
 
 const COST_COMPARISON = [
-  { item: "كلميرون (Pro)", monthly: "من 499 ج.م", isKalmeron: true },
-  { item: "مستشار مالي", monthly: "5,000–15,000 ج.م", isKalmeron: false },
-  { item: "محامي شركات", monthly: "3,000–10,000 ج.م", isKalmeron: false },
-  { item: "محلل سوق", monthly: "3,000–8,000 ج.م", isKalmeron: false },
-  { item: "الإجمالي (مستشارون)", monthly: "+21,000 ج.م", isKalmeron: false },
+  { item: "كلميرون (Pro)", monthly: "جزء بسيط من التكلفة", isKalmeron: true },
+  { item: "مستشار مالي", monthly: "$500 – $2,000 / شهر", isKalmeron: false },
+  { item: "محامي شركات", monthly: "$300 – $1,200 / شهر", isKalmeron: false },
+  { item: "محلل سوق", monthly: "$300 – $900 / شهر", isKalmeron: false },
+  { item: "الإجمالي (مستشارون)", monthly: "+$2,500 / شهر", isKalmeron: false },
 ];
 
 const TIME_COMPARISON = [

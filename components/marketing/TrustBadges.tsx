@@ -10,8 +10,8 @@ export interface TrustBadgesProps {
 const BADGES = [
   {
     icon: Scale,
-    title: "قانون 151 المصري",
-    subtitle: "متوافق مع تشريعات حماية البيانات",
+    title: "حماية البيانات الدولية",
+    subtitle: "متوافق مع تشريعات حماية البيانات العالمية",
   },
   {
     icon: ShieldCheck,

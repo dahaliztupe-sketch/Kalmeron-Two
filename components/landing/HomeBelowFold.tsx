@@ -37,7 +37,7 @@ const DEPARTMENTS = [
     icon: FlaskConical,
     title: "مختبر السوق",
     subtitle: "Market Lab",
-    desc: "اختبر فكرتك مع عملاء افتراضيين قبل أن تنفق جنيهاً واحداً على الإطلاق.",
+    desc: "اختبر فكرتك مع عملاء افتراضيين قبل أن تنفق أي ميزانية على الإطلاق.",
     gradient: "from-fuchsia-500 to-pink-500",
     border: "border-fuchsia-500/20 hover:border-fuchsia-400/50",
     glowColor: "rgba(217,70,239,0.12)",
@@ -55,7 +55,7 @@ const DEPARTMENTS = [
     icon: Scale,
     title: "الحارس القانوني",
     subtitle: "Legal Guard",
-    desc: "عقود ونماذج متوافقة مع التشريعات المصرية وقانون GDPR وقانون 151.",
+    desc: "عقود ونماذج متوافقة مع التشريعات الدولية ومعايير حماية البيانات العالمية.",
     gradient: "from-amber-500 to-orange-500",
     border: "border-amber-500/20 hover:border-amber-400/50",
     glowColor: "rgba(245,158,11,0.12)",
@@ -84,7 +84,7 @@ const DEPARTMENTS = [
 
 const COMPARISON = [
   { feature: "متاح ٢٤/٧", kalmeron: true,   consultant: false,       tools: "جزئياً" },
-  { feature: "متخصص للسوق العربي",  kalmeron: true,   consultant: "أحياناً", tools: false },
+  { feature: "يفهم سياق أعمالك وسوقك",  kalmeron: true,   consultant: "أحياناً", tools: false },
   { feature: "نمذجة مالية احترافية", kalmeron: true, consultant: true,  tools: false },
   { feature: "عقود قانونية جاهزة",  kalmeron: true,   consultant: true,      tools: false },
   { feature: "لغة عربية أصيلة",    kalmeron: true,   consultant: false,      tools: false },
@@ -102,7 +102,7 @@ const TESTIMONIALS = [
     color: "from-cyan-500 to-indigo-500",
     stars: 5,
     text: "كلميرون ساعدني أعمل خطة أعمال كاملة في ثلاث ساعات بدل ثلاثة أشهر. المستثمر انبهر بالنموذج المالي.",
-    metric: "جمع ٢.٥ مليون جنيه تمويل",
+    metric: "أغلق جولة تمويل ناجحة خلال ٣ أشهر",
   },
   {
     name: "مريم خالد",
@@ -110,8 +110,8 @@ const TESTIMONIALS = [
     avatar: "م",
     color: "from-fuchsia-500 to-pink-500",
     stars: 5,
-    text: "المساعد القانوني وفّر عليّ ٨ آلاف جنيه محامي. العقود جاهزة وقابلة للتخصيص بالكامل.",
-    metric: "وفّرت ١٢٠+ ألف جنيه سنوياً",
+    text: "المساعد القانوني وفّر عليّ ثمن محامٍ بالكامل. العقود جاهزة وقابلة للتخصيص في دقائق.",
+    metric: "وفّرت أكثر من ٦٠٪ من تكاليف المستشارين",
   },
   {
     name: "كريم منصور",
@@ -199,7 +199,7 @@ function DepartmentsSection() {
             <span className="brand-gradient-text">بالعربية، ٢٤/٧</span>
           </h2>
           <p className="text-neutral-400 text-base md:text-lg max-w-2xl mx-auto leading-relaxed">
-            بدلاً من إنفاق آلاف الجنيهات على مستشارين متفرقين — كل خبرة تحتاجها موجودة هنا.
+            بدلاً من إنفاق الآلاف على مستشارين متفرقين — كل خبرة تحتاجها في مكان واحد.
           </p>
         </motion.div>
 
@@ -275,7 +275,7 @@ function ComparisonSection() {
             <span className="brand-gradient-text"> كلميرون يكفيك</span>
           </h2>
           <p className="text-neutral-400 max-w-lg mx-auto text-sm md:text-base">
-            المؤسسون يدفعون ١٥,٠٠٠+ ج.م شهرياً لمستشارين متفرقين. كلميرون يعمل كلهم بكسر التكلفة.
+            المؤسسون يدفعون آلافاً شهرياً لمستشارين متفرقين. كلميرون يعمل كلهم بكسر التكلفة.
           </p>
         </motion.div>
 
@@ -417,7 +417,7 @@ function FinalCTA() {
           </h2>
 
           <p className="text-neutral-400 text-base sm:text-lg mb-10 max-w-xl mx-auto leading-relaxed">
-            انضم لآلاف المؤسسين المصريين والعرب الذين يبنون شركاتهم مع كلميرون كل يوم.
+            انضم لآلاف رواد الأعمال الذين يبنون شركاتهم مع كلميرون كل يوم.
           </p>
 
           <form onSubmit={submit} className="relative max-w-xl mx-auto group mb-8">
@@ -497,7 +497,7 @@ function SiteFooter() {
           <div className="col-span-2 md:col-span-1">
             <BrandLogo size={36} iconOnly showWordmark={false} />
             <p className="mt-4 text-sm text-neutral-500 leading-relaxed max-w-[200px]">
-              نظام تشغيل الأعمال الذكي للمؤسّس العربي.
+              شريكك الذكي في بناء شركتك — بالعربية.
             </p>
             <div className="mt-4 flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />

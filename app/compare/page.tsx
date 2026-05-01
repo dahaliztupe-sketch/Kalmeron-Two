@@ -3,10 +3,10 @@ import PageClient from "./_page-client";
 
 export const metadata: Metadata = {
   title: "لماذا كلميرون؟ — مقارنة مع ChatGPT وNotion AI وغيرها",
-  description: "كلميرون هو الخيار الأوّل للمؤسّس العربي — ٥٧ مساعداً ذكياً يفهمون السوق المصري وقانون العمل والبيئة العربية. قارن مع ChatGPT وNotion AI وJasper.",
+  description: "كلميرون هو الخيار الأوّل للمؤسّس — ٥٧ مساعداً ذكياً متخصصاً في قانون الشركات والنمذجة المالية والتسويق. قارن مع ChatGPT وNotion AI وJasper.",
   openGraph: {
     title: "لماذا كلميرون وليس ChatGPT؟",
-    description: "كلميرون مبني للمؤسّس العربي — يفهم السوق المصري، قانون الشركات، والبيئة العربية. ليس أداةً عامة.",
+    description: "كلميرون مبني للمؤسّس — يفهم سوقك، قانون الشركات، والبيئة العربية. ليس أداةً عامة — فريق مساعدين متخصصين.",
   },
   alternates: { canonical: "/compare" },
 };

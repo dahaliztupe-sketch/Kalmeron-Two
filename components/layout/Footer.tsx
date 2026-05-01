@@ -13,7 +13,7 @@ export function Footer() {
         <div className="space-y-4 max-w-sm">
           <BrandLogo size={40} iconOnly />
           <p className="text-neutral-300 text-sm leading-relaxed">
-            شريكك المؤسس المدعوم بالذكاء الاصطناعي للسوق المصري — مصمم لتمكينك من اختراق الحواجز وبناء المستقبل.
+            شريكك الذكي في بناء شركتك — من الفكرة الأولى إلى التوسع والنمو.
           </p>
         </div>
 
@@ -48,7 +48,7 @@ export function Footer() {
           Kalmeron AI © {currentYear}
         </p>
         <p className="text-neutral-400 text-[11px] text-center max-w-md">
-          جميع الحقوق محفوظة. مصممة لدعم الابتكار في جمهورية مصر العربية.
+          جميع الحقوق محفوظة. مصنوعة لرائد الأعمال في كل مكان.
         </p>
       </div>
     </footer>

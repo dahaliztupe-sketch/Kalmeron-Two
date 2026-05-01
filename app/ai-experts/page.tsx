@@ -16,7 +16,7 @@ export default function ExpertsIndexPage() {
     <SeoLandingShell
       eyebrow="الخبراء"
       title={`${EXPERTS.length} خبيراً ذكياً يعملون كفريق التأسيس الخاص بك`}
-      description="كل خبير من خبراء كلميرون متخصص بعمق في مجاله، مدرب على بيانات السوق المصري والخليجي. اختر الخبير الأنسب لاحتياجك."
+      description="كل خبير من خبراء كلميرون متخصص بعمق في مجاله، مدرب على بيانات أسواق متعددة وسياقات ريادية متنوعة. اختر الخبير الأنسب لاحتياجك."
       breadcrumbs={[{ label: "الخبراء" }]}
     >
       {EXPERT_CATEGORIES.map((cat) => {

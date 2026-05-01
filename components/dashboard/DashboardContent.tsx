@@ -25,7 +25,7 @@ export function DashboardContent({ initialInsight }: DashboardContentProps) {
           <Card className="glass bg-[#16161D]/50 border-neutral-700/50 rounded-3xl overflow-hidden shadow-2xl">
             <CardContent className="p-8">
               <h2 className="text-2xl font-bold text-[rgb(var(--brand-cyan))] mb-4">مستشارك الذكي</h2>
-              <p className="text-neutral-300 text-lg">ابدأ محادثة مع كلميرون لتحويل رؤيتك إلى واقع ملموس بخبرة السوق المصري.</p>
+              <p className="text-neutral-300 text-lg">ابدأ محادثة مع كلميرون لتحويل رؤيتك إلى خطوات عملية قابلة للتنفيذ اليوم.</p>
             </CardContent>
           </Card>
         </motion.div>

@@ -3,7 +3,7 @@ import PageClient from "./_page-client";
 
 export const metadata: Metadata = {
   title: "فرص الأعمال — Kalmeron AI",
-  description: "استكشف فرصاً تجارية جاهزة في السوق المصري والعربي. تحليل ذكي للفرصة، وحجم السوق، والمنافسين، وخطوات التنفيذ — كل ذلك بالعربية الأصيلة.",
+  description: "استكشف فرصاً تجارية جاهزة في سوقك المستهدف. تحليل ذكي للفرصة، وحجم السوق، والمنافسين، وخطوات التنفيذ — كل ذلك بالعربية الأصيلة.",
 };
 
 export default function Page() {

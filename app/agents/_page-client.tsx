@@ -102,8 +102,8 @@ const AGENTS: Agent[] = [
   {
     id: "idea-1", name: "مُحلّل الأفكار", nameEn: "Idea Validator", stage: "idea",
     icon: Star, popular: true, live: true,
-    desc: "تقييم شامل لفكرتك مع تقرير SWOT وتحليل الجدوى للسوق المصري.",
-    capabilities: ["تقييم SWOT متكامل", "جدوى السوق المصري", "نقاط القوة والضعف", "توصيات التحسين"],
+    desc: "تقييم شامل لفكرتك مع تقرير SWOT وتحليل الجدوى لسوقك المستهدف.",
+    capabilities: ["تقييم SWOT متكامل", "جدوى السوق المستهدف", "نقاط القوة والضعف", "توصيات التحسين"],
   },
   {
     id: "idea-2", name: "محلل المنافسين", nameEn: "Competitor Intel", stage: "idea",
@@ -115,7 +115,7 @@ const AGENTS: Agent[] = [
     id: "idea-3", name: "باحث السوق", nameEn: "Market Researcher", stage: "idea",
     icon: Globe2, live: true,
     desc: "يحلل حجم السوق (TAM/SAM/SOM) والاتجاهات والشرائح الأكثر نمواً.",
-    capabilities: ["حساب TAM/SAM/SOM", "اتجاهات السوق المصري", "الشرائح الأعلى قيمة", "توصيات دخول السوق"],
+    capabilities: ["حساب TAM/SAM/SOM", "اتجاهات السوق العالمي", "الشرائح الأعلى قيمة", "توصيات دخول السوق"],
   },
   {
     id: "idea-4", name: "مُصمّم شخصيات العملاء", nameEn: "Persona Designer", stage: "idea",
@@ -165,13 +165,13 @@ const AGENTS: Agent[] = [
     id: "startup-4", name: "حارس الأخطاء", nameEn: "Mistake Shield", stage: "startup",
     icon: Shield, live: true,
     desc: "يحميك من الأخطاء عبر تحذيرات استباقية مبنية على السياق والمرحلة.",
-    capabilities: ["تحذيرات استباقية", "أخطاء السوق المصري", "تحليل المخاطر", "خطة الوقاية"],
+    capabilities: ["تحذيرات استباقية", "أخطاء رواد الأعمال", "تحليل المخاطر", "خطة الوقاية"],
   },
   {
     id: "startup-5", name: "مستشار التوظيف", nameEn: "Hiring Advisor", stage: "startup",
     icon: Users, isNew: true, live: true,
-    desc: "يساعدك على بناء فريقك الأول باختيار الأدوار المناسبة وأسعار السوق المصري.",
-    capabilities: ["الوصف الوظيفي المناسب", "أسعار السوق المصري", "جذب أفضل المواهب", "بدائل اقتصادية"],
+    desc: "يساعدك على بناء فريقك الأول باختيار الأدوار المناسبة ورواتب وأسعار تنافسية.",
+    capabilities: ["الوصف الوظيفي المناسب", "رواتب وأسعار تنافسية", "جذب أفضل المواهب", "بدائل اقتصادية"],
   },
   {
     id: "startup-6", name: "بنّاء العلامة التجارية", nameEn: "Brand Builder", stage: "startup",
@@ -202,7 +202,7 @@ const AGENTS: Agent[] = [
   {
     id: "growth-3", name: "استراتيجي التسويق", nameEn: "Marketing Strategist", stage: "growth",
     icon: TrendingUp, isNew: true, live: true,
-    desc: "يضع خطة تسويق شاملة: قنوات، محتوى، ميزانية، وخطة 90 يوم للسوق المصري.",
+    desc: "يضع خطة تسويق شاملة: قنوات، محتوى، ميزانية، وخطة 90 يوم لإطلاق ناجح.",
     capabilities: ["خطة تسويق 90 يوم", "توزيع الميزانية", "خطة محتوى عربي", "Facebook/TikTok/Instagram"],
   },
   {
@@ -214,7 +214,7 @@ const AGENTS: Agent[] = [
   {
     id: "growth-5", name: "متحف النجاح", nameEn: "Success Museum", stage: "growth",
     icon: Lightbulb, live: true,
-    desc: "يحلل قصص نجاح الشركات المصرية والعالمية ويستخلص الدروس القابلة للتطبيق.",
+    desc: "يحلل قصص نجاح الشركات الناجحة حول العالم ويستخلص الدروس القابلة للتطبيق.",
     capabilities: ["قصص نجاح مشابهة", "دروس قابلة للتطبيق", "مقارنة مع حالتك", "استراتيجيات مجربة"],
   },
   {

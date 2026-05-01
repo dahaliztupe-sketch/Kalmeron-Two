@@ -24,7 +24,7 @@ const PHASE_MAP: Record<string, string> = {
   // وكلاء المشاريع المتخصصون
   idea_validator_node: 'تقييم فكرتك من عدة زوايا...',
   plan_builder_node: 'بناء خطة العمل التفصيلية...',
-  mistake_shield_node: 'فحص الأخطاء القاتلة في السوق المصري...',
+  mistake_shield_node: 'فحص الأخطاء القاتلة الشائعة لدى رواد الأعمال...',
   success_museum_node: 'استدعاء قصص نجاح مشابهة...',
   opportunity_radar_node: 'مسح فرص التمويل والفعاليات...',
   cfo_agent_node: 'إجراء تحليل مالي تفصيلي...',

@@ -116,7 +116,7 @@ export default function DepartmentsPage() {
             أقسام شركتك
           </h1>
           <p className="text-text-secondary text-sm md:text-base max-w-2xl leading-relaxed">
-            فريقك الكامل من الوكلاء الذكيين موزّع على 7 أقسام متخصصة — كل قسم مجهّز بمساعدين أذكياء يعرفون السوق المصري والعربي.
+            فريقك الكامل من الوكلاء الذكيين موزّع على 7 أقسام متخصصة — كل قسم مجهّز بمساعدين أذكياء يفهمون سوقك ويتحدثون لغتك.
           </p>
         </motion.div>
 
