@@ -90,6 +90,6 @@ export async function POST(req: NextRequest) {
 export async function GET() {
   return NextResponse.json({
     ok: true,
-    note: "POST { workflowId, inputs } to run a workflow. Use /api/workflows/list (TBD) to enumerate.",
+    note: "POST { workflowId, inputs } to run a workflow. Use GET /api/workflows/list to enumerate available workflows.",
   });
 }

@@ -22,6 +22,14 @@ import { operationsManagerAction } from '@/src/ai/agents/operations-manager/agen
 import { investmentAdvisorAction } from '@/src/ai/agents/investment-advisor/agent';
 import { expansionPlannerAction } from '@/src/ai/agents/expansion-planner/agent';
 import { boardAdvisorAction } from '@/src/ai/agents/board-advisor/agent';
+// ═══ C-Suite Executive Agents ═══
+import { ceoAgentAction } from '@/src/ai/agents/ceo/agent';
+import { cooAgentAction } from '@/src/ai/agents/coo/agent';
+import { cmoAgentAction } from '@/src/ai/agents/cmo/agent';
+import { ctoAgentAction } from '@/src/ai/agents/cto/agent';
+import { cloAgentAction } from '@/src/ai/agents/clo/agent';
+import { chroAgentAction } from '@/src/ai/agents/chro/agent';
+import { csoAgentAction } from '@/src/ai/agents/cso/agent';
 
 export const TaskTools = {
   TaskCreate: {
@@ -92,6 +100,9 @@ export interface AgentDefinition {
     | 'HIRING_ADVISOR' | 'BRAND_BUILDER'
     | 'SALES_COACH' | 'MARKETING_STRATEGIST' | 'OPERATIONS_MANAGER'
     | 'INVESTMENT_ADVISOR' | 'EXPANSION_PLANNER' | 'BOARD_ADVISOR'
+    // C-Suite Executive Intents
+    | 'CEO_AGENT' | 'COO_AGENT' | 'CMO_AGENT' | 'CTO_AGENT'
+    | 'CLO_AGENT' | 'CHRO_AGENT' | 'CSO_AGENT'
     | 'TOOL';
   /** مرحلة رائد الأعمال المستهدفة — تستخدمها الواجهة لتجميع الوكلاء. */
   stage: AgentStage;
@@ -507,6 +518,161 @@ export const AgentRegistry: Record<string, AgentDefinition> = {
       userId: z.string(),
     }),
     action: codeInterpreterAgent,
+  },
+
+  // ═══════════════════════════════════════════════════════════════════
+  // طبقة القيادة التنفيذية (C-Suite) — هيكل الشركات الكبرى
+  // ═══════════════════════════════════════════════════════════════════
+
+  'ceo-agent': {
+    name: 'ceo-agent',
+    displayNameAr: 'المدير التنفيذي',
+    description: 'الرئيس التنفيذي الذكي — يُوجّه، يُوزّع المهام على الفريق التنفيذي، ويُلخّص القرارات الاستراتيجية الكبرى.',
+    intent: 'CEO_AGENT',
+    stage: 'scale',
+    graphNode: 'ceo_agent_node',
+    preferredModel: 'PRO',
+    capabilities: ['analysis', 'delegation', 'strategic_synthesis', 'structured_output'],
+    allowedTools: ['ceo.delegate', 'ceo.synthesize'],
+    softCostBudgetUsd: 0.15,
+    inputSchema: z.object({
+      message: z.string(),
+      context: z.string().optional(),
+      urgency: z.enum(['low', 'medium', 'high', 'critical']).optional(),
+      domain: z.enum(['finance', 'marketing', 'operations', 'technology', 'legal', 'hr', 'strategy', 'general']).optional(),
+    }),
+    action: ceoAgentAction,
+    thinkingLabelAr: 'تحليل القرار الاستراتيجي على مستوى القيادة...',
+  },
+
+  'coo-agent': {
+    name: 'coo-agent',
+    displayNameAr: 'مدير العمليات التنفيذي',
+    description: 'الرئيس التنفيذي للعمليات — يُحوّل الاستراتيجية لخطوات تشغيلية قابلة للتنفيذ والقياس.',
+    intent: 'COO_AGENT',
+    stage: 'growth',
+    graphNode: 'coo_agent_node',
+    preferredModel: 'FLASH',
+    capabilities: ['process_optimization', 'risk_management', 'okr', 'structured_output'],
+    allowedTools: ['coo.plan', 'coo.metrics'],
+    softCostBudgetUsd: 0.06,
+    inputSchema: z.object({
+      message: z.string(),
+      context: z.string().optional(),
+      focusArea: z.enum(['process', 'risk', 'okr', 'quality', 'general']).optional(),
+      currentMetrics: z.record(z.string(), z.union([z.number(), z.string()])).optional(),
+    }),
+    action: cooAgentAction,
+    thinkingLabelAr: 'تحليل العمليات وتحديد فرص التحسين...',
+  },
+
+  'cmo-agent': {
+    name: 'cmo-agent',
+    displayNameAr: 'مدير التسويق التنفيذي',
+    description: 'الرئيس التنفيذي للتسويق — يبني العلامة التجارية ويُصمّم استراتيجيات النمو للسوق العربي.',
+    intent: 'CMO_AGENT',
+    stage: 'growth',
+    graphNode: 'cmo_agent_node',
+    preferredModel: 'FLASH',
+    capabilities: ['marketing_strategy', 'brand', 'growth', 'structured_output'],
+    allowedTools: ['cmo.strategy', 'cmo.brand'],
+    softCostBudgetUsd: 0.06,
+    inputSchema: z.object({
+      message: z.string(),
+      industry: z.string().optional(),
+      targetAudience: z.string().optional(),
+      budget: z.string().optional(),
+      currentStage: z.enum(['idea', 'launch', 'growth', 'scale']).optional(),
+    }),
+    action: cmoAgentAction,
+    thinkingLabelAr: 'رسم استراتيجية التسويق والنمو...',
+  },
+
+  'cto-agent': {
+    name: 'cto-agent',
+    displayNameAr: 'مدير التقنية التنفيذي',
+    description: 'الرئيس التنفيذي للتقنية — يُقيّم التكنولوجيا ويُصمّم البنية التحتية ويقود التحول الرقمي.',
+    intent: 'CTO_AGENT',
+    stage: 'growth',
+    graphNode: 'cto_agent_node',
+    preferredModel: 'FLASH',
+    capabilities: ['technical_assessment', 'architecture', 'ai_implementation'],
+    allowedTools: ['cto.assess', 'cto.recommend'],
+    softCostBudgetUsd: 0.06,
+    inputSchema: z.object({
+      message: z.string(),
+      currentTechStack: z.string().optional(),
+      teamSize: z.number().optional(),
+      stage: z.enum(['mvp', 'launch', 'growth', 'scale']).optional(),
+      budget: z.string().optional(),
+    }),
+    action: ctoAgentAction,
+    thinkingLabelAr: 'تقييم التقنية ووضع خارطة الطريق التقنية...',
+  },
+
+  'clo-agent': {
+    name: 'clo-agent',
+    displayNameAr: 'المستشار القانوني الأول',
+    description: 'الرئيس التنفيذي للشؤون القانونية — يُحلّل المخاطر القانونية ويضمن الامتثال للقانون المصري والدولي.',
+    intent: 'CLO_AGENT',
+    stage: 'startup',
+    graphNode: 'clo_agent_node',
+    preferredModel: 'FLASH',
+    capabilities: ['legal_analysis', 'compliance', 'risk_assessment'],
+    allowedTools: ['clo.analyze', 'legal.search'],
+    softCostBudgetUsd: 0.06,
+    inputSchema: z.object({
+      message: z.string(),
+      companyType: z.string().optional(),
+      jurisdiction: z.enum(['egypt', 'uae', 'ksa', 'international']).optional(),
+      urgency: z.enum(['low', 'medium', 'high']).optional(),
+    }),
+    action: cloAgentAction,
+    thinkingLabelAr: 'تحليل الإطار القانوني والامتثال التنظيمي...',
+  },
+
+  'chro-agent': {
+    name: 'chro-agent',
+    displayNameAr: 'مدير الموارد البشرية التنفيذي',
+    description: 'الرئيس التنفيذي للموارد البشرية — يستقطب المواهب ويبني ثقافة مؤسسية قوية وهياكل تنظيمية فعّالة.',
+    intent: 'CHRO_AGENT',
+    stage: 'growth',
+    graphNode: 'chro_agent_node',
+    preferredModel: 'FLASH',
+    capabilities: ['hr_strategy', 'recruitment', 'culture_building'],
+    allowedTools: ['chro.strategy', 'chro.recruit'],
+    softCostBudgetUsd: 0.05,
+    inputSchema: z.object({
+      message: z.string(),
+      companySize: z.number().optional(),
+      industry: z.string().optional(),
+      stage: z.enum(['startup', 'growth', 'scale']).optional(),
+      hrChallenge: z.enum(['hiring', 'retention', 'culture', 'performance', 'structure', 'general']).optional(),
+    }),
+    action: chroAgentAction,
+    thinkingLabelAr: 'بناء استراتيجية الموارد البشرية والمواهب...',
+  },
+
+  'cso-agent': {
+    name: 'cso-agent',
+    displayNameAr: 'مدير الاستراتيجية التنفيذي',
+    description: 'الرئيس التنفيذي للاستراتيجية — يرصد الفرص، يُصمّم التوسع، ويبني رؤية الأعمال على المدى البعيد.',
+    intent: 'CSO_AGENT',
+    stage: 'scale',
+    graphNode: 'cso_agent_node',
+    preferredModel: 'PRO',
+    capabilities: ['strategic_planning', 'opportunity_identification', 'expansion', 'investor_relations'],
+    allowedTools: ['cso.analyze', 'cso.opportunity'],
+    softCostBudgetUsd: 0.12,
+    inputSchema: z.object({
+      message: z.string(),
+      industry: z.string().optional(),
+      currentStage: z.enum(['idea', 'startup', 'growth', 'scale']).optional(),
+      horizonYears: z.union([z.literal(1), z.literal(3), z.literal(5), z.literal(10)]).optional(),
+      focusArea: z.enum(['opportunity', 'expansion', 'investor', 'innovation', 'general']).optional(),
+    }),
+    action: csoAgentAction,
+    thinkingLabelAr: 'رسم الرؤية الاستراتيجية واكتشاف الفرص...',
   },
 };
 

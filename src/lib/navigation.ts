@@ -6,7 +6,7 @@ import {
   Building2, ScrollText, Lightbulb, Store, User as UserIcon,
   Target, Brain, CreditCard, Inbox as InboxIcon, Sparkles, Cpu,
   BarChart3, Calculator, LayoutTemplate, Layers, Mic, Eye, ShieldCheck, BookOpen,
-  AlertTriangle, HandHeart, Compass, Activity, ChefHat,
+  AlertTriangle, HandHeart, Compass, Activity, ChefHat, Network,
 } from "lucide-react";
 
 export type NavItem = {
@@ -79,6 +79,7 @@ export const NAV_SECTIONS: NavSection[] = [
   {
     heading: "الأدوات الإستراتيجية",
     items: [
+      { href: "/org-chart", label: "الهيكل التنظيمي", icon: Network },
       { href: "/agents", label: "عرض الوكلاء", icon: Cpu },
       { href: "/templates", label: "مكتبة القوالب", icon: LayoutTemplate },
       { href: "/trending-tools", label: "أدوات AI الرائجة", icon: Layers },

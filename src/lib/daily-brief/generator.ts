@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Daily Brief generator — shared by GET /api/daily-brief and POST /send.
  * Pulls real signals from Firestore (operations, approvals, recipes) when
