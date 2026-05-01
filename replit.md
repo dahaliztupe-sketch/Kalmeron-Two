@@ -1,6 +1,40 @@
 # Kalmeron AI (ai-studio-applet)
 
-## جلسة 2 — تحسينات الروادماب الكاملة — 2026-05-01 (آخر تحديث)
+## جلسة Replit Migration + Health & Monitoring — 2026-05-01 (آخر تحديث)
+
+### ما تم في هذه الجلسة
+| التغيير | التفاصيل |
+|---------|----------|
+| **Replit Gemini Integration** | `src/lib/gemini.ts` يستخدم الآن `AI_INTEGRATIONS_GEMINI_API_KEY` + `AI_INTEGRATIONS_GEMINI_BASE_URL` كـ fallback أوّل قبل GEMINI_API_KEY |
+| **`/api/health` — Python sidecars** | يفحص الآن الـ 4 sidecars (PDF Worker, Egypt Calc, LLM Judge, Embeddings Worker) عبر `/health` endpoint لكلٍّ منها |
+| **`/api/health` — LLM providers** | يستدعي `listAvailableProviders()` ويعرض المزوّدين المتاحين في `meta.llmProviders` |
+| **`/api/health` — Billing** | يتحقق من Stripe + Fawry بشكل صريح |
+| **`/api/health` — Email** | يتحقق من `RESEND_API_KEY` أوّلاً ثم `SENDGRID_API_KEY` (بدلاً من SENDGRID فقط) |
+| **`omnichannel.ts` Email** | يستخدم الآن Resend كمزوّد أساسي + SendGrid كـ fallback |
+| **Admin Mission Control** | لوحة `SystemHealthPanel` مدمجة — تعرض صحة كل الخدمات، تتحدث كل 30 ثانية، مقسّمة على 4 مجموعات |
+
+### حالة الخدمات (Replit)
+| الخدمة | المنفذ | الحالة |
+|--------|--------|--------|
+| Next.js App | 5000 | ✅ running |
+| PDF Worker | 8000 | ✅ running |
+| Egypt Calc | 8008 | ✅ running |
+| LLM Judge | 8080 | ✅ running (stub — يحتاج GEMINI_API_KEY) |
+| Embeddings Worker | 8099 | ✅ running |
+
+### الأسرار المطلوبة من المستخدم
+| المفتاح | الأولوية | الغرض |
+|---------|---------|--------|
+| `GEMINI_API_KEY` | **عالية جداً** | تشغيل وكلاء الذكاء الاصطناعي + LLM Judge |
+| `FIREBASE_SERVICE_ACCOUNT_KEY` | **عالية** | Firebase Admin SDK (JSON كامل) |
+| `STRIPE_SECRET_KEY` | متوسطة | المدفوعات الدولية |
+| `STRIPE_WEBHOOK_SECRET` | متوسطة | التحقق من Stripe webhooks |
+| `FAWRY_MERCHANT_CODE` + `FAWRY_SECURITY_KEY` | متوسطة | مدفوعات فوري |
+| `RESEND_API_KEY` | متوسطة | البريد الإلكتروني |
+
+---
+
+## جلسة 2 — تحسينات الروادماب الكاملة — 2026-05-01
 
 ### ما تم إنجازه في الجلسة 2
 | التحسين | التفاصيل |

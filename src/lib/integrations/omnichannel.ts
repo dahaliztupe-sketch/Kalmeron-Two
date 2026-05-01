@@ -115,15 +115,31 @@ async function sendTelegram(chatId: string, text: string): Promise<OutboundResul
   return { ok: true, providerMessageId: String(data?.result?.message_id ?? '') };
 }
 
-/* ---------- Email (SendGrid, fallback Gmail via SMTP not included) ---------- */
+/* ---------- Email (Resend primary, SendGrid fallback) ---------- */
 
 async function sendEmail(to: string, subject: string, body: string): Promise<OutboundResult> {
-  const key = process.env.SENDGRID_API_KEY;
+  // Primary: Resend
+  const resendKey = process.env.RESEND_API_KEY;
+  if (resendKey) {
+    const from = process.env.EMAIL_FROM || 'Kalmeron <noreply@kalmeron.app>';
+    const res = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${resendKey}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ from, to: [to], subject, text: body }),
+      signal: AbortSignal.timeout(8_000),
+    });
+    if (!res.ok) return { ok: false, error: `Resend HTTP ${res.status}` };
+    const data = await res.json().catch(() => ({})) as { id?: string };
+    return { ok: true, providerMessageId: data.id };
+  }
+
+  // Fallback: SendGrid
+  const sgKey = process.env.SENDGRID_API_KEY;
   const from = process.env.EMAIL_FROM || 'noreply@kalmeron.app';
-  if (!key) return { ok: false, error: 'SendGrid API key missing' };
+  if (!sgKey) return { ok: false, error: 'Email provider not configured (set RESEND_API_KEY or SENDGRID_API_KEY)' };
   const res = await fetch('https://api.sendgrid.com/v3/mail/send', {
     method: 'POST',
-    headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
+    headers: { Authorization: `Bearer ${sgKey}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({
       personalizations: [{ to: [{ email: to }] }],
       from: { email: from },
