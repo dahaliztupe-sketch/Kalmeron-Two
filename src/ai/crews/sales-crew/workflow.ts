@@ -6,7 +6,7 @@ import { z } from 'zod';
 export const prospectingAgent = new Agent({
   name: 'Prospecting Agent',
   instructions: 'أنت خبير مبيعات (SDR). مهمتك البحث عن العملاء المحتملين وتأهيلهم بناءً على معايير محددة.',
-  model: { provider: 'google', name: 'gemini-2.5-flash-lite' } // Cost optimization via Gateway
+  model: { provider: 'google', name: 'gemini-2.5-flash' } // Cost optimization via Gateway
 });
 
 // 2. Content Writer Agent

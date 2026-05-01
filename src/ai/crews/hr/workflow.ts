@@ -42,7 +42,7 @@ export const schedulerAgent = new Agent({
   مهمتك: التواصل مع المرشحين المختارين، واقتراح مواعيد متاحة للمقابلات، وتأكيد الحجوزات.
   استلهم من Paradox (Olivia) التي تحجز المقابلات تلقائيًا.`,
   // Simple scheduling => Flash Lite
-  model: { provider: 'google', name: 'gemini-2.5-flash-lite' },
+  model: { provider: 'google', name: 'gemini-2.5-flash' },
 });
 
 // 4. Interview Companion Agent

@@ -1,189 +1,216 @@
-# Kalmeron AI Studio — خطة التطوير الشاملة
+# Kalmeron AI Studio — خطة التطوير الشاملة (30+ مرحلة)
 
-**تاريخ الإنشاء:** 2026-05-01  
-**الحالة:** نشطة - مرجع إلزامي لكل فريق التطوير  
-**المنصة:** Next.js 16 + Firebase + LangGraph + Python Microservices
-
----
-
-## نظرة عامة على المنصة الحالية
-
-**ما تم بناؤه:**
-- 57+ وكيل ذكاء اصطناعي متخصص (CEO، CFO، CMO، CTO، CLO، CHRO، CSO + 24 وكيل أقسام)
-- محادثة ذكية بث مباشر (SSE) مع RAG وحماية من Prompt Injection
-- محرك سير العمل (Workflows Engine) مع 5 قوالب جاهزة
-- بناء الشركة الافتراضية مع هيكل تنظيمي
-- نظام قاعدة معرفة (RAG) - PDF، Excel، CSV
-- صفحات: dashboard، chat، inbox، company-builder، investor، ideas/analyze، brand-voice
-- 4 خدمات Python: PDF Worker، Egypt Calc، LLM Judge، Embeddings Worker
-- نظام Billing مع Stripe + Fawry (جاهز للتوصيل)
-- Auth كامل: Firebase Google Sign-In + توثيق Admin
-
-**الإصلاحات التي تمت اليوم:**
-- ✅ HMR يعمل الآن (إصلاح CSP + allowedDevOrigins لنطاقات Replit)
-- ✅ تحديث NEXT_PUBLIC_APP_URL للنطاق الصحيح
-- ✅ إزالة تعارض middleware.ts (Next.js 16 يستخدم proxy.ts)
-- ✅ وصل WebSocket لحالة HMR في CSP
+**تاريخ التحديث:** 2026-05-01  
+**الحالة:** نشطة — المرجع الإلزامي لكل فريق التطوير  
+**المنصة:** Next.js 16 (Turbopack) + Firebase + LangGraph + Python Microservices
 
 ---
 
-## المراحل الإجمالية (30+ مرحلة)
+## ملخص الحالة الراهنة — ما تمّ حتى اليوم
+
+### ✅ البنية التحتية المكتملة
+| العنصر | الحالة |
+|---|---|
+| Next.js 16 + React 19 على port 5000 | ✅ يعمل |
+| PDF Worker (port 8000) | ✅ يعمل |
+| Egypt Calc (port 8008) | ✅ يعمل |
+| LLM Judge (port 8080) | ✅ يعمل |
+| Embeddings Worker (port 8099) | ✅ يعمل |
+| Gemini AI Integration (Replit AI Proxy) | ✅ متصل الآن |
+| Firebase Auth (Google Sign-In) | ✅ يعمل |
+| 57 وكيل ذكاء اصطناعي (LangGraph) | ✅ مسجّل |
+| RAG System (PDF/CSV/Excel) | ✅ بنية كاملة |
+| Workflow Engine (5 قوالب) | ✅ يعمل |
+| Multi-Agent Council (Panel System) | ✅ بنية كاملة |
+| Billing Plans (Free/Starter/Pro/Founder/Enterprise) | ✅ معرّف |
+| Security (Rate Limiting, PII Redaction, Prompt Guard) | ✅ مطبّق |
+
+### ✅ إصلاحات اليوم (2026-05-01)
+- ✅ ربط Gemini AI Integration عبر Replit AI Proxy (بدون API key شخصي)
+- ✅ إصلاح نماذج غير مدعومة: `gemini-2.5-flash-lite` → `gemini-2.5-flash` في 12 ملفاً
+- ✅ إصلاح `gemini-embedding-001` → embeddings-worker sidecar في كل مسارات RAG
+- ✅ إنشاء `src/lib/embed-helper.ts` — مساعد تضمين موحّد يوجّه بذكاء للـ worker أو Gemini
+- ✅ تسريع workflow restart (skip npm install عند وجود node_modules)
+- ✅ تحديث `src/lib/rag/user-rag.ts` → embed-helper
+- ✅ تحديث `src/ai/panel/router-cache.ts` → embed-helper
+- ✅ تحديث `src/lib/digital-twin/graphrag.ts` → embed-helper
+- ✅ تحديث `src/lib/embeddings.ts` → embed-helper
+
+### 🔴 ما يحتاج تكويناً يدوياً (Secrets مفقودة)
+| Secret | الغرض | الأولوية |
+|---|---|---|
+| `FIREBASE_SERVICE_ACCOUNT_KEY` | Firebase Admin SDK (Firestore، Auth Verification) | P0 |
+| `STRIPE_SECRET_KEY` + `STRIPE_WEBHOOK_SECRET` | نظام الدفع | P1 |
+| `FAWRY_API_KEY` | بوابة الدفع المصرية | P1 |
+| `RESEND_API_KEY` أو `SENDGRID_API_KEY` | إرسال البريد الإلكتروني | P1 |
+| `SENTRY_DSN` | مراقبة الأخطاء في production | P2 |
+| `LANGFUSE_SECRET_KEY` + `LANGFUSE_PUBLIC_KEY` | تتبع LLM calls | P2 |
+
+---
+
+## المراحل الإجمالية — نظرة عامة
 
 ```
-المرحلة 1-3:   الأساس والاستقرار (Infrastructure & Stability)
-المرحلة 4-7:   تجربة المستخدم الأساسية (Core UX)
-المرحلة 8-11:  تعزيز الذكاء الاصطناعي (AI Enhancement)
-المرحلة 12-15: الأعمال والمبيعات (Business & Revenue)
-المرحلة 16-19: النمو والتسويق (Growth & Marketing)
-المرحلة 20-23: التقنية المتقدمة (Advanced Tech)
-المرحلة 24-27: التكاملات الخارجية (Integrations)
-المرحلة 28-30: المنصة المؤسسية (Enterprise)
+المرحلة P0 (1-3):    الاستقرار والبيئة والأمان
+المرحلة P1-A (4-7):  تجربة المستخدم الأساسية  
+المرحلة P1-B (8-11): تعزيز الذكاء الاصطناعي
+المرحلة P2-A (12-15): الأعمال والمبيعات
+المرحلة P2-B (16-19): النمو والتسويق
+المرحلة P3-A (20-23): التقنية المتقدمة
+المرحلة P3-B (24-27): التكاملات الخارجية
+المرحلة P4 (28-30+): المنصة المؤسسية
 ```
 
 ---
 
 ## المرحلة 1: الاستقرار والبيئة (P0 — أسبوع 1)
 
-**الهدف:** المنصة تعمل 100% في بيئة التطوير بدون أخطاء.
+**الهدف:** المنصة تعمل 100% بدون أخطاء في بيئة التطوير.
 
-### 1.1 إصلاح بيئة التطوير
-- [ ] التحقق من HMR يعمل على جميع الأجهزة
-- [ ] إضافة `FIREBASE_SERVICE_ACCOUNT_KEY` للـ secrets (Admin SDK)
-- [ ] إضافة `GOOGLE_GENERATIVE_AI_API_KEY` للـ secrets
-- [ ] اختبار كل صفحة dashboard تفتح بدون 404
+### 1.1 إعداد الـ Secrets الأساسية
+- [ ] إضافة `FIREBASE_SERVICE_ACCOUNT_KEY` (JSON من Firebase Console) → تُفعّل Firestore + Admin Auth
+- [ ] التحقق من `NEXT_PUBLIC_FIREBASE_*` vars موجودة في `.replit [userenv.shared]`
+- [ ] اختبار تسجيل الدخول بـ Google Sign-In يعمل كاملاً
+
+**الملفات:**
+- `src/lib/firebase-admin.ts`
+- `src/lib/firebase-client.ts`
+- `.replit` (userenv.shared)
 
 ### 1.2 إصلاح TypeScript
 - [ ] إزالة `@ts-nocheck` من `app/api/rag/ingest/route.ts`
 - [ ] إزالة `@ts-nocheck` من `app/api/rag/search/route.ts`
+- [ ] تشغيل `npm run typecheck` وإصلاح الأخطاء بدون `@ts-ignore`
 - [ ] إضافة Zod validation للـ API routes التي تفتقرها
-- [ ] تشغيل `npm run typecheck` وإصلاح كل الأخطاء
 
-### 1.3 اختبار كامل للصفحات
-- [ ] فتح كل صفحة dashboard والتحقق من التحميل
-- [ ] اختبار Chat API مع stub mode (بدون API key)
-- [ ] اختبار RAG upload (PDF صغير)
-- [ ] اختبار Workflow runner
+### 1.3 اختبار شامل للصفحات
+- [ ] فتح كل صفحة dashboard والتحقق من تحميلها
+- [ ] اختبار Chat API مع Gemini (أول رسالة فعلية)
+- [ ] اختبار RAG upload بـ PDF صغير
+- [ ] اختبار Workflow runner (تشغيل قالب جاهز)
+- [ ] اختبار Ideas Analyze API
 
-**ملفات المرحلة:**
-- `app/api/rag/ingest/route.ts`
-- `app/api/rag/search/route.ts`  
-- `app/api/workflows/run/route.ts`
+**الأدوات ذات الصلة:** `environment-secrets`, `database`
 
 ---
 
 ## المرحلة 2: قاعدة البيانات والمخطط (P0 — أسبوع 1)
 
-**الهدف:** توثيق كامل لـ Firestore schema + إصلاح مشاكل الأداء.
+**الهدف:** Firestore يعمل بكفاءة مع مخطط موثّق كامل.
 
 ### 2.1 توثيق Firestore Schema
-- [ ] إنشاء `docs/firestore-schema.md` بكل Collections
-- [ ] إضافة Firestore indexes المفقودة
-- [ ] التحقق من القواعد `firestore.rules` تغطي كل collections
-- [ ] إضافة TTL للـ collections المؤقتة
+- [ ] مراجعة وتحديث `docs/firestore-schema.md` بكل Collections الحالية
+- [ ] إضافة Firestore indexes المفقودة (`firestore.indexes.json`)
+- [ ] مراجعة `firestore.rules` — التأكد من لا `if true` في أي مكان
+- [ ] إضافة TTL للـ collections المؤقتة (rag_chunks، session cache)
 
-### 2.2 إصلاح RAG Performance
-- [ ] استبدال In-memory cosine search بـ vector index
-- [ ] تحديد حد 500 chunk بدلاً من `limit(2000)`  
-- [ ] إضافة caching لـ query embeddings
-- [ ] تحسين Firestore batch writing للـ chunks
+### 2.2 تحسين RAG Performance
+- [ ] الانتقال من In-memory cosine search إلى Firestore vector index (or pgvector)
+- [ ] تحديد حد 500 chunk للبحث (موجود بالفعل — ✅)
+- [ ] إضافة caching لـ query embeddings (semantic-cache موجود — ✅)
+- [ ] اختبار إدخال مستند كبير (100+ صفحة) وقياس الأداء
 
-### 2.3 Neo4j Knowledge Graph
-- [ ] التحقق من اتصال Neo4j يعمل
-- [ ] إضافة fallback graceful عند غياب النيو-فور-جاي
-- [ ] اختبار `addEntity()` من chat route
+### 2.3 Neo4j Knowledge Graph (اختياري مرحلياً)
+- [ ] إضافة fallback graceful عند غياب Neo4j (موجود جزئياً — ✅)
+- [ ] اختبار `GraphRAG.retrieveContext()` مع sidecar نشط
+- [ ] توثيق إعداد Neo4j للـ production
 
-**ملفات المرحلة:**
-- `src/lib/rag/user-rag.ts`
-- `src/lib/memory/knowledge-graph.ts`
-- `firestore.rules`
-- `firestore.indexes.json`
+**الملفات:**
+- `firestore.rules`, `firestore.indexes.json`
+- `src/lib/rag/user-rag.ts` (✅ محدّث)
+- `src/lib/digital-twin/graphrag.ts` (✅ محدّث)
 
 ---
 
 ## المرحلة 3: الأمان والمراقبة (P0 — أسبوع 1-2)
 
-**الهدف:** منظومة الأمان تعمل كاملة + Observability.
+**الهدف:** منظومة الأمان والمراقبة تعمل بالكامل في production.
 
-### 3.1 تأمين Rate Limiting
+### 3.1 Rate Limiting شامل
 - [ ] التحقق من كل API endpoint يملك rate limit
-- [ ] مراجعة أحجام الـ windows والحدود
-- [ ] إضافة rate limit لـ endpoints المفقودة
+- [ ] مراجعة أحجام الـ windows: guests 3/min، users 10/min، paid 60/min
+- [ ] اختبار rate limit يُرجع 429 عند الإفراط
 
-### 3.2 Observability
-- [ ] ربط Sentry بـ production
-- [ ] ربط LangFuse لتتبع LLM calls
+### 3.2 Observability — Sentry + LangFuse
 - [ ] إضافة `SENTRY_DSN` secret
-- [ ] إضافة `LANGFUSE_SECRET_KEY` + `LANGFUSE_PUBLIC_KEY` secrets
-- [ ] اختبار error reporting يظهر في Sentry
+- [ ] تحقق من `sentry.client.config.ts` و `sentry.server.config.ts` تعملان
+- [ ] إضافة `LANGFUSE_SECRET_KEY` + `LANGFUSE_PUBLIC_KEY`
+- [ ] تحقق من LLM calls تظهر في LangFuse dashboard
+- [ ] إضافة Custom error boundaries في كل dashboard page
 
 ### 3.3 Security Hardening
-- [ ] مراجعة CSP headers تغطي كل العمليات
-- [ ] التحقق من لا يوجد sensitive data في browser logs
-- [ ] مراجعة `firestore.rules` — لا `if true` في أي مكان
-- [ ] تشغيل `npm audit` وإصلاح vulnerabilities جديدة
+- [ ] مراجعة CSP headers — التأكد من تغطية كل العمليات
+- [ ] التحقق من لا يوجد sensitive data في browser console logs
+- [ ] تشغيل `npm audit` وإصلاح vulnerabilities
+- [ ] مراجعة PII redactor يعمل على كل chat messages
 
-**ملفات المرحلة:**
-- `sentry.client.config.ts`
-- `sentry.server.config.ts`
-- `instrumentation.ts`
+**الملفات:**
+- `sentry.client.config.ts`, `sentry.server.config.ts`
+- `src/lib/security/`, `src/lib/compliance/`
 - `next.config.ts`
+
+**الأدوات ذات الصلة:** `security_scan`, `threat_modeling`
 
 ---
 
 ## المرحلة 4: واجهة Chat المتقدمة (P1 — أسبوع 2)
 
-**الهدف:** تجربة المحادثة هي أقوى مزايا المنصة.
+**الهدف:** تجربة المحادثة هي أقوى مزايا المنصة — تضاهي claude.ai بالعربية.
 
 ### 4.1 Chat UI Improvements
-- [ ] إضافة اقتراحات ذكية بناءً على تاريخ المحادثة
-- [ ] تحسين عرض `<AgentBlock>` — charts، forms، checklists
+- [ ] إضافة اقتراحات ذكية بناءً على سياق الشركة
+- [ ] تحسين عرض `<AgentBlock>` — charts، forms، checklists بشكل أجمل
 - [ ] إضافة Voice Input (Web Speech API)
-- [ ] تحسين عرض Citations و Sources
+- [ ] تحسين عرض Citations و Sources مع روابط قابلة للنقر
 - [ ] إضافة Copy، Share، Save لكل رسالة
+- [ ] إضافة Reactions (👍 👎) لتقييم ردود الوكلاء
 
 ### 4.2 Chat Intelligence
-- [ ] تحسين Agent Selection Logic (intents أدق)
-- [ ] إضافة "Thinking..." indicator أثناء معالجة الوكيل
-- [ ] تحسين SSE streaming — إظهار الوكيل النشط حالياً
-- [ ] تحسين Error Recovery — retry ذكي عند فشل الشبكة
+- [ ] تحسين Agent Selection Logic (intents أدق بالعربية)
+- [ ] إضافة "يفكّر..." indicator أثناء معالجة المجلس
+- [ ] تحسين SSE streaming — إظهار اسم الوكيل النشط حالياً
+- [ ] Error Recovery — retry ذكي عند فشل الشبكة مع رسالة واضحة
 
-### 4.3 Chat History
+### 4.3 Chat History & Search
 - [ ] تحسين واجهة تاريخ المحادثات
-- [ ] إضافة Search في التاريخ
-- [ ] إضافة Pin للمحادثات المهمة
-- [ ] Export محادثة كـ PDF
+- [ ] Search في تاريخ المحادثات بالعربية والإنجليزية
+- [ ] Pin للمحادثات المهمة
+- [ ] Export محادثة كـ PDF مُنسّق
 
-**ملفات المرحلة:**
-- `app/(dashboard)/chat/`
+**الملفات:**
+- `app/(dashboard)/chat/page.tsx`
 - `components/chat/`
 - `src/ai/orchestrator/supervisor.ts`
+
+**الأدوات ذات الصلة:** `frontend-design`, `design`
 
 ---
 
 ## المرحلة 5: لوحة القيادة الرئيسية (P1 — أسبوع 2-3)
 
-**الهدف:** Dashboard هو مركز العمليات اليومية للمؤسس.
+**الهدف:** Dashboard هو مركز العمليات اليومية لكل مؤسس.
 
 ### 5.1 Dashboard Widgets
-- [ ] Widget: ملخص AI يومي (Daily Brief) بالعربية
-- [ ] Widget: مهام معلقة من الوكلاء
-- [ ] Widget: مؤشرات الشركة الرئيسية (KPIs)
-- [ ] Widget: آخر الأفكار والفرص
-- [ ] Widget: حالة فريق الوكلاء (أي وكيل نشط)
+- [ ] Widget: ملخص AI يومي (Daily Brief) بالعربية يتجدد كل صباح
+- [ ] Widget: مهام معلقة من الوكلاء (Actionable items)
+- [ ] Widget: مؤشرات الشركة الرئيسية (KPIs مع رسوم بيانية)
+- [ ] Widget: آخر الأفكار والفرص المرصودة
+- [ ] Widget: حالة فريق الوكلاء (أي وكيل نشط ومتى)
 
-### 5.2 Quick Actions
-- [ ] زر سريع لكل وكيل رئيسي
-- [ ] اختصارات لوحة المفاتيح (Ctrl+K لبحث global)
-- [ ] Command Palette عربي
-- [ ] Notification center في Sidebar
+### 5.2 Quick Actions & Command Palette
+- [ ] زر سريع لكل وكيل رئيسي (C-Suite + Department heads)
+- [ ] Ctrl+K → Command Palette عربي/إنجليزي
+- [ ] Notification center في الـ Sidebar مع Real-time updates
+- [ ] اختصارات لوحة المفاتيح موثّقة في Help panel
 
 ### 5.3 Personalization
-- [ ] تخصيص ترتيب Widgets
-- [ ] وضع Focus (إخفاء عناصر غير ضرورية)
-- [ ] Themes: Dark / Light / Auto
+- [ ] تخصيص ترتيب وحجم Widgets (Drag & Drop)
+- [ ] وضع Focus (إخفاء Sidebar وعناصر غير ضرورية)
+- [ ] Themes: Dark / Light / Auto / Egyptian Blue
+- [ ] حفظ تفضيلات المستخدم في Firestore
 
-**ملفات المرحلة:**
-- `app/(dashboard)/dashboard/`
+**الملفات:**
+- `app/(dashboard)/dashboard/page.tsx`
 - `components/dashboard/`
 - `src/lib/daily-brief/`
 
@@ -194,9 +221,9 @@
 **الهدف:** Company Builder هو المنتج الأكثر تميزاً في السوق العربي.
 
 ### 6.1 Org Chart Interactive
-- [ ] تحسين رسم الهيكل التنظيمي
-- [ ] Click على موظف يفتح Chat معه مباشرة
-- [ ] إضافة/حذف/نقل موظفين بالـ drag & drop
+- [ ] تحسين رسم الهيكل التنظيمي (react-flow أو d3)
+- [ ] Click على موظف يفتح Chat معه مباشرةً
+- [ ] Drag & Drop لإعادة ترتيب الموظفين
 - [ ] عرض KPIs لكل قسم على الـ chart
 
 ### 6.2 Simulation Engine
@@ -206,11 +233,11 @@
 - [ ] تقرير أداء يومي لكل قسم
 
 ### 6.3 Company Templates
-- [ ] 20+ قالب شركة جاهز (Startup، Restaurant، Agency...)
-- [ ] Import/Export هيكل الشركة
-- [ ] مشاركة قالب مع مؤسس آخر
+- [ ] 20+ قالب شركة جاهز (Startup، Restaurant، Clinic، Agency، E-commerce...)
+- [ ] Import/Export هيكل الشركة كـ JSON
+- [ ] مشاركة قالب مع مؤسس آخر (رابط قابل للمشاركة)
 
-**ملفات المرحلة:**
+**الملفات:**
 - `app/(dashboard)/company-builder/`
 - `src/lib/company-builder/`
 - `src/ai/organization/`
@@ -222,57 +249,59 @@
 **الهدف:** كل مؤسس يجد ما يحتاجه في 3 نقرات.
 
 ### 7.1 Investor Dashboard
-- [ ] مستوى الاستعداد للاستثمار (1-10)
-- [ ] Pitch Deck Generator تلقائي
-- [ ] Cash Runway حاسبة تفاعلية
-- [ ] Cap Table إدارة
+- [ ] مستوى الاستعداد للاستثمار (1-10) مع تفاصيل
+- [ ] Pitch Deck Generator تلقائي بالعربية والإنجليزية
+- [ ] Cash Runway حاسبة تفاعلية مع رسم بياني
+- [ ] Cap Table إدارة بسيطة
 - [ ] نموذج DCF مدمج مع Egypt Calc
 
-### 7.2 Ideas Analyzer
-- [ ] تقييم الفكرة بـ SWOT مصري
-- [ ] مقارنة بمنافسين مصريين/عرب
-- [ ] حساب حجم السوق (TAM/SAM/SOM)
-- [ ] خطوات validation مخصصة للسوق المصري
+### 7.2 Ideas Analyzer Enhancement
+- [ ] SWOT Analysis مصري مُفصّل (يعمل الآن — ✅ Gemini متصل)
+- [ ] مقارنة بمنافسين مصريين وعرب فعليين
+- [ ] حساب حجم السوق المصري (TAM/SAM/SOM)
+- [ ] خطوات validation مخصصة (MVP أسبوعين في مصر)
+- [ ] حفظ التقييمات في Firestore للرجوع إليها لاحقاً
 
 ### 7.3 Opportunity Radar
-- [ ] اشتراكات فرص تمويل مصرية
-- [ ] تنبيهات بمواعيد تقديم للهاكاثونات
-- [ ] فرص شراكة قطاعية
-- [ ] تصفية بالصناعة والمرحلة
+- [ ] قاعدة بيانات فرص تمويل مصرية وعربية
+- [ ] تنبيهات بمواعيد تقديم للهاكاثونات والمسابقات
+- [ ] فرص شراكة قطاعية (Tech، AgriTech، FinTech مصر)
+- [ ] تصفية بالصناعة والمرحلة وحجم التمويل
 
-**ملفات المرحلة:**
+**الملفات:**
 - `app/(dashboard)/investor/`
 - `app/(dashboard)/ideas/`
 - `app/(dashboard)/opportunities/`
+- `app/api/ideas/analyze/route.ts` (✅ يعمل مع Gemini)
 
 ---
 
 ## المرحلة 8: تحسين وكلاء الذكاء الاصطناعي (P1 — أسبوع 4)
 
-**الهدف:** الوكلاء أذكى وأكثر تخصصاً للسوق المصري/العربي.
+**الهدف:** الوكلاء أذكى وأكثر تخصصاً للسوق المصري والعربي.
 
-### 8.1 Agent Quality
-- [ ] تحديث prompts لجميع الوكلاء بـ Cairo/Egypt context
-- [ ] إضافة examples مصرية في كل system prompt
-- [ ] اختبار كل وكيل مع 10 حالات استخدام حقيقية
-- [ ] تقييم جودة الردود مع LLM Judge
+### 8.1 Agent Quality — تحسين الـ Prompts
+- [ ] تحديث system prompts لجميع الـ 57 وكيل بـ Cairo/Egypt context
+- [ ] إضافة أمثلة مصرية حقيقية في كل system prompt (شركات مصرية، أسعار بالجنيه)
+- [ ] اختبار كل وكيل مع 10 حالات استخدام حقيقية من السوق المصري
+- [ ] تقييم جودة الردود بـ LLM Judge (موجود — port 8080)
 
-### 8.2 Agent Memory
-- [ ] Long-term memory لكل وكيل (يتذكر سياق الشركة)
-- [ ] Shared company context بين جميع الوكلاء
-- [ ] Memory decay للمعلومات القديمة
-- [ ] Import context من الـ Company Builder
+### 8.2 Agent Memory — الذاكرة طويلة الأمد
+- [ ] Company Profile Context: كل وكيل يعرف اسم الشركة ومجالها وموظفيها
+- [ ] Shared context بين جميع الوكلاء (لا يسأل كل وكيل من الصفر)
+- [ ] Memory decay: تقليل وزن المعلومات القديمة تدريجياً
+- [ ] Auto-import context من Company Builder
 
-### 8.3 Multi-Agent Council
-- [ ] تحسين KALMERON_COUNCIL (استشارة C-Suite)
-- [ ] عرض رأي كل وكيل بشكل منفصل
-- [ ] تصويت وتوافق بين الوكلاء
-- [ ] عرض الخلافات بين وجهات النظر
+### 8.3 Multi-Agent Council Enhancement
+- [ ] عرض رأي كل خبير في المجلس بشكل منفصل مع اسمه
+- [ ] نظام تصويت وتوافق بين الخبراء
+- [ ] إظهار الخلافات بين وجهات النظر (يجعل النتيجة أكثر مصداقية)
+- [ ] Council في وضع "fast" للأسئلة السريعة
 
-**ملفات المرحلة:**
-- `src/ai/agents/*/agent.ts` (57 ملف)
+**الملفات:**
+- `src/ai/agents/` (57 ملف)
 - `src/ai/orchestrator/supervisor.ts`
-- `src/ai/memory/`
+- `src/ai/panel/council.ts`, `src/ai/panel/experts.ts`
 
 ---
 
@@ -282,117 +311,120 @@
 
 ### 9.1 Workflow Builder UI
 - [ ] Visual drag-and-drop workflow builder
-- [ ] مكتبة 30+ قالب workflow جاهز
-- [ ] Scheduled workflows (cron-based)
-- [ ] Triggered workflows (عند حدث معين)
+- [ ] مكتبة 30+ قالب workflow جاهز بالعربية
+- [ ] Scheduled workflows (cron: يومي/أسبوعي/شهري)
+- [ ] Event-triggered workflows (عند رفع مستند، عند نتيجة معينة)
 
 ### 9.2 Workflow Outputs
-- [ ] Output كـ PDF قابل للتنزيل
-- [ ] Output كـ Email تلقائي
-- [ ] Output كـ Firestore document
+- [ ] Output كـ PDF قابل للتنزيل (PDF Worker — موجود ✅)
+- [ ] Output كـ Email تلقائي عند اكتمال Workflow
+- [ ] Output كـ Firestore document مرتّب
 - [ ] Output كـ Webhook إلى أنظمة خارجية
 
 ### 9.3 Workflow Marketplace
-- [ ] مشاركة workflows بين المستخدمين
+- [ ] مشاركة workflows بين المستخدمين (public/private)
 - [ ] تقييم وـrating للـ workflows
-- [ ] Revenue sharing للمنشئين
+- [ ] Revenue sharing مستقبلاً للمنشئين المميزين
 
-**ملفات المرحلة:**
+**الملفات:**
 - `src/lib/workflows/`
 - `app/(dashboard)/workflows-runner/`
 - `app/api/workflows/`
 
 ---
 
-## المرحلة 10: قاعدة المعرفة المتقدمة (P1 — أسبوع 5)
+## المرحلة 10: قاعدة المعرفة المتقدمة — RAG 2.0 (P1 — أسبوع 5)
 
-**الهدف:** كل مؤسس يبني "دماغ" شركته.
+**الهدف:** كل مؤسس يبني "دماغ" شركته المميز.
 
-### 10.1 RAG 2.0
-- [ ] استبدال In-memory search بـ proper vector database
-- [ ] دعم أنواع ملفات إضافية: Word، PowerPoint، Images
-- [ ] Chunking ذكي بالعربية (Arabic-aware sentence splitting)
-- [ ] Re-ranking نتائج البحث
+### 10.1 RAG 2.0 — Vector Database
+- [ ] الانتقال من In-memory cosine search إلى vector database حقيقية
+- [ ] خيارات: Pinecone، Weaviate، pgvector (Supabase)
+- [ ] دعم أنواع ملفات إضافية: Word (.docx)، PowerPoint (.pptx)، Images (OCR)
+- [ ] Arabic-aware chunking: تقسيم ذكي بالجملة العربية
 
-### 10.2 Knowledge Graph
-- [ ] عرض الـ Knowledge Graph بشكل مرئي
-- [ ] إضافة entities يدوياً
-- [ ] ربط entities ببعضها (علاقات)
-- [ ] استخدام الـ graph في توجيه الوكلاء
+### 10.2 Knowledge Graph — رسم بياني للمعرفة
+- [ ] عرض الـ Knowledge Graph بشكل مرئي (D3 أو Cytoscape)
+- [ ] إضافة entities يدوياً (شخص، شركة، منتج، عقد)
+- [ ] ربط entities ببعضها (يعمل مع، ينافس، شريك...)
+- [ ] استخدام الـ graph في توجيه الوكلاء للإجابة بدقة أعلى
 
-### 10.3 Smart Ingestion
-- [ ] Auto-summarize المستندات المرفوعة
-- [ ] Extract key entities تلقائياً
-- [ ] Detect duplicates وتوحيد المعلومات
-- [ ] API للـ real-time ingestion من مصادر خارجية
+### 10.3 Smart Ingestion — استيعاب ذكي
+- [ ] Auto-summarize المستندات المرفوعة (ملخص تلقائي عند الرفع)
+- [ ] Extract key entities تلقائياً (أسماء، تواريخ، مبالغ)
+- [ ] Detect duplicates وتوحيد المعلومات المتكررة
+- [ ] API webhook للـ real-time ingestion من مصادر خارجية
 
-**ملفات المرحلة:**
-- `src/lib/rag/user-rag.ts`
+**الملفات:**
+- `src/lib/rag/user-rag.ts` (✅ محدّث)
 - `src/lib/memory/knowledge-graph.ts`
 - `app/api/rag/`
+- `services/embeddings-worker/` (✅ يعمل)
 
 ---
 
 ## المرحلة 11: الذكاء المتخصص المصري (P1 — أسبوع 5-6)
 
-**الهدف:** كلميرون هو الخيار الأول للمؤسس المصري.
+**الهدف:** كلميرون هو الخيار الأول والأوحد للمؤسس المصري والعربي.
 
 ### 11.1 Egypt Calc Enhancement
-- [ ] تحسين حاسبة التأمينات الاجتماعية
-- [ ] إضافة قانون العمل المصري (تحديث 2024)
-- [ ] حاسبة ضريبة القيمة المضافة
-- [ ] حاسبة ضريبة الدخل للأفراد والشركات
-- [ ] إضافة Fawry payment calculator
+- [ ] تحسين حاسبة التأمينات الاجتماعية (قانون 2024)
+- [ ] حاسبة ضريبة القيمة المضافة (VAT) الكاملة
+- [ ] حاسبة ضريبة الدخل للأفراد والشركات (الشرائح الجديدة)
+- [ ] حاسبة ضريبة الأرباح التجارية والصناعية
+- [ ] تكامل Fawry payment calculator في نماذج التسعير
 
-### 11.2 Arabic NLP
-- [ ] تحسين فهم اللهجة المصرية في المحادثة
-- [ ] دعم خلط العربية والإنجليزية (Arabizi)
-- [ ] تحسين RTL في كل المكونات
-- [ ] Arabic spell checker للمحتوى
+### 11.2 Arabic NLP Quality
+- [ ] تحسين فهم اللهجة المصرية (Egyptian Arabic) في المحادثة
+- [ ] دعم Arabizi (عربي بحروف إنجليزية: "ana 3ayez...")
+- [ ] تحسين RTL في كل المكونات (لا يزال ببعض الاختلالات)
+- [ ] Arabic spell checker للمحتوى المولّد
 
-### 11.3 Local Market Data
-- [ ] بيانات أسعار السوق المصري (EGX)
-- [ ] بيانات قطاع التقنية المصرية
-- [ ] تقارير بيئة الأعمال المصرية
-- [ ] مؤشر ثقة المستثمر في مصر
+### 11.3 Local Market Intelligence
+- [ ] بيانات أسعار السوق المصري (EGX، USD/EGP)
+- [ ] بيانات قطاع التقنية المصرية (top startups، VCs، ecosystems)
+- [ ] تقارير بيئة الأعمال المصرية (مؤشر مناخ الأعمال)
+- [ ] مؤشر ثقة المستثمر في مصر (ربع سنوي)
 
-**ملفات المرحلة:**
-- `services/egypt-calc/`
+**الملفات:**
+- `services/egypt-calc/main.py`
+- `services/embeddings-worker/main.py`
 - `src/lib/egypt-calc/`
-- `services/embeddings-worker/`
 
 ---
 
 ## المرحلة 12: منظومة الدفع والاشتراكات (P0-Business — أسبوع 6)
 
-**الهدف:** Revenue-generating from day one.
+**الهدف:** Revenue-generating platform من اليوم الأول.
 
-### 12.1 Stripe Integration
+### 12.1 Stripe Integration — الربط الكامل
 - [ ] إضافة `STRIPE_SECRET_KEY` + `STRIPE_WEBHOOK_SECRET` secrets
-- [ ] تفعيل صفحة `/billing`
-- [ ] إنشاء Plans في Stripe Dashboard:
-  - Starter: 199 EGP/شهر
-  - Pro: 499 EGP/شهر  
-  - Founder: 999 EGP/شهر
-- [ ] اختبار Checkout flow كامل
+- [ ] إنشاء Products + Prices في Stripe Dashboard:
+  - Free: مجاني (100 credits/شهر)
+  - Starter: 199 EGP/شهر (500 credits)
+  - Pro: 499 EGP/شهر (2000 credits)
+  - Founder: 999 EGP/شهر (unlimited)
+- [ ] تفعيل Checkout flow كامل مع redirect
+- [ ] Stripe Webhook: معالجة `checkout.session.completed`، `invoice.payment_failed`
 
-### 12.2 Fawry Integration
+### 12.2 Fawry Integration — بوابة الدفع المصرية
 - [ ] إضافة `FAWRY_API_KEY` secret
-- [ ] تفعيل Fawry كبوابة دفع للسوق المصري
+- [ ] تفعيل Fawry كبوابة رئيسية للمصريين
 - [ ] إضافة Vodafone Cash، Orange Cash، Instapay
-- [ ] Testing sandbox Fawry flow
+- [ ] Testing sandbox flow كامل
 
-### 12.3 Credit System
-- [ ] Credits wallet واضح في الـ UI
-- [ ] إشعار عند اقتراب نفاد الـ credits
-- [ ] Buy credits بدون تغيير الخطة
-- [ ] Free tier: 100 credits/شهر للمستخدمين الجدد
+### 12.3 Credits System — نظام الرصيد
+- [ ] Credits wallet واضح في الـ UI مع شريط التقدم
+- [ ] إشعار عند اقتراب نفاد الـ credits (20% + 10% + 0%)
+- [ ] شراء credits إضافية بدون تغيير الخطة
+- [ ] Credit cost لكل نوع طلب (LITE: 1، FLASH: 3، PRO: 10)
 
-**ملفات المرحلة:**
-- `app/api/billing/`
-- `app/api/webhooks/stripe/`
-- `src/lib/billing/`
+**الملفات:**
+- `app/api/billing/`, `app/api/webhooks/stripe/`
+- `src/lib/billing/plans.ts` (✅ معرّف)
 - `app/(dashboard)/settings/`
+
+**الأدوات ذات الصلة:** `stripe`
 
 ---
 
@@ -400,57 +432,57 @@
 
 **الهدف:** كل مستخدم جديد يصل إلى "Aha moment" في أقل من 5 دقائق.
 
-### 13.1 Onboarding Flow
-- [ ] Wizard تفاعلي (4 خطوات):
-  1. بيانات الشركة الأساسية
-  2. اختيار الصناعة + المرحلة
-  3. أول سؤال للـ AI
-  4. إعداد الفريق الافتراضي
-- [ ] Progress indicator واضح
-- [ ] Skip option للمتعجلين
+### 13.1 Onboarding Flow — Wizard 4 خطوات
+1. بيانات الشركة الأساسية (الاسم، المجال، المرحلة، عدد الموظفين)
+2. اختيار الصناعة + المرحلة (Idea/MVP/Growth/Scale)
+3. أول سؤال حقيقي للذكاء الاصطناعي
+4. إعداد الفريق الافتراضي تلقائياً
+
+- [ ] Progress indicator واضح (خطوة 1 من 4)
+- [ ] Skip option للمتعجلين مع إمكانية الإكمال لاحقاً
 - [ ] Auto-populate Company Builder من الـ Onboarding
 
 ### 13.2 Guided Tours
-- [ ] Tour تفاعلي لأول مرة (Shepherd.js أو مخصص)
-- [ ] Video hints لكل ميزة رئيسية
-- [ ] Tooltips ذكية (تظهر مرة واحدة فقط)
-- [ ] "Start here" checklist للمستخدمين الجدد
+- [ ] Tour تفاعلي لأول مرة (Shepherd.js أو مخصص بالعربية)
+- [ ] Video hints قصيرة لكل ميزة رئيسية (30 ثانية)
+- [ ] Tooltips ذكية (تظهر مرة واحدة فقط وتُحفظ في Firestore)
+- [ ] "ابدأ من هنا" checklist للمستخدمين الجدد
 
 ### 13.3 First Value Fast
-- [ ] أول رد AI خلال 10 ثواني من التسجيل
-- [ ] Pre-built demo شركة للاستكشاف
-- [ ] Template library يمكن تطبيقها بنقرة واحدة
+- [ ] أول رد AI خلال 10 ثواني من إنهاء Onboarding
+- [ ] Pre-built demo شركة للاستكشاف (كلميرون Demo Corp)
+- [ ] Template library قابل للتطبيق بنقرة واحدة
 
-**ملفات المرحلة:**
-- `app/onboarding/`
-- `app/api/analytics/`
+**الملفات:**
+- `app/onboarding/page.tsx`
 - `components/onboarding/`
+- `app/api/analytics/`
 
 ---
 
 ## المرحلة 14: Inbox وإدارة المهام (P1 — أسبوع 7)
 
-**الهدف:** Inbox هو مركز قرارات المؤسس.
+**الهدف:** Inbox هو مركز قرارات المؤسس — كل شيء في مكان واحد.
 
-### 14.1 AI Inbox
-- [ ] تصنيف الرسائل تلقائياً (أولوية / نوع)
-- [ ] اقتراحات رد ذكية لكل رسالة
-- [ ] Snooze + Archive + Pin
-- [ ] Bulk actions
+### 14.1 AI Inbox Enhancement
+- [ ] تصنيف تلقائي للرسائل (أولوية عالية/متوسطة/منخفضة)
+- [ ] اقتراحات رد ذكية لكل رسالة (بناءً على نمط الشركة)
+- [ ] Snooze + Archive + Pin + Labels
+- [ ] Bulk actions (تحديد الكل، أرشفة، حذف)
 
 ### 14.2 Task Management
-- [ ] Tasks مستخرجة من المحادثات تلقائياً
-- [ ] ربط Task بـ Workflow
-- [ ] Due dates وتنبيهات
-- [ ] Kanban view بالعربية
+- [ ] Tasks مستخرجة تلقائياً من المحادثات
+- [ ] ربط Task بـ Workflow تلقائياً
+- [ ] Due dates وتنبيهات قبل الموعد
+- [ ] Kanban view بالعربية (قيد التنفيذ، منتهٍ، معلّق)
 
 ### 14.3 Team Collaboration
-- [ ] Delegate task لـ AI agent
-- [ ] Comments على الـ tasks
-- [ ] Activity log مرتب زمنياً
+- [ ] Delegate task لـ AI agent مباشرةً
+- [ ] Comments على الـ tasks مع ذكر وكيل
+- [ ] Activity log مرتب زمنياً لكل شركة
 
-**ملفات المرحلة:**
-- `app/(dashboard)/inbox/`
+**الملفات:**
+- `app/(dashboard)/inbox/page.tsx`
 - `app/api/inbox/`
 
 ---
@@ -460,464 +492,447 @@
 **الهدف:** كل مؤسس يتخذ قرارات بناءً على بيانات حقيقية.
 
 ### 15.1 Business Reports
-- [ ] تقرير أسبوعي تلقائي (يرسله Daily Brief agent)
-- [ ] مقارنة الأداء شهر بشهر
-- [ ] Burn rate + Runway forecast
-- [ ] Customer acquisition funnel
+- [ ] تقرير أسبوعي تلقائي (Daily Brief Agent يُرسله)
+- [ ] مقارنة الأداء شهر بشهر (Month-over-Month)
+- [ ] Burn rate + Runway forecast تلقائي
+- [ ] Customer acquisition funnel مُرسوم بشكل جميل
 
 ### 15.2 AI Analytics
-- [ ] أكثر الوكلاء استخداماً
-- [ ] أكثر الأسئلة تكراراً (Privacy-safe)
-- [ ] مقارنة جودة الردود عبر الزمن
-- [ ] ROI حاسبة (وفر في الوقت والمال)
+- [ ] أكثر الوكلاء استخداماً (هل يستخدم المؤسس CFO أكثر؟)
+- [ ] أكثر الأسئلة تكراراً (Privacy-safe anonymized)
+- [ ] مقارنة جودة الردود عبر الزمن (LLM Judge score trend)
+- [ ] ROI Calculator: كم وفّر كلميرون في وقت وتكلفة استشارات
 
 ### 15.3 Export & Sharing
-- [ ] Export تقارير كـ PDF
-- [ ] Share link للتقرير
-- [ ] Embed في Notion/Confluence
-- [ ] Investor-ready report generator
+- [ ] Export تقارير كـ PDF مُنسّق (PDF Worker — ✅ موجود)
+- [ ] Shareable link للتقرير (token-protected)
+- [ ] Investor-ready report generator بالعربية والإنجليزية
 
-**ملفات المرحلة:**
+**الملفات:**
 - `app/(dashboard)/investor/`
 - `src/lib/analytics/`
-- `services/data-warehouse/`
 
 ---
 
 ## المرحلة 16: التسويق والـ SEO (P1-Growth — أسبوع 8-9)
 
-**الهدف:** المنصة تجد نفسها على Google في أول 3 نتائج.
+**الهدف:** كلميرون تظهر في أول 3 نتائج Google لكل استعلام ريادة أعمال بالعربية.
 
 ### 16.1 SEO Technical
-- [ ] Structured data (JSON-LD) لكل صفحة
-- [ ] Sitemap.xml تلقائي وشامل
-- [ ] Meta tags كاملة (OG + Twitter + canonical)
-- [ ] Core Web Vitals: LCP < 2.5s، CLS < 0.1
-- [ ] Arabic SEO: keywords research مصري
+- [ ] Structured data (JSON-LD: Organization، SoftwareApplication) لكل صفحة
+- [ ] Sitemap.xml تلقائي وشامل (`app/sitemap.ts`)
+- [ ] Meta tags كاملة: OG + Twitter Card + canonical لكل صفحة
+- [ ] Core Web Vitals: LCP < 2.5s، CLS < 0.1، FID < 100ms
+- [ ] Arabic SEO: keywords research مصري + عربي
 
 ### 16.2 Content Strategy
-- [ ] Blog بالعربية (أدوات الأعمال + ريادة)
-- [ ] Landing pages مخصصة لكل صناعة مصرية
-- [ ] Pages مقارنة: كلميرون vs ChatGPT، vs Notion AI
-- [ ] Use cases pages: مطاعم، عيادات، شركات تقنية
+- [ ] Blog بالعربية: "دليل ريادة الأعمال في مصر 2026"
+- [ ] Landing pages مخصصة لكل صناعة مصرية (مطاعم، عيادات، شركات تقنية...)
+- [ ] Comparison pages: كلميرون vs ChatGPT، vs Notion AI
+- [ ] Use cases: "كيف تبني خطة عمل لمطعم في القاهرة"
 
 ### 16.3 Programmatic SEO
-- [ ] صفحات تلقائية لكل مدينة مصرية رئيسية
-- [ ] صفحات لكل قطاع صناعي
-- [ ] مقالات دليلية: "كيف تبني خطة عمل لـ [صناعة]"
-- [ ] FAQ pages من أسئلة المستخدمين الشائعة
+- [ ] صفحات تلقائية لكل محافظة مصرية رئيسية
+- [ ] صفحات لكل قطاع صناعي مصري (30+ قطاع)
+- [ ] مقالات دليلية: "كيف تبني [نوع شركة] في [مدينة] خطوة بخطوة"
+- [ ] FAQ pages من أسئلة المستخدمين الشائعة (Schema markup)
 
-**ملفات المرحلة:**
-- `app/blog/`
-- `app/sitemap.ts`
-- `app/robots.ts`
-- `app/(seo-pages)/`
+**الملفات:**
+- `app/blog/`, `app/sitemap.ts`, `app/robots.ts`
+
+**الأدوات ذات الصلة:** `seo-audit`, `programmatic-seo`
 
 ---
 
 ## المرحلة 17: البريد الإلكتروني والإشعارات (P1 — أسبوع 9)
 
-**الهدف:** التواصل مع المستخدم في اللحظة المناسبة.
+**الهدف:** التواصل مع المستخدم في اللحظة المناسبة بالرسالة الصحيحة.
 
-### 17.1 Email System
-- [ ] إضافة Resend أو Postmark كـ email provider
-- [ ] قوالب React Email بالعربية:
-  - Welcome email
-  - Daily brief
-  - Billing invoices
-  - Credit low warning
-  - Workflow completed
-- [ ] Unsubscribe flow قانوني
+### 17.1 Email System — Resend/SendGrid
+- [ ] إضافة `RESEND_API_KEY` أو `SENDGRID_API_KEY` secret
+- [ ] قوالب React Email بالعربية (RTL):
+  - Welcome email (ترحيب دافئ)
+  - Daily brief (ملخص يومي)
+  - Billing invoices (فواتير)
+  - Credit low warning (تحذير نفاد الرصيد)
+  - Workflow completed (انتهاء مهمة)
+- [ ] Unsubscribe flow قانوني مطابق للـ CAN-SPAM
 
-### 17.2 Push Notifications
+### 17.2 Push Notifications — FCM
 - [ ] Firebase Cloud Messaging إعداد كامل
-- [ ] إشعار: "وكيلك أنهى المهمة"
-- [ ] إشعار: "فرصة جديدة تناسب شركتك"
-- [ ] Notification preferences panel
+- [ ] "وكيلك أنهى المهمة" — إشعار فوري
+- [ ] "فرصة جديدة تناسب شركتك" — إشعار ذكي
+- [ ] Notification preferences panel في الإعدادات
 
 ### 17.3 In-App Notifications
-- [ ] Notification bell في الـ header
-- [ ] Real-time via Firestore listeners
-- [ ] Read/Unread state
-- [ ] Group by type
+- [ ] Notification bell في الـ header مع عداد
+- [ ] Real-time updates عبر Firestore listeners
+- [ ] Read/Unread state مع تسليط الضوء
+- [ ] Group by type وتصفية
 
-**ملفات المرحلة:**
-- `app/api/notifications/`
-- `emails/`
+**الملفات:**
+- `app/api/notifications/`, `emails/`
 - `src/lib/fcm.ts`
 
 ---
 
 ## المرحلة 18: PWA والتطبيق الجوال (P1 — أسبوع 9-10)
 
-**الهدف:** المنصة تعمل كتطبيق جوال على iOS و Android.
+**الهدف:** كلميرون يعمل كتطبيق جوال احترافي على iOS و Android.
 
 ### 18.1 PWA Enhancement
-- [ ] Web App Manifest كامل
-- [ ] Service Worker: Offline support
+- [ ] Web App Manifest كامل مع أيقونات بالأحجام الكاملة
+- [ ] Service Worker: Offline support للصفحات الأساسية
 - [ ] Push notifications عبر PWA
-- [ ] Install prompt (A2HS)
-- [ ] Splash screen بالهوية البصرية
+- [ ] Install prompt (Add to Home Screen) ذكي
+- [ ] Splash screen بالهوية البصرية لكلميرون
 
 ### 18.2 Mobile UX
-- [ ] Gesture navigation (swipe actions)
-- [ ] Bottom navigation bar (موبايل-أولاً)
-- [ ] Voice input على الموبايل
+- [ ] Bottom navigation bar للجوال (Chat، Dashboard، Company، Settings)
+- [ ] Gesture navigation (swipe للعودة، pull-to-refresh)
+- [ ] Voice input محسّن على الجوال
 - [ ] Haptic feedback للتفاعلات المهمة
 
 ### 18.3 Performance Mobile
-- [ ] Lazy loading لكل الصور
-- [ ] Reduce JS bundle size
-- [ ] API response caching
-- [ ] Prefetch أكثر الصفحات زيارةً
-
-**ملفات المرحلة:**
-- `public/manifest.json`
-- `app/firebase-messaging-sw.js`
-- `src/mobile-app/`
-- `app/offline/`
+- [ ] Lazy loading لكل الصور والمكونات الثقيلة
+- [ ] Bundle size: استهداف < 300KB Initial JS
+- [ ] API response caching بـ SWR أو React Query
+- [ ] Prefetch الصفحات الأكثر زيارةً
 
 ---
 
 ## المرحلة 19: Brand Voice ومحتوى التسويق (P1 — أسبوع 10)
 
-**الهدف:** كل شركة تملك صوتها التسويقي المميز بالذكاء الاصطناعي.
+**الهدف:** كل شركة تملك صوتها التسويقي المميز بقوة الذكاء الاصطناعي.
 
 ### 19.1 Brand Voice Builder
-- [ ] تحليل موقع الشركة واستخراج الـ brand voice
-- [ ] أسلوب الكتابة: رسمي/ودي/محايد
-- [ ] Target audience profiles
-- [ ] Save + apply على كل المحتوى
+- [ ] تحليل موقع الشركة واستخراج الـ brand voice تلقائياً
+- [ ] تحديد أسلوب الكتابة: رسمي/ودي/جريء/محايد
+- [ ] بناء Target Audience profiles ثلاثية الأبعاد
+- [ ] Save + Apply على كل المحتوى المولّد
 
-### 19.2 Content Generator
-- [ ] منشورات LinkedIn بالعربية
-- [ ] Threads و X (تويتر) content
-- [ ] محتوى إيميل تسويقي
-- [ ] Product descriptions للـ E-commerce
+### 19.2 Content Generator المتقدم
+- [ ] منشورات LinkedIn بالعربية (محسّنة لـ engagement)
+- [ ] Threads و X (تويتر) content بالعربية والإنجليزية
+- [ ] Email marketing بالعربية (RTL-optimized)
+- [ ] Product descriptions للـ E-commerce المصري
 
 ### 19.3 Content Calendar
-- [ ] خطة محتوى أسبوعية/شهرية
-- [ ] Scheduling للـ posts
-- [ ] Analytics للمحتوى السابق
+- [ ] خطة محتوى أسبوعية/شهرية تلقائية
+- [ ] Scheduling للـ posts (Google Calendar integration)
+- [ ] Analytics للمحتوى السابق (what works vs what doesn't)
 - [ ] A/B testing للعناوين
 
-**ملفات المرحلة:**
+**الملفات:**
 - `app/(dashboard)/brand-voice/`
-- `src/ai/agents/brand-builder/`
-- `src/ai/agents/content-creator/`
+- `src/ai/agents/brand-builder/`, `src/ai/agents/content-creator/`
 
 ---
 
 ## المرحلة 20: API العام والـ Integrations (P2 — أسبوع 10-11)
 
-**الهدف:** المطورون يبنون فوق كلميرون.
+**الهدف:** المطورون يبنون فوق كلميرون — developer ecosystem.
 
-### 20.1 Public API
-- [ ] REST API موثق بالكامل (OpenAPI)
-- [ ] Authentication: API Keys (kal_live_...)
-- [ ] Rate limiting عام للـ API
-- [ ] `/api-docs` تحديث بكل الـ endpoints الجديدة
+### 20.1 Public REST API
+- [ ] توثيق OpenAPI كامل (`/api-docs` → Swagger UI)
+- [ ] API Keys بصيغة: `kal_live_...` (25 حرفاً)
+- [ ] Rate limiting مستقل للـ API (100 req/min للـ Pro)
+- [ ] تحديث `/api-docs` بكل الـ endpoints الجديدة
 
 ### 20.2 Webhooks 2.0
-- [ ] Webhook events catalog كامل
-- [ ] Retry policy مخصص لكل event
-- [ ] Webhook logs في الـ dashboard
-- [ ] HMAC signature verification
+- [ ] Event catalog كامل: `agent.response.completed`، `workflow.finished`...
+- [ ] Retry policy مخصص (3 محاولات، exponential backoff)
+- [ ] Webhook logs في الـ dashboard (last 100 events)
+- [ ] HMAC-SHA256 signature verification
 
 ### 20.3 Third-party Integrations
-- [ ] Zapier integration
+- [ ] Zapier integration (no-code automation)
 - [ ] Make (Integromat) integration
-- [ ] Slack integration (ارسل للـ channel)
-- [ ] WhatsApp Business API
+- [ ] Slack Bot (ارسل للـ channel من كلميرون)
+- [ ] WhatsApp Business API (تفاعل مع الوكلاء عبر واتساب)
 - [ ] Telegram Bot
 
-**ملفات المرحلة:**
+**الملفات:**
 - `app/api-docs/`
 - `src/lib/webhooks/`
-- `app/api/webhooks/`
 
 ---
 
 ## المرحلة 21: الأمان المتقدم (P2 — أسبوع 11)
 
-**الهدف:** المنصة تحمي بيانات المؤسسين بشكل كامل.
+**الهدف:** أعلى معايير الأمان — منصة يثق بها المؤسس بنسبة 100%.
 
 ### 21.1 Authentication Advanced
-- [ ] MFA إعداد كامل (TOTP)
-- [ ] Passkeys تفعيل (WebAuthn)
-- [ ] Session management متقدم
-- [ ] Device trust list
+- [ ] MFA إعداد كامل (TOTP: Google Authenticator)
+- [ ] Passkeys/WebAuthn تفعيل (المصادقة بدون كلمة مرور)
+- [ ] Session management متقدم (Refresh tokens، revocation)
+- [ ] Device trust list مع إشعار عند تسجيل دخول من جهاز جديد
 
 ### 21.2 Data Privacy
-- [ ] Data export (GDPR compliant)
-- [ ] Account deletion مع تنظيف كامل
-- [ ] Data retention policies
-- [ ] Privacy dashboard للمستخدم
+- [ ] Data export (GDPR/PDPL compliant) — تنزيل كل بيانات المستخدم
+- [ ] Account deletion مع تنظيف كامل (Firestore + Storage)
+- [ ] Data retention policies (auto-delete بعد 90 يوم للبيانات المؤقتة)
+- [ ] Privacy dashboard للمستخدم (ماذا نحفظ عنك؟)
 
-### 21.3 Compliance
-- [ ] PDPL (قانون حماية البيانات المصري) compliance
-- [ ] Audit log كامل لكل العمليات
-- [ ] Data classification labels
-- [ ] Privacy impact assessment
+### 21.3 Compliance مصر
+- [ ] PDPL (قانون حماية البيانات الشخصية المصري) compliance
+- [ ] Audit log كامل لكل العمليات الحساسة
+- [ ] Data residency: خيار تخزين البيانات في منطقة Middle East
+- [ ] Privacy Impact Assessment (PIA) موثّق
 
-**ملفات المرحلة:**
+**الملفات:**
+- `src/lib/security/`, `src/lib/compliance/`
 - `app/api/auth/`
-- `src/lib/security/`
-- `src/lib/compliance/`
+
+**الأدوات ذات الصلة:** `security_scan`, `threat_modeling`
 
 ---
 
 ## المرحلة 22: الأداء والقابلية للتوسع (P2 — أسبوع 11-12)
 
-**الهدف:** المنصة تستوعب 10,000 مستخدم نشط بدون تعطل.
+**الهدف:** كلميرون يستوعب 10,000 مستخدم نشط بدون تباطؤ.
 
 ### 22.1 Frontend Performance
-- [ ] Bundle analysis وتحسين
+- [ ] Bundle analysis (`npm run analyze`) وتقليص
 - [ ] Code splitting لكل dashboard page
-- [ ] Image optimization (AVIF/WebP)
-- [ ] Font subsetting للعربية
-- [ ] Critical CSS extraction
+- [ ] Image optimization: WebP/AVIF تلقائي (Next.js Image — ✅ مُهيّأ)
+- [ ] Prefetch الصفحات الشائعة
 
-### 22.2 API Performance
-- [ ] Redis caching للـ heavy queries
-- [ ] LLM response caching (semantic similarity)
-- [ ] Firestore read optimization
-- [ ] Connection pooling
+### 22.2 Backend Performance
+- [ ] Edge Functions لـ middleware (proxy.ts → Edge runtime)
+- [ ] Caching strategy: Firestore reads cached بـ Redis أو Upstash
+- [ ] Connection pooling للـ Python sidecars
+- [ ] Async task queue لـ workflows طويلة المدة (Bull MQ أو Inngest)
 
-### 22.3 Infrastructure
-- [ ] CDN للأصول الثابتة
-- [ ] Edge functions للـ lightweight APIs
-- [ ] Database sharding strategy
-- [ ] Cost monitoring والتنبيهات
+### 22.3 Scalability Infrastructure
+- [ ] Health checks محسّنة مع circuit breakers
+- [ ] Auto-scaling للـ Python services
+- [ ] Horizontal scaling plan للـ Next.js (Vercel أو Cloud Run)
+- [ ] Load testing: k6 أو Artillery مع هدف 1000 concurrent users
 
-**ملفات المرحلة:**
-- `next.config.ts`
-- `src/lib/cache/`
-- `src/lib/ai-cost-tracker.ts`
+**الأدوات ذات الصلة:** `google-cloud-waf-reliability`, `google-cloud-waf-cost-optimization`
 
 ---
 
-## المرحلة 23: اختبارات شاملة (P2 — أسبوع 12)
+## المرحلة 23: الذكاء الاصطناعي التوليدي (P2 — أسبوع 12)
 
-**الهدف:** 0 regressions، 80%+ test coverage.
+**الهدف:** توليد صور، تحليل صور، ومعالجة متقددة.
 
-### 23.1 Unit Tests
-- [ ] Tests لكل AI agent (mock LLM)
-- [ ] Tests لكل API route
-- [ ] Tests لـ Firestore security rules
-- [ ] Tests لـ Egypt Calc calculations
+### 23.1 Image Generation
+- [ ] توليد صور للمحتوى التسويقي (`gemini-2.5-flash-image` — متوفر عبر proxy ✅)
+- [ ] توليد شعارات أولية (logo concepts)
+- [ ] تصميم infographics تلقائي من البيانات
+- [ ] صور للمنتجات بوصف نصي (E-commerce)
 
-### 23.2 Integration Tests
-- [ ] E2E: Onboarding flow
-- [ ] E2E: Chat → Agent → Response
-- [ ] E2E: Upload PDF → Query
-- [ ] E2E: Billing checkout
+### 23.2 Document Intelligence
+- [ ] تحليل عقد PDF واستخراج البنود الخطرة
+- [ ] مقارنة نسختين من عقد (Contract Reviewer Agent)
+- [ ] تلخيص تقارير مالية طويلة
+- [ ] استخراج بيانات منظّمة من صور (Receipts، Invoices)
 
-### 23.3 Performance Tests
-- [ ] Load testing: 100 concurrent users
-- [ ] Chat latency < 500ms للـ first token
-- [ ] Dashboard load < 2s
-- [ ] API response < 200ms (P99)
-
-**ملفات المرحلة:**
-- `test/`
-- `e2e/`
-- `vitest.config.ts`
+### 23.3 Advanced Analytics
+- [ ] Predictive analytics للمبيعات
+- [ ] Anomaly detection في البيانات المالية
+- [ ] Pattern recognition في سلوك المستخدم
+- [ ] Forecasting نموذج نمو الشركة
 
 ---
 
-## المرحلة 24: التكاملات المحلية المصرية (P2 — أسبوع 12-13)
+## المرحلة 24: التكاملات المالية المصرية (P2 — أسبوع 12-13)
 
-**الهدف:** كلميرون متكامل مع البنية التحتية الرقمية المصرية.
+**الهدف:** كلميرون متصل بكل المنصات المالية المصرية.
 
 ### 24.1 Banking & Payments
-- [ ] Instapay API
-- [ ] CIB Corporate banking webhook
-- [ ] QNB Business API
-- [ ] ميزة "تحليل كشف حساب" (PDF upload)
+- [ ] Fawry API كاملة (pay, bill, refund)
+- [ ] CIB Open Banking API
+- [ ] Vodafone Cash B2B
+- [ ] InstaPay QR code generator
+- [ ] NBE (البنك الأهلي) integration
 
-### 24.2 Government Services
-- [ ] e-Signature integration (توقيع إلكتروني معتمد)
-- [ ] Tax Authority API (تسهيل الامتثال)
-- [ ] Commercial Registry data
-- [ ] ITIDA certification tracking
+### 24.2 Accounting & ERP
+- [ ] QuickBooks Online integration (للشركات التي تستخدمه)
+- [ ] Odoo integration (شائع في مصر)
+- [ ] Excel/Google Sheets sync ثنائي الاتجاه
+- [ ] إصدار فواتير PDF تلقائية
 
-### 24.3 Ecosystem
-- [ ] Flat6Labs API (فرص حاضنات)
-- [ ] Plug and Play Egypt
-- [ ] Cairo Angels network
-- [ ] USAID Egypt programs
-
----
-
-## المرحلة 25: Multi-tenant والمؤسسات (P2 — أسبوع 13-14)
-
-**الهدف:** Enterprise deals من 10+ موظفين.
-
-### 25.1 Team Features
-- [ ] Multiple users per workspace
-- [ ] Role-based access (Admin، Editor، Viewer)
-- [ ] Shared AI agents بين الفريق
-- [ ] Team activity feed
-
-### 25.2 Workspace Management
-- [ ] Custom domain لكل شركة
-- [ ] Branding الشركة في الـ UI
-- [ ] SSO integration (Okta، Google Workspace)
-- [ ] Audit log للفريق
-
-### 25.3 Enterprise Billing
-- [ ] Custom pricing للمؤسسات
-- [ ] Annual contracts
-- [ ] Usage-based billing
-- [ ] Invoice management
+### 24.3 Government Services
+- [ ] بوابة الخدمات الحكومية المصرية (eHUKOMA)
+- [ ] مصلحة الضرائب المصرية API
+- [ ] السجل التجاري الإلكتروني
+- [ ] GAFI (الهيئة العامة للاستثمار) integrations
 
 ---
 
-## المرحلة 26: Marketplace وعائدات المنتجين (P2 — أسبوع 14-15)
+## المرحلة 25: شبكة المؤسسين (P2 — أسبوع 13)
 
-**الهدف:** Flywheel effect — المستخدمون يبنون فوق كلميرون.
+**الهدف:** كلميرون ليس فقط أداة، بل مجتمع رواد أعمال.
 
-### 26.1 Workflow Marketplace
-- [ ] نشر Workflows مدفوعة ومجانية
-- [ ] Revenue sharing 70/30
-- [ ] Ratings وـreviews
-- [ ] Collections (مجموعات ثيماتية)
+### 25.1 Founder Network
+- [ ] صفحة Profile للمؤسس (قابلة للمشاركة)
+- [ ] Directory المؤسسين المصريين قابل للبحث
+- [ ] نظام Connections بين المؤسسين
+- [ ] Referral program مع credits مجانية
 
-### 26.2 Agent Marketplace
-- [ ] Custom agents من المطورين
-- [ ] Vetting process للجودة
-- [ ] Usage analytics للمنتجين
-- [ ] Stripe Connect للمدفوعات
+### 25.2 Mentorship System
+- [ ] نظام جلسات mentorship 1:1
+- [ ] ربط مؤسسين خبراء بالمبتدئين
+- [ ] Expert marketplace (استشارة بالساعة)
+- [ ] Office Hours مجانية مع experts
 
-### 26.3 Template Library
-- [ ] Business plan templates
-- [ ] Contract templates (بالقانون المصري)
-- [ ] Financial model templates
-- [ ] Pitch deck templates
-
----
-
-## المرحلة 27: الذكاء التنبؤي (P3 — أسبوع 15-16)
-
-**الهدف:** كلميرون يتوقع احتياجات المؤسس قبل أن يسأل.
-
-### 27.1 Predictive Analytics
-- [ ] توقع الأزمات المالية قبل 30 يوم
-- [ ] اقتراح فرص السوق بناءً على Trend analysis
-- [ ] Early warning system للمؤشرات السلبية
-- [ ] Competitive threat alerts
-
-### 27.2 Personalized AI
-- [ ] تخصيص ردود الوكلاء لأسلوب كل مؤسس
-- [ ] Adaptive UI بناءً على patterns الاستخدام
-- [ ] Smart suggestions بناءً على يوم الأسبوع/الوقت
-- [ ] "اليوم المناسب للقرار الكبير" indicator
-
-### 27.3 Benchmarking
-- [ ] مقارنة익익 الشركة بمتوسط السوق المصري
-- [ ] Peer comparison (anonymous)
-- [ ] Industry benchmarks
-- [ ] Growth trajectory forecasting
+### 25.3 Community Features
+- [ ] Q&A مجتمعي بالعربية (مثل Stack Overflow للريادة)
+- [ ] Success stories والمتحف الناجحين
+- [ ] Weekly challenges ومسابقات
+- [ ] Leaderboard المؤسسين الأكثر نشاطاً
 
 ---
 
-## المرحلة 28: منصة التعلم والتطوير (P3 — أسبوع 16-17)
+## المرحلة 26: المنصة الدولية (P3 — أسبوع 13-14)
 
-**الهدف:** كلميرون يطور مهارات المؤسس.
+**الهدف:** التوسع إلى كل الأسواق العربية.
 
-### 28.1 Learning Hub
-- [ ] Micro-courses بالعربية
-- [ ] Video lessons من خبراء مصريين
-- [ ] Quizzes وشهادات
-- [ ] Learning paths حسب مرحلة الشركة
+### 26.1 Multi-Market Support
+- [ ] دعم السوق السعودي (VAT 15%، العمالة المحلية، Vision 2030)
+- [ ] دعم السوق الإماراتي (DIFC، Free Zones، VAT 5%)
+- [ ] دعم المغرب والجزائر وتونس
+- [ ] دعم العراق والأردن والكويت
 
-### 28.2 Mentorship Network
-- [ ] ربط بمرشدين مصريين تجاريين
-- [ ] Booking sessions مباشرة
-- [ ] AI pre-session briefing
-- [ ] Post-session action items تلقائية
+### 26.2 Localization
+- [ ] خصائص كل سوق في Egypt Calc (قابل للتوسع إلى Saudi Calc، UAE Calc)
+- [ ] Legal templates لكل دولة عربية
+- [ ] Currency support: EGP، SAR، AED، MAD، DZD، JOD
+- [ ] Local payment gateways لكل سوق
 
-### 28.3 Community
-- [ ] Forum مؤسسي مصري
-- [ ] Anonymous peer support
-- [ ] Success stories sharing
-- [ ] Monthly virtual meetup
-
----
-
-## المرحلة 29: التوسع الإقليمي (P3 — أسبوع 17-18)
-
-**الهدف:** من مصر إلى كل العالم العربي.
-
-### 29.1 Saudi Arabia
-- [ ] ZATCA VAT compliance
-- [ ] Saudi Labor Law integration
-- [ ] Riyal pricing + STC Pay
-- [ ] Local Arabic dialect adaptation
-
-### 29.2 UAE
-- [ ] DIFC regulations
-- [ ] UAE VAT
-- [ ] AED pricing
-- [ ] Free zone compliance tools
-
-### 29.3 Regional Expansion
-- [ ] Morocco، Tunisia، Jordan
-- [ ] Multi-currency real-time rates
-- [ ] Regional partner network
-- [ ] Localized support teams
+### 26.3 Partnerships
+- [ ] شراكة مع أكاديميات ريادة الأعمال العربية
+- [ ] تكامل مع منصات Accelerators (Flat6Labs، AUC Venture Lab)
+- [ ] شراكة مع banks للـ Startup banking packages
+- [ ] Reseller program للاستشاريين والمدربين
 
 ---
 
-## المرحلة 30: الـ IPO-Ready Infrastructure (P3 — أسبوع 18+)
+## المرحلة 27: المنصة المؤسسية — Enterprise (P3 — أسبوع 14-15)
 
-**الهدف:** المنصة جاهزة للاستثمار الكبير.
+**الهدف:** الشركات الكبيرة تشتري كلميرون للفرق.
 
-### 30.1 Data Infrastructure
-- [ ] Data warehouse production (BigQuery/Snowflake)
-- [ ] BI dashboard (Metabase)
-- [ ] Real-time metrics API للـ investors
-- [ ] GDPR + PDPL full compliance audit
+### 27.1 Team Management
+- [ ] Multi-user workspaces (فريق من 5-50 شخصاً)
+- [ ] Role-based access control (Owner, Admin, Member, Viewer)
+- [ ] SSO (SAML/OIDC) للـ Enterprise customers
+- [ ] Audit logs للمديرين (من فعل ماذا ومتى)
 
-### 30.2 Reliability
-- [ ] SLA 99.9% uptime
-- [ ] Multi-region deployment
-- [ ] Automated failover
-- [ ] Disaster recovery plan
+### 27.2 Enterprise Features
+- [ ] Private AI instances (Dedicated compute)
+- [ ] Custom fine-tuning بيانات الشركة
+- [ ] SLA 99.9% uptime guarantee
+- [ ] Dedicated customer success manager
 
-### 30.3 Governance
-- [ ] SOC 2 Type II preparation
-- [ ] ISO 27001 roadmap
-- [ ] Privacy by design audit
-- [ ] AI Ethics committee formation
-
----
-
-## مؤشرات النجاح (KPIs)
-
-| المؤشر | الهدف 3 أشهر | الهدف 6 أشهر | الهدف 12 شهر |
-|--------|-------------|-------------|-------------|
-| مستخدمين نشطين | 500 | 5,000 | 50,000 |
-| MRR | 5,000 USD | 50,000 USD | 500,000 USD |
-| NPS | >50 | >60 | >70 |
-| Churn Rate | <15% | <10% | <5% |
-| Chat Messages/Day | 1,000 | 10,000 | 100,000 |
-| LCP | <3s | <2s | <1.5s |
-| Uptime | 99% | 99.5% | 99.9% |
+### 27.3 Enterprise Billing
+- [ ] Annual invoicing (فاتورة سنوية مع NET-30)
+- [ ] Volume discounts تلقائية
+- [ ] Procurement-friendly: PO numbers، W9/W8
+- [ ] Usage reporting للمديرين
 
 ---
 
-## أولويات تنفيذ فورية (هذا الأسبوع)
+## المرحلة 28: البنية التحتية المتقدمة (P3 — أسبوع 15-16)
 
-```
-الأولوية 1 (P0): المراحل 1، 2، 3 — الاستقرار والأمان
-الأولوية 2 (P1): المرحلة 12 — الدفع والاشتراكات (Revenue)
-الأولوية 3 (P1): المرحلة 4 — تحسين Chat UI
-الأولوية 4 (P1): المرحلة 13 — Onboarding (Activation)
-الأولوية 5 (P1): المرحلة 8 — تحسين جودة الوكلاء
-```
+**الهدف:** بنية تحتية تستحق Scale-up.
+
+### 28.1 Infrastructure
+- [ ] Multi-region deployment (Egypt + UAE + Europe)
+- [ ] CDN مُحسَّن للمحتوى العربي
+- [ ] Database sharding للمستخدمين الكبار
+- [ ] Disaster Recovery Plan موثّق ومختبر
+
+### 28.2 DevOps Excellence
+- [ ] CI/CD pipeline كامل (GitHub Actions + Firebase Deploy)
+- [ ] Automated testing: Unit + Integration + E2E (Playwright)
+- [ ] Feature flags (Unleash أو LaunchDarkly)
+- [ ] Blue-Green deployment للـ zero-downtime updates
+
+### 28.3 FinOps
+- [ ] Cost tracking per user per agent call
+- [ ] Budget alerts تلقائية عند تجاوز الحد
+- [ ] LLM cost optimization: caching + compression + routing
+- [ ] Monthly cost report للفريق
+
+**الأدوات ذات الصلة:** `google-cloud-waf-reliability`, `cloud-run-basics`
 
 ---
 
-*آخر تحديث: 2026-05-01 | المسؤول: فريق التطوير*
+## المرحلة 29: المنصة الذاتية التحسين (P4 — مستقبل)
+
+**الهدف:** كلميرون يتحسن بنفسه بناءً على بيانات المستخدمين.
+
+### 29.1 Self-Learning System
+- [ ] Reinforcement Learning من تقييمات المستخدمين (👍 👎)
+- [ ] A/B testing للـ system prompts تلقائياً
+- [ ] Fine-tuning مجدول للنماذج المخصصة
+- [ ] Continuous evaluation pipeline
+
+### 29.2 Agent Evolution
+- [ ] إضافة وكلاء جدد بناءً على طلبات المستخدمين
+- [ ] تقاعد الوكلاء منخفضي الأداء
+- [ ] Agent marketplace: وكلاء يبنيها المجتمع
+- [ ] Custom agents: المستخدم يبني وكيله الخاص
+
+### 29.3 Predictive Intelligence
+- [ ] التنبؤ باحتياجات المؤسس قبل أن يسأل
+- [ ] Proactive insights: "شركتك ستحتاج X في 30 يوم"
+- [ ] Market signals: تنبيه "هذا التوقيت مناسب للتمويل"
+
+---
+
+## المرحلة 30: الرؤية بعيدة المدى (2027+)
+
+**الهدف:** كلميرون هو "Amazon AWS" لريادة الأعمال العربية.
+
+### 30.1 AI Platform
+- [ ] كلميرون كـ Platform for AI Agents (يبني عليها الآخرون)
+- [ ] Agent Studio: بناء وكلاء بدون كود
+- [ ] Agent Marketplace مفتوح للمجتمع
+- [ ] Revenue sharing 70/30 مع بناة الوكلاء
+
+### 30.2 Data Advantage
+- [ ] أكبر قاعدة بيانات ريادة أعمال عربية مجمّعة بشكل خاص
+- [ ] Benchmarks صناعية محدّثة باستمرار
+- [ ] Market intelligence reports ربع سنوية
+- [ ] Arabic Business Knowledge Graph
+
+### 30.3 Impact Measurement
+- [ ] عداد "وظائف أُنشئت بمساعدة كلميرون"
+- [ ] عداد "شركات أُسّست بمساعدة كلميرون"
+- [ ] عداد "EGP مُوّلت بمساعدة كلميرون"
+- [ ] تقرير الأثر الاقتصادي السنوي
+
+---
+
+## مصفوفة الأولويات والمهارات المستخدمة
+
+| المرحلة | الأولوية | الأدوات/المهارات |
+|---|---|---|
+| 1-3 | P0 | `environment-secrets`, `database`, `security_scan` |
+| 4-7 | P1 | `frontend-design`, `design`, `shadcn-ui` |
+| 8-11 | P1 | `delegation`, `cto-egypt`, `cfo-egypt` |
+| 12-13 | P0-Business | `stripe`, `environment-secrets` |
+| 14-15 | P1 | `frontend-design`, `database` |
+| 16 | P1-Growth | `seo-audit`, `programmatic-seo` |
+| 17-18 | P1 | `environment-secrets`, `mockup-sandbox` |
+| 19 | P1 | `cmo-egypt`, `content-machine` |
+| 20-21 | P2 | `security_scan`, `threat_modeling` |
+| 22-23 | P2 | `google-cloud-waf-reliability`, `gemini-api` |
+| 24-25 | P2 | `integrations`, `query-integration-data` |
+| 26-27 | P3 | `ceo-egypt`, `intl-expansion` |
+| 28-30 | P3-P4 | `cloud-run-basics`, `deployment` |
+
+---
+
+## الخطوة التالية الفورية (اليوم)
+
+1. **P0 الأهم:** إضافة `FIREBASE_SERVICE_ACCOUNT_KEY` secret (بدونه Firestore لا يعمل)
+2. **P0:** اختبار Chat مع Gemini (Gemini متصل الآن — اختبر أول رسالة حقيقية)
+3. **P0:** اختبار Ideas Analyze API مع فكرة مشروع حقيقية
+4. **P1:** البدء في المرحلة 4 (Chat UI improvements)
+
+> لتفعيل Firebase Admin: اذهب إلى Firebase Console → Project Settings → Service Accounts → Generate new private key → ضع الـ JSON كاملاً في secret `FIREBASE_SERVICE_ACCOUNT_KEY`

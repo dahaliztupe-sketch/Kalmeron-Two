@@ -26,9 +26,10 @@ export interface RoutedModel {
 
 // أسماء نقاط النهاية الفعلية في @ai-sdk/google.
 // نسمّي كل مستوى بشكل مستقل حتى نستبدله بسهولة لاحقاً.
+// gemini-2.5-flash-lite not supported via Replit AI proxy — use flash for all tiers
 const MODEL_ALIASES: Record<TaskTier, string> = {
-  trivial:  'gemini-2.5-flash-lite',
-  simple:   'gemini-2.5-flash-lite',
+  trivial:  'gemini-2.5-flash',
+  simple:   'gemini-2.5-flash',
   medium:   'gemini-2.5-flash',
   complex:  'gemini-2.5-flash',
   critical: 'gemini-2.5-pro',

@@ -8,13 +8,11 @@
  * Firestore batch limit is 500 operations per commit. Large documents are
  * split into multiple batch writes automatically.
  */
-import { embed, embedMany } from 'ai';
-import { google } from '@ai-sdk/google';
 import { adminDb } from '@/src/lib/firebase-admin';
 import type { DocumentSnapshot } from 'firebase-admin/firestore';
+import { embedOne, embedBatch } from '@/src/lib/embed-helper';
 
 const COLLECTION = 'rag_chunks';
-const EMBED_MODEL = google.textEmbeddingModel('gemini-embedding-001');
 const FIRESTORE_BATCH_LIMIT = 499; // Firestore max is 500; keep one slot of safety
 
 export interface RagChunk {
@@ -83,7 +81,7 @@ export async function ingestDocument(opts: {
 
   const allEmbeddings: number[][] = [];
   for (const batch of batches) {
-    const { embeddings } = await embedMany({ model: EMBED_MODEL, values: batch });
+    const embeddings = await embedBatch(batch);
     allEmbeddings.push(...embeddings);
   }
 
@@ -122,7 +120,7 @@ export async function searchUserKnowledge(opts: {
   const topK = opts.topK ?? 4;
   const minSim = opts.minSimilarity ?? 0.55;
 
-  const { embedding: q } = await embed({ model: EMBED_MODEL, value: opts.query });
+  const q = await embedOne(opts.query);
 
   // Limit to 500 chunks per search for performance — sufficient for most users.
   // Users with larger knowledge bases should migrate to a vector DB.

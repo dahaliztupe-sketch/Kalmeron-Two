@@ -17,8 +17,7 @@
  * P50 latency target on cache hit: < 200ms (no LLM call → just cosine math).
  */
 
-import { embed } from 'ai';
-import { MODELS } from '@/src/lib/gemini';
+import { embedOne } from '@/src/lib/embed-helper';
 import { routePanel as routePanelLite } from './router';
 import type { PanelRoute } from './types';
 
@@ -100,12 +99,7 @@ function evictIfNeeded(): void {
 
 async function safeEmbed(text: string): Promise<number[] | null> {
   try {
-    const { embedding } = await embed({
-      model: MODELS.EMBEDDING,
-      value: text.slice(0, 2000),
-      maxRetries: 0,
-    });
-    return embedding;
+    return await embedOne(text.slice(0, 2000));
   } catch {
     return null;
   }
