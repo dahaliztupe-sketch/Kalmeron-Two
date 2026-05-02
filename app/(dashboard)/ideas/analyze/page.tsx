@@ -441,6 +441,7 @@ export default function IdeaValidationPage() {
 
         {/* ── Analyze Tab ── */}
         {pageTab === "analyze" && (
+        <>
         <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}>
           <Card className="bg-neutral-900/60 border-neutral-700/50 rounded-2xl overflow-hidden">
             <CardContent className="p-6 space-y-5">
@@ -578,6 +579,7 @@ export default function IdeaValidationPage() {
             </motion.div>
           )}
         </AnimatePresence>
+        </>
         )} {/* end pageTab === "analyze" */}
 
       </div>
