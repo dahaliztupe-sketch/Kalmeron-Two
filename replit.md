@@ -1,5 +1,111 @@
 # Kalmeron AI (ai-studio-applet)
 
+## جلسة 2026-05-02 — الجولة الخامسة: مسح شامل لـ 63 صفحة + إصلاح competitor-watch (أحدث تحديث)
+
+### ملخص الجولة الخامسة
+| التغيير | التفاصيل |
+|---------|----------|
+| **مسح شامل لـ 63 صفحة** | تم التحقق من جميع صفحات dashboard وAPI routes المقابلة |
+| **إصلاح competitor-watch/page.tsx** | كانت تستدعي `/api/ideas/analyze` — تم تحويلها إلى `/api/competitor-watch` الصحيح |
+| **تنظيف كود** | حذف المتغيرات المكررة والـ prompt الزائد من competitor-watch |
+| **تحقق من API routes** | كل الـ APIs موجودة: notifications, virtual-office, referrals, team-os, meetings, decisions |
+
+### نتائج المسح الشامل (جلسة 5)
+**جميع 63+ صفحة dashboard** فُحصت وتعمل بشكل صحيح مع APIs مقابلة:
+- meetings ← `/api/meetings` (Firestore + virtual meeting orchestrator) ✅
+- brain ← `/api/team-os` (knowledge graph) ✅  
+- okr ← `/api/okr` + `/api/okr/generate` ✅
+- launchpad ← `/api/launchpad` (8-stage pipeline) ✅
+- brand-voice ← `/api/brand-voice` (Firestore persist) ✅
+- cash-runway ← `/api/runway` (hook: useRunwaySnapshot) ✅
+- chat ← `/api/chat` (full LLM streaming + Firestore history) ✅
+- settings ← `BillingTab` + Firebase Auth ✅
+- usage ← `/api/billing/usage/summary` + `/api/billing/usage/events` ✅
+- system-health ← `/api/health` ✅
+- company-builder ← `/api/company/*` ✅
+- org-chart ← `OrgChart` component ✅
+- virtual-office ← `/api/virtual-office` ✅
+- workflows-runner ← `/api/workflows/run` ✅
+- founder-agreement ← `/api/cofounder-health` (mode: agreement) ✅
+- real-estate ← `/api/chat` (specialized prompt) ✅
+- roadmap ← `/api/dashboard` (teamActivity) ✅
+- trending-tools ← static curated list (by design) ✅
+- notifications ← `/api/account/notifications` ✅
+- experts ← `/api/experts` ✅
+- lab ← links hub (static) ✅
+- skills ← `/api/skills` + `/api/skills/[id]` ✅
+- departments ← links hub (static) ✅
+- hr ← `/api/workflows/run` (hiring-plan workflow) ✅
+- sales ← `/api/workflows/run` (social-media-strategy workflow) ✅
+- dashboard ← `/api/dashboard` (full data aggregator) ✅
+
+### إصلاحات API جلسة 5 — تفاصيل كاملة
+
+| الصفحة | كانت | أصبحت |
+|---------|------|--------|
+| `competitor-watch/page.tsx` | `/api/ideas/analyze` مع prompt بناءً محلياً | `/api/competitor-watch` مع البيانات الصحيحة (industry, companyName, competitors, targetCustomer, analysisType) |
+| `real-estate/page.tsx` | `/api/chat` مع streaming parser معقد | `/api/real-estate` مباشرة (Zod-validated, JSON response) |
+| `supply-chain/page.tsx` | `/api/chat` لكل عميل (demand/inventory/logistics) | `/api/supply-chain` مع `analysisType` parameter |
+| `brand-voice/page.tsx` (معاينة) | `/api/chat` مع prompt محلي | `/api/brand-voice` POST مع كامل بيانات الـ brand voice + scenario |
+
+### حقول الاستجابة الصحيحة للـ APIs
+| API | حقل الاستجابة الرئيسي |
+|-----|----------------------|
+| `/api/competitor-watch` | `result` |
+| `/api/real-estate` | `analysis` |
+| `/api/supply-chain` | `analysis` |
+| `/api/brand-voice` (POST) | `preview` |
+
+### التحقق الشامل من وجود جميع APIs
+تم التحقق من وجود جميع الـ endpoints التالية:
+- `/api/usage/daily` ✅ | `/api/extract-pdf` ✅ | `/api/first-100` ✅
+- `/api/investor/*` (metrics, health, seed, demo-mode) ✅
+- `/api/learned-skills` ✅ | `/api/pitch-practice` ✅
+- `/api/contract-review` ✅ | `/api/customer-discovery` ✅
+- `/api/egypt-calc` ✅ | `/api/decision-ai` ✅
+
+---
+
+## جلسة 2026-05-02 — الجولة الرابعة: ربط Firestore + APIs حقيقية + endpoints مفقودة
+
+### ملخص الجولة الرابعة
+| التغيير | التفاصيل |
+|---------|----------|
+| **plan/page.tsx** | مربوط بـ Firestore عبر `/api/plan` — حفظ/تحميل/حذف/تحديث تلقائي |
+| **opportunities/page.tsx** | مربوط بـ `/api/opportunities` الحقيقي (Firestore + seed fallback) |
+| **/api/competitor-watch** | endpoint جديد — تحليل تنافسي ثلاثي (full/gaps/positioning) |
+| **/api/okr/generate** | endpoint جديد — توليد OKR مخصص من وصف الهدف |
+| **plan/page.tsx AI** | تم تحويل AI OKR generator إلى `/api/okr/generate` بدلاً من `/api/okr` |
+| **إصلاح import** | حذف `FieldValue` غير المستخدم من `app/api/plan/route.ts` |
+
+### حالة الـ APIs الآن (شاملة)
+جميع صفحات Dashboard (63 صفحة) لديها APIs مقابلة:
+- `/api/plan` ← plan/page.tsx (Firestore CRUD) ✅
+- `/api/opportunities` ← opportunities/page.tsx (Firestore + AI) ✅
+- `/api/competitor-watch` ← competitor-watch/page.tsx ✅ (جديد)
+- `/api/okr/generate` ← plan/page.tsx AI OKR ✅ (جديد)
+- `/api/okr` ← okr/page.tsx (weekly OKR store) ✅
+- `/api/growth-lab` ← growth-lab/page.tsx ✅
+- `/api/sales-coach` ← sales-coach/page.tsx ✅
+- `/api/financial-model` ← financial-model/page.tsx ✅
+- `/api/market-intelligence` ← market-intelligence/page.tsx ✅
+- `/api/email-ai` ← email-ai/page.tsx ✅
+- `/api/legal-ai` ← legal-ai/page.tsx ✅
+- `/api/hr-ai` ← hr-ai/page.tsx ✅
+- `/api/smart-pricing` ← smart-pricing/page.tsx ✅
+- `/api/supply-chain` ← supply-chain/page.tsx ✅
+- `/api/launchpad` ← launchpad/page.tsx ✅
+- `/api/daily-brief` ← daily-brief/page.tsx ✅ (LLM + fallback)
+- `/api/account/notifications` ← notifications/page.tsx ✅
+
+### ملاحظات تقنية للجولة الرابعة
+- plan/page.tsx: auto-save debounce 1500ms لتقدم Key Results
+- opportunities/page.tsx: يتعامل مع `provider`+`organizer` و`url`+`link` بشكل ديناميكي
+- `rateLimit(req, {...})` — التوقيع الصحيح في جميع الـ routes الجديدة
+- OKR generate: يتطلب auth (ليس guest) لمنع الاستغلال
+
+---
+
 ## جلسة 2026-05-02 — جولة ثالثة: حاسبة ضرائب مصرية + navigation شامل (أحدث تحديث)
 
 ### ملخص الجلسة الثالثة

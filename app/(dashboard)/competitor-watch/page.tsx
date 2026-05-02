@@ -50,44 +50,16 @@ export default function CompetitorWatchPage() {
       if (user) headers["Authorization"] = `Bearer ${await user.getIdToken()}`;
 
       const validCompetitors = knownCompetitors.filter(c => c.trim());
-      const typeLabels: Record<string, string> = {
-        full: "تحليل شامل للمنافسين",
-        gaps: "تحليل الفجوات السوقية",
-        positioning: "تحليل نقاط التميّز والموضع التنافسي",
-      };
-
-      const prompt = `قطاع: ${industry}
-${companyName ? `شركتي: ${companyName}` : ""}
-${targetCustomer ? `عميلي المستهدف: ${targetCustomer}` : ""}
-${validCompetitors.length > 0 ? `منافسون معروفون: ${validCompetitors.join("، ")}` : ""}
-
-نوع التحليل المطلوب: ${typeLabels[analysisType] || "تحليل شامل"}
-
-قدّم ${typeLabels[analysisType]} للسوق المصري والعربي في قطاع "${industry}".
-
-اشمل:
-## خريطة المنافسين
-(المباشرون وغير المباشرون — مع تقييم قوة كل منهم)
-
-## تحليل نقاط القوة والضعف
-(لأبرز ٣-٥ منافسين مع المصادر إن أمكن)
-
-## الفجوات السوقية غير المستغلة
-(ما الذي يفتقده العملاء حالياً من الحلول الموجودة؟)
-
-## فرص التمايز
-(كيف يمكن لشركة جديدة أن تنافس وتتميّز؟)
-
-## توصية Positioning
-(جملة تموضع تنافسي واضحة وقابلة للاختبار)
-
-## خطوات التتبع التالية
-(كيف تراقب المنافسين باستمرار؟)`;
-
-      const res = await fetch("/api/ideas/analyze", {
+      const res = await fetch("/api/competitor-watch", {
         method: "POST",
         headers,
-        body: JSON.stringify({ ideaDesc: prompt, industry, startup_stage: `competitor_${analysisType}` }),
+        body: JSON.stringify({
+          industry,
+          companyName,
+          competitors: validCompetitors.join("، "),
+          targetCustomer,
+          analysisType,
+        }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "خطأ");

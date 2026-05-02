@@ -68,7 +68,24 @@ const securityHeaders = [
   },
 ];
 
+// ── Dev domain resolution ──────────────────────────────────────────────────
+// REPLIT_DEV_DOMAIN is injected at runtime by Replit (e.g. xxx.kirk.replit.dev).
+// We use it to build an absolute base URL so NEXT_PUBLIC_BASE_URL is always
+// correct regardless of which Replit cluster the Repl is running on.
+// In production (deployed), NEXT_PUBLIC_APP_URL is expected to be set manually
+// to the canonical domain (e.g. https://kalmeron.app).
+const replitDevDomain = process.env.REPLIT_DEV_DOMAIN;
+const resolvedBaseUrl = replitDevDomain
+  ? `https://${replitDevDomain}`
+  : process.env.NEXT_PUBLIC_APP_URL || 'https://kalmeron.app';
+
 const nextConfig: NextConfig = {
+  // ── Inject NEXT_PUBLIC vars dynamically at build/startup time ──────────
+  // This ensures the correct domain is always used, even after Repl restarts.
+  env: {
+    NEXT_PUBLIC_BASE_URL: resolvedBaseUrl,
+    NEXT_PUBLIC_APP_URL: resolvedBaseUrl,
+  },
   serverExternalPackages: ['pdf-parse', '@napi-rs/canvas'],
   async redirects() {
     return [

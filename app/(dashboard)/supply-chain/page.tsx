@@ -66,60 +66,26 @@ export default function SupplyChainDashboard() {
     try {
       const token = await user.getIdToken();
 
-      const callAgent = async (agentKey: string, prompt: string): Promise<string> => {
+      const callAgent = async (agentKey: 'demand' | 'inventory' | 'logistics'): Promise<string> => {
         setActiveAgent(agentKey);
-        const res = await fetch('/api/chat', {
+        const res = await fetch('/api/supply-chain', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-          body: JSON.stringify({
-            messages: [{ content: prompt }],
-            isGuest: false,
-          }),
+          body: JSON.stringify({ product: productDesc, analysisType: agentKey }),
         });
         if (!res.ok) return '';
-        // Try streaming first, then JSON
-        const reader = res.body?.getReader();
-        const decoder = new TextDecoder();
-        let text = '';
-        if (reader) {
-          while (true) {
-            const { done, value } = await reader.read();
-            if (done) break;
-            const chunk = decoder.decode(value);
-            for (const line of chunk.split('\n')) {
-              if (line.startsWith('data: ')) {
-                try {
-                  const parsed = JSON.parse(line.slice(6)) as { delta?: string; content?: string };
-                  if (parsed.delta) text += parsed.delta;
-                  if (parsed.content) text = parsed.content;
-                } catch { /* skip */ }
-              }
-            }
-          }
-        }
-        if (!text) {
-          try {
-            const data = await res.json() as { result?: string };
-            text = data.result || '';
-          } catch { /* skip */ }
-        }
-        return text;
+        const data = await res.json() as { result?: string; analysis?: string };
+        return data.result || data.analysis || '';
       };
 
       setActiveAgent('demand');
-      const demand = await callAgent('demand',
-        `أنت مساعد متخصص في سلسلة الإمداد. حلّل الطلب المتوقع لـ "${productDesc}" في السوق المصري للربع القادم. شمّل: الأنماط الموسمية، معدلات النمو المتوقعة بالأرقام، والعوامل المؤثرة على الطلب.`
-      );
+      const demand = await callAgent('demand');
 
       setActiveAgent('inventory');
-      const inventory = await callAgent('inventory',
-        `أنت خبير في إدارة المخزون. لمنتج "${productDesc}"، احسب: مستوى الأمان (Safety Stock)، نقطة إعادة الطلب (Reorder Point)، الكمية الاقتصادية للطلب (EOQ). قدّم أرقاماً تقديرية واقعية.`
-      );
+      const inventory = await callAgent('inventory');
 
       setActiveAgent('logistics');
-      const logistics = await callAgent('logistics',
-        `أنت مختص لوجستيات في مصر. لمنتج "${productDesc}"، اقترح: أفضل مسارات التوريد، الموردين المحتملين، كيفية إدارة مخاطر التعطل (disruption management)، وخطط بديلة لضمان الاستمرارية.`
-      );
+      const logistics = await callAgent('logistics');
 
       setResult({ demand, inventory, logistics });
       setActiveAgent(null);

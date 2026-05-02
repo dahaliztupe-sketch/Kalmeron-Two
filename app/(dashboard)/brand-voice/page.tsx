@@ -91,17 +91,18 @@ export default function BrandVoicePage() {
     setGeneratingPreview(true);
     setPreview(null);
     try {
-      const toneLabels = data.tone.map(t => TONE_OPTIONS.find(o => o.id === t)?.label).filter(Boolean).join("، ");
-      const prompt = `بناءً على هذه المعلومات:\n- العلامة: ${data.name}\n- الجمهور: ${data.audience}\n- النبرة: ${toneLabels}\n- القيم: ${data.values}\n- تجنّب: ${data.avoid}\n\nاكتب رسالة تسويقية قصيرة (2-3 جمل) تعكس صوت هذه العلامة التجارية لمنشور على وسائل التواصل الاجتماعي.`;
-      
-      const r = await fetch("/api/chat", {
+      const token = await user?.getIdToken().catch(() => null);
+      const headers: Record<string, string> = { "Content-Type": "application/json" };
+      if (token) headers["Authorization"] = `Bearer ${token}`;
+
+      const r = await fetch("/api/brand-voice", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: [{ role: "user", content: prompt }] }),
+        headers,
+        body: JSON.stringify({ ...data, scenario: "منشور على وسائل التواصل الاجتماعي" }),
       });
       if (r.ok) {
-        const text = await r.text();
-        setPreview(text.slice(0, 500));
+        const json = await r.json() as { preview?: string; result?: string };
+        setPreview(json.preview || json.result || "");
       }
     } catch {}
     setGeneratingPreview(false);
