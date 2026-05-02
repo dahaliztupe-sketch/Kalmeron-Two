@@ -1,6 +1,7 @@
 // @ts-nocheck
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { recordDriftSample } from '@/src/lib/observability/drift-detector';
+import { CUSTOMER_SUPPORT_PROMPT } from './prompt';
 
 const genAI = new GoogleGenerativeAI(
   process.env.GEMINI_API_KEY ||
@@ -19,10 +20,7 @@ export async function createSupportSession() {
     });
 
     const chat = model.startChat({
-      systemInstruction: `أنت وكيل خدمة عملاء لمنصة كلميرون تو.
-    دورك: مساعدة رواد الأعمال في استخدام المنصة، الإجابة على أسئلتهم، وحل مشكلاتهم بالاعتماد على قاعدة المعرفة.
-    كن ودودًا، محترفًا، وتحدث بالعربية الفصحى الواضحة أو العامية المصرية الأنيقة.
-    أنت تدعم الآن التواصل الصوتي والمرئي، فاستخدم أسلوب المحادثة المباشرة (Live).`,
+      systemInstruction: CUSTOMER_SUPPORT_PROMPT,
     });
 
     return chat;

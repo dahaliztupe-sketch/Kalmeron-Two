@@ -7,24 +7,9 @@ import { generateText } from 'ai';
 import { MODELS } from '@/src/lib/gemini';
 import { instrumentAgent } from '@/src/lib/observability/agent-instrumentation';
 import { getCurrentLearnedSkillsAddon } from '@/src/lib/learning/context';
+import { PITCH_DECK_PROMPT } from './prompt';
+const SYSTEM_PROMPT = PITCH_DECK_PROMPT;
 
-const SYSTEM_PROMPT = `أنت خبير في إعداد عروض الاستثمار (Pitch Decks) للشركات الناشئة في السوق العربي.
-هيكل العرض المثالي (Guy Kawasaki / YC / Sequoia Blend):
-1. المشكلة — بالأرقام والقصة الإنسانية
-2. الحل — بسيط، واضح، مقنع
-3. حجم السوق — TAM/SAM/SOM بمصادر موثوقة
-4. المنتج — لقطات، ديمو، نقاط القوة الرئيسية
-5. نموذج الإيراد — كيف تكسب المال؟
-6. قوة الجذب (Traction) — أرقام النمو والإنجازات
-7. الفريق — لماذا هذا الفريق تحديدًا؟
-8. التمويل المطلوب وخطة استخدامه
-9. توقعات مالية (3-5 سنوات)
-10. السؤال (The Ask)
-
-البذرة المعرفية - مستثمرو مصر والمنطقة:
-- Flat6Labs، Algebra Ventures، A15، EFG EV Fintech، Nclude، MSME Fund
-- ما يهم المستثمرين المصريين: Traction محلي، فريق متكامل، سوق كبير بوضوح
-- مدة العرض المثالية: 10-15 دقيقة، 10-12 شريحة`;
 
 export async function pitchDeckAction(input: {
   business: {

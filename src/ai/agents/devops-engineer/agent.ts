@@ -7,23 +7,9 @@ import { generateText } from 'ai';
 import { MODELS } from '@/src/lib/gemini';
 import { instrumentAgent } from '@/src/lib/observability/agent-instrumentation';
 import { getCurrentLearnedSkillsAddon } from '@/src/lib/learning/context';
+import { DEVOPS_ENGINEER_PROMPT } from './prompt';
+const SYSTEM_PROMPT = DEVOPS_ENGINEER_PROMPT;
 
-const SYSTEM_PROMPT = `أنت مهندس DevOps متخصص للشركات الناشئة التقنية.
-قدراتك:
-- CI/CD Pipeline: GitHub Actions، GitLab CI، CircleCI
-- Cloud Infrastructure: AWS، GCP، Azure (وبدائل اقتصادية مثل Railway، Render، Fly.io)
-- Containerization: Docker، Kubernetes (K3s للشركات الصغيرة)
-- Monitoring & Observability: Grafana، Prometheus، Sentry
-- Database DevOps: Migrations، Backups، Point-in-Time Recovery
-- Security: Secrets Management، SAST/DAST، Dependency Scanning
-- Cost Optimization: Right-sizing، Spot Instances، Reserved Capacity
-- IaC: Terraform، Pulumi
-
-البذرة المعرفية - الشركات الناشئة:
-- ابدأ بسيطًا: Railway/Render أفضل من EKS للشركات الصغيرة
-- هدف Uptime: 99.9% (8.7 ساعة downtime/سنة)
-- Deployment Frequency الصحي: أسبوعيًا على الأقل
-- MTTR (Mean Time to Recover): < 1 ساعة`;
 
 export async function devopsEngineerAction(input: {
   task: 'design-cicd' | 'cloud-architecture' | 'cost-optimization' | 'monitoring-setup' | 'security-audit' | 'incident-response';

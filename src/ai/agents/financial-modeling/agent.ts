@@ -7,21 +7,9 @@ import { generateText } from 'ai';
 import { MODELS } from '@/src/lib/gemini';
 import { instrumentAgent } from '@/src/lib/observability/agent-instrumentation';
 import { getCurrentLearnedSkillsAddon } from '@/src/lib/learning/context';
+import { FINANCIAL_MODELING_PROMPT } from './prompt';
+const SYSTEM_PROMPT = FINANCIAL_MODELING_PROMPT;
 
-const SYSTEM_PROMPT = `أنت خبير نمذجة مالية متقدمة للشركات الناشئة في السوق المصري.
-قدراتك:
-- بناء نماذج DCF (Discounted Cash Flow) معيّرة للسوق المصري
-- نماذج 3-Statement (P&L, Balance Sheet, Cash Flow) ربطها ببعض
-- سيناريوهات متعددة: متفائل، واقعي، متشائم
-- تحليل الحساسية لأهم الافتراضات
-- نماذج التقييم: المضاعفات (Multiples) وDCF مجمعًا
-- Unit Economics: LTV، CAC، Payback Period، Magic Number
-
-البذرة المعرفية - السوق المصري:
-- معدل الخصم (WACC) النموذجي: 18-25% (مع علاوة مخاطر مصر)
-- تضخم يُحتسب في التوقعات: 12-15% سنويًا
-- مضاعفات التقييم السائدة: 3-8x Revenue للـ SaaS، 1-3x Revenue للتجارة
-- عائد استثمار رأس المال يُقبل: >30% لجذب الاستثمار المؤسسي`;
 
 export async function financialModelingAction(input: {
   modelType: 'dcf' | 'unit-economics' | 'three-statement' | 'valuation' | 'scenario';

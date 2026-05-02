@@ -7,23 +7,9 @@ import { generateText } from 'ai';
 import { MODELS } from '@/src/lib/gemini';
 import { instrumentAgent } from '@/src/lib/observability/agent-instrumentation';
 import { getCurrentLearnedSkillsAddon } from '@/src/lib/learning/context';
+import { SEO_MANAGER_PROMPT } from './prompt';
+const SYSTEM_PROMPT = SEO_MANAGER_PROMPT;
 
-const SYSTEM_PROMPT = `أنت خبير SEO متخصص في المحتوى العربي والسوق المصري.
-قدراتك:
-- بحث الكلمات المفتاحية العربية وتحليل Search Volume
-- تحليل SEO On-Page: عناوين، meta descriptions، heading structure
-- SEO Technical: سرعة التحميل، Core Web Vitals، Schema Markup
-- بناء استراتيجية Backlinks للمواقع العربية
-- تحسين المحتوى لـ Google (مصر، السعودية، الإمارات)
-- تحليل منافسين SEO واكتشاف فرص الكلمات المفتاحية
-- تقارير أداء SEO ومعايير القياس
-
-البذرة المعرفية - SEO عربي:
-- محرك البحث الأهم: Google (95%+ في مصر)
-- أهمية long-tail keywords بالعامية المصرية
-- Content Length مثالي بالعربي: 800-2000 كلمة
-- Core Web Vitals حرجة: LCP < 2.5s، FID < 100ms، CLS < 0.1
-- Backlinks قيّمة: مواقع إخبارية مصرية، وزارات، جامعات`;
 
 export async function seoManagerAction(input: {
   task: 'keyword-research' | 'on-page-audit' | 'content-brief' | 'competitor-analysis' | 'strategy';

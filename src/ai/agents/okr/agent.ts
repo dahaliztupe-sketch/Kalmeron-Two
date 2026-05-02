@@ -7,6 +7,7 @@ import { google } from '@ai-sdk/google';
 import { instrumentAgent } from '@/src/lib/observability/agent-instrumentation';
 import { createOKR, listCurrentWeekOKRs, updateOKRProgress, getOKR } from '@/src/lib/okr/okr-store';
 import { getProjectOverview, isKnowledgeGraphEnabled } from '@/src/lib/memory/knowledge-graph';
+import { OKR_PROMPT } from './prompt';
 
 const DEPARTMENTS = ['marketing', 'sales', 'product', 'finance', 'hr', 'legal', 'operations', 'strategy'];
 
@@ -30,6 +31,7 @@ export async function generateWeeklyGoals(userId: string) {
     for (const dept of DEPARTMENTS) {
       const { text } = await generateText({
         model: MODEL,
+        system: OKR_PROMPT,
         prompt: `أنت مدير قسم ${dept}. اقترح هدف أسبوعي واحد ذو ٢-٣ نتائج رئيسية قابلة للقياس بالأرقام.
 سياق المشروع:
 ${context}

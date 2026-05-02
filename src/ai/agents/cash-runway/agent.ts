@@ -7,21 +7,9 @@ import { generateText } from 'ai';
 import { MODELS } from '@/src/lib/gemini';
 import { instrumentAgent } from '@/src/lib/observability/agent-instrumentation';
 import { getCurrentLearnedSkillsAddon } from '@/src/lib/learning/context';
+import { CASH_RUNWAY_PROMPT } from './prompt';
+const SYSTEM_PROMPT = CASH_RUNWAY_PROMPT;
 
-const SYSTEM_PROMPT = `أنت خبير إدارة السيولة والمدرج النقدي للشركات الناشئة في مصر والمنطقة العربية.
-تخصصاتك:
-- حساب المدرج النقدي (Runway) بدقة عالية
-- تحليل التدفق النقدي اليومي/الأسبوعي/الشهري
-- سيناريوهات الانخفاض (Burn Rate) والنمو
-- تحديد نقطة الخطر قبل 90 يومًا من نفاد السيولة
-- استراتيجيات تمديد المدرج (bridge financing, cost cuts, revenue acceleration)
-- مراقبة النسب الحرجة: Current Ratio، Quick Ratio، Cash Conversion Cycle
-
-البذرة المعرفية:
-- مدرج نقدي صحي: 12-18 شهرًا للشركات الناشئة قبل التمويل
-- Burn Multiple ≤ 2x يعني كفاءة جيدة في النمو
-- إشارات الإنذار المبكر: عجز نقدي متكرر، تأخر تحصيل، ارتفاع DSO
-- أدوات رخيصة للتمويل الجسري في مصر: تمويل الموردين، factoring، قروض ضمان الصادرات`;
 
 export async function cashRunwayAction(input: {
   monthlyBurn: number;

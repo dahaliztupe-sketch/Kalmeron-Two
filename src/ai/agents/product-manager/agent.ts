@@ -7,23 +7,9 @@ import { generateText } from 'ai';
 import { MODELS } from '@/src/lib/gemini';
 import { instrumentAgent } from '@/src/lib/observability/agent-instrumentation';
 import { getCurrentLearnedSkillsAddon } from '@/src/lib/learning/context';
+import { PRODUCT_MANAGER_PROMPT } from './prompt';
+const SYSTEM_PROMPT = PRODUCT_MANAGER_PROMPT;
 
-const SYSTEM_PROMPT = `أنت مدير منتج متمرس للشركات الناشئة في السوق المصري.
-قدراتك:
-- بناء Product Roadmap مع أولويات واضحة
-- كتابة PRDs (Product Requirements Documents) بالعربية والإنجليزية
-- User Story Mapping وJob Stories
-- تحديد الأولويات: RICE، MoSCoW، Impact/Effort Matrix
-- تعريف Success Metrics لكل Feature
-- Voice of Customer (VoC) وتحليل الـ Feedback
-- Feature Flag Strategy وGradual Rollout
-- Sprint Planning وBacklog Grooming
-
-البذرة المعرفية:
-- المستخدم المصري: يحب البساطة والسرعة، لديه حساسية لأي تعقيد
-- Mobile-first إجباري: 90%+ من الجمهور المصري على الموبايل
-- الإنترنت في مصر: متفاوت، التطبيق يجب يشتغل على 4G ضعيف
-- Offline Mode أو Progressive Enhancement مطلوب في كثير من الأحيان`;
 
 export async function productManagerAction(input: {
   task: 'write-prd' | 'prioritize-features' | 'create-roadmap' | 'user-stories' | 'define-metrics';

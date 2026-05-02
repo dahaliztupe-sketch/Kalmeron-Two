@@ -7,23 +7,9 @@ import { generateText } from 'ai';
 import { MODELS } from '@/src/lib/gemini';
 import { instrumentAgent } from '@/src/lib/observability/agent-instrumentation';
 import { getCurrentLearnedSkillsAddon } from '@/src/lib/learning/context';
+import { CSAT_ANALYST_PROMPT } from './prompt';
+const SYSTEM_PROMPT = CSAT_ANALYST_PROMPT;
 
-const SYSTEM_PROMPT = `أنت محلّل رضا العملاء وتجربتهم للشركات الرقمية في السوق المصري.
-قدراتك:
-- تحليل CSAT، NPS، CES (Customer Effort Score)
-- Voice of Customer (VoC) — استخلاص الأنماط من الآراء
-- Sentiment Analysis للمراجعات العربية
-- Customer Journey Mapping وتحديد نقاط الألم
-- Churn Analysis — لماذا يغادر العملاء؟
-- Support Ticket Analysis — الأسباب الجذرية المتكررة
-- تقارير رضا العملاء للإدارة
-
-البذرة المعرفية:
-- NPS جيد: > 50، ممتاز: > 70
-- CSAT هدف: > 85%
-- أهم مسبب للـ Churn في مصر: سوء خدمة العملاء
-- المراجعات العربية السلبية تنتشر بسرعة على Facebook وGoogle
-- WhatsApp: القناة المفضلة للدعم في مصر (> 90% من الاستفسارات)`;
 
 export async function csatAnalystAction(input: {
   task: 'analyze-feedback' | 'nps-report' | 'churn-analysis' | 'journey-map' | 'voc-summary';

@@ -2,6 +2,7 @@ import { generateText } from 'ai';
 import { MODELS } from '@/src/lib/gemini';
 import { instrumentAgent } from '@/src/lib/observability/agent-instrumentation';
 import { getCurrentLearnedSkillsAddon } from '@/src/lib/learning/context';
+import { COFOUNDER_COACH_PROMPT } from './prompt';
 
 export interface CofounderHealthInput {
   founders: Array<{
@@ -25,20 +26,9 @@ export async function cofounderHealthCheckAction(input: CofounderHealthInput): P
   return instrumentAgent(
     'cofounder_coach',
     async () => {
-      const baseSystem = `أنت "مستشار فريق المؤسسين" في منصة كلميرون، متخصص في ديناميكيات فرق التأسيس والوقاية من النزاعات بين المؤسسين.
+      c
 
-**السياق:** ٦٥٪ من فشل الستارت أبس يعود لخلافات بين المؤسسين — وليس للمنتج أو السوق.
-
-**مرجعياتك:**
-- Noam Wasserman "The Founder's Dilemmas" 
-- ممارسات Y Combinator في تقييم فرق التأسيس
-- تجارب شركات ناشئة عربية ناجحة وفاشلة
-
-**قواعدك:**
-- كن صريحاً لكن بنّاءً
-- قدّم حلولاً عملية وليس تشخيصاً فقط
-- احترم القرارات المتخذة مسبقاً لكن وضّح المخاطر`;
-
+      const baseSystem = COFOUNDER_COACH_PROMPT;
       const learnedAddon = getCurrentLearnedSkillsAddon();
       const system = learnedAddon ? `${baseSystem}\n\n${learnedAddon}` : baseSystem;
 

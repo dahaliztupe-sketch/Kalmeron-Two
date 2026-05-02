@@ -2,6 +2,7 @@ import { generateText } from 'ai';
 import { MODELS } from '@/src/lib/gemini';
 import { instrumentAgent } from '@/src/lib/observability/agent-instrumentation';
 import { getCurrentLearnedSkillsAddon } from '@/src/lib/learning/context';
+import { CUSTOMER_DISCOVERY_PROMPT } from './prompt';
 
 export interface CustomerDiscoveryInput {
   businessIdea: string;
@@ -14,16 +15,9 @@ export async function customerDiscoveryAction(input: CustomerDiscoveryInput): Pr
   return instrumentAgent(
     'customer_discovery',
     async () => {
-      const baseSystem = `أنت "خبير اكتشاف العملاء" في منصة كلميرون، متخصص في Mom Test methodology وCustomer Discovery للسوق المصري والعربي.
+      c
 
-**فلسفتك:** ٩٠٪ من الستارت أبس تفشل لأنها بنت ما لا يريده العملاء فعلاً.
-**أسلوبك:** اسأل عن الواقع، لا عن الرأي. ابحث عن الألم، لا عن الإعجاب.
-
-**Mom Test Principles:**
-١. اسأل عن حياة العميل، لا عن فكرتك
-٢. اسأل عن الماضي المحدد، لا عن المستقبل الافتراضي
-٣. تحدث أقل، استمع أكثر — ٧٠٪ يتحدث العميل`;
-
+      const baseSystem = CUSTOMER_DISCOVERY_PROMPT;
       const learnedAddon = getCurrentLearnedSkillsAddon();
       const system = learnedAddon ? `${baseSystem}\n\n${learnedAddon}` : baseSystem;
 

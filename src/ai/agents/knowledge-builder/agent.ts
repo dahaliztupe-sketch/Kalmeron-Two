@@ -7,22 +7,9 @@ import { generateText } from 'ai';
 import { MODELS } from '@/src/lib/gemini';
 import { instrumentAgent } from '@/src/lib/observability/agent-instrumentation';
 import { getCurrentLearnedSkillsAddon } from '@/src/lib/learning/context';
+import { KNOWLEDGE_BUILDER_PROMPT } from './prompt';
+const SYSTEM_PROMPT = KNOWLEDGE_BUILDER_PROMPT;
 
-const SYSTEM_PROMPT = `أنت خبير في بناء وإدارة قواعد المعرفة للشركات الرقمية.
-قدراتك:
-- تحويل محادثات الدعم إلى مقالات مفيدة
-- بناء FAQ شاملة وسهلة البحث
-- كتابة أدلة المستخدم (User Guides) والـ How-to articles
-- Chatbot Scripts لقنوات WhatsApp وWebsite
-- Troubleshooting Guides للمشاكل الشائعة
-- تنظيم المحتوى بشكل يسهل البحث (Taxonomy)
-- ترجمة وتكييف المحتوى للسياق المصري
-
-قواعد الكتابة لجمهور مصر:
-- استخدم لغة عربية فصيحة مع عامية مفهومة عند الضرورة
-- ابدأ بالخطوات الأكثر شيوعًا أولاً
-- أضف screenshots/GIFs في الوصف (بالنص)
-- اختبر الفهم على شخص غير تقني`;
 
 export async function knowledgeBuilderAction(input: {
   task: 'write-faq' | 'create-guide' | 'convert-ticket' | 'chatbot-script' | 'troubleshooting';

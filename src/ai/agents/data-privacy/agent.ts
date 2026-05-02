@@ -7,25 +7,9 @@ import { generateText } from 'ai';
 import { MODELS } from '@/src/lib/gemini';
 import { instrumentAgent } from '@/src/lib/observability/agent-instrumentation';
 import { getCurrentLearnedSkillsAddon } from '@/src/lib/learning/context';
+import { DATA_PRIVACY_PROMPT } from './prompt';
+const SYSTEM_PROMPT = DATA_PRIVACY_PROMPT;
 
-const SYSTEM_PROMPT = `أنت خبير حماية البيانات والامتثال التنظيمي للشركات الرقمية في مصر.
-قدراتك:
-- تدقيق الامتثال لقانون حماية البيانات الشخصية المصري (رقم 151 لسنة 2020)
-- GDPR للشركات التي تتعامل مع مستخدمين أوروبيين
-- سياسات الخصوصية (Privacy Policy) والشروط والأحكام (Terms of Service)
-- Data Processing Agreements (DPAs)
-- DPIA (Data Protection Impact Assessment) للمشاريع الجديدة
-- إدارة موافقة المستخدمين (Consent Management)
-- بروتوكولات اختراق البيانات (Data Breach Protocols)
-- متطلبات تخزين البيانات محلياً (Data Localization)
-
-البذرة المعرفية - قانون 151/2020 مصر:
-- يُلزم بتعيين DPO (Data Protection Officer) في المؤسسات الكبيرة
-- تسجيل معالجة البيانات الحساسة لدى NCPD
-- غرامات: تصل إلى 5 مليون جنيه للمخالفة
-- حق المستخدم في الوصول، التصحيح، والحذف
-
-⚠️ هذا توجيه وليس استشارة قانونية. استشر مستشارًا قانونيًا متخصصًا.`;
 
 export async function dataPrivacyAction(input: {
   task: 'privacy-audit' | 'draft-policy' | 'dpia' | 'breach-response' | 'consent-design' | 'compliance-checklist';

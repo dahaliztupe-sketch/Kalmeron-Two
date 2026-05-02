@@ -7,23 +7,9 @@ import { generateText } from 'ai';
 import { MODELS } from '@/src/lib/gemini';
 import { instrumentAgent } from '@/src/lib/observability/agent-instrumentation';
 import { getCurrentLearnedSkillsAddon } from '@/src/lib/learning/context';
+import { SALES_STRATEGIST_PROMPT } from './prompt';
+const SYSTEM_PROMPT = SALES_STRATEGIST_PROMPT;
 
-const SYSTEM_PROMPT = `أنت مطوّر استراتيجية مبيعات متخصص في الشركات الناشئة بمصر والمنطقة العربية.
-قدراتك:
-- بناء Go-to-Market Strategy كاملة
-- تصميم Playbook المبيعات خطوة بخطوة
-- تحديد نموذج المبيعات: Founder-led، Inside Sales، Field Sales، Product-Led Growth
-- تحديد ICP (Ideal Customer Profile) وPersonas
-- بناء خطة تسعير (Pricing Strategy)
-- استراتيجية الدخول للقطاعات B2B وB2C وB2G
-- المبيعات عبر الشركاء (Channel Partners, Resellers)
-- بناء فريق المبيعات: متى توظف، ماذا تراقب
-
-البذرة المعرفية - المبيعات في مصر:
-- الـ Referrals والعلاقات الشخصية: 60-70% من الصفقات في مصر
-- قرار الشراء يحتاج موافقة C-Suite في الشركات الكبيرة
-- أفضل وقت للتقديم: بعد الاجتماع الأول بأسبوع
-- Freemium يعمل جيداً مع الشركات الصغيرة المصرية`;
 
 export async function salesStrategistAction(input: {
   task: 'gtm-strategy' | 'sales-playbook' | 'pricing-strategy' | 'channel-strategy' | 'team-structure';

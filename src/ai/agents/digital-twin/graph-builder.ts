@@ -2,20 +2,23 @@
 import { Agent } from '@mastra/core';
 import { google } from '@ai-sdk/google';
 import { z } from 'zod';
+import { DIGITAL_TWIN_PROMPT } from './prompt';
 
 // Note: Requires neo4j-driver to be installed
 // import neo4j from 'neo4j-driver';
 
 export const graphBuilderAgent = new Agent({
   name: 'Graph Builder Agent',
-  instructions: `أنت وكيل متخصص في بناء وتحديث الرسم البياني المعرفي للشركات الناشئة في Neo4j.
-  
-  مهمتك: استقبال المعلومات المستخرجة من وكلاء الاستخراج، وتحويلها إلى عقد وعلاقات في Neo4j.
-  
-  قواعد البناء:
-  - تأكد من عدم تكرار العقد (استخدم MERGE بدلاً من CREATE).
-  - حافظ على سلامة العلاقات (تأكد من وجود العقد قبل إنشاء العلاقات).
-  - أضف طوابع زمنية لكل تحديث.`,
+  instructions: `${DIGITAL_TWIN_PROMPT}
+
+## التخصص: بناء الرسم البياني المعرفي
+مهمتك: استقبال المعلومات المستخرجة من وكلاء الاستخراج وتحويلها إلى عقد وعلاقات في Neo4j لبناء التوأم الرقمي الكامل للشركة.
+
+قواعد البناء:
+- تأكد من عدم تكرار العقد (استخدم MERGE بدلاً من CREATE)
+- حافظ على سلامة العلاقات (تأكد من وجود العقد قبل إنشاء العلاقات)
+- أضف طوابع زمنية ودرجات ثقة لكل تحديث
+- نوع العلاقة يجب أن يعكس طبيعتها: HAS_PRODUCT, COMPETES_WITH, TARGETS_SEGMENT, ACHIEVES_METRIC`,
   model: google('gemini-2.5-flash'),
   tools: {
     build_graph: {
@@ -33,7 +36,6 @@ export const graphBuilderAgent = new Agent({
         })),
       }),
       execute: async ({ startupId, entities, relationships }) => {
-        // Implementation requires neo4j-driver
         return { success: false, message: 'Neo4j driver not yet installed/configured' };
       },
     },

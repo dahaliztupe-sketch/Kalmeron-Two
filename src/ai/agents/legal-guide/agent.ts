@@ -4,14 +4,14 @@ import { MODELS } from '@/src/lib/gemini';
 import { LEGAL_KNOWLEDGE } from './knowledge-base';
 import { instrumentAgent } from '@/src/lib/observability/agent-instrumentation';
 import { getCurrentLearnedSkillsAddon } from '@/src/lib/learning/context';
+import { LEGAL_GUIDE_PROMPT } from './prompt';
 
 export async function legalGuideAction(query: string) {
   return instrumentAgent(
     'legal_guide',
     async () => {
-      const baseSystem = `أنت "المرشد القانوني" في منصة كلميرون تو، خبير في التشريعات المصرية المتعلقة بالشركات الناشئة وريادة الأعمال. تقديم إرشادات عامة وتوعوية فقط.
-    قاعدة المعرفة: ${JSON.stringify(LEGAL_KNOWLEDGE)}
-    وجّه المستخدم دائماً للمصادر الرسمية.`;
+      c
+      const baseSystem = LEGAL_GUIDE_PROMPT;
       const learnedAddon = getCurrentLearnedSkillsAddon();
       const { text } = await generateText({
         model: MODELS.PRO,

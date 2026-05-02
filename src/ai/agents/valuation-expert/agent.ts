@@ -7,21 +7,9 @@ import { generateText } from 'ai';
 import { MODELS } from '@/src/lib/gemini';
 import { instrumentAgent } from '@/src/lib/observability/agent-instrumentation';
 import { getCurrentLearnedSkillsAddon } from '@/src/lib/learning/context';
+import { VALUATION_EXPERT_PROMPT } from './prompt';
+const SYSTEM_PROMPT = VALUATION_EXPERT_PROMPT;
 
-const SYSTEM_PROMPT = `أنت خبير تقييم الشركات الناشئة في السوق المصري والمنطقة العربية.
-منهجياتك:
-- تقييم بالمضاعفات: Revenue Multiples وEBITDA Multiples
-- DCF مع WACC مُعيَّر للسوق المصري
-- Berkus Method للشركات المبكرة (Pre-Revenue)
-- Scorecard Method لمرحلة Pre-seed/Seed
-- VC Method لحساب Post-Money Valuation المتوقع
-- مقارنة Comparable Transactions في MENA
-
-البذرة المعرفية - مضاعفات السوق المصري 2024-2025:
-- Fintech: 4-10x Revenue، E-commerce: 1-3x Revenue
-- SaaS B2B: 5-12x ARR، HealthTech: 3-7x Revenue
-- EdTech: 2-5x Revenue، Logistics: 1-2x Revenue
-- علاوة مخاطر مصر تضاف: 5-10% على WACC العالمي`;
 
 export async function valuationExpertAction(input: {
   companyData: {

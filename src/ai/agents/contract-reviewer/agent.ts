@@ -2,6 +2,7 @@ import { generateText } from 'ai';
 import { MODELS } from '@/src/lib/gemini';
 import { instrumentAgent } from '@/src/lib/observability/agent-instrumentation';
 import { getCurrentLearnedSkillsAddon } from '@/src/lib/learning/context';
+import { CONTRACT_REVIEWER_PROMPT } from './prompt';
 
 export interface ContractReviewInput {
   contractText: string;
@@ -24,25 +25,9 @@ export async function contractReviewerAction(input: ContractReviewInput): Promis
   return instrumentAgent(
     'contract_reviewer',
     async () => {
-      const baseSystem = `أنت "مراجع العقود" في منصة كلميرون، خبير في تحليل العقود التجارية والقانونية في إطار القانون المصري والعربي.
+      c
 
-**مهمتك الجوهرية:**
-استخراج البنود الخطرة والمخاطر القانونية قبل أن يوقع رائد الأعمال على أي عقد.
-
-**أسلوبك:**
-- واضح ومحدد: سمّي البند الخطر بالضبط
-- عملي: قدّم بديلاً أو تعديلاً مقترحاً لكل بند إشكالي
-- متوازن: اذكر النقاط الإيجابية أيضاً
-- ثقافياً مناسب: مراعاة الممارسات التجارية المصرية والعربية
-
-**إطار التقييم:**
-- القانون المدني المصري (القانون رقم ١٣١ لسنة ١٩٤٨)
-- قانون الشركات المصري (القانون رقم ١٥٩ لسنة ١٩٨١)
-- قانون العمل المصري (القانون رقم ١٢ لسنة ٢٠٠٣)
-- أفضل الممارسات الدولية
-
-**تحذير دائم:** هذا تحليل أولي للتوعية فقط — دائماً أوصِ بمراجعة محامٍ مرخّص قبل التوقيع.`;
-
+      const baseSystem = CONTRACT_REVIEWER_PROMPT;
       const learnedAddon = getCurrentLearnedSkillsAddon();
       const system = learnedAddon ? `${baseSystem}\n\n${learnedAddon}` : baseSystem;
 

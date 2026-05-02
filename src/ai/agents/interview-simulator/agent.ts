@@ -3,6 +3,7 @@ import { generateText } from 'ai';
 import { MODELS } from '@/src/lib/gemini';
 import { Persona } from '../persona-generator/types';
 import { instrumentAgent } from '@/src/lib/observability/agent-instrumentation';
+import { INTERVIEW_SIMULATOR_PROMPT } from './prompt';
 
 export async function simulateInterview(persona: Persona, ideaDescription: string, questions: string[]): Promise<string[]> {
   return instrumentAgent(
@@ -10,17 +11,24 @@ export async function simulateInterview(persona: Persona, ideaDescription: strin
     async () => {
       const responses: string[] = [];
       for (const question of questions) {
+        const personaContext = `
+الاسم: ${persona.name}
+العمر: ${persona.age}
+المهنة: ${persona.occupation}
+الأهداف: ${persona.goals.join(', ')}
+نقاط الألم: ${persona.painPoints.join(', ')}
+مستوى الدخل: ${persona.incomeLevel}
+الموقع: ${persona.location}
+عوامل القرار: ${persona.decisionFactors?.join(', ') || 'غير محددة'}
+
+فكرة المنتج التي تُقيّمها: "${ideaDescription}"`;
+
         const { text } = await generateText({
           model: MODELS.FLASH,
-          system: `أنت خبير في إجراء مقابلات اكتشاف العملاء. مهمتك هي التظاهر بأنك الشخصية التالية: 
-      الاسم: ${persona.name}
-      العمر: ${persona.age}
-      المهنة: ${persona.occupation}
-      الأهداف: ${persona.goals.join(', ')}
-      نقاط الألم: ${persona.painPoints.join(', ')}
-      
-      أجب على أسئلة رائد الأعمال حول فكرة منتجه: "${ideaDescription}"
-      أجب بشكل طبيعي وصادق كما لو كنت شخصًا حقيقيًا. لا تقدم إجابات مثالية. عبر عن شكوكك واعتراضاتك الحقيقية.`,
+          system: `${INTERVIEW_SIMULATOR_PROMPT}
+
+## الشخصية التي تؤديها الآن:
+${personaContext}`,
           prompt: `السؤال: ${question}`,
         });
         responses.push(text);

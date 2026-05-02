@@ -7,21 +7,9 @@ import { generateText } from 'ai';
 import { MODELS } from '@/src/lib/gemini';
 import { instrumentAgent } from '@/src/lib/observability/agent-instrumentation';
 import { getCurrentLearnedSkillsAddon } from '@/src/lib/learning/context';
+import { LEAD_QUALIFIER_PROMPT } from './prompt';
+const SYSTEM_PROMPT = LEAD_QUALIFIER_PROMPT;
 
-const SYSTEM_PROMPT = `أنت خبير تأهيل العملاء المحتملين للشركات الناشئة في السوق المصري.
-منهجياتك:
-- BANT: Budget, Authority, Need, Timeline
-- MEDDIC: Metrics, Economic Buyer, Decision Criteria, Decision Process, Identify Pain, Champion
-- SPIN Selling للعملاء B2B
-- تحليل ICP (Ideal Customer Profile) وتطابق العميل معه
-- Lead Scoring (0-100) بناءً على معايير موضوعية
-- تحديد الاعتراضات المبكرة وكيفية معالجتها
-
-البذرة المعرفية - السوق المصري:
-- دورة بيع B2B مصرية: 2-6 أشهر (أطول من المتوسط العالمي)
-- صانعو القرار: غالبًا يتطلب موافقة صاحب العمل مباشرة
-- الاعتراضات الشائعة: السعر، الوقت، الثقة في الشركات الجديدة
-- قنوات الوصول الأفضل: WhatsApp Business، LinkedIn، الإحالات الشخصية`;
 
 export async function leadQualifierAction(input: {
   leadData: {

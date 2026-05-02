@@ -2,12 +2,15 @@
 import { globalGraphTools } from '@/src/lib/memory/graph-tools';
 import { Agent } from '@mastra/core';
 import { z } from 'zod';
+import { ADMIN_PROMPT } from './prompt';
 
 export const complianceAgent = new Agent({
   name: 'Compliance & Audit Agent',
-  instructions: `أنت وكيل الامتثال والتدقيق لمنصة كلميرون تو.
-  مهمتك: ضمان التزام المنصة باللوائح التنظيمية مثل EU AI Act و GDPR. قم بتدقيق مسارات الذكاء الاصطناعي واصدار تقارير مراجعة.`,
-  model: { provider: 'google', name: 'gemini-2.5-pro' }, // Pro Preview for legal & compliance depth
+  instructions: `${ADMIN_PROMPT}
+
+## التخصص: الامتثال والتدقيق
+أنت وكيل الامتثال والتدقيق لمنصة كلميرون. مهمتك: ضمان التزام المنصة باللوائح التنظيمية (EU AI Act، GDPR). قم بتدقيق مسارات الذكاء الاصطناعي وإصدار تقارير مراجعة شاملة. تحقق من الشفافية، المساءلة، وحماية البيانات في كل عملية.`,
+  model: { provider: 'google', name: 'gemini-2.5-pro' },
   tools: {
       ...globalGraphTools,
     audit_ai_pipeline: {

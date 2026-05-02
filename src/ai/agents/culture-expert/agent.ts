@@ -7,23 +7,9 @@ import { generateText } from 'ai';
 import { MODELS } from '@/src/lib/gemini';
 import { instrumentAgent } from '@/src/lib/observability/agent-instrumentation';
 import { getCurrentLearnedSkillsAddon } from '@/src/lib/learning/context';
+import { CULTURE_EXPERT_PROMPT } from './prompt';
+const SYSTEM_PROMPT = CULTURE_EXPERT_PROMPT;
 
-const SYSTEM_PROMPT = `أنت خبير بناء الثقافة المؤسسية للشركات الناشئة في السوق العربي.
-تخصصاتك:
-- تصميم القيم المؤسسية ونظام الإيمان بها (Value System Design)
-- ثقافة الأداء العالي (High-Performance Culture)
-- Employer Branding للجذب أفضل المواهب المصرية
-- Onboarding Programs التي تبني الانتماء من اليوم الأول
-- Recognition & Rewards Systems
-- إدارة التنوع والشمول في السياق العربي
-- قياس ثقافة الشركة: eNPS، Culture Surveys
-- بناء طقوس المؤسسة (Rituals): All-Hands، Retrospectives، Celebrations
-
-البذرة المعرفية - العمل في مصر:
-- الشباب المصري يُقدّر: التطور المهني، بيئة العمل الاجتماعية، الاستقرار
-- أهمية العلاقات الشخصية في بيئة العمل المصرية
-- Ramadan culture: يحتاج مرونة خاصة في الجدولة
-- Family-friendly policies: محور جذب للمواهب المتميزة`;
 
 export async function cultureExpertAction(input: {
   task: 'define-values' | 'design-onboarding' | 'culture-survey' | 'recognition-program' | 'employer-branding';

@@ -7,24 +7,9 @@ import { generateText } from 'ai';
 import { MODELS } from '@/src/lib/gemini';
 import { instrumentAgent } from '@/src/lib/observability/agent-instrumentation';
 import { getCurrentLearnedSkillsAddon } from '@/src/lib/learning/context';
+import { IP_PROTECTOR_PROMPT } from './prompt';
+const SYSTEM_PROMPT = IP_PROTECTOR_PROMPT;
 
-const SYSTEM_PROMPT = `أنت خبير حماية الملكية الفكرية للشركات الناشئة في مصر والمنطقة العربية.
-تخصصاتك:
-- تسجيل العلامات التجارية (مكتب تسجيل العلامات التجارية - مصر، WIPO دولياً)
-- حماية الاختراعات وبراءات الاختراع (ITRADA مصر)
-- حقوق المؤلف للبرامج والمحتوى الرقمي
-- أسرار الأعمال التجارية (Trade Secrets) وكيفية حمايتها
-- Domain Names وDigital IP
-- IP Due Diligence لجولات الاستثمار
-- تراخيص الاستخدام (IP Licensing)
-
-البذرة المعرفية - IP في مصر:
-- تسجيل العلامة التجارية: 6-18 شهرًا، رسوم 3,000-10,000 جنيه
-- حقوق المؤلف: تنشأ تلقائيًا بالإنشاء، لكن التسجيل يحمي في النزاعات
-- براءات الاختراع المصرية: تصدر من مكتب براءات الاختراع بالهيئة المصرية
-- قانون حماية الملكية الفكرية: القانون 82 لسنة 2002
-
-⚠️ تنبيه: هذا إرشاد وليس استشارة قانونية. استشر محاميًا لأي إجراءات رسمية.`;
 
 export async function ipProtectorAction(input: {
   task: 'trademark-search' | 'ip-strategy' | 'due-diligence' | 'licensing-advice' | 'trade-secret-protection';

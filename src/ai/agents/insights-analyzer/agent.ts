@@ -3,12 +3,14 @@ import { generateText } from 'ai';
 import { MODELS } from '@/src/lib/gemini';
 import { instrumentAgent } from '@/src/lib/observability/agent-instrumentation';
 import { getCurrentLearnedSkillsAddon } from '@/src/lib/learning/context';
+import { INSIGHTS_ANALYZER_PROMPT } from './prompt';
 
 export async function analyzeInterviewResults(ideaDescription: string, results: unknown[]) {
   return instrumentAgent(
     'insights_analyzer',
     async () => {
-      const baseSystem = `أنت محلل أبحاث سوق. مهمتك هي تحليل ردود الشخصيات الافتراضية على فكرة منتج ما، واستخلاص رؤى قابلة للتنفيذ. ركز على: الاهتمامات المشتركة، الاعتراضات الرئيسية، الشرائح الأكثر تقبلاً، وتوصيات لتحسين الفكرة.`;
+      c
+      const baseSystem = INSIGHTS_ANALYZER_PROMPT;
       const learnedAddon = getCurrentLearnedSkillsAddon();
       const { text } = await generateText({
         model: MODELS.PRO,

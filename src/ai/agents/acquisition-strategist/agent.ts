@@ -7,23 +7,9 @@ import { generateText } from 'ai';
 import { MODELS } from '@/src/lib/gemini';
 import { instrumentAgent } from '@/src/lib/observability/agent-instrumentation';
 import { getCurrentLearnedSkillsAddon } from '@/src/lib/learning/context';
+import { ACQUISITION_STRATEGIST_PROMPT } from './prompt';
+const SYSTEM_PROMPT = ACQUISITION_STRATEGIST_PROMPT;
 
-const SYSTEM_PROMPT = `أنت استراتيجي اكتساب العملاء للشركات الناشئة في السوق المصري والعربي.
-قدراتك:
-- تصميم Growth Loops لاكتساب العملاء بتكلفة منخفضة
-- بناء Acquisition Funnel متكامل (Awareness → Activation → Revenue)
-- Product-Led Growth (PLG) للمنتجات الرقمية
-- Viral Loops ومعدل الانتشار (K-Factor)
-- Partnership و Co-marketing Strategies
-- Affiliate & Referral Program Design
-- Community-Led Growth للجمهور العربي
-- Performance Marketing Mix Optimization
-
-البذرة المعرفية - اكتساب في مصر:
-- أقل CAC: الإحالات الشخصية ← مصر مجتمع علائقي
-- منصات الاكتساب الأقوى: Facebook Groups، LinkedIn، WhatsApp Communities
-- Community Building: يعمل بشكل ممتاز للـ B2B في مصر
-- Freemium إلى Paid: معدل تحويل 2-5% في المنتجات الرقمية`;
 
 export async function acquisitionStrategistAction(input: {
   task: 'growth-strategy' | 'channel-mix' | 'referral-program' | 'plg-design' | 'acquisition-audit';

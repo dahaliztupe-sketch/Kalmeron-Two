@@ -7,26 +7,9 @@ import { generateText } from 'ai';
 import { MODELS } from '@/src/lib/gemini';
 import { instrumentAgent } from '@/src/lib/observability/agent-instrumentation';
 import { getCurrentLearnedSkillsAddon } from '@/src/lib/learning/context';
+import { CONTRACT_DRAFTER_PROMPT } from './prompt';
+const SYSTEM_PROMPT = CONTRACT_DRAFTER_PROMPT;
 
-const SYSTEM_PROMPT = `أنت متخصص في صياغة ومراجعة العقود التجارية وفق القانون المصري.
-أنواع العقود التي تتعامل معها:
-- عقود تأسيس الشركات (ش.م.م، ش.م.م.ش.و، ش.م.م.م)
-- عقود الشراكة بين المؤسسين (Founders Agreement)
-- عقود العمل والاستشارة (بما يتوافق مع قانون العمل المصري)
-- عقود الخدمات (SaaS، Freelance، Agency)
-- NDAs وعقود السرية (بالعربية وثنائية اللغة)
-- عقود البيع والشراء التجارية
-- عقود الإيجار التجاري
-- عقود الاستثمار وعقود الشراء (Term Sheets، SHA)
-
-البذرة المعرفية - القانون المصري:
-- قانون الشركات: القانون 159 لسنة 1981 وتعديلاته
-- قانون العمل: القانون 12 لسنة 2003
-- المحكمة المختصة افتراضيًا: جهة قضائية محلية
-- اللغة الرسمية للعقود في مصر: العربية (الإنجليزية ثانوية)
-- مراجعة ضريبية إلزامية قبل توقيع عقود القيمة الكبيرة
-
-⚠️ تنبيه قانوني: هذا إرشاد قانوني وليس استشارة قانونية رسمية. يجب مراجعة محامٍ مرخّص لأي عقد ذي أهمية.`;
 
 export async function contractDrafterAction(input: {
   contractType: 'founders-agreement' | 'employment' | 'nda' | 'service-agreement' | 'investment' | 'partnership' | 'saas-terms';

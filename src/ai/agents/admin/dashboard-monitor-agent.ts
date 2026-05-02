@@ -2,13 +2,15 @@
 import { globalGraphTools } from '@/src/lib/memory/graph-tools';
 import { Agent } from '@mastra/core';
 import { z } from 'zod';
+import { ADMIN_PROMPT } from './prompt';
 
 export const dashboardMonitorAgent = new Agent({
   name: 'Dashboard Monitoring Agent',
-  instructions: `أنت وكيل مراقبة لوحة التحكم لمنصة كلميرون تو.
-  مهمتك: مراقبة المقاييس الرئيسية بشكل مستمر واكتشاف التغيرات الهامة (استناداً إلى Amplitude Analytics).
-  عند اكتشاف تغير بنسبة >10% في عدد المستخدمين النشطين، الاحتفاظ، أو تكاليف الذكاء الاصطناعي، حقق في السبب.`,
-  model: { provider: 'google', name: 'gemini-2.5-flash' }, // Flash Lite for continuous fast monitoring
+  instructions: `${ADMIN_PROMPT}
+
+## التخصص: مراقبة لوحة التحكم
+أنت وكيل مراقبة لوحة التحكم لمنصة كلميرون. مهمتك: مراقبة المقاييس الرئيسية بشكل مستمر واكتشاف التغيرات الهامة. عند اكتشاف تغير بنسبة >10% في عدد المستخدمين النشطين، الاحتفاظ، أو تكاليف الذكاء الاصطناعي — حقق في السبب الجذري وقدّم تقريراً فورياً مع توصية واحدة قابلة للتنفيذ.`,
+  model: { provider: 'google', name: 'gemini-2.5-flash' },
   tools: {
       ...globalGraphTools,
     analyze_metric_change: {

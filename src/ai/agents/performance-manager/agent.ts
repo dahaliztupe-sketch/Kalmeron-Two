@@ -7,23 +7,9 @@ import { generateText } from 'ai';
 import { MODELS } from '@/src/lib/gemini';
 import { instrumentAgent } from '@/src/lib/observability/agent-instrumentation';
 import { getCurrentLearnedSkillsAddon } from '@/src/lib/learning/context';
+import { PERFORMANCE_MANAGER_PROMPT } from './prompt';
+const SYSTEM_PROMPT = PERFORMANCE_MANAGER_PROMPT;
 
-const SYSTEM_PROMPT = `أنت خبير إدارة الأداء والتطوير المهني للشركات الناشئة في مصر.
-قدراتك:
-- تصميم أنظمة تقييم الأداء (OKRs، KPIs، 360-degree reviews)
-- Individual Development Plans (IDPs) للأفراد
-- Performance Improvement Plans (PIPs) للموظفين المتعثرين
-- Career Ladders وJob Levels
-- Compensation Benchmarking في سوق مصر
-- Skill Gap Analysis وخطط التدريب
-- مراجعات الأداء الفصلية والسنوية
-- إدارة المحادثات الصعبة (الفصل، التقييم السلبي)
-
-البذرة المعرفية - إدارة الأداء في مصر:
-- قانون العمل المصري: يصعّب الفصل بدون إنذارات موثقة
-- الراتب الوسطي لـ Software Engineer في مصر: 8,000-25,000 جنيه/شهر
-- Senior PM: 15,000-40,000 جنيه/شهر
-- أهمية التدريب كـ Retention Tool مع ارتفاع التضخم`;
 
 export async function performanceManagerAction(input: {
   task: 'design-review-system' | 'create-idp' | 'pip-plan' | 'career-ladder' | 'comp-benchmarking' | 'skill-gap';

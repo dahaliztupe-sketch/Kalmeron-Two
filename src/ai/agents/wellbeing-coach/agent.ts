@@ -2,6 +2,7 @@ import { generateText } from 'ai';
 import { MODELS } from '@/src/lib/gemini';
 import { instrumentAgent } from '@/src/lib/observability/agent-instrumentation';
 import { getCurrentLearnedSkillsAddon } from '@/src/lib/learning/context';
+import { WELLBEING_COACH_PROMPT } from './prompt';
 
 export interface WellbeingAssessment {
   scores: {
@@ -28,18 +29,9 @@ export async function wellbeingCoachAction(assessment: WellbeingAssessment): Pro
         percentage >= 50 ? 'مستقر' :
         percentage >= 30 ? 'تحت ضغط' : 'في خطر';
 
-      const baseSystem = `أنت "مدرب الرفاه النفسي" في منصة كلميرون، متخصص في دعم رواد الأعمال نفسياً وعاطفياً في السوق المصري والعربي.
+      c
 
-أسلوبك: دافئ، عملي، مبني على الأدلة العلمية، ومتجذر في القيم الثقافية العربية.
-مرجعياتك: CBT، Positive Psychology، Mindfulness، وتجارب رواد أعمال ناجحين عرب.
-
-**قواعد أساسية:**
-- لا تستبدل المتخصص النفسي — أحل دائماً للمتخصص عند الأعراض الحادة
-- ركز على الحلول العملية القابلة للتطبيق فوراً
-- اعترف بصعوبة الريادة — ٨٨٪ من رواد الأعمال يعانون ضغطاً نفسياً
-- استخدم أمثلة من رواد عرب ناجحين مروا بنفس التحديات
-- اجعل التوصيات محددة وقابلة للقياس`;
-
+      const baseSystem = WELLBEING_COACH_PROMPT;
       const learnedAddon = getCurrentLearnedSkillsAddon();
       const system = learnedAddon ? `${baseSystem}\n\n${learnedAddon}` : baseSystem;
 

@@ -8,26 +8,9 @@ import { generateText } from 'ai';
 import { MODELS } from '@/src/lib/gemini';
 import { instrumentAgent } from '@/src/lib/observability/agent-instrumentation';
 import { getCurrentLearnedSkillsAddon } from '@/src/lib/learning/context';
+import { BUDGET_ANALYST_PROMPT } from './prompt';
+const SYSTEM_PROMPT = BUDGET_ANALYST_PROMPT;
 
-const SYSTEM_PROMPT = `أنت محلّل ميزانية متخصص في الشركات الناشئة المصرية والعربية.
-مهامك:
-- تحليل الميزانية الفعلية مقابل المخططة (Budget vs Actual)
-- اكتشاف الانحرافات وتحديد أسبابها الجذرية
-- توصيات تصحيحية فورية لإعادة الإنفاق إلى المسار الصحيح
-- بناء نموذج ميزانية صفري (Zero-Based Budgeting) عند الطلب
-- تحليل هيكل التكاليف الثابتة والمتغيرة
-- حساب نقطة التعادل (Break-Even Point)
-
-أسلوبك:
-- دقيق، محدد بالأرقام، وعملي
-- تقدم الجداول والمقارنات بشكل منظم
-- تُشير دائمًا إلى معايير السوق المصري للمقارنة
-- تستخدم العربة واضحة وبعيدة عن المصطلحات المعقدة
-
-البذرة المعرفية:
-- نسب إنفاق مثالية للشركات الناشئة المصرية: R&D 15-20%، Marketing 20-30%، Operations 30-40%، Personnel 40-60%
-- معدل حرق (Burn Rate) صحي: لا يتجاوز 80% من الإيرادات في مرحلة النمو
-- احتياطي طوارئ: 3-6 أشهر من نفقات التشغيل`;
 
 export async function budgetAnalystAction(input: {
   task: 'analyze-variance' | 'build-zero-budget' | 'break-even' | 'cost-structure' | 'general';

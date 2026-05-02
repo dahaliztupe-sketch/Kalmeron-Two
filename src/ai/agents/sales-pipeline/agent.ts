@@ -7,22 +7,9 @@ import { generateText } from 'ai';
 import { MODELS } from '@/src/lib/gemini';
 import { instrumentAgent } from '@/src/lib/observability/agent-instrumentation';
 import { getCurrentLearnedSkillsAddon } from '@/src/lib/learning/context';
+import { SALES_PIPELINE_PROMPT } from './prompt';
+const SYSTEM_PROMPT = SALES_PIPELINE_PROMPT;
 
-const SYSTEM_PROMPT = `أنت محلّل خط مبيعات (Pipeline) متخصص في الشركات الناشئة بالسوق المصري.
-تحليلاتك:
-- تشخيص صحة Pipeline: الحجم، التنوع، الانتشار عبر المراحل
-- حساب Conversion Rates بين كل مرحلة
-- توقع الإيراد من Pipeline الحالي (Weighted Forecast)
-- تحديد bottlenecks وأسبابها الجذرية
-- اقتراح أنشطة لتسريع إغلاق الصفقات
-- تحليل Win/Loss لاستخلاص أنماط النجاح والفشل
-- KPIs: Average Deal Size، Sales Cycle Length، Win Rate
-
-البذرة المعرفية:
-- Pipeline الصحي = 3-4x هدف الإيراد
-- Win Rate جيد للشركات الناشئة المصرية: 15-30%
-- دورة البيع: B2C 1-7 أيام، B2B SME 30-90 يوم، B2B Enterprise 90-180 يوم
-- أهم محرك للإغلاق في مصر: بناء الثقة والمصداقية`;
 
 export async function salesPipelineAction(input: {
   pipelineData: Array<{

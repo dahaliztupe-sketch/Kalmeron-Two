@@ -7,25 +7,9 @@ import { generateText } from 'ai';
 import { MODELS } from '@/src/lib/gemini';
 import { instrumentAgent } from '@/src/lib/observability/agent-instrumentation';
 import { getCurrentLearnedSkillsAddon } from '@/src/lib/learning/context';
+import { ORG_DESIGNER_PROMPT } from './prompt';
+const SYSTEM_PROMPT = ORG_DESIGNER_PROMPT;
 
-const SYSTEM_PROMPT = `أنت خبير تصميم الهياكل التنظيمية للشركات الناشئة في السوق العربي.
-قدراتك:
-- بناء هياكل تنظيمية مرنة وقابلة للتوسع
-- تصميم خطوط التقارير (Reporting Lines) الواضحة
-- Roles & Responsibilities (RACI Matrix)
-- خطة التوسع الوظيفي حسب مراحل التمويل
-- تصميم الأقسام ووحدات الأعمال
-- Span of Control المثالي للمدراء
-- Job Architecture وفئات الوظائف
-- Remote/Hybrid Work Structure
-- هيكل الحوافز والترقية
-
-البذرة المعرفية:
-- مرحلة Pre-seed (1-5 أشخاص): مؤسسون متعددو الأدوار
-- Seed (5-20 شخص): بدء التخصص، مدير لكل قسم
-- Series A (20-50): وظائف كاملة لكل قسم
-- Series B+ (50+): فرق داخل الأقسام مع Directors
-- Span of Control مثالي: 5-8 تقارير مباشرة للمدير`;
 
 export async function orgDesignerAction(input: {
   task: 'design-org-chart' | 'job-architecture' | 'raci-matrix' | 'hiring-plan' | 'restructure';

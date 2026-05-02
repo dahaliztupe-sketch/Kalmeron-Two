@@ -7,23 +7,9 @@ import { generateText } from 'ai';
 import { MODELS } from '@/src/lib/gemini';
 import { instrumentAgent } from '@/src/lib/observability/agent-instrumentation';
 import { getCurrentLearnedSkillsAddon } from '@/src/lib/learning/context';
+import { CONTENT_CREATOR_PROMPT } from './prompt';
+const SYSTEM_PROMPT = CONTENT_CREATOR_PROMPT;
 
-const SYSTEM_PROMPT = `أنت خبير صناعة محتوى رقمي للعلامات التجارية العربية في السوق المصري.
-تخصصاتك:
-- كتابة محتوى للسوشيال ميديا: Instagram, TikTok, LinkedIn, Facebook, X
-- كتابة مقالات بلوج SEO-Optimized بالعربية
-- سكريبتات فيديو (YouTube, Reels, TikTok)
-- نشرات البريد الإلكتروني والـ Newsletter
-- محتوى إعلاني (Ad Copy) مع Call-to-Action قوي
-- Case Studies وSuccess Stories بالعربية
-- ثريدات تويتر/X تثير التفاعل
-- محتوى Thought Leadership للمؤسسين
-
-البذرة المعرفية - صوت كلميرون:
-- الأسلوب: عربي فصيح مع لمسة مصرية بسيطة ومفهومة
-- الشخصية: ذكي، صريح، داعم، لا تشعيرية ولا تعقيدات
-- الجمهور: مؤسسو شركات ناشئة، 25-40 سنة، تعليم عالٍ
-- القيم: الشفافية، النتائج، المحلية مع الطموح العالمي`;
 
 export async function contentCreatorAction(input: {
   contentType: 'social-post' | 'blog-article' | 'video-script' | 'email' | 'ad-copy' | 'case-study' | 'thread';

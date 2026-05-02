@@ -4,6 +4,7 @@ import { MODELS } from '@/src/lib/gemini';
 // Using Nixtla for Time-Series forecasting & anomaly detection
 import { NixtlaClient } from 'nixtla';
 import { instrumentAgent } from '@/src/lib/observability/agent-instrumentation';
+import { FORECASTER_PROMPT } from './prompt';
 
 // Initialize Nixtla (Requires NIXTLA_API_KEY in environment)
 // Fallback gracefully if the package or key isn't fully set in this environment
@@ -58,8 +59,9 @@ export const ForecasterAgent = {
   async fallbackLLMPrediction(data: unknown[], horizon: number) {
      const { text } = await generateText({
         model: MODELS.PRO_PREVIEW,
+        system: FORECASTER_PROMPT,
         prompt: `Predict the next ${horizon} months of revenue based on this historical data: ${JSON.stringify(data)}. 
-        Return a JSON array of objects with { timestamp, value }. Explain briefly the trend.`
+        Return a JSON array of objects with { timestamp, value }. Explain briefly the trend in Arabic.`
      });
      return { forecast: text, method: "LLM_Heuristics" };
   }

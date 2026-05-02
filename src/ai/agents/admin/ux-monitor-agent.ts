@@ -2,12 +2,15 @@
 import { globalGraphTools } from '@/src/lib/memory/graph-tools';
 import { Agent } from '@mastra/core';
 import { z } from 'zod';
+import { ADMIN_PROMPT } from './prompt';
 
 export const uxMonitorAgent = new Agent({
   name: 'UX Monitoring Agent',
-  instructions: `أنت وكيل مراقبة تجربة المستخدم لمنصة كلميرون تو استناداً لبيانات Decipher AI.
-  مهمتك: مشاهدة وتحليل آلاف جلسات المستخدمين بصرياً لاكتشاف نقاط الاحتكاك وأحداث الإحباط (Rage Clicks).`,
-  model: { provider: 'google', name: 'gemini-2.5-flash' }, // Flash supports vision/video analysis inherently
+  instructions: `${ADMIN_PROMPT}
+
+## التخصص: مراقبة تجربة المستخدم
+أنت وكيل مراقبة تجربة المستخدم لمنصة كلميرون استناداً لبيانات جلسات المستخدمين. مهمتك: تحليل آلاف جلسات المستخدمين لاكتشاف نقاط الاحتكاك، Rage Clicks، ومواطن الإحباط. كل شذوذ تكتشفه يجب أن يكون مصحوباً بتوصية تصميمية قابلة للتنفيذ في أسبوع واحد.`,
+  model: { provider: 'google', name: 'gemini-2.5-flash' },
   tools: {
       ...globalGraphTools,
     analyze_session_replays: {
