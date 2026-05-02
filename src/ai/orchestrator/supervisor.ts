@@ -85,7 +85,7 @@ async function withCouncil(opts: {
   });
   if (!result) {
      
-    console.error(`[withCouncil] council failed for ${opts.agentName}:`, error);
+    // council failed — using fallback draft
     return opts.draft || markdown || opts.fallback;
   }
 
@@ -111,7 +111,7 @@ async function withCouncil(opts: {
         });
         if (refinedResult) {
            
-          console.log(`[reflexion] ${opts.agentName} refined (score ${judgeOverall(score)} → re-rendered)`);
+          // reflexion: agent refined successfully
           return refined;
         }
       }
@@ -220,7 +220,7 @@ async function routerNode(state: typeof SupervisorState.State) {
     // Fallback ذكي عند فشل الـ Router (quota، شبكة، ...): نصنّف النية
     // محلياً عبر كلمات مفتاحية حتى لا نُفشل المحادثة بالكامل.
     intent = heuristicIntent(lastMessage);
-    console.warn('[router] LLM classification failed, used heuristic →', intent, '·', (e as Error)?.message?.slice(0, 200));
+    // LLM router failed — heuristic fallback used
   }
 
   const cleaned = intent.trim().toUpperCase();
@@ -434,7 +434,7 @@ async function cfoAgentNode(state: typeof SupervisorState.State) {
   } catch (e) {
     // Egypt-Calc unreachable → fall through to LLM-based reasoning.
      
-    console.warn('[cfo-agent] egypt-calc tool failed:', (e as Error)?.message);
+    // egypt-calc unreachable — falling through to LLM reasoning
   }
 
   if (!draft) {

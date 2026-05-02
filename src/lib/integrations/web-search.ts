@@ -63,7 +63,7 @@ export async function webSearch(query: string, opts: WebSearchOpts = {}): Promis
       return { ok: true, source: 'gemini_grounded', answer, citations };
     } catch (e: unknown) {
       // fall through
-      console.warn('[web-search] gemini grounded failed:', (e as Error)?.message);
+      // gemini grounded search failed — trying next provider
     }
   }
 
@@ -94,7 +94,7 @@ export async function webSearch(query: string, opts: WebSearchOpts = {}): Promis
         })),
       };
     } catch (e: unknown) {
-      console.warn('[web-search] tavily failed:', (e as Error)?.message);
+      // tavily search failed — trying next provider
     }
   }
 
@@ -128,7 +128,7 @@ export async function webSearch(query: string, opts: WebSearchOpts = {}): Promis
         citations,
       };
     } catch (e: unknown) {
-      console.warn('[web-search] serper failed:', (e as Error)?.message);
+      // serper search failed — trying next provider
     }
   }
 

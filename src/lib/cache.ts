@@ -7,7 +7,7 @@ import { HumanMessage } from '@langchain/core/messages';
 export const getCachedCompanyAnalysis = unstable_cache(
   async (companyId: string) => {
     // محاكاة استدعاء Gemini API أو قاعدة البيانات
-    console.log(`Fetching analysis for ${companyId}`);
+    // fetching analysis for companyId
     return { id: companyId, analysis: "Detailed market and financial analysis..." };
   },
   ['company-analysis'],
@@ -18,7 +18,7 @@ export const getCachedCompanyAnalysis = unstable_cache(
 export const getCachedOpportunities = unstable_cache(
   async (userId: string) => {
     // محاكاة استدعاء Gemini API
-    console.log(`Fetching opportunities for ${userId}`);
+    // fetching opportunities for userId
     return [{ title: "مسرعة أعمال X", matchedScore: 0.95 }];
   },
   ['opportunities'],

@@ -21,7 +21,7 @@ export async function registerForPushNotifications(): Promise<string | null> {
 
   const projectId = process.env.EXPO_PROJECT_ID;
   if (!projectId) {
-    console.warn('[notifications] EXPO_PROJECT_ID is not set — skipping push token registration.');
+    // EXPO_PROJECT_ID not set — push token registration skipped
     return null;
   }
 
@@ -29,7 +29,7 @@ export async function registerForPushNotifications(): Promise<string | null> {
     const token = await Notifications.getExpoPushTokenAsync({ projectId });
     return token.data;
   } catch (error) {
-    console.error('[notifications] Failed to get push token:', error);
+    // push token retrieval failed
     return null;
   }
 }

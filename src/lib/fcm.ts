@@ -35,7 +35,7 @@ export async function registerFCMServiceWorker(): Promise<ServiceWorkerRegistrat
     if (existing) return existing;
     return await navigator.serviceWorker.register("/firebase-messaging-sw.js", { scope: "/" });
   } catch (e) {
-    console.warn("[FCM] SW registration failed", e);
+    // service worker registration failed — FCM will be unavailable
     return null;
   }
 }
@@ -48,7 +48,7 @@ export async function requestPushPermission(): Promise<NotificationPermission> {
 
 export async function getFCMToken(): Promise<string | null> {
   if (!VAPID_KEY) {
-    console.warn("[FCM] NEXT_PUBLIC_FIREBASE_VAPID_KEY not set");
+    // VAPID key not configured — push notifications disabled
     return null;
   }
   const messaging = getFirebaseMessaging();
@@ -62,7 +62,7 @@ export async function getFCMToken(): Promise<string | null> {
     });
     return token ?? null;
   } catch (e) {
-    console.warn("[FCM] getToken failed", e);
+    // FCM token retrieval failed
     return null;
   }
 }

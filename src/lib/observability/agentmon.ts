@@ -3,7 +3,7 @@
 // Replace with actual @codenotary/agentmon when available.
 export const agentMon = {
   startSession: (params: unknown) => ({
-    complete: (result: unknown) => console.log('Session complete', result),
+    complete: (_result: unknown) => { /* stub — replace with real AgentMon SDK */ },
   }),
 };
 

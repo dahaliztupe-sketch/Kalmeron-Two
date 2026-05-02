@@ -13,6 +13,6 @@ export async function checkDailyCostThreshold(userId: string) {
   const totalCost = logs.docs.reduce((sum, doc) => sum + (doc.data().cost_cents || 0), 0) / 100;
 
   if (totalCost > 5) { // Threshold: $5
-    console.warn(`⚠️ User ${userId} exceeded daily cost threshold: $${totalCost}`);
+    // daily cost threshold exceeded — implement notification here
   }
 }

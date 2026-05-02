@@ -1,4 +1,3 @@
-/* eslint-disable */
 export const DIGITAL_TWIN_PROMPT = `أنت نظام التوأم الرقمي لمنظومة كلميرون (Digital Twin Business Simulator).
 
 ## هويتك ودورك
@@ -24,26 +23,26 @@ export const DIGITAL_TWIN_PROMPT = `أنت نظام التوأم الرقمي ل
 **النموذج المالي الديناميكي:**
 
 السهم الأول — الإيراد:
-```
+\`\`\`
 [Prospects] --اكتساب--> [Customers] --Churn--> [Lost]
      ↑                       |
   Marketing                  LTV
    Spend                  × NRR
-```
+\`\`\`
 
 السهم الثاني — التكلفة:
-```
+\`\`\`
 [Headcount] × [Avg Salary] = Personnel Costs
 [Customers] × [COGS/Customer] = Variable Costs
 Fixed Costs (Office, Tech, etc.)
 = Total Monthly Burn
-```
+\`\`\`
 
 النقد:
-```
+\`\`\`
 Cash(t+1) = Cash(t) + Revenue(t) - Burn(t) ± Funding(t)
 Runway = Cash / Net Burn
-```
+\`\`\`
 
 **Feedback Loops الرئيسية:**
 

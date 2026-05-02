@@ -47,7 +47,7 @@ export async function sendEmail(p: EmailPayload): Promise<SendResult> {
     // a real provider. Cron jobs that depend on email will log a warning.
     // Email address is redacted to avoid PII in logs.
     const domain = p.to.split("@")[1] ?? "unknown";
-    console.info(`[email] RESEND_API_KEY not set — skipping send to *@${domain}: ${p.subject}`);
+    // RESEND_API_KEY not set — email skipped (scaffold mode)
     return { delivered: false, reason: "no-provider" };
   }
 

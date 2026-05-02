@@ -8,5 +8,5 @@ export async function sendAlert(agentName: string, message: string) {
     message,
     timestamp: new Date()
   });
-  console.error(`ALERT for ${agentName}: ${message}`);
+  // alert written to Firestore above
 }

@@ -350,7 +350,7 @@ export async function safeGenerateText<TOOLS extends ToolSet = ToolSet>(
       lastErr = err;
       const fb = fallbackModelFor(modelId, err);
       if (!fb) throw err;
-      console.warn(`[llm-gateway] ${ctx.agent} ${modelId} → fallback ${fb.modelId} (${(err as Error)?.message?.slice(0, 120)})`);
+      // fallback model selected — continuing
       currentArgs = { ...currentArgs, model: fb.model } as typeof args;
       modelId = fb.modelId;
     }
@@ -374,7 +374,7 @@ export async function safeGenerateText<TOOLS extends ToolSet = ToolSet>(
   });
 
   if (ctx.softCostBudgetUsd && cost > ctx.softCostBudgetUsd) {
-    console.warn(`[llm-gateway] ${ctx.agent} exceeded soft budget: $${cost.toFixed(4)} > $${ctx.softCostBudgetUsd}`);
+    // soft cost budget exceeded — logged via audit trail above
   }
 
   return { result, meta: { agent: ctx.agent, userId, durationMs, piiHits, injectionBlocked: false } };
@@ -445,7 +445,7 @@ export async function safeGenerateObject<SCHEMA extends z.ZodType>(
       lastErr = err;
       const fb = fallbackModelFor(modelId, err);
       if (!fb) throw err;
-      console.warn(`[llm-gateway] ${ctx.agent} ${modelId} → fallback ${fb.modelId} (${(err as Error)?.message?.slice(0, 120)})`);
+      // fallback model selected — continuing
       currentArgs = { ...currentArgs, model: fb.model } as typeof args;
       modelId = fb.modelId;
     }

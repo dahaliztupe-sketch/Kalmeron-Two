@@ -17,17 +17,12 @@ function parseServiceAccount() {
   try {
     const parsed = JSON.parse(raw);
     if (!parsed || typeof parsed !== 'object' || !parsed.project_id) {
-      console.warn(
-        '[firebase-admin] FIREBASE_SERVICE_ACCOUNT_KEY parsed but missing required fields (project_id). Falling back to ADC.',
-      );
+      // FIREBASE_SERVICE_ACCOUNT_KEY missing required fields — falling back to ADC
       return null;
     }
     return parsed;
   } catch (e) {
-    console.warn(
-      '[firebase-admin] FIREBASE_SERVICE_ACCOUNT_KEY is not valid JSON. Falling back to ADC. Detail:',
-      e instanceof Error ? e.message : String(e),
-    );
+    // FIREBASE_SERVICE_ACCOUNT_KEY is not valid JSON — falling back to ADC
     return null;
   }
 }

@@ -53,7 +53,7 @@ export function useAudioAgent() {
 
       ws.onopen = () => {
         setIsRecording(true);
-        console.log('[Live API] Connected. Ready to stream PCM16 audio.');
+        // Live API connected — ready to stream PCM16 audio
         // Simulate agent taking a second to think then speak
         setTimeout(() => setAgentSpeaking(true), 2000);
         setTimeout(() => setAgentSpeaking(false), 6000);
@@ -78,7 +78,7 @@ export function useAudioAgent() {
       };
 
     } catch (err) {
-      console.error('Failed to start Audio Agent Session:', err);
+      // audio agent session failed to start
       stopSession();
     }
   }, [stopSession]);

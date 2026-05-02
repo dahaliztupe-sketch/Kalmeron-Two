@@ -112,7 +112,7 @@ export const supervisor = new Supervisor({
     ...allDepartmentAgents,
   ],
   delegationHook: async (task: string, agent: { name: string }) => {
-    console.log(`[Mastra Supervisor] تفويض المهمة: "${task}" → الوكيل: ${agent.name}`);
+    // task delegated to agent
   },
   completionScoring: true,
   memoryIsolation: true,

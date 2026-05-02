@@ -31,7 +31,7 @@ export async function loadRunwaySnapshot(uid: string): Promise<RunwaySnapshot | 
       dismissedUntil: data.dismissedUntil ? String(data.dismissedUntil) : undefined,
     };
   } catch (err) {
-    console.warn("[runway] loadRunwaySnapshot failed", err);
+    // runway snapshot load failed — returning null
     return null;
   }
 }
@@ -56,7 +56,7 @@ export async function saveRunwaySnapshot(
     await setDoc(ref, payload, { merge: true });
     return payload;
   } catch (err) {
-    console.warn("[runway] saveRunwaySnapshot failed", err);
+    // runway snapshot save failed
     return null;
   }
 }
@@ -68,6 +68,6 @@ export async function dismissRunwayAlarm(uid: string, days: number = 7): Promise
     const ref = doc(db, COLLECTION, uid);
     await updateDoc(ref, { dismissedUntil: until });
   } catch (err) {
-    console.warn("[runway] dismissRunwayAlarm failed", err);
+    // runway alarm dismiss failed
   }
 }

@@ -168,7 +168,7 @@ export async function detectCollaborationOpportunity(
     const j = JSON.parse(text.slice(text.indexOf('{'), text.lastIndexOf('}') + 1));
     return Array.isArray(j.opportunities) ? j.opportunities : [];
   } catch (err: unknown) {
-    console.warn('[virtual-meeting:detectCollab]', err?.message || err);
+    // collaboration detection failed — returning empty list
     return [];
   }
 }

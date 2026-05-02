@@ -22,6 +22,7 @@
 import { adminDb } from '@/src/lib/firebase-admin';
 import { trackEvent } from '@/src/lib/analytics/track';
 import { FieldValue } from 'firebase-admin/firestore';
+import { logger } from '@/src/lib/logger';
 
 export type TtfvStage = 'signup' | 'first_message' | 'first_value';
 
@@ -98,7 +99,7 @@ export async function markTtfvStage(args: TtfvMarkArgs): Promise<void> {
       properties: { kind: 'ttfv', stage: args.stage, ...(args.properties ?? {}) },
     });
   } catch (e) {
-    console.error('[ttfv] mark failed', e instanceof Error ? e.message : e);
+    logger.error({ event: 'ttfv_mark_failed', error: e instanceof Error ? e.message : String(e) });
   }
 }
 
@@ -147,7 +148,7 @@ export async function getTtfvSummary(maxDocs = 5000): Promise<TtfvSummary> {
       p90WarmMs: percentile(warms, 90),
     };
   } catch (e) {
-    console.error('[ttfv] summary failed', e instanceof Error ? e.message : e);
+    logger.error({ event: 'ttfv_summary_failed', error: e instanceof Error ? e.message : String(e) });
     return {
       totalUsersWithSignup: 0,
       totalUsersWithFirstValue: 0,

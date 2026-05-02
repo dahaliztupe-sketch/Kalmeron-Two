@@ -21,7 +21,7 @@ function getDriver(): Driver | null {
     if (!warned) {
       warned = true;
       logger?.warn?.({ msg: 'KG_DISABLED', reason: 'NEO4J credentials missing' })
-        ?? console.warn('[knowledge-graph] disabled: missing NEO4J_URI/USER/PASSWORD');
+        ?? undefined; // NEO4J credentials missing — knowledge graph disabled
     }
     return null;
   }
@@ -54,7 +54,7 @@ async function withSession<T>(fn: (s: Session) => Promise<T>): Promise<T | null>
   try {
     return await fn(session);
   } catch (e: unknown) {
-    logger?.error?.({ msg: 'KG_QUERY_FAILED', error: e?.message }) ?? console.error('[KG]', e?.message);
+    logger?.error?.({ msg: 'KG_QUERY_FAILED', error: e?.message });
     return null;
   } finally {
     await session.close().catch(() => {});

@@ -16,9 +16,9 @@ export async function setupWorkdayMCP() {
       toolsets: ['workday_core', 'workday_recruiting', 'workday_compensation'],
     });
 
-    console.log("Workday MCP Tools Loaded successfully.");
+    // Workday MCP tools loaded successfully
   } catch (err) {
-    console.error("Failed connecting to Workday MCP Orchestrator:", err);
+    // Workday MCP connection failed — mastra returned without HRIS tools
   }
   
   return mastra;

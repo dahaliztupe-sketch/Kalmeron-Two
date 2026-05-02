@@ -9,6 +9,7 @@
  */
 import { adminDb } from '@/src/lib/firebase-admin';
 import { FieldValue } from 'firebase-admin/firestore';
+import { logger } from '@/src/lib/logger';
 
 export type AnalyticsEvent =
   | 'landing_visited'
@@ -85,7 +86,7 @@ export async function trackEvent(args: TrackArgs): Promise<void> {
       occurredAt: FieldValue.serverTimestamp(),
     });
   } catch (e) {
-    console.error('[analytics] firestore write failed', e instanceof Error ? e.message : e);
+    logger.error({ event: 'analytics_firestore_write_failed', error: e instanceof Error ? e.message : String(e) });
   }
 
   // 2) Best-effort mirror to PostHog (PII-stripped).

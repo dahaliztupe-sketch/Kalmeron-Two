@@ -11,7 +11,7 @@ const apiKey =
 const baseURL = process.env.AI_INTEGRATIONS_GEMINI_BASE_URL || undefined;
 
 if (!apiKey && typeof window === "undefined") {
-    console.warn("[gemini] GEMINI_API_KEY غير موجود — وكلاء كلميرون لن يعملوا.");
+    // GEMINI_API_KEY not set — Kalmeron agents will be unavailable
 }
 
 export const google = createGoogleGenerativeAI({ apiKey, ...(baseURL ? { baseURL } : {}) });
@@ -76,7 +76,7 @@ const _legacyApiKey =
   process.env.GOOGLE_GENERATIVE_AI_API_KEY ||
   process.env.AI_INTEGRATIONS_GEMINI_API_KEY;
 if (!_legacyApiKey) {
-  console.warn('[gemini] Missing GEMINI_API_KEY / GOOGLE_GENERATIVE_AI_API_KEY for legacy `ai` client');
+  // Missing GEMINI_API_KEY — legacy ai client will be non-functional
 }
 const _legacyBaseUrl = process.env.AI_INTEGRATIONS_GEMINI_BASE_URL;
 export const ai = new GoogleGenAI({

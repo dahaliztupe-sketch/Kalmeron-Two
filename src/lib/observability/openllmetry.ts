@@ -39,7 +39,7 @@ export async function initOpenLLMetry(): Promise<void> {
   // static `import(...)` expression so Turbopack won't try to resolve it.
   const traceloop = (await import(/* webpackIgnore: true */ /* @vite-ignore */ pkg).catch((err) => {
      
-    console.warn('[openllmetry] traceloop package not installed; skipping init.', err);
+    // traceloop package not installed — skipping OpenLLMetry init
     return null;
   })) as { initialize: (o: InitializeOptions) => void } | null;
 
@@ -62,10 +62,6 @@ export async function initOpenLLMetry(): Promise<void> {
 
   if (debug) {
      
-    console.info('[openllmetry] initialised', {
-      app: opts.appName,
-      baseUrl: opts.baseUrl ?? '(default)',
-      traceContent: opts.traceContent,
-    });
+    // OpenLLMetry initialised in debug mode
   }
 }

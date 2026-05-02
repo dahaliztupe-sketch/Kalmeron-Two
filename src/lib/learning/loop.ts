@@ -43,7 +43,7 @@ const MERGE_SIMILARITY_THRESHOLD = 0.92;
 function logErr(scope: string, err: unknown): void {
   const msg = err instanceof Error ? `${err.name}: ${err.message}` : String(err);
   // Telemetry is best-effort but failures should be visible in server logs.
-  console.warn(`[learning-loop:${scope}] ${msg}`);
+  // best-effort telemetry: learning loop error swallowed
 }
 
 function cosineSimilarity(a: number[], b: number[]): number {

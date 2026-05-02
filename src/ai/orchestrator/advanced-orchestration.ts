@@ -16,7 +16,7 @@ export const mars2Workflow = new Workflow({
 
 // نموذج ResMAS لتحسين الطوبولوجيا ومرونة النظام
 export async function optimizeTopology(task: string, agents: string[]) {
-  console.log(`[ResMAS] Optimizing topology for task: ${task}`);
+  // optimizing topology for task
   // استخدام نموذج مكافأة مدرب مسبقاً لتقييم مرونة الطوبولوجيا
   return { topology: 'dynamic_mesh', resilienceScore: 0.94 };
 }

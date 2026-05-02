@@ -53,7 +53,7 @@ export async function reflectOnRetrieval(query: string, documents: string[]): Pr
       return JSON.parse(jsonMatch[0]);
     }
   } catch (e) {
-    console.error('Failed to parse reflection result:', e);
+    // reflection result parse failed — using default
   }
   
   // افتراضي: غير كافٍ

@@ -254,6 +254,6 @@ export class CreditManager {
   }
 
   private async sendNotification(type: string, percent: number): Promise<void> {
-    console.log(`Notification for ${this.userId}: ${type} (${percent}%)`);
+    // notification stub — implement real push/email delivery here
   }
 }

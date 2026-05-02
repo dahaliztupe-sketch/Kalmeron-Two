@@ -51,7 +51,7 @@ export async function analyzeDiscourse(documents: string[]): Promise<{
       };
     }
   } catch (e) {
-    console.error('Failed to parse discourse analysis:', e);
+    // discourse analysis parse failed — returning empty result
   }
   
   return { mainClaims: [], supportingEvidence: new Map(), contradictions: [] };

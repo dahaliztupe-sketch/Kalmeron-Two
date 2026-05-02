@@ -140,7 +140,7 @@ async function generateBlocks(signals: string): Promise<BriefBlock[] | null> {
     if (!parsed.success) return null;
     return parsed.data.blocks;
   } catch (err) {
-    console.warn('[daily-brief] generation failed:', (err as Error).message);
+    // generation failed — caller will use fallback stub
     return null;
   }
 }

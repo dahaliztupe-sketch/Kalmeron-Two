@@ -4,6 +4,7 @@
  */
 import { adminDb } from '@/src/lib/firebase-admin';
 import { FieldValue } from 'firebase-admin/firestore';
+import { logger } from '@/src/lib/logger';
 
 export type AuditAction =
   | 'create'
@@ -42,7 +43,7 @@ export async function writeAudit(entry: AuditEntry): Promise<string> {
     });
     return doc.id;
   } catch (e) {
-    console.error('[audit] write failed', e);
+    logger.error({ event: 'audit_write_failed', error: e instanceof Error ? e.message : String(e) });
     return '';
   }
 }

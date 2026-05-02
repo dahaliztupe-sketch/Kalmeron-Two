@@ -26,7 +26,7 @@ export async function getFeatureFlag(flagName: string, userId?: string): Promise
     }
     return flag.enabled;
   } catch (error) {
-    console.warn("Failed to fetch feature flag", error);
+    // feature flag fetch failed — returning false
     return false;
   }
 }

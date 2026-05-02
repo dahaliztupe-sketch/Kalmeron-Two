@@ -7,6 +7,6 @@ export const tracer = {
   },
 };
 
-export const agentCallCounter = { add: (n: number, tags: unknown) => console.log('Agent call', n, tags) };
-export const agentLatencyHistogram = { record: (n: number, tags: unknown) => console.log('Latency', n, tags) };
-export const tokenUsageCounter = { add: (n: number, tags: unknown) => console.log('Tokens', n, tags) };
+export const agentCallCounter = { add: (_n: number, _tags: unknown) => { /* stub */ } };
+export const agentLatencyHistogram = { record: (_n: number, _tags: unknown) => { /* stub */ } };
+export const tokenUsageCounter = { add: (_n: number, _tags: unknown) => { /* stub */ } };

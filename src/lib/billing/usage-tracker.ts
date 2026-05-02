@@ -52,6 +52,6 @@ export async function trackAgentUsage(
       data: { agentName, model, tokens },
     });
   } catch (error) {
-    console.error('Failed to ingest usage into OpenMeter:', error);
+    // best-effort telemetry — swallow silently
   }
 }

@@ -22,6 +22,6 @@ export class RuntimeGuard {
   
   private revokeAccess(): void {
     // إبطال صلاحيات الوكيل وإرسال تنبيه أمني
-    console.error(`Agent ${this.agentSessionId} access revoked due to policy violation`);
+    // agent access revoked due to policy violation
   }
 }

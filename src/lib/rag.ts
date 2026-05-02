@@ -62,7 +62,7 @@ export async function searchKnowledge(queryText: string, category?: string, topK
 
     return topMatches.map(m => m.text).join("\n---\n");
   } catch (err: unknown) {
-    console.warn('[rag.searchKnowledge] degraded — returning empty context:', (err as Error)?.message || err);
+    // RAG search degraded — returning empty context
     return '';
   }
 }

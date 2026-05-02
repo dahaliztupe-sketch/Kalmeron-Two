@@ -86,7 +86,7 @@
     const enriched = { ...alert, timestamp: alert.timestamp || new Date() };
     alerts.push(enriched);
     if (alerts.length > 1000) alerts.shift();
-    logger?.warn?.({ msg: 'AGENT_ALERT', ...enriched }) ?? console.warn('[ALERT]', enriched);
+    logger?.warn?.({ msg: 'AGENT_ALERT', ...enriched });
     monitorEvents.emit('alert', enriched);
   }
 

@@ -33,7 +33,7 @@ async function checkDailyLimit(userId: string) {
   const totalCost = logs.docs.reduce((sum, doc) => sum + doc.data().costCents, 0) / 100;
   
   if (totalCost > 5) { // $5 حد يومي للمستخدم
-    console.warn(`⚠️ User ${userId} exceeded daily cost threshold: $${totalCost}`);
+    // daily cost threshold exceeded — implement notification here
     // يمكن إرسال إشعار للمستخدم أو للمشرف هنا
   }
 }

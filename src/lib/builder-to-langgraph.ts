@@ -34,7 +34,7 @@ export function compileFlowToLangGraph(nodes: ReactFlowNode[], edges: ReactFlowE
   // 1. Register nodes dynamically based on blocks
   nodes.forEach(node => {
     workflow.addNode(node.id, async (state: typeof DynamicGraphState.State) => {
-      console.log(`[Dynamic Compiler] Executing node: ${node.id} of type (${node.type})`);
+      // executing node in dynamic graph
       
       // The logic here binds to node.data configurations
       // e.g., if type === 'ai_prompt', call Gemini with node.data.promptTemplate
