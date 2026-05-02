@@ -105,7 +105,8 @@ ${scenarioText}
 
     return NextResponse.json({ preview: text, generatedAt: new Date().toISOString() });
   } catch (e) {
-    console.error('[brand-voice] AI error:', e);
+    const { logger } = await import('@/src/lib/logger');
+    logger.error({ event: 'brand_voice_ai_error', error: e instanceof Error ? e.message : String(e) });
     return NextResponse.json({ error: 'ai_error' }, { status: 500 });
   }
 }

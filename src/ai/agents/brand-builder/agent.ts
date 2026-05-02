@@ -9,7 +9,6 @@ export async function brandBuilderAction(businessName: string, description: stri
   return instrumentAgent(
     'brand_builder',
     async () => {
-      c
       const baseSystem = BRAND_BUILDER_PROMPT;
       const learnedAddon = getCurrentLearnedSkillsAddon();
       const system = learnedAddon ? `${baseSystem}\n\n${learnedAddon}` : baseSystem;

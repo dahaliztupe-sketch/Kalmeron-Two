@@ -6,6 +6,7 @@
  */
 import { NextRequest, NextResponse } from 'next/server';
 import { aggregateRollup } from '@/src/lib/observability/cost-ledger';
+import { logger } from '@/src/lib/logger';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -27,7 +28,7 @@ async function handle(req: NextRequest): Promise<NextResponse> {
     return NextResponse.json({ ok: true, ...result });
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
-    console.error(JSON.stringify({ event: 'cost_rollup_failed', error: msg }));
+    logger.error({ event: 'cost_rollup_failed', error: msg });
     return NextResponse.json({ ok: false, error: msg }, { status: 500 });
   }
 }

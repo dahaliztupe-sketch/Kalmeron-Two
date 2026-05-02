@@ -9,7 +9,6 @@ export async function analyzeInterviewResults(ideaDescription: string, results: 
   return instrumentAgent(
     'insights_analyzer',
     async () => {
-      c
       const baseSystem = INSIGHTS_ANALYZER_PROMPT;
       const learnedAddon = getCurrentLearnedSkillsAddon();
       const { text } = await generateText({

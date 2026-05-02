@@ -44,7 +44,8 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ ok: true });
   } catch (e: unknown) {
-    console.error("[FCM Subscribe]", e);
+    const { logger } = await import('@/src/lib/logger');
+    logger.error({ event: 'fcm_subscribe_failed', error: e instanceof Error ? e.message : String(e) });
     return NextResponse.json({ error: toErrorMessage(e) }, { status: 500 });
   }
 }

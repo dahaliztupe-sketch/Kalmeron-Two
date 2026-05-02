@@ -9,7 +9,6 @@ export async function competitorIntelAction(industry: string, companyName?: stri
   return instrumentAgent(
     'competitor_intel',
     async () => {
-      c
       const baseSystem = COMPETITOR_INTEL_PROMPT;
       const learnedAddon = getCurrentLearnedSkillsAddon();
       const system = learnedAddon ? `${baseSystem}\n\n${learnedAddon}` : baseSystem;

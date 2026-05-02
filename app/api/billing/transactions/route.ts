@@ -41,7 +41,8 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({ transactions });
   } catch (err) {
-    console.error('[billing/transactions]', err);
+    const { logger } = await import('@/src/lib/logger');
+    logger.error({ event: 'billing_transactions_failed', error: err instanceof Error ? err.message : String(err) });
     return NextResponse.json({ transactions: [] });
   }
 }

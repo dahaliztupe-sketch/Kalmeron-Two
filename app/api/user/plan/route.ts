@@ -141,7 +141,8 @@ export async function POST(req: NextRequest) {
   } catch (e: unknown) {
     // Log full error server-side; expose only an opaque code to the client
     // to avoid leaking implementation details (CodeQL js/stack-trace-exposure).
-    console.error('[user/plan] failed', toErrorMessage(e, 'unknown'));
+    const { logger } = await import('@/src/lib/logger');
+    logger.error({ event: 'user_plan_update_failed', error: toErrorMessage(e, 'unknown') });
     return new Response(JSON.stringify({ error: 'internal_error' }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },

@@ -9,7 +9,6 @@ export async function marketResearcherAction(industry: string, targetSegment?: s
   return instrumentAgent(
     'market_researcher',
     async () => {
-      c
       const baseSystem = MARKET_RESEARCHER_PROMPT;
       const learnedAddon = getCurrentLearnedSkillsAddon();
       const system = learnedAddon ? `${baseSystem}\n\n${learnedAddon}` : baseSystem;

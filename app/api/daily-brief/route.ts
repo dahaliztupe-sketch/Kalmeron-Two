@@ -161,7 +161,8 @@ async function generateBrief(signals: string): Promise<BriefBlock[] | null> {
     if (!parsed.success) return null;
     return parsed.data.blocks;
   } catch (err) {
-    console.warn('[daily-brief] generation failed, using fallback:', (err as Error).message);
+    const { logger } = await import('@/src/lib/logger');
+    logger.warn({ event: 'daily_brief_generation_failed', error: (err as Error).message });
     return null;
   }
 }

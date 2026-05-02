@@ -15,6 +15,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { adminDb } from '@/src/lib/firebase-admin';
 import { FieldValue } from 'firebase-admin/firestore';
+import { logger } from '@/src/lib/logger';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -87,19 +88,19 @@ async function handle(req: NextRequest): Promise<NextResponse> {
   if (projectId && bucket) {
     const result = await nativeExport(projectId, bucket);
     if (result.ok) {
-      console.log(JSON.stringify({ event: 'firestore_backup_ok', mode: 'native', operation: result.operation }));
+      logger.info({ event: 'firestore_backup_ok', mode: 'native', operation: result.operation });
       return NextResponse.json({ mode: 'native', ...result });
     }
-    console.error(JSON.stringify({ event: 'firestore_backup_native_failed', error: result.error }));
+    logger.error({ event: 'firestore_backup_native_failed', error: result.error });
     // Fall through to logical snapshot.
   }
 
   const fallback = await logicalSnapshot();
   if (!fallback.ok) {
-    console.error(JSON.stringify({ event: 'firestore_backup_failed', error: fallback.error }));
+    logger.error({ event: 'firestore_backup_failed', error: fallback.error });
     return NextResponse.json({ mode: 'logical', ...fallback }, { status: 500 });
   }
-  console.log(JSON.stringify({ event: 'firestore_backup_ok', mode: 'logical', counts: fallback.counts }));
+  logger.info({ event: 'firestore_backup_ok', mode: 'logical', counts: fallback.counts });
   return NextResponse.json({ mode: 'logical', ...fallback });
 }
 

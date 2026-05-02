@@ -94,7 +94,7 @@ export async function POST(req: NextRequest) {
             senderId,
             text,
             raw: m,
-          }).catch((e: unknown) => console.warn('[webhook:whatsapp]', toErrorMessage(e)));
+          }).catch(async (e: unknown) => { const { logger } = await import('@/src/lib/logger'); logger.warn({ event: 'whatsapp_handler_failed', error: toErrorMessage(e) }); });
         }
       }
     }

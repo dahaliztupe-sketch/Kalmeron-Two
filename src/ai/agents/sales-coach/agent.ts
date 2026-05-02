@@ -9,7 +9,6 @@ export async function salesCoachAction(product: string, target: string, challeng
   return instrumentAgent(
     'sales_coach',
     async () => {
-      c
       const baseSystem = SALES_COACH_PROMPT;
       const learnedAddon = getCurrentLearnedSkillsAddon();
       const system = learnedAddon ? `${baseSystem}\n\n${learnedAddon}` : baseSystem;

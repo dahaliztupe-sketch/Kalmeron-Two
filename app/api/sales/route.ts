@@ -88,7 +88,8 @@ ${channels.length ? `القنوات المفضلة: ${channels.join('، ')}` : '
 
     return NextResponse.json({ strategy: text, generatedAt: new Date().toISOString() });
   } catch (e) {
-    console.error('[sales] AI error:', e);
+    const { logger } = await import('@/src/lib/logger');
+    logger.error({ event: 'sales_ai_error', error: e instanceof Error ? e.message : String(e) });
     return NextResponse.json({ error: 'ai_error' }, { status: 500 });
   }
 }

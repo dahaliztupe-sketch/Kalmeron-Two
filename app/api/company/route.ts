@@ -66,7 +66,8 @@ export async function POST(req: NextRequest) {
     });
     return NextResponse.json({ company }, { status: 201 });
   } catch (err) {
-    console.error('[POST /api/company]', err);
+    const { logger } = await import('@/src/lib/logger');
+    logger.error({ event: 'company_post_failed', error: err instanceof Error ? err.message : String(err) });
     return NextResponse.json(
       { error: err instanceof Error ? err.message : 'Internal error' },
       { status: 500 },
@@ -88,7 +89,8 @@ export async function GET(req: NextRequest) {
     const companies = await listCompaniesByOwner(userId);
     return NextResponse.json({ companies });
   } catch (err) {
-    console.error('[GET /api/company]', err);
+    const { logger } = await import('@/src/lib/logger');
+    logger.error({ event: 'company_get_failed', error: err instanceof Error ? err.message : String(err) });
     return NextResponse.json(
       { error: err instanceof Error ? err.message : 'Internal error' },
       { status: 500 },

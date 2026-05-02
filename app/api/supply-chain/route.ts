@@ -87,7 +87,8 @@ ${context ? `معلومات إضافية: ${context}` : ''}
 
     return NextResponse.json({ analysis: text, generatedAt: new Date().toISOString() });
   } catch (e) {
-    console.error('[supply-chain] AI error:', e);
+    const { logger } = await import('@/src/lib/logger');
+    logger.error({ event: 'supply_chain_ai_error', error: e instanceof Error ? e.message : String(e) });
     return NextResponse.json({ error: 'ai_error' }, { status: 500 });
   }
 }

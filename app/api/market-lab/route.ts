@@ -170,7 +170,8 @@ ${targetSegment ? `شريحة المستخدمين المستهدفة: ${targetS
       });
     }
   } catch (e) {
-    console.error('[market-lab] AI error:', e);
+    const { logger } = await import('@/src/lib/logger');
+    logger.error({ event: 'market_lab_ai_error', error: e instanceof Error ? e.message : String(e) });
   }
 
   return NextResponse.json({

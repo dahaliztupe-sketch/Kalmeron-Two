@@ -9,7 +9,6 @@ export async function operationsManagerAction(challenge: string, context?: strin
   return instrumentAgent(
     'operations_manager',
     async () => {
-      c
       const baseSystem = OPERATIONS_MANAGER_PROMPT;
       const learnedAddon = getCurrentLearnedSkillsAddon();
       const system = learnedAddon ? `${baseSystem}\n\n${learnedAddon}` : baseSystem;

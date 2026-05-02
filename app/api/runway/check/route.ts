@@ -80,7 +80,8 @@ export async function POST(req: NextRequest) {
       };
     }
   } catch (err) {
-    console.warn("[runway/check] failed to load snapshot", err);
+    const { logger } = await import('@/src/lib/logger');
+    logger.warn({ event: 'runway_snapshot_load_failed', error: err instanceof Error ? err.message : String(err) });
   }
 
   const inputs: RunwayInputs = {

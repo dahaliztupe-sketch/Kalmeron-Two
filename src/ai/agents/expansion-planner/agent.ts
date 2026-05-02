@@ -9,7 +9,6 @@ export async function expansionPlannerAction(business: string, targetMarket: str
   return instrumentAgent(
     'expansion_planner',
     async () => {
-      c
       const baseSystem = EXPANSION_PLANNER_PROMPT;
       const learnedAddon = getCurrentLearnedSkillsAddon();
       const system = learnedAddon ? `${baseSystem}\n\n${learnedAddon}` : baseSystem;

@@ -15,8 +15,6 @@ export async function customerDiscoveryAction(input: CustomerDiscoveryInput): Pr
   return instrumentAgent(
     'customer_discovery',
     async () => {
-      c
-
       const baseSystem = CUSTOMER_DISCOVERY_PROMPT;
       const learnedAddon = getCurrentLearnedSkillsAddon();
       const system = learnedAddon ? `${baseSystem}\n\n${learnedAddon}` : baseSystem;

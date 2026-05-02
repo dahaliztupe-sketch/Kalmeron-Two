@@ -9,7 +9,6 @@ export async function investmentAdvisorAction(business: string, stage?: string, 
   return instrumentAgent(
     'investment_advisor',
     async () => {
-      c
       const baseSystem = INVESTMENT_ADVISOR_PROMPT;
       const learnedAddon = getCurrentLearnedSkillsAddon();
       const system = learnedAddon ? `${baseSystem}\n\n${learnedAddon}` : baseSystem;

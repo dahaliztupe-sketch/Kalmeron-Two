@@ -9,7 +9,6 @@ export async function marketingStrategistAction(business: string, budget?: strin
   return instrumentAgent(
     'marketing_strategist',
     async () => {
-      c
       const baseSystem = MARKETING_STRATEGIST_PROMPT;
       const learnedAddon = getCurrentLearnedSkillsAddon();
       const system = learnedAddon ? `${baseSystem}\n\n${learnedAddon}` : baseSystem;

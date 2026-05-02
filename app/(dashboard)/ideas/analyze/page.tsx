@@ -178,8 +178,7 @@ export default function IdeaValidationPage() {
       }
 
       toast.success("تم التحليل! اطّلع على التقرير أدناه.");
-    } catch (error) {
-      console.error(error);
+    } catch {
       toast.error("تعذّر التحليل. حاول مجدداً.");
     } finally {
       setIsValidating(false);

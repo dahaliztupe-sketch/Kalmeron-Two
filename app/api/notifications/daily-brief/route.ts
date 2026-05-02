@@ -85,7 +85,8 @@ async function listOptedInUsers(limit = 1_000): Promise<BriefDoc[]> {
     });
     return docs.filter((x): x is BriefDoc => x !== null);
   } catch (e) {
-    console.error("[daily-brief] listOptedInUsers failed", e);
+    const { logger } = await import('@/src/lib/logger');
+    logger.error({ event: 'daily_brief_list_users_failed', error: e instanceof Error ? e.message : String(e) });
     return [];
   }
 }

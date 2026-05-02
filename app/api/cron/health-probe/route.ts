@@ -6,6 +6,7 @@
  * - Auth is enforced via CRON_SECRET (same convention as other crons).
  */
 import { NextRequest, NextResponse } from 'next/server';
+import { logger } from '@/src/lib/logger';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -46,21 +47,9 @@ async function handle(req: NextRequest): Promise<NextResponse> {
 
   // Log degradations loudly so Sentry / Vercel Logs alert on them.
   if (status !== 'healthy') {
-    console.error(JSON.stringify({
-      level: 'error',
-      event: 'health_probe_degraded',
-      status,
-      durationMs,
-      payload,
-      timestamp: new Date().toISOString(),
-    }));
+    logger.error({ event: 'health_probe_degraded', status, durationMs, payload });
   } else {
-    console.log(JSON.stringify({
-      level: 'info',
-      event: 'health_probe_ok',
-      durationMs,
-      timestamp: new Date().toISOString(),
-    }));
+    logger.info({ event: 'health_probe_ok', durationMs });
   }
 
   return NextResponse.json({ probe: status, durationMs, payload });

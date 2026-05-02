@@ -25,8 +25,6 @@ export async function contractReviewerAction(input: ContractReviewInput): Promis
   return instrumentAgent(
     'contract_reviewer',
     async () => {
-      c
-
       const baseSystem = CONTRACT_REVIEWER_PROMPT;
       const learnedAddon = getCurrentLearnedSkillsAddon();
       const system = learnedAddon ? `${baseSystem}\n\n${learnedAddon}` : baseSystem;

@@ -10,7 +10,6 @@ export async function legalGuideAction(query: string) {
   return instrumentAgent(
     'legal_guide',
     async () => {
-      c
       const baseSystem = LEGAL_GUIDE_PROMPT;
       const learnedAddon = getCurrentLearnedSkillsAddon();
       const { text } = await generateText({

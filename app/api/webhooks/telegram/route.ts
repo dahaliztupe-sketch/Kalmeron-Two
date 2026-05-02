@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
           senderId,
           text,
           raw: msg,
-        }).catch((e: unknown) => console.warn('[webhook:telegram]', toErrorMessage(e)));
+        }).catch(async (e: unknown) => { const { logger } = await import('@/src/lib/logger'); logger.warn({ event: 'telegram_handler_failed', error: toErrorMessage(e) }); });
       }
     }
     return NextResponse.json({ ok: true });

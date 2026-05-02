@@ -16,6 +16,7 @@ import Stripe from 'stripe';
 import { adminAuth, adminDb } from '@/src/lib/firebase-admin';
 import { getPlan, getStripePriceIds, type PlanId, type BillingCycle } from '@/src/lib/billing/plans';
 import { rateLimit, rateLimitResponse } from '@/src/lib/security/rate-limit';
+import { logger } from '@/src/lib/logger';
 
 export const runtime = 'nodejs';
 
@@ -128,7 +129,7 @@ export async function POST(req: NextRequest) {
     });
   } catch (e) {
     const msg = e instanceof Error ? e.message : 'unknown';
-    console.error('[checkout] failed', msg);
+    logger.error({ event: 'checkout_failed', error: msg });
     return Response.json({ error: 'checkout_failed' }, { status: 500 });
   }
 }

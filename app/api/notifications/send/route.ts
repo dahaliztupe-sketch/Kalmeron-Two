@@ -102,7 +102,8 @@ export async function POST(req: NextRequest) {
       failed: result.failureCount,
     });
   } catch (e: unknown) {
-    console.error("[FCM Send]", e);
+    const { logger } = await import('@/src/lib/logger');
+    logger.error({ event: 'fcm_send_failed', error: e instanceof Error ? e.message : String(e) });
     return NextResponse.json({ error: toErrorMessage(e) }, { status: 500 });
   }
 }

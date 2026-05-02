@@ -9,7 +9,6 @@ export async function hiringAdvisorAction(role: string, stage?: string, budget?:
   return instrumentAgent(
     'hiring_advisor',
     async () => {
-      c
       const baseSystem = HIRING_ADVISOR_PROMPT;
       const learnedAddon = getCurrentLearnedSkillsAddon();
       const system = learnedAddon ? `${baseSystem}\n\n${learnedAddon}` : baseSystem;

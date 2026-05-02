@@ -29,8 +29,6 @@ export async function wellbeingCoachAction(assessment: WellbeingAssessment): Pro
         percentage >= 50 ? 'مستقر' :
         percentage >= 30 ? 'تحت ضغط' : 'في خطر';
 
-      c
-
       const baseSystem = WELLBEING_COACH_PROMPT;
       const learnedAddon = getCurrentLearnedSkillsAddon();
       const system = learnedAddon ? `${baseSystem}\n\n${learnedAddon}` : baseSystem;

@@ -89,7 +89,8 @@ export async function GET(req: NextRequest) {
   } catch (e: unknown) {
     // Log the real error server-side, never echo internal details to the client
     // (CodeQL js/stack-trace-exposure). The API contract is a stable opaque code.
-    console.error('[credits] failed', toErrorMessage(e, 'unknown'));
+    const { logger } = await import('@/src/lib/logger');
+    logger.error({ event: 'credits_fetch_failed', error: toErrorMessage(e, 'unknown') });
     return new Response(JSON.stringify({ error: 'internal_error' }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },

@@ -26,8 +26,6 @@ export async function cofounderHealthCheckAction(input: CofounderHealthInput): P
   return instrumentAgent(
     'cofounder_coach',
     async () => {
-      c
-
       const baseSystem = COFOUNDER_COACH_PROMPT;
       const learnedAddon = getCurrentLearnedSkillsAddon();
       const system = learnedAddon ? `${baseSystem}\n\n${learnedAddon}` : baseSystem;

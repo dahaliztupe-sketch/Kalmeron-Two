@@ -17,6 +17,7 @@ import { getPlan, planFromStripePriceId, type PlanId } from '@/src/lib/billing/p
 import { rewardReferrerOnUpgrade } from '@/src/lib/referrals/manager';
 import { toErrorMessage } from '@/src/lib/errors/to-message';
 import { rateLimit, rateLimitResponse } from '@/src/lib/security/rate-limit';
+import { logger } from '@/src/lib/logger';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -89,7 +90,7 @@ export async function POST(req: NextRequest) {
     event = stripe.webhooks.constructEvent(rawBody, sig, webhookSecret);
   } catch (err: unknown) {
     const msg = toErrorMessage(err);
-    console.error('[stripe-webhook] signature verification failed', msg);
+    logger.error({ event: 'stripe_webhook_sig_failed', error: msg });
     return new Response(`Webhook Error: ${msg}`, { status: 400 });
   }
 
@@ -156,7 +157,7 @@ export async function POST(req: NextRequest) {
         break;
     }
   } catch (err: unknown) {
-    console.error('[stripe-webhook] handler failed', event.type, toErrorMessage(err));
+    logger.error({ event: 'stripe_webhook_handler_failed', type: event.type, error: toErrorMessage(err) });
     // Returning 500 lets Stripe retry; safe because we dedupe by event.id.
     return new Response('Handler failed', { status: 500 });
   }

@@ -9,7 +9,6 @@ export async function boardAdvisorAction(question: string, context?: string) {
   return instrumentAgent(
     'board_advisor',
     async () => {
-      c
       const baseSystem = BOARD_ADVISOR_PROMPT;
       const learnedAddon = getCurrentLearnedSkillsAddon();
       const system = learnedAddon ? `${baseSystem}\n\n${learnedAddon}` : baseSystem;
