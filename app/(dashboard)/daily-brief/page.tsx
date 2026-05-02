@@ -9,6 +9,7 @@ import {
   Mail, MessageCircle, Settings as SettingsIcon, Loader2,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { AppShell } from "@/components/layout/AppShell";
 
 interface BriefBlock {
   type: "anomaly" | "decision" | "message";
@@ -66,11 +67,13 @@ export default function DailyBriefPage() {
   }
 
   return (
-    <div dir="rtl" className="max-w-3xl mx-auto px-6 py-8">
+    <AppShell>
+    <div dir="rtl" className="max-w-3xl mx-auto px-4 py-8">
       <div className="flex items-center justify-between mb-8">
-        <Link href="/dashboard" className="flex items-center gap-2 text-neutral-400 hover:text-white text-sm">
-          <ArrowLeft className="w-4 h-4" /> لوحة التحكم
-        </Link>
+        <div className="inline-flex items-center gap-2 rounded-full border border-amber-400/20 bg-amber-500/[0.06] px-3 py-1 text-[11px] text-amber-200">
+          <Sun className="w-3.5 h-3.5" />
+          إيجاز الصباح · Morning Brief
+        </div>
         <button
           onClick={() => void fetchBrief()}
           disabled={isBusy}
@@ -169,6 +172,7 @@ export default function DailyBriefPage() {
         المرآة التشغيلية — تجريبي
       </p>
     </div>
+    </AppShell>
   );
 }
 

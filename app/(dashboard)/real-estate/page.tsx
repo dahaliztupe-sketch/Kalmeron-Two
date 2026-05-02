@@ -1,77 +1,262 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Home, Calculator, Search } from 'lucide-react';
+import { Home, Search, Loader2, Copy, Check, Download, TrendingUp, Calculator, AlertTriangle, CheckCircle2 } from 'lucide-react';
 import { AppShell } from "@/components/layout/AppShell";
+import { useAuth } from "@/contexts/AuthContext";
+import { motion, AnimatePresence } from "motion/react";
+import ReactMarkdown from "react-markdown";
+import { toast } from "sonner";
+import { cn } from "@/src/lib/utils";
+
+const LOCATION_EXAMPLES = [
+  "القاهرة الجديدة — شقة 120م²",
+  "التجمع الخامس — فيلا 300م²",
+  "الإسكندرية — شقة ساحلية 150م²",
+  "المعادي — عمارة استثمارية 8 طوابق",
+  "6 أكتوبر — محل تجاري 60م²",
+];
+
+interface AnalysisResult {
+  text: string;
+  location: string;
+}
 
 export default function RealEstateAnalyzer() {
-  const [analyzing, setAnalyzing] = useState(false);
+  const { user } = useAuth();
   const [location, setLocation] = useState('');
+  const [price, setPrice] = useState('');
+  const [size, setSize] = useState('');
+  const [analyzing, setAnalyzing] = useState(false);
+  const [result, setResult] = useState<AnalysisResult | null>(null);
+  const [copied, setCopied] = useState(false);
 
-  const analyzeDeal = (e: React.FormEvent) => {
+  const analyzeDeal = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!location.trim() || !user) return;
     setAnalyzing(true);
-    setTimeout(() => setAnalyzing(false), 3000);
+    setResult(null);
+
+    try {
+      const token = await user.getIdToken();
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({
+          messages: [{
+            content: `أنت خبير عقاري مصري محترف. حلّل الصفقة العقارية التالية بشكل تفصيلي:
+
+الموقع: ${location}
+${price ? `السعر المطلوب: ${price} جنيه مصري` : ''}
+${size ? `المساحة: ${size} م²` : ''}
+
+قدّم تحليلاً شاملاً يشمل:
+1. **تقييم الموقع** — جودة الحي، البنية التحتية، مستقبل المنطقة
+2. **التحليل المالي** — ROI المتوقع، معدل العائد (Cap Rate)، قاعدة الـ 1%
+3. **مقارنة السوق** — أسعار مماثلة في المنطقة
+4. **مخاطر الاستثمار** — العوامل السلبية والتحديات
+5. **توصية نهائية** — هل تستحق الصفقة؟ وما الخطوة التالية؟
+
+استخدم أرقاماً تقديرية واقعية للسوق المصري الحالي.`,
+          }],
+          isGuest: false,
+        }),
+      });
+
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+      const reader = res.body?.getReader();
+      const decoder = new TextDecoder();
+      let fullText = '';
+
+      if (reader) {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          const chunk = decoder.decode(value);
+          const lines = chunk.split('\n');
+          for (const line of lines) {
+            if (line.startsWith('data: ')) {
+              try {
+                const parsed = JSON.parse(line.slice(6));
+                if (parsed.delta) fullText += parsed.delta;
+                if (parsed.content) fullText = parsed.content;
+              } catch { /* skip */ }
+            }
+          }
+        }
+      }
+
+      if (!fullText) {
+        const data = await res.json().catch(() => ({})) as { result?: string };
+        fullText = (data as { result?: string }).result || 'تعذّر الحصول على التحليل.';
+      }
+
+      setResult({ text: fullText, location });
+      toast.success('اكتمل التحليل العقاري!');
+    } catch {
+      toast.error('تعذّر التحليل. تأكد من اتصالك وحاول مجدداً.');
+    } finally {
+      setAnalyzing(false);
+    }
+  };
+
+  const handleCopy = async () => {
+    if (!result) return;
+    await navigator.clipboard.writeText(result.text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleDownload = () => {
+    if (!result) return;
+    const blob = new Blob([`# تحليل عقاري: ${result.location}\n\n${result.text}`], { type: 'text/markdown;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `real-estate-${Date.now()}.md`;
+    a.click();
+    URL.revokeObjectURL(url);
   };
 
   return (
     <AppShell>
-      <div className="p-8 max-w-6xl mx-auto text-white" dir="rtl">
-         <header className="mb-10">
-          <h1 className="text-3xl font-bold flex items-center gap-3">
-            <Home className="w-8 h-8 text-blue-500" />
-            مُحلل الصفقات العقارية الافتراضي (Investra)
-          </h1>
-          <p className="text-neutral-400 mt-2">
-            اطلب من مساعد الذكاء الاصطناعي معالجة بيانات المجمعات العقارية لاحتساب المقاييس النقدية، ROI ومعدلات العائد (Cap Rates) واعتماد خط الدفاع الأول.
+      <div className="max-w-4xl mx-auto px-4 py-8 text-white" dir="rtl">
+        <motion.div initial={{ opacity: 0, y: -12 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
+          <div className="inline-flex items-center gap-2 rounded-full border border-blue-400/20 bg-blue-500/[0.06] px-3 py-1 text-[11px] text-blue-200 mb-3">
+            <Home className="w-3.5 h-3.5" />
+            تحليل عقاري · Investra AI
+          </div>
+          <h1 className="text-2xl md:text-3xl font-extrabold mb-2">مُحلل الصفقات العقارية</h1>
+          <p className="text-neutral-400 text-sm max-w-xl">
+            أدخل تفاصيل العقار واحصل على تحليل مالي كامل — ROI، Cap Rate، ومقارنة السوق — من خبير ذكاء اصطناعي متخصص في السوق المصري.
           </p>
-         </header>
+        </motion.div>
 
-         <form onSubmit={analyzeDeal} className="bg-neutral-900 border border-neutral-800 rounded-2xl p-6 mb-8 flex gap-4">
-           <input aria-label="حقل إدخال" 
-             type="text" 
-             value={location} 
-             onChange={e=>setLocation(e.target.value)} 
-             placeholder="ابحث عن عقار استثماري للتحليل (مثال: القاهرة الجديدة)..." 
-             className="flex-1 bg-neutral-950 border border-neutral-800 rounded-lg p-3 text-white outline-none focus:border-blue-500" 
-             required 
-           />
-           <button disabled={analyzing} className="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-bold py-3 px-8 rounded-lg flex items-center gap-2">
-             {analyzing ? 'جاري التحليل المعمق...' : 'بحث وتحليل'} <Search className="w-5 h-5" />
-           </button>
-         </form>
+        {/* Form */}
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}>
+          <form onSubmit={analyzeDeal} className="bg-neutral-900/60 border border-neutral-700/50 rounded-2xl p-6 mb-6">
+            <div className="space-y-4 mb-4">
+              <div>
+                <label className="block text-xs text-neutral-400 mb-1.5">وصف العقار والموقع</label>
+                <input
+                  type="text"
+                  value={location}
+                  onChange={(e) => setLocation(e.target.value)}
+                  placeholder="مثال: شقة 120م² في التجمع الخامس..."
+                  className="w-full bg-neutral-800 border border-neutral-700 rounded-xl px-3 py-2.5 text-white text-sm outline-none focus:border-blue-500 transition-colors"
+                  required
+                />
+                {/* Quick examples */}
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {LOCATION_EXAMPLES.map((ex) => (
+                    <button
+                      key={ex}
+                      type="button"
+                      onClick={() => setLocation(ex)}
+                      className="text-xs text-neutral-500 hover:text-neutral-300 border border-neutral-700/50 hover:border-neutral-600 rounded-lg px-2.5 py-1 transition-colors"
+                    >
+                      {ex}
+                    </button>
+                  ))}
+                </div>
+              </div>
 
-         {/* Mock Data representation after analysis */}
-         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div className={`bg-neutral-900 border border-neutral-800 rounded-2xl p-6 relative overflow-hidden transition-all ${analyzing ? 'opacity-50' : ''}`}>
-               <div className="absolute top-0 right-0 bg-green-500/20 text-emerald-400 text-xs px-3 py-1 font-bold rounded-bl-lg">Strong Buy</div>
-               <h3 className="font-bold text-xl mt-4 mb-1">فيلا 3 غرف - الياسمين</h3>
-               <p className="text-neutral-400 text-sm mb-6">السعر التقديري: 4,500,000 EGP</p>
-               
-               <div className="space-y-3">
-                 <div className="flex justify-between items-center text-sm border-b border-neutral-800 pb-2">
-                   <span className="text-neutral-500">التدفق النقدي:</span>
-                   <span className="font-mono text-emerald-400">+12,500 EGP/ش</span>
-                 </div>
-                 <div className="flex justify-between items-center text-sm border-b border-neutral-800 pb-2">
-                   <span className="text-neutral-500">العائد على الاستثمار ROI:</span>
-                   <span className="font-mono text-white">11.4%</span>
-                 </div>
-                 <div className="flex justify-between items-center text-sm border-b border-neutral-800 pb-2">
-                   <span className="text-neutral-500">معدل العائد (Cap Rate):</span>
-                   <span className="font-mono text-white">8.5%</span>
-                 </div>
-                 <div className="flex justify-between items-center text-sm">
-                   <span className="text-neutral-500">قاعدة الـ 1%:</span>
-                   <span className="font-mono text-emerald-400">محققة ✓</span>
-                 </div>
-               </div>
-               
-               <button className="w-full mt-6 bg-white/5 hover:bg-white/10 py-2 rounded text-sm transition-colors flex items-center justify-center gap-2">
-                  <Calculator className="w-4 h-4"/> تفاصيل القرض والمصروفات
-               </button>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs text-neutral-400 mb-1.5">السعر (اختياري)</label>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      value={price}
+                      onChange={(e) => setPrice(e.target.value)}
+                      placeholder="مثال: 4,500,000"
+                      className="w-full bg-neutral-800 border border-neutral-700 rounded-xl px-3 py-2.5 text-white text-sm outline-none focus:border-blue-500 transition-colors"
+                    />
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-neutral-500">EGP</span>
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-xs text-neutral-400 mb-1.5">المساحة (اختياري)</label>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      value={size}
+                      onChange={(e) => setSize(e.target.value)}
+                      placeholder="120"
+                      className="w-full bg-neutral-800 border border-neutral-700 rounded-xl px-3 py-2.5 text-white text-sm outline-none focus:border-blue-500 transition-colors"
+                    />
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-neutral-500">م²</span>
+                  </div>
+                </div>
+              </div>
             </div>
-         </div>
+
+            <div className="flex justify-end">
+              <button
+                type="submit"
+                disabled={analyzing || !location.trim()}
+                className="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-bold py-2.5 px-6 rounded-xl flex items-center gap-2 text-sm transition-all"
+              >
+                {analyzing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
+                {analyzing ? 'جاري التحليل المعمق...' : 'تحليل الصفقة'}
+              </button>
+            </div>
+          </form>
+        </motion.div>
+
+        {/* Result */}
+        <AnimatePresence>
+          {result && (
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-neutral-900/60 border border-blue-500/20 rounded-2xl overflow-hidden"
+            >
+              <div className="flex items-center justify-between px-5 py-3 border-b border-neutral-800">
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                  <span className="text-sm font-semibold text-neutral-200">التحليل العقاري: {result.location}</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <button onClick={handleCopy} className="flex items-center gap-1.5 text-xs text-neutral-400 hover:text-white transition-colors">
+                    {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                    {copied ? 'تم' : 'نسخ'}
+                  </button>
+                  <button onClick={handleDownload} className="flex items-center gap-1.5 text-xs text-neutral-400 hover:text-white transition-colors">
+                    <Download className="w-3.5 h-3.5" />
+                    تحميل
+                  </button>
+                </div>
+              </div>
+              <div className="p-6">
+                <div className="prose prose-invert prose-sm max-w-none prose-headings:text-blue-300 prose-strong:text-white prose-li:text-neutral-300" dir="auto">
+                  <ReactMarkdown>{result.text}</ReactMarkdown>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Info Cards */}
+        {!result && !analyzing && (
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-4">
+            {[
+              { icon: TrendingUp, title: "ROI & Cap Rate", desc: "احسب العائد السنوي ومعدلات الرسملة بدقة", color: "text-emerald-400" },
+              { icon: Calculator, title: "نمذجة التدفق النقدي", desc: "توقع الدخل الإيجاري والمصروفات التشغيلية", color: "text-blue-400" },
+              { icon: AlertTriangle, title: "تحليل المخاطر", desc: "تحديد العوامل السلبية قبل اتخاذ القرار", color: "text-amber-400" },
+            ].map((card, i) => {
+              const Icon = card.icon;
+              return (
+                <div key={i} className={cn("bg-neutral-900/40 border border-neutral-700/30 rounded-2xl p-5")}>
+                  <Icon className={cn("w-5 h-5 mb-3", card.color)} />
+                  <h3 className="text-sm font-bold text-white mb-1">{card.title}</h3>
+                  <p className="text-xs text-neutral-500">{card.desc}</p>
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
     </AppShell>
   );

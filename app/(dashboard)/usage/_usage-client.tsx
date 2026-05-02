@@ -12,6 +12,7 @@
 
 import { useMemo } from "react";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { AppShell } from "@/components/layout/AppShell";
 import { useAuth } from "@/contexts/AuthContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -104,10 +105,14 @@ export default function UsageClient() {
   const s = summaryQuery.data;
 
   return (
+    <AppShell>
     <main dir="rtl" className="mx-auto max-w-6xl px-4 py-8">
       <header className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight">لوحة الاستخدام</h1>
-        <p className="mt-1 text-muted-foreground">تابع استهلاكك من نقاط الذكاء الاصطناعي والتكاليف الشهرية.</p>
+        <div className="inline-flex items-center gap-2 rounded-full border border-violet-400/20 bg-violet-500/[0.06] px-3 py-1 text-[11px] text-violet-300 mb-3">
+          📊 لوحة الاستخدام
+        </div>
+        <h1 className="text-3xl font-bold tracking-tight text-white">تتبّع الاستهلاك</h1>
+        <p className="mt-1 text-neutral-400">تابع استهلاكك من نقاط الذكاء الاصطناعي والتكاليف الشهرية بدقة.</p>
       </header>
 
       {summaryQuery.isLoading && (
@@ -220,6 +225,7 @@ export default function UsageClient() {
         </Card>
       </section>
     </main>
+    </AppShell>
   );
 }
 

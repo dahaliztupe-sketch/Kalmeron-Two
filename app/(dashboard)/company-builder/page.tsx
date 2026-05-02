@@ -6,6 +6,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { COMPANY_TYPE_LIST, getPreset } from '@/src/lib/company-builder/presets';
 import type { Company, CompanyType, CompanyStage } from '@/src/lib/company-builder/types';
 import { cn } from '@/src/lib/utils';
+import { AppShell } from '@/components/layout/AppShell';
 
 // ─── بطاقة شركة موجودة ────────────────────────────────────────────────────────
 function CompanyCard({ company }: { company: Company }) {
@@ -219,18 +220,22 @@ export default function CompanyBuilderPage() {
   }, [user]);
 
   return (
-    <div className="min-h-screen bg-[#080812] text-white p-6" dir="rtl">
+    <AppShell>
+    <div className="text-white px-4 py-8 max-w-6xl mx-auto" dir="rtl">
       {/* Header */}
       <div className="flex items-start justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold">🏢 محاكي الشركات</h1>
-          <p className="text-gray-400 text-sm mt-1">
-            ابنِ شركتك الافتراضية بموظفين AI — مطعم، مصنع، عيادة، متجر… أي نوع
+          <div className="inline-flex items-center gap-2 rounded-full border border-indigo-400/20 bg-indigo-500/[0.06] px-3 py-1 text-[11px] text-indigo-300 mb-3">
+            🏢 محاكي الشركات
+          </div>
+          <h1 className="text-3xl font-bold text-white">ابنِ شركتك الافتراضية</h1>
+          <p className="text-neutral-400 text-sm mt-1">
+            موظفون AI جاهزون للعمل — مطعم، مصنع، عيادة، متجر… أي نوع
           </p>
         </div>
         <button
           onClick={() => setShowCreate(true)}
-          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium transition-colors shadow-lg"
+          className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-bold transition-colors shadow-lg"
         >
           <span className="text-lg leading-none">+</span>
           شركة جديدة
@@ -278,5 +283,6 @@ export default function CompanyBuilderPage() {
         />
       )}
     </div>
+    </AppShell>
   );
 }

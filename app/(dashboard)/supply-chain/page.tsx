@@ -1,78 +1,274 @@
 'use client';
 
 import { useState } from 'react';
-import { Package, Truck, Activity, ArrowRightLeft } from 'lucide-react';
+import { Package, Truck, Activity, ArrowRightLeft, Play, Loader2, Copy, Check, Download } from 'lucide-react';
 import { AppShell } from "@/components/layout/AppShell";
 import { DocumentUploader } from "@/components/rag/DocumentUploader";
+import { useAuth } from "@/contexts/AuthContext";
+import { motion, AnimatePresence } from "motion/react";
+import ReactMarkdown from "react-markdown";
+import { toast } from "sonner";
+import { cn } from "@/src/lib/utils";
+
+interface AnalysisResult {
+  demand?: string;
+  inventory?: string;
+  logistics?: string;
+}
+
+const AGENT_CARDS = [
+  {
+    icon: Activity,
+    color: 'text-indigo-400',
+    border: 'border-neutral-700/50',
+    glow: 'border-indigo-500/50 shadow-[0_0_15px_rgba(99,102,241,0.2)]',
+    title: 'التنبؤ بالطلب',
+    desc: 'يراجع الأنماط الموسمية ويتوقع الطلب على المنتجات للربع القادم.',
+    key: 'demand' as const,
+    resultColor: 'text-emerald-400',
+  },
+  {
+    icon: Package,
+    color: 'text-amber-400',
+    border: 'border-neutral-700/50',
+    glow: 'border-amber-500/50 shadow-[0_0_15px_rgba(245,158,11,0.2)]',
+    title: 'موازنة المخزون',
+    desc: 'يراقب النواقص ويوازن مستويات المخزون لتحقيق خدمة أفضل من 98%.',
+    key: 'inventory' as const,
+    resultColor: 'text-amber-400',
+  },
+  {
+    icon: ArrowRightLeft,
+    color: 'text-rose-400',
+    border: 'border-neutral-700/50',
+    glow: 'border-rose-500/50 shadow-[0_0_15px_rgba(244,63,94,0.2)]',
+    title: 'مسارات التتبع',
+    desc: 'يتعقب الشحنات ويقترح مسارات بديلة عند حدوث تعطيلات.',
+    key: 'logistics' as const,
+    resultColor: 'text-rose-400',
+  },
+];
 
 export default function SupplyChainDashboard() {
+  const { user } = useAuth();
   const [analyzing, setAnalyzing] = useState(false);
+  const [result, setResult] = useState<AnalysisResult | null>(null);
+  const [activeAgent, setActiveAgent] = useState<string | null>(null);
+  const [productDesc, setProductDesc] = useState('');
+  const [copied, setCopied] = useState(false);
 
-  const runAnalysis = () => {
+  const runAnalysis = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!productDesc.trim() || !user) return;
     setAnalyzing(true);
-    setTimeout(() => setAnalyzing(false), 3000);
+    setResult(null);
+
+    try {
+      const token = await user.getIdToken();
+
+      const callAgent = async (agentKey: string, prompt: string): Promise<string> => {
+        setActiveAgent(agentKey);
+        const res = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+          body: JSON.stringify({
+            messages: [{ content: prompt }],
+            isGuest: false,
+          }),
+        });
+        if (!res.ok) return '';
+        // Try streaming first, then JSON
+        const reader = res.body?.getReader();
+        const decoder = new TextDecoder();
+        let text = '';
+        if (reader) {
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            const chunk = decoder.decode(value);
+            for (const line of chunk.split('\n')) {
+              if (line.startsWith('data: ')) {
+                try {
+                  const parsed = JSON.parse(line.slice(6)) as { delta?: string; content?: string };
+                  if (parsed.delta) text += parsed.delta;
+                  if (parsed.content) text = parsed.content;
+                } catch { /* skip */ }
+              }
+            }
+          }
+        }
+        if (!text) {
+          try {
+            const data = await res.json() as { result?: string };
+            text = data.result || '';
+          } catch { /* skip */ }
+        }
+        return text;
+      };
+
+      setActiveAgent('demand');
+      const demand = await callAgent('demand',
+        `أنت مساعد متخصص في سلسلة الإمداد. حلّل الطلب المتوقع لـ "${productDesc}" في السوق المصري للربع القادم. شمّل: الأنماط الموسمية، معدلات النمو المتوقعة بالأرقام، والعوامل المؤثرة على الطلب.`
+      );
+
+      setActiveAgent('inventory');
+      const inventory = await callAgent('inventory',
+        `أنت خبير في إدارة المخزون. لمنتج "${productDesc}"، احسب: مستوى الأمان (Safety Stock)، نقطة إعادة الطلب (Reorder Point)، الكمية الاقتصادية للطلب (EOQ). قدّم أرقاماً تقديرية واقعية.`
+      );
+
+      setActiveAgent('logistics');
+      const logistics = await callAgent('logistics',
+        `أنت مختص لوجستيات في مصر. لمنتج "${productDesc}"، اقترح: أفضل مسارات التوريد، الموردين المحتملين، كيفية إدارة مخاطر التعطل (disruption management)، وخطط بديلة لضمان الاستمرارية.`
+      );
+
+      setResult({ demand, inventory, logistics });
+      setActiveAgent(null);
+      toast.success('اكتمل تحليل سلسلة الإمداد!');
+    } catch {
+      toast.error('تعذّر التحليل. حاول مجدداً.');
+      setActiveAgent(null);
+    } finally {
+      setAnalyzing(false);
+    }
+  };
+
+  const fullText = result
+    ? `## التنبؤ بالطلب\n\n${result.demand || ''}\n\n---\n\n## موازنة المخزون\n\n${result.inventory || ''}\n\n---\n\n## مسارات التتبع\n\n${result.logistics || ''}`
+    : '';
+
+  const handleCopy = async () => {
+    if (!fullText) return;
+    await navigator.clipboard.writeText(fullText);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleDownload = () => {
+    if (!fullText) return;
+    const blob = new Blob([`# تحليل سلسلة الإمداد — كلميرون\n\n${fullText}`], { type: 'text/markdown;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `supply-chain-${Date.now()}.md`;
+    a.click();
+    URL.revokeObjectURL(url);
   };
 
   return (
     <AppShell>
-      <div className="p-8 max-w-6xl mx-auto text-white" dir="rtl">
-        <header className="mb-10 flex items-center justify-between">
-          <div>
-             <h1 className="text-3xl font-bold flex items-center gap-3">
-               <Truck className="w-8 h-8 text-teal-400" />
-               سرب الإمداد واللوجستيات (Supply Chain Swarm)
-             </h1>
-             <p className="text-neutral-400 mt-2">
-               مساعدين ذكاء اصطناعي يتفاوضون لتحسين المخزون، وتوقع الطلبات عبر (TimeCopilot/Nixtla)، وتتبع الشحنات.
-             </p>
+      <div className="max-w-5xl mx-auto px-4 py-8 text-white" dir="rtl">
+        <motion.div initial={{ opacity: 0, y: -12 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
+          <div className="inline-flex items-center gap-2 rounded-full border border-teal-400/20 bg-teal-500/[0.06] px-3 py-1 text-[11px] text-teal-200 mb-3">
+            <Truck className="w-3.5 h-3.5" />
+            سرب الإمداد · Supply Chain AI
           </div>
-          <button onClick={runAnalysis} disabled={analyzing} className="bg-teal-600 hover:bg-teal-700 disabled:opacity-50 text-white font-bold py-3 px-6 rounded-xl transition-all shadow-lg flex items-center gap-2">
-            {analyzing ? 'يتم تحسين المخزون...' : 'تشغيل تحسين السلسلة (Swarm)'}
-          </button>
-        </header>
+          <div className="flex items-start justify-between gap-4 flex-wrap">
+            <div>
+              <h1 className="text-2xl md:text-3xl font-extrabold mb-2">سرب الإمداد واللوجستيات</h1>
+              <p className="text-neutral-400 text-sm max-w-xl">
+                مساعدو ذكاء اصطناعي يتعاونون لتحسين المخزون، توقّع الطلبات، وتتبّع الشحنات — كل ذلك بضغطة واحدة.
+              </p>
+            </div>
+          </div>
+        </motion.div>
 
-        <div className="grid md:grid-cols-3 gap-6">
-          {/* Demand Agent */}
-          <div className={`bg-neutral-900 border border-neutral-800 rounded-2xl p-6 transition-all ${analyzing ? 'border-teal-500/50 shadow-[0_0_15px_rgba(20,184,166,0.2)]' : ''}`}>
-             <div className="flex items-center gap-3 mb-4">
-               <Activity className="w-6 h-6 text-indigo-400" />
-               <h3 className="font-bold text-lg">التنبؤ بالطلب</h3>
-             </div>
-             <p className="text-sm text-neutral-400 mb-4">يعتمد على Gemini 3.1 Pro لمراجعة الأنماط الموسمية للمنتجات.</p>
-             <div className="bg-neutral-950 rounded p-3 text-xs text-emerald-400 font-mono">
-               {`>`} أحدث تقرير: +15% طلب متوقع على المنتجات التقنية في الربع القادم.
-             </div>
-          </div>
+        {/* Input Form */}
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}>
+          <form onSubmit={runAnalysis} className="bg-neutral-900/60 border border-neutral-700/50 rounded-2xl p-5 mb-6">
+            <div className="flex flex-wrap gap-3 items-end">
+              <div className="flex-1 min-w-[200px]">
+                <label className="block text-xs text-neutral-500 mb-1.5">المنتج / الخدمة المراد تحليل سلسلة إمدادها</label>
+                <input
+                  value={productDesc}
+                  onChange={(e) => setProductDesc(e.target.value)}
+                  placeholder="مثال: ملابس أطفال مستوردة من الصين — توصيل للقاهرة"
+                  className="w-full bg-neutral-800 border border-neutral-700 rounded-xl px-3 py-2.5 text-white text-sm outline-none focus:border-teal-500 transition-colors"
+                  required
+                />
+              </div>
+              <button
+                type="submit"
+                disabled={analyzing || !productDesc.trim()}
+                className="h-10 px-5 rounded-xl bg-teal-600 hover:bg-teal-700 disabled:opacity-50 text-white text-sm font-bold transition-all flex items-center gap-2 shrink-0"
+              >
+                {analyzing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4" />}
+                {analyzing ? 'جارٍ التحليل...' : 'تشغيل السرب'}
+              </button>
+            </div>
+          </form>
+        </motion.div>
 
-          {/* Inventory Agent */}
-          <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-6">
-             <div className="flex items-center gap-3 mb-4">
-               <Package className="w-6 h-6 text-amber-400" />
-               <h3 className="font-bold text-lg">موازنة المخزون</h3>
-             </div>
-             <p className="text-sm text-neutral-400 mb-4">يراقب النواقص الزائدة وتكاليف التخزين لتقديم مستويات خدمة أفضل من 98%.</p>
-             <div className="bg-neutral-950 rounded p-3 text-xs text-amber-400 font-mono">
-               {`>`} تنبيه: المنتج #205 المخزون أقل من النسبة الآمنة (Safety Stock). يتم نقل شحنات...
-             </div>
-          </div>
-
-          {/* Logistics Agent */}
-          <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-6">
-             <div className="flex items-center gap-3 mb-4">
-               <ArrowRightLeft className="w-6 h-6 text-rose-400" />
-               <h3 className="font-bold text-lg">مسارات التتبع</h3>
-             </div>
-             <p className="text-sm text-neutral-400 mb-4">Disruption Management - يتعقب الشحنات عالمياً ويبحث عن تعطيلات الطرق.</p>
-             <div className="bg-neutral-950 rounded p-3 text-xs text-rose-400 font-mono">
-               {`>`} مسار بديل مقترح: شحنة X5 لتجنب إغلاقات الميناء الحالية، يوفر 3 أيام.
-             </div>
-          </div>
+        {/* Agent Cards */}
+        <div className="grid md:grid-cols-3 gap-4 mb-6">
+          {AGENT_CARDS.map((card) => {
+            const Icon = card.icon;
+            const isActive = activeAgent === card.key;
+            const isDone = result && result[card.key];
+            return (
+              <div
+                key={card.key}
+                className={cn(
+                  "bg-neutral-900/60 border rounded-2xl p-5 transition-all duration-300",
+                  isActive ? card.glow : card.border
+                )}
+              >
+                <div className="flex items-center gap-3 mb-3">
+                  {isActive
+                    ? <Loader2 className={cn("w-5 h-5 animate-spin", card.color)} />
+                    : <Icon className={cn("w-5 h-5", card.color)} />
+                  }
+                  <h3 className="font-bold text-sm">{card.title}</h3>
+                  {isDone && !isActive && (
+                    <span className="mr-auto text-emerald-400 text-xs font-semibold">✓</span>
+                  )}
+                </div>
+                <p className="text-xs text-neutral-400 mb-3">{card.desc}</p>
+                {isDone && !isActive && (
+                  <div className={cn("bg-neutral-950 rounded-lg p-2.5 text-xs font-mono line-clamp-2 leading-relaxed", card.resultColor)}>
+                    {(result[card.key] || '').slice(0, 120)}...
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
 
-        <div className="mt-8">
-          <DocumentUploader title="مستندات سلسلة الإمداد (قوائم موردين، عقود، فواتير شحن)" />
+        {/* Full Result */}
+        <AnimatePresence>
+          {result && (
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-neutral-900/60 border border-teal-500/20 rounded-2xl overflow-hidden mb-6"
+            >
+              <div className="flex items-center justify-between px-5 py-3 border-b border-neutral-800">
+                <span className="text-sm font-semibold text-neutral-200">التقرير الكامل</span>
+                <div className="flex items-center gap-3">
+                  <button onClick={handleCopy} className="flex items-center gap-1.5 text-xs text-neutral-400 hover:text-white transition-colors">
+                    {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                    {copied ? 'تم' : 'نسخ'}
+                  </button>
+                  <button onClick={handleDownload} className="flex items-center gap-1.5 text-xs text-neutral-400 hover:text-white transition-colors">
+                    <Download className="w-3.5 h-3.5" />
+                    تحميل
+                  </button>
+                </div>
+              </div>
+              <div className="p-6">
+                <div className="prose prose-invert prose-sm max-w-none prose-headings:text-teal-300 prose-strong:text-white" dir="auto">
+                  <ReactMarkdown>{fullText}</ReactMarkdown>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Document Upload */}
+        <div className="bg-neutral-900/40 border border-neutral-700/30 rounded-2xl p-5">
+          <h3 className="text-sm font-semibold text-neutral-300 mb-3">مستندات سلسلة الإمداد</h3>
+          <DocumentUploader title="قوائم موردين، عقود، فواتير شحن" />
           <p className="text-xs text-neutral-500 mt-2">
-            ارفع بيانات المخزون والموردين ليستشهد بها سرب الإمداد عند توصياته في المحادثة.
+            ارفع بيانات المخزون والموردين ليستشهد بها سرب الإمداد عند توصياته.
           </p>
         </div>
       </div>
