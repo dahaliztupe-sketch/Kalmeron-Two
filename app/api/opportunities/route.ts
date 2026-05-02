@@ -210,3 +210,43 @@ export async function GET(req: NextRequest) {
     filters: { industry, stage, type },
   });
 }
+
+export async function POST(req: NextRequest) {
+  const uid = await authedUserId(req);
+  if (!uid) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+  const rl = rateLimit(req, { limit: 20, windowMs: 60_000 });
+  if (!rl.success) return rateLimitResponse();
+
+  const { query } = await req.json();
+  if (!query?.trim()) return NextResponse.json({ error: 'الرجاء وصف شركتك' }, { status: 400 });
+
+  try {
+    const { generateText } = await import('ai');
+    const { google } = await import('@/src/lib/gemini');
+    const MODEL = google('gemini-2.5-flash');
+
+    const system = `أنت "رادار الفرص" في منصة كلميرون — خبير في مصادر التمويل والدعم للشركات الناشئة المصرية والعربية.
+
+مهمتك: بناءً على وصف المستخدم، حدد أنسب 3-5 فرص تمويل أو دعم متاحة.
+
+لكل فرصة:
+- اذكر اسمها والجهة المانحة
+- سبب ملاءمتها لهذه الشركة تحديداً
+- المبلغ أو نوع الدعم
+- آخر موعد للتقديم
+- الخطوة التالية المطلوبة
+
+كن محدداً وعملياً. ركّز على الفرص المتاحة للشركات المصرية أو العربية.`;
+
+    const { text } = await generateText({
+      model: MODEL,
+      system,
+      prompt: `بناءً على هذا الوصف، ما أنسب الفرص المتاحة؟\n\n${query}`,
+    });
+
+    return NextResponse.json({ result: text });
+  } catch (e: unknown) {
+    return NextResponse.json({ error: 'حدث خطأ أثناء البحث' }, { status: 500 });
+  }
+}

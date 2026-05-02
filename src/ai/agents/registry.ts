@@ -62,6 +62,11 @@ import { orgDesignerAction } from '@/src/ai/agents/org-designer/agent';
 import { csatAnalystAction } from '@/src/ai/agents/csat-analyst/agent';
 import { knowledgeBuilderAction } from '@/src/ai/agents/knowledge-builder/agent';
 import { ticketManagerAction } from '@/src/ai/agents/ticket-manager/agent';
+// ═══ New Agents — Wellbeing, Contract, Discovery, Cofounder ═══
+import { wellbeingCoachAction } from '@/src/ai/agents/wellbeing-coach/agent';
+import { contractReviewerAction } from '@/src/ai/agents/contract-reviewer/agent';
+import { customerDiscoveryAction } from '@/src/ai/agents/customer-discovery/agent';
+import { cofounderHealthCheckAction } from '@/src/ai/agents/cofounder-coach/agent';
 
 export const TaskTools = {
   TaskCreate: {
@@ -1323,6 +1328,95 @@ export const AgentRegistry: Record<string, AgentDefinition> = {
     }),
     action: ticketManagerAction,
     thinkingLabelAr: 'معالجة تذكرة الدعم بكفاءة...',
+  },
+
+  // ═══ وكلاء الرفاه والعقود واكتشاف العملاء وصحة الفريق ═══
+
+  'wellbeing-coach': {
+    name: 'wellbeing-coach',
+    displayNameAr: 'مدرب الرفاه النفسي',
+    description: 'يقيّم الصحة النفسية لرائد الأعمال ويقدّم توصيات عملية مبنية على CBT وعلم النفس الإيجابي.',
+    intent: 'WELLBEING_COACH',
+    stage: 'tool',
+    graphNode: 'wellbeing_coach_node',
+    preferredModel: 'FLASH',
+    capabilities: ['wellbeing_assessment', 'mental_health', 'resilience', 'burnout_prevention'],
+    allowedTools: ['wellbeing.assessment', 'wellbeing.recommendations'],
+    softCostBudgetUsd: 0.02,
+    inputSchema: z.object({
+      scores: z.record(z.number()),
+      context: z.string().optional(),
+      mode: z.enum(['full', 'checkin']).optional(),
+    }),
+    action: wellbeingCoachAction as (input: unknown) => Promise<string>,
+    thinkingLabelAr: 'يحلل صحتك النفسية ويُعدّ توصيات مخصّصة...',
+  },
+
+  'contract-reviewer': {
+    name: 'contract-reviewer',
+    displayNameAr: 'مراجع العقود',
+    description: 'يحلل العقود التجارية ويستخرج البنود الخطرة والناقصة في إطار القانون المصري.',
+    intent: 'CONTRACT_REVIEWER',
+    stage: 'tool',
+    graphNode: 'contract_reviewer_node',
+    preferredModel: 'PRO',
+    capabilities: ['contract_analysis', 'risk_detection', 'egypt_law', 'clause_review'],
+    allowedTools: ['legal.contract_review', 'legal.egypt_law'],
+    softCostBudgetUsd: 0.08,
+    inputSchema: z.object({
+      contractText: z.string(),
+      contractType: z.string().optional(),
+      partyRole: z.string().optional(),
+      specificConcerns: z.string().optional(),
+    }),
+    action: contractReviewerAction as (input: unknown) => Promise<string>,
+    thinkingLabelAr: 'يقرأ بنود العقد ويستخرج المخاطر والثغرات...',
+  },
+
+  'customer-discovery': {
+    name: 'customer-discovery',
+    displayNameAr: 'خبير اكتشاف العملاء',
+    description: 'يطبّق Mom Test methodology لاختبار فرضيات الستارت أب وتوليد أسئلة مقابلات العملاء.',
+    intent: 'CUSTOMER_DISCOVERY',
+    stage: 'idea',
+    graphNode: 'customer_discovery_node',
+    preferredModel: 'PRO',
+    capabilities: ['mom_test', 'hypothesis_testing', 'interview_design', 'customer_segments'],
+    allowedTools: ['discovery.mom_test', 'discovery.hypothesis'],
+    softCostBudgetUsd: 0.06,
+    inputSchema: z.object({
+      businessIdea: z.string(),
+      targetSegment: z.string().optional(),
+      hypotheses: z.array(z.string()),
+      interviewAnswers: z.array(z.object({ question: z.string(), answer: z.string() })).optional(),
+    }),
+    action: customerDiscoveryAction as (input: unknown) => Promise<string>,
+    thinkingLabelAr: 'يصمّم أسئلة اكتشاف العملاء بأسلوب Mom Test...',
+  },
+
+  'cofounder-coach': {
+    name: 'cofounder-coach',
+    displayNameAr: 'مستشار فريق المؤسسين',
+    description: 'يقيّم ديناميكيات فريق المؤسسين ويشخّص نقاط الخطر قبل أن تتحول لنزاعات مدمّرة.',
+    intent: 'COFOUNDER_COACH',
+    stage: 'startup',
+    graphNode: 'cofounder_coach_node',
+    preferredModel: 'PRO',
+    capabilities: ['team_dynamics', 'conflict_prevention', 'founder_agreement', 'equity_structure'],
+    allowedTools: ['cofounder.health', 'cofounder.dynamics'],
+    softCostBudgetUsd: 0.07,
+    inputSchema: z.object({
+      founders: z.array(z.object({
+        name: z.string(),
+        role: z.string(),
+        equity: z.number(),
+        answers: z.record(z.number()),
+      })),
+      companyStage: z.string(),
+      specificChallenges: z.string().optional(),
+    }),
+    action: cofounderHealthCheckAction as (input: unknown) => Promise<string>,
+    thinkingLabelAr: 'يحلل ديناميكيات الفريق ويشخّص نقاط الخطر...',
   },
 };
 

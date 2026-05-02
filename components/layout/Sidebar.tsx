@@ -15,6 +15,7 @@ const BADGE_STYLES: Record<string, string> = {
   amber:   "bg-amber-400/10 text-amber-300 border-amber-400/25",
   emerald: "bg-emerald-400/10 text-emerald-300 border-emerald-400/25",
   violet:  "bg-violet-400/10 text-violet-300 border-violet-400/25",
+  rose:    "bg-rose-400/10 text-rose-300 border-rose-400/25",
 };
 
 function SectionLabel({ children }: { children: React.ReactNode }) {

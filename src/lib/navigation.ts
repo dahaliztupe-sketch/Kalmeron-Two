@@ -26,6 +26,12 @@ import {
   Flame,
   Server,
   PieChart,
+  Scale,
+  UserCheck,
+  LayoutTemplate,
+  MapPin,
+  Mic,
+  Globe,
 } from "lucide-react";
 
 export type NavItem = {
@@ -34,7 +40,7 @@ export type NavItem = {
   icon: React.ComponentType<{ className?: string; size?: number }>;
   exact?: boolean;
   badge?: string;
-  badgeColor?: "cyan" | "amber" | "emerald" | "violet";
+  badgeColor?: "cyan" | "amber" | "emerald" | "violet" | "rose";
 };
 
 export type NavSection = {
@@ -67,14 +73,35 @@ export const NAV_SECTIONS: NavSection[] = [
     heading: "الأدوات",
     items: [
       { href: "/ideas/analyze", label: "مختبر الأفكار", icon: Brain, badge: "AI", badgeColor: "emerald" },
+      { href: "/ideas/canvas", label: "كانفاس الأعمال", icon: LayoutTemplate, badge: "جديد", badgeColor: "violet" },
+      { href: "/customer-discovery", label: "اكتشاف العملاء", icon: Users, badge: "جديد", badgeColor: "cyan" },
+      { href: "/competitor-watch", label: "رصد المنافسين", icon: Radar, badge: "جديد", badgeColor: "rose" },
+      { href: "/pitch-practice", label: "تدريب الـ Pitch", icon: Mic, badge: "جديد", badgeColor: "violet" },
       { href: "/opportunities", label: "رادار الفرص", icon: Radar },
       { href: "/market-lab", label: "مختبر السوق", icon: FlaskConical },
       { href: "/brand-voice", label: "صوت العلامة", icon: Sparkles },
+      { href: "/contract-review", label: "مراجع العقود", icon: Scale, badge: "جديد", badgeColor: "amber" },
+      { href: "/setup-egypt", label: "التأسيس في مصر", icon: MapPin },
       { href: "/decision-journal", label: "دفتر القرارات", icon: BookOpen },
+      { href: "/smart-pricing", label: "التسعير الذكي", icon: BarChart3, badge: "جديد", badgeColor: "emerald" },
+      { href: "/financial-model", label: "النموذج المالي", icon: BarChart3, badge: "جديد", badgeColor: "cyan" },
+      { href: "/growth-lab", label: "مختبر النمو", icon: Rocket, badge: "جديد", badgeColor: "violet" },
+      { href: "/hr-ai", label: "مساعد الموارد البشرية", icon: Users, badge: "جديد", badgeColor: "amber" },
+      { href: "/market-intelligence", label: "استخبارات السوق", icon: Globe, badge: "جديد", badgeColor: "cyan" },
+      { href: "/email-ai", label: "كاتب البريد الذكي", icon: MessageSquareText, badge: "جديد", badgeColor: "violet" },
+      { href: "/sales-coach", label: "مدرّب المبيعات", icon: TrendingUp, badge: "جديد", badgeColor: "emerald" },
       { href: "/okr", label: "أهداف OKR", icon: BarChart3 },
       { href: "/workflows-runner", label: "المسارات الآلية", icon: Workflow },
       { href: "/operations", label: "غرفة العمليات", icon: Activity },
       { href: "/trending-tools", label: "أدوات AI الرائجة", icon: Flame },
+    ],
+  },
+  {
+    heading: "الفريق",
+    items: [
+      { href: "/cofounder-health", label: "صحة فريق المؤسسين", icon: UserCheck, badge: "جديد", badgeColor: "violet" },
+      { href: "/wellbeing", label: "صحتك النفسية", icon: Heart },
+      { href: "/founder-agreement", label: "معالج اتفاقية المؤسسين", icon: Scale, badge: "جديد", badgeColor: "emerald" },
     ],
   },
   {
@@ -83,7 +110,6 @@ export const NAV_SECTIONS: NavSection[] = [
       { href: "/profile", label: "الملف الشخصي", icon: UserIcon },
       { href: "/notifications", label: "الإشعارات", icon: Bell },
       { href: "/usage", label: "الاستخدام", icon: PieChart },
-      { href: "/wellbeing", label: "صحتك النفسية", icon: Heart },
       { href: "/settings", label: "الإعدادات", icon: Settings },
     ],
   },

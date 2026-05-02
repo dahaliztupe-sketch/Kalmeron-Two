@@ -10,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import {
   Loader2, Lightbulb, CheckCircle2, Copy, Check,
   Download, History, ChevronDown, BarChart3, Shield,
-  Target, Rocket, Plus, Clock, Trash2
+  Target, Rocket, Plus, Clock, Trash2, Users, AlertCircle, RefreshCw,
 } from "lucide-react";
 import { db } from "@/src/lib/firebase";
 import {
@@ -21,6 +21,8 @@ import { toast } from "sonner";
 import ReactMarkdown from "react-markdown";
 import { motion, AnimatePresence } from "motion/react";
 import { cn } from "@/src/lib/utils";
+
+type PageTab = "analyze" | "first100";
 
 const INDUSTRIES = [
   "تقنية المعلومات والبرمجيات",
@@ -90,7 +92,9 @@ function parseAnalysisTabs(text: string): Record<string, string> {
 
 export default function IdeaValidationPage() {
   const { user, dbUser } = useAuth();
+  const [pageTab, setPageTab] = useState<PageTab>("analyze");
 
+  // Analyze state
   const [ideaDesc, setIdeaDesc] = useState("");
   const [industry, setIndustry] = useState("");
   const [stage, setStage] = useState("idea");
@@ -102,6 +106,16 @@ export default function IdeaValidationPage() {
   const [history, setHistory] = useState<IdeaRecord[]>([]);
   const [loadingHistory, setLoadingHistory] = useState(false);
   const [tabs, setTabs] = useState<Record<string, string>>({});
+
+  // First 100 state
+  const [f100Product, setF100Product] = useState("");
+  const [f100Segment, setF100Segment] = useState("");
+  const [f100Budget, setF100Budget] = useState("");
+  const [f100Stage, setF100Stage] = useState("pre-product");
+  const [f100Loading, setF100Loading] = useState(false);
+  const [f100Result, setF100Result] = useState("");
+  const [f100Error, setF100Error] = useState("");
+  const [f100Copied, setF100Copied] = useState(false);
 
   useEffect(() => {
     if (dbUser?.industry) setIndustry(dbUser.industry);
@@ -209,9 +223,33 @@ export default function IdeaValidationPage() {
     toast.success("تم استعادة التحليل");
   };
 
+  const handleFirst100 = useCallback(async () => {
+    if (!f100Product.trim() || f100Loading) return;
+    setF100Loading(true);
+    setF100Error("");
+    setF100Result("");
+    try {
+      const token = await user?.getIdToken();
+      const res = await fetch("/api/first-100", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ product: f100Product, segment: f100Segment, budget: f100Budget, stage: f100Stage }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "حدث خطأ");
+      setF100Result(data.result);
+    } catch (e: unknown) {
+      setF100Error(e instanceof Error ? e.message : "حدث خطأ غير متوقع");
+    } finally {
+      setF100Loading(false);
+    }
+  }, [f100Product, f100Segment, f100Budget, f100Stage, f100Loading, user]);
+
   const tabContent = activeTab === "swot"
     ? (tabs.swot || validationResult || "")
     : (tabs[activeTab] || validationResult || "");
+
+  const inputCls = "w-full bg-neutral-800/60 border border-neutral-700 text-white text-sm rounded-xl px-3 py-2.5 outline-none focus:border-[rgb(var(--brand-cyan))] transition-colors placeholder:text-neutral-600";
 
   return (
     <AppShell>
@@ -222,10 +260,10 @@ export default function IdeaValidationPage() {
             <div>
               <h1 className="text-3xl font-black tracking-tight flex items-center gap-2 text-[rgb(var(--brand-cyan))]">
                 <Lightbulb className="w-8 h-8" />
-                محلّل الأفكار الاستراتيجي
+                مختبر الأفكار
               </h1>
               <p className="text-neutral-400 mt-1 text-sm max-w-xl">
-                أدخل فكرتك واحصل على تحليل SWOT كامل + ملاءمة السوق المصري + خطة MVP في ثوانٍ.
+                تحليل SWOT كامل + ملاءمة السوق المصري + خطة أول 100 عميل
               </p>
             </div>
             <button
@@ -239,9 +277,30 @@ export default function IdeaValidationPage() {
           </div>
         </motion.div>
 
+        {/* Page Tab Switcher */}
+        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }} className="flex gap-2">
+          {[
+            { id: "analyze" as PageTab, label: "تحليل الفكرة", icon: Lightbulb },
+            { id: "first100" as PageTab, label: "أول 100 عميل", icon: Users },
+          ].map(({ id, label, icon: Icon }) => (
+            <button
+              key={id}
+              onClick={() => setPageTab(id)}
+              className={cn(
+                "flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all",
+                pageTab === id
+                  ? "bg-[rgb(var(--brand-cyan))]/20 text-[rgb(var(--brand-cyan))] border border-[rgb(var(--brand-cyan))]/30"
+                  : "bg-neutral-800/60 text-neutral-400 hover:text-white hover:bg-neutral-700/60"
+              )}
+            >
+              <Icon className="w-3.5 h-3.5" /> {label}
+            </button>
+          ))}
+        </motion.div>
+
         {/* History Panel */}
         <AnimatePresence>
-          {showHistory && (
+          {showHistory && pageTab === "analyze" && (
             <motion.div
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: "auto" }}
@@ -289,7 +348,99 @@ export default function IdeaValidationPage() {
           )}
         </AnimatePresence>
 
-        {/* Input Form */}
+        {/* ── First 100 Customers Tab ── */}
+        {pageTab === "first100" && (
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
+            <Card className="bg-neutral-900/60 border-neutral-700/50 rounded-2xl overflow-hidden">
+              <CardContent className="p-6 space-y-4">
+                <div className="flex items-center gap-2 mb-1">
+                  <Users className="w-5 h-5 text-cyan-400" />
+                  <span className="font-semibold text-cyan-400">استراتيجية أول 100 عميل</span>
+                </div>
+                <p className="text-neutral-400 text-sm">أخبرني عن منتجك وسأبني لك خطة اكتساب العملاء الأوائل خطوة بخطوة.</p>
+
+                <div className="space-y-3">
+                  <div>
+                    <Label className="text-neutral-300 font-semibold text-sm">وصف المنتج/الخدمة *</Label>
+                    <Textarea
+                      value={f100Product}
+                      onChange={e => setF100Product(e.target.value)}
+                      placeholder="مثال: منصة SaaS تساعد المطاعم الصغيرة على إدارة الطلبات والمخزون..."
+                      className="min-h-[90px] resize-none text-sm p-4 rounded-xl bg-neutral-800/60 text-white border-neutral-700 focus-visible:ring-cyan-500 placeholder:text-neutral-600 mt-1.5"
+                    />
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <Label className="text-neutral-300 font-semibold text-sm">العميل المستهدف</Label>
+                      <input value={f100Segment} onChange={e => setF100Segment(e.target.value)}
+                        placeholder="مثال: مطاعم 5-20 طاولة في القاهرة" className={cn(inputCls, "mt-1.5")} />
+                    </div>
+                    <div>
+                      <Label className="text-neutral-300 font-semibold text-sm">مرحلة الشركة</Label>
+                      <select value={f100Stage} onChange={e => setF100Stage(e.target.value)} className={cn(inputCls, "mt-1.5")}>
+                        <option value="pre-product">قبل المنتج (Idea)</option>
+                        <option value="MVP">MVP جاهز</option>
+                        <option value="early-traction">بداية المبيعات</option>
+                        <option value="growth">نمو</option>
+                      </select>
+                    </div>
+                    <div className="sm:col-span-2">
+                      <Label className="text-neutral-300 font-semibold text-sm">الميزانية التسويقية</Label>
+                      <input value={f100Budget} onChange={e => setF100Budget(e.target.value)}
+                        placeholder="مثال: 5000 جنيه شهرياً، أو صفر" className={cn(inputCls, "mt-1.5")} />
+                    </div>
+                  </div>
+                </div>
+
+                <Button
+                  onClick={handleFirst100}
+                  disabled={f100Loading || !f100Product.trim()}
+                  className="w-full h-12 text-sm rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-bold transition-all disabled:opacity-50"
+                >
+                  {f100Loading ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> جاري البناء...</> : <><Target className="h-4 w-4 mr-2" /> ابنِ استراتيجيتي</>}
+                </Button>
+
+                <AnimatePresence>
+                  {f100Error && (
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                      className="bg-red-900/30 border border-red-500/30 rounded-xl p-4 text-red-300 text-sm flex gap-2">
+                      <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" /> {f100Error}
+                    </motion.div>
+                  )}
+                  {f100Result && (
+                    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+                      className="bg-neutral-900/50 border border-cyan-500/20 rounded-xl p-5 space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-cyan-400 text-sm font-medium flex items-center gap-1">
+                          <CheckCircle2 className="w-3.5 h-3.5" /> خطة الـ 100 عميل الأولى
+                        </span>
+                        <div className="flex gap-3">
+                          <button onClick={() => { setF100Result(""); setF100Product(""); setF100Segment(""); setF100Budget(""); }}
+                            className="text-neutral-400 hover:text-white transition-colors text-xs flex items-center gap-1">
+                            <RefreshCw className="w-3.5 h-3.5" /> جديد
+                          </button>
+                          <button onClick={() => { navigator.clipboard.writeText(f100Result); setF100Copied(true); setTimeout(() => setF100Copied(false), 2000); }}
+                            className="text-neutral-400 hover:text-white transition-colors text-xs flex items-center gap-1">
+                            {f100Copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                            {f100Copied ? "تم" : "نسخ"}
+                          </button>
+                        </div>
+                      </div>
+                      <div className="text-sm leading-relaxed prose prose-invert prose-neutral max-w-none
+                        prose-headings:text-cyan-400 prose-headings:font-bold prose-strong:text-white
+                        prose-li:text-neutral-300 prose-p:text-neutral-300" dir="auto">
+                        <ReactMarkdown>{f100Result}</ReactMarkdown>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </CardContent>
+            </Card>
+          </motion.div>
+        )}
+
+        {/* ── Analyze Tab ── */}
+        {pageTab === "analyze" && (
         <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}>
           <Card className="bg-neutral-900/60 border-neutral-700/50 rounded-2xl overflow-hidden">
             <CardContent className="p-6 space-y-5">
@@ -427,6 +578,8 @@ export default function IdeaValidationPage() {
             </motion.div>
           )}
         </AnimatePresence>
+        )} {/* end pageTab === "analyze" */}
+
       </div>
     </AppShell>
   );

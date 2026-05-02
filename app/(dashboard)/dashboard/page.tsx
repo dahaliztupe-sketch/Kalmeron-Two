@@ -17,6 +17,7 @@ import { RunwayAlarmBanner } from "@/components/runway/RunwayAlarmBanner";
 import { SmartHubSection } from "@/src/components/dashboard/SmartHubSection";
 import { CompanyHealthScore } from "@/src/components/dashboard/CompanyHealthScore";
 import { GoalsProgress } from "@/src/components/dashboard/GoalsProgress";
+import { AIAdoptionScore } from "@/src/components/dashboard/AIAdoptionScore";
 import { KalmeronAreaChart } from "@/src/components/charts";
 import Link from "next/link";
 import { cn } from "@/src/lib/utils";
@@ -422,6 +423,38 @@ export default function DashboardPage() {
             {/* Goals Progress */}
             <motion.div variants={reduce ? itemVReduced : itemV}>
               <GoalsProgress />
+            </motion.div>
+
+            {/* AI Adoption Score + New Tools */}
+            <motion.div variants={reduce ? itemVReduced : itemV}>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <AIAdoptionScore metrics={data?.metrics} />
+                <div className="grid grid-cols-2 gap-3">
+                  {[
+                    { href: "/ideas/canvas", label: "كانفاس الأعمال", desc: "صمّم نموذج عملك كاملاً", color: "from-fuchsia-500/10 to-purple-500/5 border-fuchsia-500/20", icon: "🗺️" },
+                    { href: "/customer-discovery", label: "اكتشاف العملاء", desc: "Mom Test للسوق المصري", color: "from-cyan-500/10 to-blue-500/5 border-cyan-500/20", icon: "🎯" },
+                    { href: "/contract-review", label: "مراجع العقود", desc: "حلّل عقودك بالذكاء", color: "from-amber-500/10 to-orange-500/5 border-amber-500/20", icon: "📜" },
+                    { href: "/cofounder-health", label: "صحة الفريق", desc: "فحص ديناميكيات المؤسسين", color: "from-violet-500/10 to-purple-500/5 border-violet-500/20", icon: "🤝" },
+                    { href: "/pitch-practice", label: "تدريب الـ Pitch", desc: "تغذية راجعة من مستثمر AI", color: "from-rose-500/10 to-pink-500/5 border-rose-500/20", icon: "🎤" },
+                    { href: "/competitor-watch", label: "رصد المنافسين", desc: "SWOT + فجوات + تميّز", color: "from-red-500/10 to-orange-500/5 border-red-500/20", icon: "👁️" },
+                    { href: "/decision-journal", label: "دفتر القرارات", desc: "Pre/Post mortem بالذكاء الاصطناعي", color: "from-indigo-500/10 to-blue-500/5 border-indigo-500/20", icon: "📖" },
+                    { href: "/smart-pricing", label: "التسعير الذكي", desc: "استراتيجية تسعير للسوق المصري", color: "from-emerald-500/10 to-green-500/5 border-emerald-500/20", icon: "💰" },
+                    { href: "/financial-model", label: "النموذج المالي", desc: "توقعات + نقطة تعادل + Unit Economics", color: "from-blue-500/10 to-indigo-500/5 border-blue-500/20", icon: "📊" },
+                    { href: "/growth-lab", label: "مختبر النمو", desc: "استراتيجيات Growth للسوق المصري", color: "from-violet-500/10 to-fuchsia-500/5 border-violet-500/20", icon: "🚀" },
+                    { href: "/hr-ai", label: "مساعد HR", desc: "وصف وظيفي + مقابلات + عروض عمل", color: "from-amber-500/10 to-orange-500/5 border-amber-500/20", icon: "👥" },
+                    { href: "/market-intelligence", label: "استخبارات السوق", desc: "تحليل السوق المصري والعربي", color: "from-cyan-500/10 to-teal-500/5 border-cyan-500/20", icon: "🌍" },
+                    { href: "/email-ai", label: "كاتب البريد الذكي", desc: "Cold outreach + متابعة + عروض", color: "from-purple-500/10 to-indigo-500/5 border-purple-500/20", icon: "📧" },
+                    { href: "/sales-coach", label: "مدرّب المبيعات", desc: "سكريبتات + اعتراضات + إغلاق", color: "from-green-500/10 to-emerald-500/5 border-green-500/20", icon: "💼" },
+                  ].map(({ href, label, desc, color, icon }) => (
+                    <Link key={href} href={href} className={`group relative overflow-hidden rounded-2xl border bg-gradient-to-br ${color} p-4 hover:scale-[1.02] transition-all`}>
+                      <div className="text-2xl mb-2">{icon}</div>
+                      <div className="text-xs font-bold text-white mb-0.5">{label}</div>
+                      <div className="text-[10px] text-white/40 leading-tight">{desc}</div>
+                      <div className="absolute top-2 left-2 text-[9px] text-white/30 border border-white/10 rounded-full px-1.5 py-0.5 font-medium">جديد</div>
+                    </Link>
+                  ))}
+                </div>
+              </div>
             </motion.div>
 
             <motion.div variants={reduce ? itemVReduced : itemV}>

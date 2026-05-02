@@ -1,5 +1,58 @@
 # Kalmeron AI (ai-studio-applet)
 
+## جلسة 2026-05-02 — الجولة الثانية من وكلاء الـ AI والصفحات (أحدث تحديث)
+
+### ملخص الجلسة الكامل
+| التغيير | التفاصيل |
+|---------|----------|
+| **4 وكلاء AI جدد** | `wellbeing-coach`, `contract-reviewer`, `customer-discovery`, `cofounder-coach` |
+| **62 وكيل AI إجمالاً** | في `src/ai/agents/registry.ts` |
+| **12+ API Routes جديدة** | أنظر القائمة أدناه |
+| **12+ صفحة Dashboard جديدة** | أنظر القائمة أدناه |
+| **Dashboard محدَّث** | 8 بطاقات أدوات جديدة في الشبكة |
+| **Navigation 6 أقسام** | الرئيسي، شركتي، الأدوات (15)، الفريق (3)، الحساب (4)، النظام (2) |
+| **proxy.ts محدَّث** | جميع المسارات الجديدة في PROTECTED_PREFIXES |
+| **إصلاح Build Error** | حُذف `app/(dashboard)/operations/page.tsx` المكرر |
+
+### كل الصفحات المبنية في هذه الجلسة
+| الصفحة | المسار | الوصف |
+|--------|--------|--------|
+| مراجع العقود | `/contract-review` | يحلل العقود بإطار القانون المصري |
+| اكتشاف العملاء | `/customer-discovery` | Mom Test + اختبار الفرضيات |
+| صحة فريق المؤسسين | `/cofounder-health` | تقييم ديناميكيات المؤسسين |
+| كانفاس الأعمال | `/ideas/canvas` | Business Model Canvas 9 مربعات |
+| رصد المنافسين | `/competitor-watch` | SWOT + فجوات + Positioning |
+| تدريب الـ Pitch | `/pitch-practice` | تغذية راجعة + أسئلة المستثمرين |
+| صحتك النفسية | `/wellbeing` | AI coach كامل (تقييم + check-in) |
+| رادار الفرص | `/opportunities` | تمويل + مسرّعات + مسابقات + AI search |
+| التأسيس في مصر | `/setup-egypt` | دليل خطوة بخطوة + AI Q&A |
+| دفتر القرارات | `/decision-journal` | تسجيل + Pre/Post mortem AI |
+| معالج اتفاقية المؤسسين | `/founder-agreement` | اتفاقية كاملة AI-generated |
+| الأهداف والخطة | `/plan` | OKRs tracker + AI generation |
+| الملف الشخصي | `/profile` | بيانات المستخدم والشركة |
+
+### كل API Routes الجديدة
+| المسار | الوصف |
+|--------|--------|
+| `/api/wellbeing` | wellbeing coach + quick check-in |
+| `/api/contract-review` | contract analysis + risk extraction |
+| `/api/customer-discovery` | discovery analysis + interview script |
+| `/api/cofounder-health` | team dynamics + agreement generation |
+| `/api/pitch-practice` | pitch feedback + investor questions |
+| `/api/decision-ai` | pre-mortem + post-mortem analysis |
+| `/api/opportunities` (POST) | AI search for funding opportunities |
+| `/api/setup-egypt` | legal Q&A للتأسيس في مصر |
+| `/api/first-100` | أول 100 عميل strategy |
+
+### ملاحظات تقنية
+- `rateLimit(req, { limit, windowMs, userId, scope })` — التوقيع الصحيح دائماً
+- `google('gemini-2.5-flash')` أو `google('gemini-2.5-pro')` — النماذج المدعومة
+- جميع الصفحات الجديدة: `AppShell`, `motion/react`, RTL `dir="rtl"`
+- `cofounder-health` API يدعم mode: `agreement` لإنشاء اتفاقية المؤسسين
+- Sidebar rose badge: `BADGE_STYLES.rose` مُضاف في `components/layout/Sidebar.tsx`
+
+---
+
 ## جلسة إصلاح الـ 404 + Gemini Integration — 2026-05-01 (أحدث تحديث)
 
 ### الإصلاحات الجوهرية في هذه الجلسة

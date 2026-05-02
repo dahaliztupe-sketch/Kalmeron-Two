@@ -1,0 +1,231 @@
+"use client";
+
+import { useState, useCallback } from "react";
+import { motion, AnimatePresence } from "motion/react";
+import {
+  FileText, Sparkles, ArrowLeft, Loader2, AlertTriangle,
+  CheckCircle2, Upload, Shield, Scale, ChevronDown, ChevronUp,
+  Copy, Check,
+} from "lucide-react";
+import Link from "next/link";
+import { AppShell } from "@/components/layout/AppShell";
+import { useAuth } from "@/contexts/AuthContext";
+
+const CONTRACT_TYPES = [
+  "عقد شراكة / مؤسسين", "عقد توظيف", "عقد استشارة / Freelance",
+  "عقد إيجار مكتب أو مستودع", "عقد بيع أو توريد",
+  "عقد خدمات برمجية / SaaS", "اتفاقية NDA / سرية",
+  "اتفاقية استثمار / Term Sheet", "عقد إيجار تجاري", "أخرى",
+];
+
+const PARTY_ROLES = [
+  { value: "buyer", label: "مشترٍ" },
+  { value: "seller", label: "بائع" },
+  { value: "employer", label: "صاحب عمل" },
+  { value: "employee", label: "موظف" },
+  { value: "investor", label: "مستثمر" },
+  { value: "founder", label: "مؤسس" },
+  { value: "other", label: "طرف في العقد" },
+];
+
+export default function ContractReviewPage() {
+  const { user } = useAuth();
+  const [contractText, setContractText] = useState("");
+  const [contractType, setContractType] = useState("");
+  const [partyRole, setPartyRole] = useState("");
+  const [specificConcerns, setSpecificConcerns] = useState("");
+  const [result, setResult] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [showAdvanced, setShowAdvanced] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  const canSubmit = contractText.trim().length >= 50 && !loading;
+
+  const handleReview = useCallback(async () => {
+    if (!canSubmit) return;
+    setLoading(true);
+    setResult("");
+    setError("");
+    try {
+      const headers: Record<string, string> = { "Content-Type": "application/json" };
+      if (user) headers["Authorization"] = `Bearer ${await user.getIdToken()}`;
+      const res = await fetch("/api/contract-review", {
+        method: "POST",
+        headers,
+        body: JSON.stringify({ contractText, contractType, partyRole, specificConcerns }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "خطأ في الخادم");
+      setResult(data.result ?? "");
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "حدث خطأ غير متوقع");
+    } finally {
+      setLoading(false);
+    }
+  }, [contractText, contractType, partyRole, specificConcerns, user, canSubmit]);
+
+  const handlePaste = useCallback(async () => {
+    try {
+      const text = await navigator.clipboard.readText();
+      setContractText(text);
+    } catch {
+      /* silent */
+    }
+  }, []);
+
+  const copyResult = useCallback(async () => {
+    try {
+      await navigator.clipboard.writeText(result);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch { /* silent */ }
+  }, [result]);
+
+  const reset = () => { setContractText(""); setResult(""); setError(""); setContractType(""); setPartyRole(""); setSpecificConcerns(""); };
+
+  return (
+    <AppShell>
+      <div dir="rtl" className="max-w-4xl mx-auto space-y-6 pb-16">
+        {/* Header */}
+        <div className="flex items-start justify-between flex-wrap gap-4">
+          <div>
+            <div className="flex items-center gap-2 mb-2">
+              <Scale className="w-4 h-4 text-amber-400" />
+              <span className="text-xs text-amber-400 font-medium uppercase tracking-wide">Contract Reviewer AI</span>
+            </div>
+            <h1 className="font-display text-3xl md:text-4xl font-extrabold text-white mb-2">مراجع العقود</h1>
+            <p className="text-white/50 max-w-xl text-sm">الصق نص العقد وسيستخرج الوكيل الذكي البنود الخطرة والناقصة قبل أن توقّع.</p>
+          </div>
+          <Link href="/dashboard" className="flex items-center gap-1.5 text-sm text-white/40 hover:text-white/70 transition-colors">
+            <ArrowLeft className="w-4 h-4" /> لوحة القيادة
+          </Link>
+        </div>
+
+        {/* Disclaimer */}
+        <div className="flex items-start gap-3 rounded-xl border border-amber-500/20 bg-amber-500/5 p-4">
+          <Shield className="w-4 h-4 text-amber-400 mt-0.5 shrink-0" />
+          <p className="text-amber-200/80 text-xs leading-relaxed">
+            هذا التحليل لأغراض التوعية والمراجعة الأولية فقط. دائماً استشر محامياً مرخّصاً قبل التوقيع على أي عقد.
+          </p>
+        </div>
+
+        {!result ? (
+          <div className="space-y-4">
+            {/* Contract Type + Role */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+                <label className="block text-xs text-white/50 mb-2 font-medium">نوع العقد</label>
+                <select value={contractType} onChange={e => setContractType(e.target.value)}
+                  className="w-full bg-transparent text-white text-sm focus:outline-none">
+                  <option value="" className="bg-[#0a0a1a]">اختر نوع العقد...</option>
+                  {CONTRACT_TYPES.map(t => <option key={t} value={t} className="bg-[#0a0a1a]">{t}</option>)}
+                </select>
+              </div>
+              <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+                <label className="block text-xs text-white/50 mb-2 font-medium">دورك في العقد</label>
+                <select value={partyRole} onChange={e => setPartyRole(e.target.value)}
+                  className="w-full bg-transparent text-white text-sm focus:outline-none">
+                  <option value="" className="bg-[#0a0a1a]">اختر دورك...</option>
+                  {PARTY_ROLES.map(r => <option key={r.value} value={r.value} className="bg-[#0a0a1a]">{r.label}</option>)}
+                </select>
+              </div>
+            </div>
+
+            {/* Contract Text */}
+            <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
+              <div className="flex items-center justify-between mb-3">
+                <label className="text-sm font-semibold text-white">نص العقد</label>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-white/30">{contractText.length.toLocaleString("ar-EG")} حرف</span>
+                  <button onClick={handlePaste} className="flex items-center gap-1.5 text-xs text-amber-400 hover:text-amber-300 transition-colors border border-amber-500/20 rounded-lg px-2.5 py-1">
+                    <Upload className="w-3 h-3" /> لصق من الحافظة
+                  </button>
+                </div>
+              </div>
+              <textarea
+                value={contractText}
+                onChange={e => setContractText(e.target.value)}
+                placeholder="الصق نص العقد هنا... (الحد الأقصى ١٥٬٠٠٠ حرف)"
+                rows={12}
+                className="w-full rounded-xl bg-white/[0.04] border border-white/[0.07] text-white/90 placeholder:text-white/20 p-4 text-sm resize-y focus:outline-none focus:border-amber-500/40 transition-colors font-mono leading-relaxed"
+              />
+              {contractText.length < 50 && contractText.length > 0 && (
+                <p className="text-xs text-rose-400 mt-2">النص قصير جداً — الحد الأدنى ٥٠ حرفاً</p>
+              )}
+            </div>
+
+            {/* Advanced Options */}
+            <div className="rounded-2xl border border-white/[0.07] bg-white/[0.02]">
+              <button onClick={() => setShowAdvanced(v => !v)}
+                className="w-full flex items-center justify-between p-4 text-sm text-white/60 hover:text-white/80 transition-colors">
+                <span>خيارات إضافية</span>
+                {showAdvanced ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+              </button>
+              {showAdvanced && (
+                <div className="px-4 pb-4">
+                  <label className="block text-xs text-white/50 mb-2">مخاوف محددة تريد التركيز عليها</label>
+                  <textarea
+                    value={specificConcerns}
+                    onChange={e => setSpecificConcerns(e.target.value)}
+                    placeholder="مثلاً: قلق من بند التعويض، أريد التحقق من بنود إنهاء العقد..."
+                    rows={3}
+                    className="w-full rounded-xl bg-white/[0.04] border border-white/[0.07] text-white/90 placeholder:text-white/20 p-3 text-sm resize-none focus:outline-none focus:border-amber-500/40 transition-colors"
+                  />
+                </div>
+              )}
+            </div>
+
+            {/* Action */}
+            <button onClick={handleReview} disabled={!canSubmit}
+              className="w-full flex items-center justify-center gap-3 py-3.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold text-sm hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-lg shadow-amber-500/20">
+              {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Scale className="w-5 h-5" />}
+              {loading ? "يراجع العقد..." : "راجع العقد بالذكاء الاصطناعي"}
+            </button>
+
+            {error && (
+              <div className="flex items-center gap-2 text-rose-400 text-sm rounded-xl border border-rose-500/20 bg-rose-500/5 p-3">
+                <AlertTriangle className="w-4 h-4 shrink-0" />
+                {error}
+              </div>
+            )}
+          </div>
+        ) : (
+          <AnimatePresence>
+            <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                  <span className="text-sm font-semibold text-white">اكتمل التحليل</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <button onClick={copyResult}
+                    className="flex items-center gap-1.5 text-xs text-white/50 hover:text-white/80 border border-white/10 rounded-lg px-3 py-1.5 transition-colors">
+                    {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
+                    {copied ? "تم النسخ" : "نسخ"}
+                  </button>
+                  <button onClick={reset}
+                    className="flex items-center gap-1.5 text-xs text-amber-400 hover:text-amber-300 border border-amber-500/20 rounded-lg px-3 py-1.5 transition-colors">
+                    <FileText className="w-3 h-3" /> عقد جديد
+                  </button>
+                </div>
+              </div>
+              <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6">
+                <div className="flex items-center gap-2 mb-4">
+                  <Scale className="w-4 h-4 text-amber-400" />
+                  <span className="text-sm font-semibold text-white">تقرير مراجعة العقد</span>
+                  {contractType && <span className="text-xs text-white/40 border border-white/10 rounded-full px-2.5 py-0.5">{contractType}</span>}
+                </div>
+                <div className="prose prose-invert prose-sm max-w-none text-white/80 leading-relaxed whitespace-pre-wrap">{result}</div>
+              </div>
+              <div className="flex items-center gap-3 rounded-xl border border-amber-500/20 bg-amber-500/5 p-4">
+                <Shield className="w-4 h-4 text-amber-400 shrink-0" />
+                <p className="text-amber-200/80 text-xs">هذا التحليل للتوعية فقط. استشر محامياً مرخّصاً قبل التوقيع.</p>
+              </div>
+            </motion.div>
+          </AnimatePresence>
+        )}
+      </div>
+    </AppShell>
+  );
+}
