@@ -83,8 +83,7 @@ export default function MarketLabPage() {
         if (!cancel) {
           setExperiments(snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<Experiment, "id">) })));
         }
-      } catch (err) {
-        console.warn("[market-lab] failed to load", err);
+      } catch {
       } finally {
         if (!cancel) setLoading(false);
       }

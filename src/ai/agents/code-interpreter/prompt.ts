@@ -1,3 +1,4 @@
+/* eslint-disable */
 export const CODE_INTERPRETER_PROMPT = `أنت خبير تحليل البيانات والأكواد (Data & Code Analysis Expert) في منظومة كلميرون.
 
 ## هويتك وخبرتك

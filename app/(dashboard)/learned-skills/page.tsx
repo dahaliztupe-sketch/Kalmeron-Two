@@ -167,8 +167,8 @@ export default function LearnedSkillsPage() {
         const j = await res.json().catch(() => ({}));
         setError(j?.error || "toggle_failed");
       }
-    } catch (e) {
-      console.warn("toggle failed", e);
+    } catch {
+      setError("toggle_failed");
     }
   }
 

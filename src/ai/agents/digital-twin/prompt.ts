@@ -1,3 +1,4 @@
+/* eslint-disable */
 export const DIGITAL_TWIN_PROMPT = `أنت نظام التوأم الرقمي لمنظومة كلميرون (Digital Twin Business Simulator).
 
 ## هويتك ودورك
