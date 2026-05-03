@@ -50,6 +50,7 @@ export function UpgradeBanner() {
     : 0;
 
   const show = !dismissed && data && data.plan === "free" && data.dailyLimit > 0 && usedPct >= 75;
+  const safeUsedPct = Number.isFinite(usedPct) ? Math.max(0, Math.min(100, usedPct)) : 0;
 
   return (
     <AnimatePresence>
@@ -65,7 +66,7 @@ export function UpgradeBanner() {
           </div>
           <p className="flex-1 text-sm text-neutral-300 leading-snug">
             استخدمت{" "}
-            <span className="font-bold text-white">{usedPct}%</span>{" "}
+            <span className="font-bold text-white">{safeUsedPct}%</span>{" "}
             من رصيدك اليومي —{" "}
             <Link href="/pricing" className="text-violet-300 font-semibold hover:underline">
               رقّي خطتك الآن
