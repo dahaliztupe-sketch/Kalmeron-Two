@@ -12,6 +12,15 @@ service cloud.firestore {
     }
 
     // ============================================================
+    // Server-side AI cache — written exclusively by Firebase Admin
+    // SDK (server). Client reads/writes are explicitly denied.
+    // TTL-based eviction is handled in application code.
+    // ============================================================
+    match /_ai_cache/{entry} {
+      allow read, write: if false;
+    }
+
+    // ============================================================
     // Hardened Helpers
     // ============================================================
     function isSignedIn()           { return request.auth != null; }

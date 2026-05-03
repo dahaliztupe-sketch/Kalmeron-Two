@@ -8,6 +8,7 @@ import { generateText } from 'ai';
 import { routeModel } from '@/src/lib/model-router';
 import { redactPii } from '@/src/lib/security/pii-redactor';
 import { adminDb } from '@/src/lib/firebase-admin';
+import { buildKey, withCache, TTL } from '@/src/lib/cache/firestore-cache';
 
 export interface BriefBlock {
   type: 'anomaly' | 'decision' | 'message';
@@ -20,6 +21,8 @@ export interface DailyBrief {
   greeting: string;
   blocks: BriefBlock[];
   source: 'generated' | 'fallback';
+  /** Present when the response was served from the server-side Firestore cache. */
+  cachedAt?: string;
   signals?: {
     pendingApprovals: number;
     actionsLast24h: number;
@@ -147,28 +150,38 @@ async function generateBlocks(signals: string): Promise<BriefBlock[] | null> {
 
 export async function generateDailyBrief(userId: string): Promise<DailyBrief> {
   const today = new Date();
+  const dateStr = today.toISOString().slice(0, 10);
   const dayIndex = today.getUTCFullYear() * 366 + today.getUTCMonth() * 31 + today.getUTCDate();
+  const cacheKey = buildKey('daily-brief', userId, dateStr);
 
-  let blocks: BriefBlock[] | null = null;
-  let source: DailyBrief['source'] = 'fallback';
-  let signalsMeta: DailyBrief['signals'] | undefined;
+  const { value: brief, hit } = await withCache<DailyBrief>(
+    cacheKey,
+    TTL.SIX_HOURS,
+    async () => {
+      let blocks: BriefBlock[] | null = null;
+      let source: DailyBrief['source'] = 'fallback';
+      let signalsMeta: DailyBrief['signals'] | undefined;
 
-  try {
-    const { text, meta } = await pullWorkspaceSignals(userId);
-    signalsMeta = meta;
-    blocks = await generateBlocks(text);
-    if (blocks) source = 'generated';
-  } catch {}
+      try {
+        const { text, meta } = await pullWorkspaceSignals(userId);
+        signalsMeta = meta;
+        blocks = await generateBlocks(text);
+        if (blocks) source = 'generated';
+      } catch {}
 
-  if (!blocks) blocks = STUB_LIBRARY[dayIndex % STUB_LIBRARY.length];
+      if (!blocks) blocks = STUB_LIBRARY[dayIndex % STUB_LIBRARY.length];
 
-  return {
-    generatedAt: today.toISOString(),
-    greeting: GREETINGS[dayIndex % GREETINGS.length],
-    blocks,
-    source,
-    signals: signalsMeta,
-  };
+      return {
+        generatedAt: today.toISOString(),
+        greeting: GREETINGS[dayIndex % GREETINGS.length],
+        blocks,
+        source,
+        signals: signalsMeta,
+      };
+    },
+  );
+
+  return { ...brief, ...(hit ? { cachedAt: brief.generatedAt } : {}) } as DailyBrief;
 }
 
 /** Format brief as plain Arabic text for WhatsApp / SMS / email body */

@@ -7,6 +7,7 @@ import { generateText } from 'ai';
 import { google } from '@/src/lib/gemini';
 import { adminAuth } from '@/src/lib/firebase-admin';
 import { rateLimit, rateLimitResponse } from '@/src/lib/security/rate-limit';
+import { buildKey, hashInputs, withCache, TTL } from '@/src/lib/cache/firestore-cache';
 import xss from 'xss';
 
 export const runtime = 'nodejs';
@@ -126,17 +127,29 @@ export async function POST(req: NextRequest) {
   const promptFn = MODE_PROMPTS[analysisType] || MODE_PROMPTS.full;
   const prompt = promptFn({ industry, companyName, competitors, targetCustomer });
 
+  const cacheKey = buildKey(
+    'competitor-watch',
+    hashInputs(industry, analysisType, companyName, competitors, targetCustomer),
+  );
+
   try {
-    const { text } = await generateText({
-      model: MODEL,
-      system: `أنت خبير استراتيجية تنافسية متخصص في الأسواق المصرية والعربية.
+    const { value: result, hit } = await withCache<string>(
+      cacheKey,
+      TTL.ONE_DAY,
+      async () => {
+        const { text } = await generateText({
+          model: MODEL,
+          system: `أنت خبير استراتيجية تنافسية متخصص في الأسواق المصرية والعربية.
 تكتب بالعربية الاحترافية مع أمثلة من السوق المحلي.
 استخدم الجداول والقوائم والأقسام المنظمة لتقديم تحليل واضح وقابل للتنفيذ.
 ركّز على الواقع العملي وليس التحليل النظري المجرد.${isGuest ? '\nالمستخدم ضيف — قدّم تحليلاً مفيداً ولكن موجزاً.' : ''}`,
-      prompt,
-      maxTokens: 2500,
-    });
-    return NextResponse.json({ result: text });
+          prompt,
+          maxTokens: 2500,
+        });
+        return text;
+      },
+    );
+    return NextResponse.json({ result, cached: hit });
   } catch (e: unknown) {
     const msg = e instanceof Error ? e.message : 'فشل التحليل';
     return NextResponse.json({ error: msg }, { status: 500 });

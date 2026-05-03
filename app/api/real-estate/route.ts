@@ -5,6 +5,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { adminAuth } from '@/src/lib/firebase-admin';
 import { rateLimit, rateLimitResponse } from '@/src/lib/security/rate-limit';
+import { buildKey, hashInputs, withCache, TTL } from '@/src/lib/cache/firestore-cache';
 import { generateText } from 'ai';
 import { google } from '@/src/lib/gemini';
 
@@ -55,10 +56,12 @@ export async function POST(req: NextRequest) {
     commercial: 'نشاط تجاري',
   };
 
-  try {
-    const { text } = await generateText({
-      model: MODEL,
-      prompt: `أنت خبير عقاري مصري محترف مع خبرة 15 عاماً في السوق المصري.
+  const cacheKey = buildKey(
+    'real-estate',
+    hashInputs(location, price ?? '', size ?? '', purpose, notes ?? ''),
+  );
+
+  const promptText = `أنت خبير عقاري مصري محترف مع خبرة 15 عاماً في السوق المصري.
 
 الموقع: ${location}
 ${price ? `السعر المطلوب: ${price} جنيه` : ''}
@@ -84,10 +87,19 @@ ${price ? `- سعر المتر المربع: احسب وقارن بالسوق
 العوامل السلبية والتحديات المحتملة
 
 ## 5. توصية نهائية ⭐
-هل الصفقة تستحق؟ التقييم من 10 وخطوات العمل التالية`,
-    });
+هل الصفقة تستحق؟ التقييم من 10 وخطوات العمل التالية`;
 
-    return NextResponse.json({ analysis: text, generatedAt: new Date().toISOString() });
+  try {
+    const { value: analysis, hit } = await withCache<string>(
+      cacheKey,
+      TTL.TWELVE_HOURS,
+      async () => {
+        const { text } = await generateText({ model: MODEL, prompt: promptText });
+        return text;
+      },
+    );
+
+    return NextResponse.json({ analysis, generatedAt: new Date().toISOString(), cached: hit });
   } catch (e) {
     const { logger } = await import('@/src/lib/logger');
     logger.error({ event: 'real_estate_ai_error', error: e instanceof Error ? e.message : String(e) });
