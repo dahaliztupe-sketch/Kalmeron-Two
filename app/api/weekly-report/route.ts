@@ -36,36 +36,6 @@ function buildDateKeys(days: number): string[] {
   return keys;
 }
 
-const SEED_OPPS = [
-  {
-    id: "eit-food-2026",
-    title: "EIT Food Innovation Hub — منحة شركات الغذاء",
-    type: "grant",
-    organizer: "EIT Food",
-    amount: "€50,000 – €500,000",
-    deadline: "2026-06-30",
-    link: "https://www.eitfood.eu",
-  },
-  {
-    id: "flat6labs-2026",
-    title: "Flat6Labs Cairo — الدورة الثامنة عشرة",
-    type: "accelerator",
-    organizer: "Flat6Labs",
-    amount: "EGP 500,000",
-    deadline: "2026-07-15",
-    link: "https://flat6labs.com",
-  },
-  {
-    id: "fawry-fintech-2026",
-    title: "Fawry Fintech Challenge — تحدي فوري للتكنولوجيا المالية",
-    type: "competition",
-    organizer: "Fawry",
-    amount: "EGP 250,000",
-    deadline: "2026-08-01",
-    link: "https://fawry.com",
-  },
-];
-
 export async function GET(req: NextRequest) {
   const rl = rateLimit(req, { limit: 20, windowMs: 60_000 });
   if (!rl.success) return rateLimitResponse();
@@ -140,7 +110,15 @@ export async function GET(req: NextRequest) {
   }
 
   // ── Opportunities ────────────────────────────────────────────────────────
-  let opportunities: typeof SEED_OPPS = [];
+  let opportunities: Array<{
+    id: string;
+    title: string;
+    type: string;
+    organizer: string;
+    amount: string;
+    deadline: string;
+    link: string;
+  }> = [];
   if (adminDb?.collection) {
     try {
       const snap = await adminDb
@@ -164,7 +142,6 @@ export async function GET(req: NextRequest) {
       }
     } catch { /* ignore */ }
   }
-  if (opportunities.length === 0) opportunities = SEED_OPPS;
 
   // ── Compute weekly summary ────────────────────────────────────────────────
   const totalRequests = Object.values(costByDate).reduce((s, d) => s + d.requests, 0);
@@ -266,7 +243,7 @@ export async function GET(req: NextRequest) {
       okrCompletionRate,
       pendingTasksCount: pendingTasks.length,
       criticalAlertsCount: criticalAlerts.length,
-      agentCount: metrics.agentCount,
+      agentCount: Object.keys(metrics.agents || {}).length,
       dailyCostUsd: metrics.dailyCostUsd,
     },
     chartData,
@@ -281,13 +258,15 @@ export async function GET(req: NextRequest) {
       description: t.description,
       status: t.status,
     })),
-    alerts: alertsList.slice(0, 6).map((a: { severity?: string; source?: string; message?: string; timestamp?: string }) => ({
+    alerts: alertsList.slice(0, 6).map((a: { severity?: string; source?: string; message?: string; timestamp?: Date | string }) => ({
       severity: a.severity || "info",
       source: a.source || "system",
       message: a.message || "",
-      timestamp: a.timestamp,
+      timestamp: a.timestamp instanceof Date ? a.timestamp.toISOString() : a.timestamp,
     })),
     opportunities: opportunities.slice(0, 3),
+    opportunitiesStatus: opportunities.length > 0 ? "available" : "unavailable",
+    opportunitiesMessage: opportunities.length > 0 ? null : "لا توجد فرص منشورة حالياً في قاعدة البيانات.",
     recommendations,
     agentBreakdown: Object.entries(agentMap)
       .sort(([, a], [, b]) => b.requests - a.requests)
