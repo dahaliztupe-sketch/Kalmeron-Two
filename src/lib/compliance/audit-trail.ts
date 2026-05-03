@@ -1,4 +1,4 @@
-import { db } from '@/src/lib/firebase';
+import { adminDb } from '@/src/lib/firebase-admin';
 import { Timestamp } from 'firebase-admin/firestore';
 import { createHash } from 'crypto';
 
@@ -24,7 +24,7 @@ interface AATLogEntry {
 }
 
 export class ImmutableAuditTrail {
-  private collection = db.collection('audit_trail');
+  private get collection() { return adminDb!.collection('audit_trail'); }
   
   async logDecision(params: Omit<AATLogEntry, 'previous_hash' | 'current_hash' | 'timestamp'>): Promise<string> {
     const lastLog = await this.collection

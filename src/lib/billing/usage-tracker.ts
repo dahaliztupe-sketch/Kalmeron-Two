@@ -24,7 +24,7 @@ async function getClient(): Promise<OpenMeterClient | null> {
   if (!process.env['OPENMETER_API_KEY']) return null;
   if (_client) return _client;
   try {
-    const { OpenMeter } = await import('@openmeter/sdk') as { OpenMeter: OpenMeterConstructor };
+    const { OpenMeter } = (await import('@openmeter/sdk')) as unknown as { OpenMeter: OpenMeterConstructor };
     _client = new OpenMeter({
       apiKey: process.env['OPENMETER_API_KEY']!,
       baseUrl: process.env['OPENMETER_BASE_URL'] ?? 'https://openmeter.cloud',

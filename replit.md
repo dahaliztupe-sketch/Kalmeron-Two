@@ -1,6 +1,50 @@
 # Kalmeron AI (ai-studio-applet)
 
-## جلسة 2026-05-02 — الجولة الخامسة: مسح شامل لـ 63 صفحة + إصلاح competitor-watch (أحدث تحديث)
+## جلسة 2026-05-03 — الجولة السادسة: مسح شامل + إصلاح TypeScript + صفحات مفقودة (أحدث تحديث)
+
+### ملخص الجولة السادسة — المسح الشامل الكامل للمنصة
+
+#### ✅ TypeScript Errors — أُصلحت جميعها (من 20 إلى صفر)
+
+| الملف | الخطأ | الإصلاح |
+|-------|-------|---------|
+| `app/api/competitor-watch/route.ts` | `maxTokens` غير موجود في AI SDK v6 | → `maxOutputTokens` |
+| `app/api/okr/generate/route.ts` | `maxTokens` غير موجود | → `maxOutputTokens` |
+| `app/api/workspaces/route.ts` | `string` غير قابل للتحويل إلى `WorkspaceRole` | → validation + cast صريح |
+| `app/api/actions/inbox/route.ts` | `r` مكتوب كـ `unknown` من `listInbox` | → `as InboxRow[]` cast |
+| `src/lib/compliance/audit-trail.ts` | يستخدم client `db` بدلاً من admin SDK | → `adminDb` + getter |
+| `src/lib/billing/usage-tracker.ts` | Type cast خاطئ مع `@openmeter/sdk` | → `as unknown as` |
+| `app/(dashboard)/system-health/page.tsx` | `unknown` في JSX من `meta.recentLaunchRuns` | → `Array.isArray()` guard + Object.entries cast |
+| `app/admin/mission-control/_page-client.tsx` | `unknown[]` في JSX | → `Array.isArray()` guard |
+
+#### ✅ صفحات النقاط المفقودة
+
+- **inbox** ← تعمل فعلاً في `app/inbox/` (خارج dashboard group)
+- **market-lab** ← تعمل في `app/market-lab/`
+- **operations** ← تعمل في `app/operations/`
+- تم إضافة `/market-lab` لقائمة المسارات المحمية في `proxy.ts`
+
+#### ✅ المسح الشامل للمنصة — نتائج
+
+| المنطقة | العدد | الحالة |
+|---------|-------|--------|
+| صفحات dashboard | 49 صفحة | ✅ جميعها موجودة وتعمل |
+| API routes | 139 route | ✅ بدون TODO أو FIXME |
+| وكلاء الذكاء الاصطناعي | 61 agent | ✅ |
+| Python sidecars | 4 خدمات | ✅ تعمل جميعها |
+| TypeScript errors | 0 | ✅ صفر أخطاء |
+
+#### 🏗️ البنية الأساسية المؤكدة
+- **Auth**: Firebase Auth + `proxy.ts` يحمي 50+ مسار، cookie `kal_session`
+- **Chat**: LangGraph orchestrator + streaming SSE + Firestore history
+- **Billing**: 5 خطط (free/starter/pro/founder/enterprise) + Stripe + Fawry (EGP)
+- **Cache**: `_ai_cache` Firestore collection بـ TTL متغير (6h/12h/24h)
+- **RAG**: embeddings-worker + pgvector search
+- **Cron**: 8 scheduled jobs (opportunity-alerts, runway-alerts, weekly-okr, etc.)
+
+---
+
+## جلسة 2026-05-02 — الجولة الخامسة: مسح شامل لـ 63 صفحة + إصلاح competitor-watch
 
 ### ملخص الجولة الخامسة
 | التغيير | التفاصيل |

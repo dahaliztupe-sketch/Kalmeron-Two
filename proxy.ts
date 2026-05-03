@@ -64,6 +64,7 @@ const PROTECTED_PREFIXES = [
   '/growth-lab',
   '/hr-ai',
   '/market-intelligence',
+  '/market-lab',
   '/email-ai',
   '/sales-coach',
   '/profile',

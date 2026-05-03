@@ -75,7 +75,7 @@ export async function POST(req: NextRequest) {
 تكتب بالعربية الاحترافية مع أمثلة ومقاييس واقعية وقابلة للتطبيق.
 اجعل النتائج الرئيسية محددة وقابلة للقياس (SMART).`,
       prompt,
-      maxTokens: 1500,
+      maxOutputTokens: 1500,
     });
     return NextResponse.json({ result: text });
   } catch (e: unknown) {

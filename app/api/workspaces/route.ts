@@ -7,6 +7,7 @@ import {
   addMember,
   removeMember,
   recordAudit,
+  type WorkspaceRole,
 } from '@/src/lib/workspaces/workspaces';
 import { rateLimit, rateLimitResponse } from '@/src/lib/security/rate-limit';
 
@@ -73,7 +74,9 @@ export async function POST(req: NextRequest) {
       if (typeof targetUid !== 'string' || !targetUid) {
         return NextResponse.json({ error: 'targetUid_required' }, { status: 400 });
       }
-      await addMember({ workspaceId, byUid: uid, uid: targetUid, role: typeof role === 'string' ? role : 'viewer' });
+      const validRoles: WorkspaceRole[] = ['owner', 'finance', 'ops', 'viewer'];
+      const safeRole: WorkspaceRole = (typeof role === 'string' && validRoles.includes(role as WorkspaceRole)) ? (role as WorkspaceRole) : 'viewer';
+      await addMember({ workspaceId, byUid: uid, uid: targetUid, role: safeRole });
       await recordAudit({ workspaceId, userId: uid, action: 'member.add', target: targetUid, details: { role } });
     } else if (op === 'remove_member') {
       if (typeof targetUid !== 'string' || !targetUid) {

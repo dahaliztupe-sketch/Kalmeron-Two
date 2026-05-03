@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { AppShell } from "@/components/layout/AppShell";
 import { motion } from "motion/react";
 import { RefreshCw, Activity, Server, Zap, Wifi, WifiOff, Clock } from "lucide-react";
@@ -140,9 +140,9 @@ export default function SystemHealthPage() {
           </motion.div>
         )}
 
-        {loading && !data && (
+        {(loading && !data) && (
           <div className="space-y-4">
-            {[0,1,2].map((i) => (
+            {[0, 1, 2].map((i) => (
               <div key={i} className="h-32 rounded-2xl border border-white/[0.04] bg-white/[0.02] animate-pulse" />
             ))}
           </div>
@@ -151,7 +151,7 @@ export default function SystemHealthPage() {
         {/* Groups */}
         {data && (
           <div className="space-y-4">
-            {Object.entries(GROUPS).map(([key, group]) => {
+            {(Object.entries(GROUPS) as Array<[string, { label: string; keys: string[]; icon: React.ComponentType<{ className?: string }> }]>).map(([key, group]) => {
               const Icon = group.icon;
               const keys = group.keys;
               const allOk = keys.every((k) => {
@@ -210,7 +210,7 @@ export default function SystemHealthPage() {
         )}
 
         {/* Recent launches */}
-        {data?.meta?.recentLaunchRuns && Array.isArray(data.meta.recentLaunchRuns) && data.meta.recentLaunchRuns.length > 0 && (
+        {Array.isArray(data?.meta?.recentLaunchRuns) && (data.meta.recentLaunchRuns as unknown[]).length > 0 && (
           <div className="mt-4 rounded-2xl border border-white/[0.08] bg-white/[0.02] p-5">
             <div className="font-bold text-sm text-white mb-3">آخر عمليات الإطلاق</div>
             <ul className="space-y-1 text-xs" role="list">

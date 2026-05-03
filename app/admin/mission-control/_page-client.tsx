@@ -112,7 +112,7 @@ function SystemHealthPanel({ health, lastFetch }: { health: HealthSnapshot; last
         ))}
       </div>
 
-      {health.meta?.llmProviders && Array.isArray(health.meta.llmProviders) && health.meta.llmProviders.length > 0 && (
+      {Array.isArray(health.meta?.llmProviders) && (health.meta.llmProviders as string[]).length > 0 && (
         <div className="mt-4 text-xs text-neutral-500">
           مزوّدو الذكاء الاصطناعي المتاحون: {(health.meta.llmProviders as string[]).join(', ')}
         </div>

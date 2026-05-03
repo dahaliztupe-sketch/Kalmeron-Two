@@ -31,7 +31,8 @@ export async function GET(req: NextRequest) {
   const status = new URL(req.url).searchParams.get('status') ?? undefined;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const items = await listInbox(userId, status as any);
-  const safe = items.map((r) => ({
+  type InboxRow = Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
+  const safe = (items as InboxRow[]).map((r) => ({
     id: r.id,
     actionId: r.actionId,
     label: r.label,
