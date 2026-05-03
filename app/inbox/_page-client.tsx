@@ -54,7 +54,7 @@ export default function InboxPage() {
     try {
       const token = await user.getIdToken();
       const url = filter === "all" ? "/api/actions/inbox" : `/api/actions/inbox?status=${filter}`;
-      const r = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
+      const r = await fetch(url, { headers: { Authorization: `Bearer ${token}` }, cache: "no-store" });
       const j = await r.json();
       if (r.ok) setItems(j.items || []);
     } finally {
@@ -62,7 +62,7 @@ export default function InboxPage() {
     }
   };
 
-  useEffect(() => { refresh(); /* eslint-disable-line */ }, [user, filter]);
+  useEffect(() => { refresh(); }, [user, filter]);
 
   const decide = async (it: Item, decision: "approve" | "reject") => {
     if (!user) return;
@@ -79,7 +79,7 @@ export default function InboxPage() {
       toast.success(decision === "approve" ? "تمت الموافقة والتنفيذ." : "تم الرفض.");
       await refresh();
     } catch (e: unknown) {
-      toast.error(e instanceof Error ? e.message : 'فشلت العملية');
+      toast.error(e instanceof Error ? e.message : "فشلت العملية");
     } finally {
       setBusyId(null);
     }
@@ -90,46 +90,23 @@ export default function InboxPage() {
       <div className="p-8 max-w-5xl mx-auto" dir="rtl">
         <header className="mb-8 flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-white flex items-center gap-3">
-              <InboxIcon className="w-8 h-8 text-brand-cyan" />
-              صندوق موافقات المساعدين
-            </h1>
-            <p className="text-neutral-400 mt-2">
-              طلبات الإجراءات من مساعدين كلميرون — راجِع، عدّل، ووافق قبل أي تأثير خارجي.
-            </p>
+            <h1 className="text-3xl font-bold text-white flex items-center gap-3"><InboxIcon className="w-8 h-8 text-brand-cyan" /> صندوق موافقات المساعدين</h1>
+            <p className="text-neutral-400 mt-2">طلبات الإجراءات من مساعدين كلميرون — راجِع، عدّل، ووافق قبل أي تأثير خارجي.</p>
           </div>
         </header>
 
-        <div className="flex gap-2 mb-6">
+        <div className="flex gap-2 mb-6 flex-wrap">
           {(["pending", "executed", "rejected", "all"] as const).map((s) => (
-            <Button
-              key={s}
-              size="sm"
-              variant={filter === s ? "default" : "secondary"}
-              onClick={() => setFilter(s)}
-            >
-              {s === "pending" && "قيد الانتظار"}
-              {s === "executed" && "منفّذة"}
-              {s === "rejected" && "مرفوضة"}
-              {s === "all" && "الكل"}
+            <Button key={s} size="sm" variant={filter === s ? "default" : "secondary"} onClick={() => setFilter(s)}>
+              {s === "pending" && "قيد الانتظار"}{s === "executed" && "منفّذة"}{s === "rejected" && "مرفوضة"}{s === "all" && "الكل"}
             </Button>
           ))}
         </div>
 
-        {!user ? (
-          <Card className="bg-dark-surface/60 border-white/10">
-            <CardContent className="p-6 text-text-secondary">سجّل دخولك لعرض الصندوق.</CardContent>
-          </Card>
-        ) : loading ? (
-          <div className="flex items-center gap-2 text-text-secondary">
-            <Loader2 className="w-4 h-4 animate-spin" /> جاري التحميل...
-          </div>
+        {!user ? <Card className="bg-dark-surface/60 border-white/10"><CardContent className="p-6 text-text-secondary">سجّل دخولك لعرض الصندوق.</CardContent></Card> : loading ? (
+          <div className="flex items-center gap-2 text-text-secondary"><Loader2 className="w-4 h-4 animate-spin" /> جاري التحميل...</div>
         ) : items.length === 0 ? (
-          <Card className="bg-dark-surface/60 border-white/10">
-            <CardContent className="p-6 text-text-secondary text-center">
-              لا توجد طلبات حالياً ضمن هذا التصنيف.
-            </CardContent>
-          </Card>
+          <Card className="bg-dark-surface/60 border-white/10"><CardContent className="p-6 text-text-secondary text-center">لا توجد طلبات حالياً ضمن هذا التصنيف.</CardContent></Card>
         ) : (
           <div className="space-y-4">
             {items.map((it) => (
@@ -137,50 +114,18 @@ export default function InboxPage() {
                 <CardHeader className="pb-3">
                   <div className="flex items-start justify-between gap-3">
                     <CardTitle className="text-white text-base">{it.label}</CardTitle>
-                    <Badge variant="outline" className={STATUS_COLOR[it.status] || ""}>
-                      {STATUS_LABEL[it.status] || it.status}
-                    </Badge>
+                    <Badge variant="outline" className={STATUS_COLOR[it.status] || ""}>{STATUS_LABEL[it.status] || it.status}</Badge>
                   </div>
-                  <p className="text-xs text-text-secondary flex items-center gap-1.5">
-                    <Clock className="w-3 h-3" />
-                    {it.createdAt ? new Date(it.createdAt).toLocaleString("ar-EG") : "—"}
-                    <span className="mx-1">·</span>
-                    <span>طلبه: {it.requestedBy === "user" ? "أنت" : "مساعد"}</span>
-                  </p>
+                  <p className="text-xs text-text-secondary flex items-center gap-1.5"><Clock className="w-3 h-3" />{it.createdAt ? new Date(it.createdAt).toLocaleString("ar-EG") : "—"}<span className="mx-1">·</span><span>طلبه: {it.requestedBy === "user" ? "أنت" : "مساعد"}</span></p>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  {it.rationale && (
-                    <p className="text-sm text-neutral-300 italic">«{it.rationale}»</p>
-                  )}
-                  <pre className="bg-black/40 border border-white/5 rounded-lg p-3 text-xs text-neutral-300 overflow-x-auto whitespace-pre-wrap">
-                    {JSON.stringify(it.input, null, 2)}
-                  </pre>
-                  {it.error && (
-                    <p className="text-xs text-rose-400">خطأ: {it.error}</p>
-                  )}
+                  {it.rationale && <p className="text-sm text-neutral-300 italic">«{it.rationale}»</p>}
+                  <pre className="bg-black/40 border border-white/5 rounded-lg p-3 text-xs text-neutral-300 overflow-x-auto whitespace-pre-wrap">{JSON.stringify(it.input, null, 2)}</pre>
+                  {it.error && <p className="text-xs text-rose-400">خطأ: {it.error}</p>}
                   {it.status === "pending" && (
                     <div className="flex gap-2 pt-2">
-                      <Button
-                        size="sm"
-                        onClick={() => decide(it, "approve")}
-                        disabled={busyId === it.id}
-                        className="bg-emerald-600 hover:bg-emerald-700"
-                      >
-                        {busyId === it.id ? (
-                          <Loader2 className="w-4 h-4 animate-spin ml-1" />
-                        ) : (
-                          <CheckCircle2 className="w-4 h-4 ml-1" />
-                        )}
-                        موافقة وتنفيذ
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="secondary"
-                        onClick={() => decide(it, "reject")}
-                        disabled={busyId === it.id}
-                      >
-                        <XCircle className="w-4 h-4 ml-1" /> رفض
-                      </Button>
+                      <Button size="sm" onClick={() => decide(it, "approve")} disabled={busyId === it.id} className="bg-emerald-600 hover:bg-emerald-700">{busyId === it.id ? <Loader2 className="w-4 h-4 animate-spin ml-1" /> : <CheckCircle2 className="w-4 h-4 ml-1" />}موافقة وتنفيذ</Button>
+                      <Button size="sm" variant="secondary" onClick={() => decide(it, "reject")} disabled={busyId === it.id}><XCircle className="w-4 h-4 ml-1" /> رفض</Button>
                     </div>
                   )}
                 </CardContent>
