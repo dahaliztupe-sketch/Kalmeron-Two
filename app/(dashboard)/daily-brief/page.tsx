@@ -30,8 +30,8 @@ interface DailyBrief {
  * One screen, one decision, one message. The user opens this in the morning
  * and is done in 5 minutes.
  *
- * For now the data comes from the static stub at /api/daily-brief; the next
- * iteration will plug it into the LangGraph orchestrator.
+ * The data comes from /api/daily-brief and can be sent through available
+ * delivery channels when enabled.
  */
 export default function DailyBriefPage() {
   const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
@@ -68,7 +68,7 @@ export default function DailyBriefPage() {
 
   return (
     <AppShell>
-    <div dir="rtl" className="max-w-3xl mx-auto px-4 py-8">
+      <div dir="rtl" className="max-w-3xl mx-auto px-4 py-8">
       <div className="flex items-center justify-between mb-8">
         <div className="inline-flex items-center gap-2 rounded-full border border-amber-400/20 bg-amber-500/[0.06] px-3 py-1 text-[11px] text-amber-200">
           <Sun className="w-3.5 h-3.5" />
@@ -171,7 +171,7 @@ export default function DailyBriefPage() {
         <Sparkles className="w-3 h-3" />
         المرآة التشغيلية — تجريبي
       </p>
-    </div>
+      </div>
     </AppShell>
   );
 }

@@ -70,7 +70,7 @@ export default function OpportunitiesPage() {
   const [error, setError] = useState("");
   const [copied, setCopied] = useState(false);
 
-  // ── Fetch from real API (Firestore + seed data) ────────────────────────────
+  // ── Fetch from real API ───────────────────────────────────────────────────
   const fetchOpportunities = useCallback(async () => {
     setLoading(true);
     setError("");
@@ -83,8 +83,11 @@ export default function OpportunitiesPage() {
       const params = new URLSearchParams({ limit: "30" });
       const res = await fetch(`/api/opportunities?${params}`, { headers, cache: "no-store" });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const data = await res.json() as { opportunities: Opportunity[] };
+      const data = await res.json() as { opportunities: Opportunity[]; status?: string };
       setOpportunities(data.opportunities || []);
+      if (data.status === "unavailable") {
+        setError("لا توجد فرص منشورة حالياً في قاعدة البيانات");
+      }
     } catch {
       setError("تعذّر تحميل الفرص");
     } finally {
