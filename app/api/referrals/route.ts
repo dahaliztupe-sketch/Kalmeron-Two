@@ -4,6 +4,7 @@ import { getReferralStats, recordReferral, ensureReferralCode } from '@/src/lib/
 import { rateLimit, rateLimitResponse } from '@/src/lib/security/rate-limit';
 
 export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
 
 async function getUid(req: NextRequest): Promise<string | null> {
   const auth = req.headers.get('Authorization');
@@ -16,7 +17,6 @@ async function getUid(req: NextRequest): Promise<string | null> {
   }
 }
 
-/** GET /api/referrals — returns the caller's referral stats + share link. */
 export async function GET(req: NextRequest) {
   const rl = rateLimit(req, { limit: 30, windowMs: 60_000 });
   if (!rl.success) return rateLimitResponse();
@@ -29,11 +29,6 @@ export async function GET(req: NextRequest) {
   return NextResponse.json(stats);
 }
 
-/**
- * POST /api/referrals
- * Body: { code: string }
- * Used at signup time to attribute the new user to a referrer.
- */
 export async function POST(req: NextRequest) {
   const rl = rateLimit(req, { limit: 10, windowMs: 60_000 });
   if (!rl.success) return rateLimitResponse();
@@ -47,6 +42,7 @@ export async function POST(req: NextRequest) {
   } catch {
     return NextResponse.json({ error: 'invalid_json' }, { status: 400 });
   }
+
   const code = (body.code || '').trim().toUpperCase();
   if (!code) return NextResponse.json({ error: 'code_required' }, { status: 400 });
 
@@ -54,8 +50,6 @@ export async function POST(req: NextRequest) {
   if (!ok) {
     return NextResponse.json({ ok: false, message: 'Code invalid or already used' }, { status: 200 });
   }
-  return NextResponse.json({
-    ok: true,
-    message: 'تم تطبيق كود الإحالة! حصلت على 500 رصيد إضافي.',
-  });
+
+  return NextResponse.json({ ok: true, message: 'تم تطبيق كود الإحالة! حصلت على 500 رصيد إضافي.' });
 }

@@ -119,6 +119,7 @@ export const NAV_SECTIONS: NavSection[] = [
       { href: "/cofounder-health", label: "صحة فريق المؤسسين", icon: UserCheck, badge: "جديد", badgeColor: "violet" },
       { href: "/wellbeing", label: "صحتك النفسية", icon: Heart },
       { href: "/founder-agreement", label: "معالج اتفاقية المؤسسين", icon: Scale, badge: "جديد", badgeColor: "emerald" },
+      { href: "/settings/referrals", label: "برنامج الإحالات", icon: Sparkles, badge: "جديد", badgeColor: "violet" },
     ],
   },
   {
