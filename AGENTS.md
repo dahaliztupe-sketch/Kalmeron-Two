@@ -167,6 +167,30 @@ npm run embeddings-worker:dev   # 8099
 | `skill-creator` | anthropics/skills | إنشاء/تحسين مهارة جديدة محلّيّة |
 | `kalmeron-ui-polish` | local | تحسين واجهات كلميرون العربية أولاً قبل التسليم |
 | `kalmeron-agent-builder` | local | إضافة أو توسيع وكيل جديد من الفكرة حتى الربط |
+| `web-design-guidelines` | local | مراجعة UX/UI للواجهات العربية أولاً |
+| `vercel-react-best-practices` | local | أفضل ممارسات React وRSC |
+| `vercel-composition-patterns` | local | أنماط التركيب للمكوّنات القابلة لإعادة الاستخدام |
+| `ui-ux-pro-max` | local | تحسينات واجهات عالية الجودة |
+| `tailwind-design-system` | local | نظام تصميم Tailwind موحّد |
+| `seo-audit` | local | تدقيق SEO للصفحات |
+| `shadcn-ui` | local | مكوّنات shadcn/ui |
+| `product-skills` | local | مهارات المنتج والتصميم والبحث |
+| `mcp-builder` | local | بناء MCP server والربط |
+| `frontend-design-review` | local | مراجعات الواجهة ونظام التصميم |
+| `frontend-design` | local | تصميم الواجهات الأمامية |
+| `firebase-basics` | local | Firestore وAuth وStorage |
+| `gemini-api` | local | تكامل Gemini API |
+| `google-cloud-waf-security` | local | مراجعات أمنية وIAM |
+| `google-cloud-waf-reliability` | local | الموثوقية والتحمّل |
+| `google-cloud-waf-cost-optimization` | local | تحسين تكلفة الموارد |
+| `cloud-run-basics` | local | أساسيات Cloud Run |
+| `continual-learning` | local | حلقات التعلّم والذاكرة |
+| `find-skills` | local | اكتشاف المهارات المناسبة |
+| `free-tool-strategy` | local | استراتيجية الأدوات المجانية |
+| `finance-skills` | local | مهارات المالية والتحليل |
+| `c-level-advisor` | local | مهارات القيادة التنفيذية |
+| `business-growth-skills` | local | النمو، المبيعات، والإيرادات |
+| `audit-website` | local | تدقيق المواقع |
 
 **أوامر إدارة المهارات:**
 ```bash
