@@ -1,8 +1,3 @@
-/**
- * POST /api/growth-lab
- * Builds growth strategies for Egyptian/Arab startups.
- * Modes: strategy | channels | retention | viral
- */
 import { NextRequest, NextResponse } from 'next/server';
 import { generateText } from 'ai';
 import { google } from '@/src/lib/gemini';
@@ -27,6 +22,42 @@ async function softAuth(req: NextRequest): Promise<{ userId: string; isGuest: bo
 }
 
 const MODE_PROMPTS: Record<string, (d: Record<string, string>) => string> = {
+  experiment: (d) => `أنت Growth Scientist متخصص في تصميم تجارب نمو قابلة للقياس للشركات الناشئة.
+
+فكرة التجربة: ${d.experimentIdea}
+${d.product ? `المنتج/الخدمة: ${d.product}` : ''}
+${d.stage ? `مرحلة الشركة: ${d.stage}` : ''}
+${d.currentMetrics ? `المقاييس الحالية: ${d.currentMetrics}` : ''}
+
+صمّم تجربة نمو كاملة بالعربية:
+
+## 🔬 الفرضية (Hypothesis)
+صيغة واضحة: "نعتقد أن [الإجراء] سيؤدي إلى [النتيجة] لأن [المبرر]"
+
+## 🎯 مؤشر النجاح الرئيسي (Primary KPI)
+- المقياس المحدد:
+- عتبة النجاح (Success Threshold): [القيمة التي تُعتبر فوزاً]
+- المهلة الزمنية للقياس:
+
+## 📋 خطة التنفيذ الأسبوعية
+| الأسبوع | المهمة | المسؤول | التسليمات |
+|---------|-------|---------|----------|
+| 1 | ... | ... | ... |
+| 2 | ... | ... | ... |
+| 3 | ... | ... | ... |
+| 4 | ... | ... | ... |
+
+## ✅ متطلبات التجربة
+- الحد الأدنى من العينة:
+- متطلبات البنية التحتية:
+- موارد الفريق المطلوبة:
+
+## 🚦 معايير الإيقاف المبكر
+متى تتوقف عن التجربة قبل اكتمالها؟
+
+## 📊 كيف تحلل النتائج
+خطوات القياس والتحليل بعد انتهاء التجربة.
+`,
   strategy: (d) => `ابنِ استراتيجية نمو شاملة:
 
 المنتج: ${d.product}
@@ -171,14 +202,19 @@ export async function POST(request: NextRequest) {
       currentMetrics: xss(String(body.currentMetrics ?? '').slice(0, 500)),
       budget: xss(String(body.budget ?? '').slice(0, 200)),
       challenge: xss(String(body.challenge ?? '').slice(0, 500)),
+      experimentIdea: xss(String(body.experimentIdea ?? '').slice(0, 1000)),
     };
 
-    if (!d.product.trim()) {
+    if (mode === 'experiment' && !d.experimentIdea.trim()) {
+      return NextResponse.json({ error: 'experiment idea required' }, { status: 400 });
+    }
+    if (mode !== 'experiment' && !d.product.trim()) {
       return NextResponse.json({ error: 'product description required' }, { status: 400 });
     }
 
     const { text } = await generateText({
       model: MODEL,
+      maxOutputTokens: 4096,
       system: `أنت "خبير النمو" في منصة كلميرون — متخصص في Growth Hacking وبناء استراتيجيات نمو للشركات الناشئة في الأسواق الناشئة.
 
 خلفيتك: عملت مع شركات B2B وB2C في السوق المصري والعربي. تفهم السلوك الاستهلاكي المحلي والقيود المالية للشركات الناشئة.

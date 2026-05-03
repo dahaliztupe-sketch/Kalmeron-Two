@@ -1,6 +1,8 @@
 // @ts-nocheck
 import { Agent, Workflow } from '@mastra/core';
 import { z } from 'zod';
+import { generateText } from 'ai';
+import { MODELS } from '@/src/lib/gemini';
 
 // 1. Job Description Agent
 export const jdAgent = new Agent({
@@ -10,26 +12,40 @@ export const jdAgent = new Agent({
   model: { provider: 'google', name: 'gemini-2.5-flash' },
 });
 
-// 2. Resume Screening Agent
+// 2. Resume Screening Agent — real Gemini CV analysis (no mocks)
 export const screeningAgent = new Agent({
   name: 'Resume Screening Agent',
   instructions: `أنت خبير في فحص وتقييم السير الذاتية.
   مهمتك: تحليل السير الذاتية للمتقدمين، ومطابقتها مع متطلبات الوظيفة، وتصنيف المرشحين حسب ملاءمتهم.
   استخدم معايير موضوعية مثل المهارات، الخبرة، والتعليم. قدم قائمة مختصرة بأفضل المرشحين مع تبرير لكل اختيار.`,
-  // Complex analysis => Pro preview
   model: { provider: 'google', name: 'gemini-2.5-pro' },
   tools: {
     parse_resume: {
-      description: 'استخراج المعلومات الرئيسية من السيرة الذاتية',
+      description: 'استخراج المعلومات الرئيسية من السيرة الذاتية بواسطة Gemini',
       parameters: z.object({
         resumeText: z.string().describe('نص السيرة الذاتية'),
       }),
       execute: async ({ resumeText }) => {
-        return { 
-          skills: ['React', 'Next.js', 'Typescript'], 
-          experienceYears: 4, 
-          qualified: true 
-        };
+        const { text } = await generateText({
+          model: MODELS.FLASH,
+          system: `أنت محلل سير ذاتية. استخرج من النص التالي بتنسيق JSON فقط — لا تضف أي نص خارج JSON:
+{
+  "name": "الاسم الكامل أو unknown",
+  "skills": ["مهارة1", "مهارة2"],
+  "experienceYears": عدد_سنوات_الخبرة_رقم,
+  "education": "أعلى درجة علمية",
+  "highlights": ["إنجاز1", "إنجاز2"],
+  "qualified": true_or_false
+}`,
+          prompt: resumeText.slice(0, 8000),
+          maxOutputTokens: 600,
+        });
+        try {
+          const cleaned = text.replace(/```json\n?|```/g, '').trim();
+          return JSON.parse(cleaned);
+        } catch {
+          return { skills: [], experienceYears: 0, qualified: false, raw: text };
+        }
       },
     },
   },
@@ -41,7 +57,6 @@ export const schedulerAgent = new Agent({
   instructions: `أنت منسق مقابلات محترف.
   مهمتك: التواصل مع المرشحين المختارين، واقتراح مواعيد متاحة للمقابلات، وتأكيد الحجوزات.
   استلهم من Paradox (Olivia) التي تحجز المقابلات تلقائيًا.`,
-  // Simple scheduling => Flash Lite
   model: { provider: 'google', name: 'gemini-2.5-flash' },
 });
 

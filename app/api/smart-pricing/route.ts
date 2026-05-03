@@ -1,7 +1,3 @@
-/**
- * POST /api/smart-pricing
- * Generates a complete pricing strategy for Egyptian/Arab startups.
- */
 import { NextRequest, NextResponse } from 'next/server';
 import { generateText } from 'ai';
 import { google } from '@/src/lib/gemini';
@@ -50,6 +46,7 @@ export async function POST(request: NextRequest) {
 
     const { text } = await generateText({
       model: MODEL,
+      maxOutputTokens: 4096,
       system: `أنت "مستشار التسعير الاستراتيجي" في منصة كلميرون — متخصص في بناء استراتيجيات تسعير للشركات الناشئة المصرية والعربية.
 
 تعتمد على:
@@ -71,11 +68,19 @@ export async function POST(request: NextRequest) {
 
 أنشئ استراتيجية تسعير تشمل:
 
-## 💰 السعر الموصى به
-(رقم واضح أو نطاق مبرر)
+## ⚖️ مقارنة مناهج التسعير الثلاثة
+قيّم كل منهج بوضوح لهذا المنتج تحديداً:
 
-## 🎯 منطق التسعير
-(لماذا هذا السعر تحديداً؟)
+| المنهج | السعر المُقدَّر | المبرر | الملاءمة لهذا المنتج |
+|--------|--------------|--------|----------------------|
+| **Cost-Plus** (التكلفة + هامش ربح) | ... | COGS + X% | ✅/⚠️/❌ — السبب |
+| **Value-Based** (القيمة المُدرَكة) | ... | ما يوفره على العميل | ✅/⚠️/❌ — السبب |
+| **Competitive** (محاذاة المنافسين) | ... | بناءً على السوق | ✅/⚠️/❌ — السبب |
+
+**المنهج الموصى به:** اذكر أيها أنسب ولماذا.
+
+## 💰 السعر الموصى به
+(رقم واضح أو نطاق — مبني على المنهج الموصى به)
 
 ## 📦 هيكل الخطط المقترح
 (إذا كان Tiered/Freemium — حدّد كل خطة بمحتواها وسعرها)

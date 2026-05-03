@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { Users, ArrowLeft, Loader2, Plus, Trash2, Heart, AlertTriangle, CheckCircle2, Copy, Check } from "lucide-react";
+import { Users, ArrowLeft, Loader2, Plus, Trash2, Heart, AlertTriangle, CheckCircle2, Copy, Check, Download } from "lucide-react";
 import Link from "next/link";
 import { AppShell } from "@/components/layout/AppShell";
 import { useAuth } from "@/contexts/AuthContext";
@@ -96,7 +96,7 @@ export default function CofounderHealthPage() {
         ) : (
           <AnimatePresence>
             <motion.div key="result" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
-              <div className="flex items-center justify-between"><div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-400" /><span className="text-sm font-semibold text-white">تقرير صحة الفريق</span></div><div className="flex items-center gap-2"><button onClick={copyResult} className="flex items-center gap-1.5 text-xs text-white/50 hover:text-white/80 border border-white/10 rounded-lg px-3 py-1.5 transition-colors">{copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}{copied ? "تم" : "نسخ"}</button><button onClick={() => setResult("")} className="text-xs text-violet-400 hover:text-violet-300 border border-violet-500/20 rounded-lg px-3 py-1.5 transition-colors">تحليل جديد</button></div></div>
+              <div className="flex items-center justify-between"><div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-400" /><span className="text-sm font-semibold text-white">تقرير صحة الفريق</span></div><div className="flex items-center gap-2"><button onClick={copyResult} className="flex items-center gap-1.5 text-xs text-white/50 hover:text-white/80 border border-white/10 rounded-lg px-3 py-1.5 transition-colors">{copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}{copied ? "تم" : "نسخ"}</button><button onClick={() => { const b = new Blob([result], { type: "text/markdown" }); const u = URL.createObjectURL(b); const a = document.createElement("a"); a.href = u; a.download = `cofounder-health-${Date.now()}.md`; a.click(); URL.revokeObjectURL(u); }} className="flex items-center gap-1 text-xs text-white/50 hover:text-white/80 border border-white/10 rounded-lg px-3 py-1.5 transition-colors"><Download className="w-3 h-3" />تحميل</button><button onClick={() => setResult("")} className="text-xs text-violet-400 hover:text-violet-300 border border-violet-500/20 rounded-lg px-3 py-1.5 transition-colors">تحليل جديد</button></div></div>
               <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6"><div className="prose prose-invert prose-sm max-w-none text-white/80 leading-relaxed whitespace-pre-wrap">{result}</div></div>
             </motion.div>
           </AnimatePresence>

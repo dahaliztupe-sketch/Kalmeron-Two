@@ -3,22 +3,24 @@
 import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import {
-  Rocket, Sparkles, ArrowLeft, Loader2, CheckCircle2,
+  Rocket, ArrowLeft, Loader2, CheckCircle2,
   Copy, Check, RefreshCw, AlertCircle, TrendingUp,
-  Zap, Target, BarChart3,
+  Zap, Target, BarChart3, Download, FlaskConical,
+  type LucideIcon,
 } from "lucide-react";
 import Link from "next/link";
 import { AppShell } from "@/components/layout/AppShell";
 import { useAuth } from "@/contexts/AuthContext";
 import ReactMarkdown from "react-markdown";
 
-type GrowthMode = "strategy" | "channels" | "retention" | "viral";
+type GrowthMode = "experiment" | "strategy" | "channels" | "retention" | "viral";
 
-const GROWTH_MODES = [
-  { id: "strategy" as GrowthMode, label: "استراتيجية النمو", icon: Rocket, desc: "خطة نمو شاملة لمرحلتك الحالية" },
-  { id: "channels" as GrowthMode, label: "قنوات الاكتساب", icon: Target, desc: "أفضل قنوات لاكتساب عملاء جدد" },
-  { id: "retention" as GrowthMode, label: "الاحتفاظ بالعملاء", icon: BarChart3, desc: "زيادة Retention وخفض Churn" },
-  { id: "viral" as GrowthMode, label: "الانتشار الفيروسي", icon: Zap, desc: "بناء Growth loops وViral loops" },
+const GROWTH_MODES: { id: GrowthMode; label: string; icon: LucideIcon; desc: string }[] = [
+  { id: "experiment", label: "تجربة نمو", icon: FlaskConical, desc: "صمّم فرضية + KPI + خطة أسبوعية" },
+  { id: "strategy",   label: "استراتيجية النمو", icon: Rocket,    desc: "خطة نمو شاملة لمرحلتك الحالية" },
+  { id: "channels",   label: "قنوات الاكتساب",   icon: Target,    desc: "أفضل قنوات لاكتساب عملاء جدد" },
+  { id: "retention",  label: "الاحتفاظ بالعملاء", icon: BarChart3, desc: "زيادة Retention وخفض Churn" },
+  { id: "viral",      label: "الانتشار الفيروسي", icon: Zap,       desc: "بناء Growth loops وViral loops" },
 ];
 
 const STAGES = [
@@ -31,7 +33,9 @@ const STAGES = [
 
 export default function GrowthLabPage() {
   const { user } = useAuth();
-  const [mode, setMode] = useState<GrowthMode>("strategy");
+  const [mode, setMode] = useState<GrowthMode>("experiment");
+
+  const [experimentIdea, setExperimentIdea] = useState("");
   const [product, setProduct] = useState("");
   const [stage, setStage] = useState("MVP");
   const [currentMetrics, setCurrentMetrics] = useState("");
@@ -43,17 +47,24 @@ export default function GrowthLabPage() {
   const [error, setError] = useState("");
   const [copied, setCopied] = useState(false);
 
+  const isExperiment = mode === "experiment";
+
+  const isSubmitDisabled = loading || (isExperiment ? !experimentIdea.trim() : !product.trim());
+
   const handleSubmit = useCallback(async () => {
-    if (!product.trim() || loading) return;
+    if (isSubmitDisabled) return;
     setLoading(true);
     setError("");
     setResult("");
     try {
       const token = await user?.getIdToken();
+      const body = isExperiment
+        ? { mode, experimentIdea, product, stage, currentMetrics }
+        : { mode, product, stage, currentMetrics, budget, challenge };
       const res = await fetch("/api/growth-lab", {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ mode, product, stage, currentMetrics, budget, challenge }),
+        body: JSON.stringify(body),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "حدث خطأ");
@@ -63,17 +74,22 @@ export default function GrowthLabPage() {
     } finally {
       setLoading(false);
     }
-  }, [mode, product, stage, currentMetrics, budget, challenge, loading, user]);
+  }, [mode, experimentIdea, product, stage, currentMetrics, budget, challenge, loading, user, isExperiment, isSubmitDisabled]);
 
   const inputClass = "w-full bg-slate-900/70 border border-slate-700/50 rounded-xl px-4 py-2.5 text-white placeholder-slate-500 focus:outline-none focus:border-violet-500/50 text-sm";
   const currentMode = GROWTH_MODES.find(m => m.id === mode)!;
+
+  const handleModeChange = (id: GrowthMode) => {
+    setMode(id);
+    setResult("");
+    setError("");
+  };
 
   return (
     <AppShell>
       <div className="min-h-screen bg-[#0a0a0f] text-white" dir="rtl">
         <div className="max-w-4xl mx-auto px-4 py-8 space-y-8">
 
-          {/* Header */}
           <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="flex items-center gap-4">
             <Link href="/dashboard" className="text-slate-400 hover:text-white transition-colors">
               <ArrowLeft size={20} />
@@ -87,24 +103,22 @@ export default function GrowthLabPage() {
             </div>
           </motion.div>
 
-          {/* Mode Cards */}
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
-            className="grid grid-cols-2 gap-3">
+            className="grid grid-cols-2 sm:grid-cols-5 gap-2">
             {GROWTH_MODES.map(({ id, label, icon: Icon, desc }) => (
-              <button key={id} onClick={() => { setMode(id); setResult(""); setError(""); }}
-                className={`text-right p-4 rounded-xl border transition-all ${
+              <button key={id} onClick={() => handleModeChange(id)}
+                className={`text-right p-3 rounded-xl border transition-all ${
                   mode === id
                     ? "bg-violet-900/30 border-violet-500/50 shadow-lg"
                     : "bg-slate-800/40 border-slate-700/40 hover:border-slate-600/60"
                 }`}>
-                <Icon size={18} className={mode === id ? "text-violet-400 mb-1" : "text-slate-400 mb-1"} />
-                <div className={`text-sm font-semibold ${mode === id ? "text-violet-300" : "text-slate-300"}`}>{label}</div>
-                <div className="text-[11px] text-slate-500 mt-0.5">{desc}</div>
+                <Icon size={16} className={mode === id ? "text-violet-400 mb-1" : "text-slate-400 mb-1"} />
+                <div className={`text-xs font-semibold leading-tight ${mode === id ? "text-violet-300" : "text-slate-300"}`}>{label}</div>
+                <div className="text-[10px] text-slate-500 mt-0.5 leading-tight hidden sm:block">{desc}</div>
               </button>
             ))}
           </motion.div>
 
-          {/* Form */}
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
             className="bg-slate-800/40 border border-slate-700/50 rounded-2xl p-6 space-y-4">
 
@@ -113,46 +127,83 @@ export default function GrowthLabPage() {
               <span className="font-semibold text-violet-400">{currentMode.label}</span>
             </div>
 
-            <div className="space-y-3">
-              <div>
-                <label className="text-slate-400 text-xs block mb-1.5">وصف المنتج/الخدمة *</label>
-                <textarea value={product} onChange={e => setProduct(e.target.value)}
-                  placeholder="مثال: منصة SaaS لإدارة المخزون للمطاعم الصغيرة..."
-                  rows={2}
-                  className="w-full bg-slate-900/70 border border-slate-700/50 rounded-xl px-4 py-3 text-white placeholder-slate-500 resize-none focus:outline-none focus:border-violet-500/50 text-sm" />
-              </div>
+            <AnimatePresence mode="wait">
+              {isExperiment ? (
+                <motion.div key="experiment" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}
+                  className="space-y-3">
+                  <div>
+                    <label className="text-slate-400 text-xs block mb-1.5">فكرة التجربة *</label>
+                    <textarea value={experimentIdea} onChange={e => setExperimentIdea(e.target.value)}
+                      placeholder="مثال: إضافة زر 'شارك مع صديق' في صفحة إتمام الطلب لزيادة الإحالات"
+                      rows={3}
+                      className="w-full bg-slate-900/70 border border-slate-700/50 rounded-xl px-4 py-3 text-white placeholder-slate-500 resize-none focus:outline-none focus:border-violet-500/50 text-sm" />
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="text-slate-400 text-xs block mb-1.5">المنتج/الخدمة (اختياري)</label>
+                      <input value={product} onChange={e => setProduct(e.target.value)}
+                        placeholder="مثال: منصة طلبات أونلاين" className={inputClass} />
+                    </div>
+                    <div>
+                      <label className="text-slate-400 text-xs block mb-1.5">مرحلة الشركة</label>
+                      <select value={stage} onChange={e => setStage(e.target.value)} className={inputClass}>
+                        {STAGES.map(({ value, label }) => (
+                          <option key={value} value={value}>{label}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="col-span-2">
+                      <label className="text-slate-400 text-xs block mb-1.5">المقاييس الحالية (اختياري)</label>
+                      <input value={currentMetrics} onChange={e => setCurrentMetrics(e.target.value)}
+                        placeholder="مثال: معدل الإحالة الحالي 2%، 500 مستخدم نشط" className={inputClass} />
+                    </div>
+                  </div>
+                </motion.div>
+              ) : (
+                <motion.div key="other" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}
+                  className="space-y-3">
+                  <div>
+                    <label className="text-slate-400 text-xs block mb-1.5">وصف المنتج/الخدمة *</label>
+                    <textarea value={product} onChange={e => setProduct(e.target.value)}
+                      placeholder="مثال: منصة SaaS لإدارة المخزون للمطاعم الصغيرة..."
+                      rows={2}
+                      className="w-full bg-slate-900/70 border border-slate-700/50 rounded-xl px-4 py-3 text-white placeholder-slate-500 resize-none focus:outline-none focus:border-violet-500/50 text-sm" />
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="text-slate-400 text-xs block mb-1.5">مرحلة النمو الحالية</label>
+                      <select value={stage} onChange={e => setStage(e.target.value)} className={inputClass}>
+                        {STAGES.map(({ value, label }) => (
+                          <option key={value} value={value}>{label}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="text-slate-400 text-xs block mb-1.5">ميزانية النمو الشهرية</label>
+                      <input value={budget} onChange={e => setBudget(e.target.value)}
+                        placeholder="مثال: 10,000 جنيه أو صفر" className={inputClass} />
+                    </div>
+                    <div className="col-span-2">
+                      <label className="text-slate-400 text-xs block mb-1.5">المقاييس الحالية (إن وُجدت)</label>
+                      <input value={currentMetrics} onChange={e => setCurrentMetrics(e.target.value)}
+                        placeholder="مثال: 50 عميل، MRR = 25,000 جنيه، Churn = 8% شهرياً" className={inputClass} />
+                    </div>
+                    <div className="col-span-2">
+                      <label className="text-slate-400 text-xs block mb-1.5">أكبر تحدي نمو تواجهه الآن</label>
+                      <input value={challenge} onChange={e => setChallenge(e.target.value)}
+                        placeholder="مثال: لا أعرف كيف أصل للعملاء بدون ميزانية إعلانية" className={inputClass} />
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="text-slate-400 text-xs block mb-1.5">مرحلة النمو الحالية</label>
-                  <select value={stage} onChange={e => setStage(e.target.value)} className={inputClass}>
-                    {STAGES.map(({ value, label }) => (
-                      <option key={value} value={value}>{label}</option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="text-slate-400 text-xs block mb-1.5">ميزانية النمو الشهرية</label>
-                  <input value={budget} onChange={e => setBudget(e.target.value)}
-                    placeholder="مثال: 10,000 جنيه أو صفر" className={inputClass} />
-                </div>
-                <div className="col-span-2">
-                  <label className="text-slate-400 text-xs block mb-1.5">المقاييس الحالية (إن وُجدت)</label>
-                  <input value={currentMetrics} onChange={e => setCurrentMetrics(e.target.value)}
-                    placeholder="مثال: 50 عميل، MRR = 25,000 جنيه، Churn = 8% شهرياً" className={inputClass} />
-                </div>
-                <div className="col-span-2">
-                  <label className="text-slate-400 text-xs block mb-1.5">أكبر تحدي نمو تواجهه الآن</label>
-                  <input value={challenge} onChange={e => setChallenge(e.target.value)}
-                    placeholder="مثال: لا أعرف كيف أصل للعملاء بدون ميزانية إعلانية" className={inputClass} />
-                </div>
-              </div>
-            </div>
-
-            <button onClick={handleSubmit} disabled={loading || !product.trim()}
+            <button onClick={handleSubmit} disabled={isSubmitDisabled}
               className="flex items-center gap-2 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white px-5 py-2.5 rounded-xl text-sm font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed">
               {loading ? <Loader2 size={16} className="animate-spin" /> : <TrendingUp size={16} />}
-              {loading ? "جاري بناء الاستراتيجية..." : "ابنِ استراتيجية النمو"}
+              {loading
+                ? (isExperiment ? "جاري تصميم التجربة..." : "جاري بناء الاستراتيجية...")
+                : (isExperiment ? "صمّم التجربة" : "ابنِ استراتيجية النمو")}
             </button>
 
             <AnimatePresence>
@@ -170,11 +221,15 @@ export default function GrowthLabPage() {
                       <CheckCircle2 size={14} /> {currentMode.label}
                     </span>
                     <div className="flex gap-2">
-                      <button onClick={() => { setResult(""); setProduct(""); }}
+                      <button onClick={() => { setResult(""); }}
                         className="text-slate-400 hover:text-white transition-colors"><RefreshCw size={14} /></button>
                       <button onClick={() => { navigator.clipboard.writeText(result); setCopied(true); setTimeout(() => setCopied(false), 2000); }}
                         className="text-slate-400 hover:text-white transition-colors">
                         {copied ? <Check size={14} className="text-emerald-400" /> : <Copy size={14} />}
+                      </button>
+                      <button onClick={() => { const b = new Blob([result], { type: "text/markdown" }); const u = URL.createObjectURL(b); const a = document.createElement("a"); a.href = u; a.download = `growth-lab-${mode}-${Date.now()}.md`; a.click(); URL.revokeObjectURL(u); }}
+                        className="text-slate-400 hover:text-white transition-colors" title="تحميل">
+                        <Download size={14} />
                       </button>
                     </div>
                   </div>
@@ -188,7 +243,6 @@ export default function GrowthLabPage() {
             </AnimatePresence>
           </motion.div>
 
-          {/* Quick Links */}
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }}
             className="grid grid-cols-3 gap-3">
             {[

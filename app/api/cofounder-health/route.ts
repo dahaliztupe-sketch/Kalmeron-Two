@@ -46,6 +46,7 @@ export async function POST(request: NextRequest) {
 
       const { text } = await generateText({
         model: MODEL,
+        maxOutputTokens: 6000,
         system: `أنت مستشار قانوني متخصص في اتفاقيات التأسيس للشركات الناشئة في مصر. أنشئ مسودة اتفاقية مؤسسين شاملة باللغة العربية.`,
         prompt: `أنشئ اتفاقية مؤسسين لـ:
 الشركة: ${companyName} (${companyType})

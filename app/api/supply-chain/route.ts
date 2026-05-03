@@ -1,6 +1,3 @@
-/**
- * POST /api/supply-chain — AI-powered supply chain analysis
- */
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { adminAuth } from '@/src/lib/firebase-admin';
@@ -58,6 +55,7 @@ export async function POST(req: NextRequest) {
   try {
     const { text } = await generateText({
       model: MODEL,
+      maxOutputTokens: 4096,
       prompt: `أنت خبير في سلاسل الإمداد والعمليات في السوق المصري.
 
 المنتج/الخدمة: ${product}

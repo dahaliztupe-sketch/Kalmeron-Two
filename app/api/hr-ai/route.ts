@@ -1,7 +1,3 @@
-/**
- * POST /api/hr-ai
- * HR tools: job descriptions, interview questions, performance reviews, offer letters
- */
 import { NextRequest, NextResponse } from 'next/server';
 import { generateText } from 'ai';
 import { google } from '@/src/lib/gemini';
@@ -26,6 +22,55 @@ async function softAuth(req: NextRequest): Promise<{ userId: string; isGuest: bo
 }
 
 const MODE_PROMPTS: Record<string, (d: Record<string, string>) => string> = {
+  'cv-compare': (d) => `أنت خبير Human Resources متخصص في المقارنة النهائية بين المرشحين للشركات الناشئة.
+
+الوظيفة: ${d.role}
+${d.skills ? `المتطلبات: ${d.skills}` : ''}
+
+فيما يلي تقارير تقييم منفصلة لكل مرشح:
+${(d.cvText ?? '').slice(0, 10000)}
+
+قدّم:
+## 🏆 ترتيب المرشحين (من الأفضل للأقل)
+(جدول مقارنة يُظهر الاسم، النتيجة، أبرز ميزة، أبرز ضعف)
+
+## 🥇 التوصية النهائية
+من تُوصي باستدعائه أولاً وسبب ذلك بالتفصيل.
+
+## 📌 ملاحظات للمقابلة
+نقاط يجب التحقق منها لأفضل المرشحين.
+`,
+  'cv-screen': (d) => `أنت خبير Human Resources متخصص في فحص وتقييم السير الذاتية للشركات الناشئة في مصر.
+
+الوظيفة المطلوبة: ${d.role}
+${d.skills ? `المتطلبات الأساسية: ${d.skills}` : ''}
+${d.department ? `القسم: ${d.department}` : ''}
+${d.experience ? `الخبرة المطلوبة: ${d.experience}` : ''}
+
+--- نص السيرة الذاتية ---
+${(d.cvText ?? '').slice(0, 10000)}
+--- نهاية السيرة الذاتية ---
+
+قدّم تقييماً شاملاً يتضمن:
+
+## 📊 نتيجة التوافق مع الوظيفة
+**النتيجة الإجمالية: X / 10** — (توافق: ضعيف / متوسط / جيد / ممتاز)
+
+## 👤 ملخص المرشح
+(5 نقاط أبرز ما في السيرة الذاتية)
+
+## ✅ نقاط القوة المُطابِقة للوظيفة
+(ما الذي يُؤهّله لهذا الدور؟)
+
+## ⚠️ نقاط الضعف والفجوات
+(ما الذي يفتقر إليه مقارنةً بالمتطلبات؟)
+
+## 🎯 أسئلة مقابلة مُخصَّصة لهذا المرشح
+(7-10 أسئلة مبنية على تجربته الفعلية — ليست عامة)
+
+## 📋 توصية نهائية
+(هل تُوصي باستدعائه للمقابلة؟ ولماذا؟)
+`,
   jobdesc: (d) => `اكتب وصفاً وظيفياً احترافياً:
 
 المسمى الوظيفي: ${d.role}
@@ -191,14 +236,19 @@ export async function POST(request: NextRequest) {
       skills: xss(String(body.skills ?? '').slice(0, 500)),
       context: xss(String(body.context ?? '').slice(0, 1000)),
       salary: xss(String(body.salary ?? '').slice(0, 100)),
+      cvText: String(body.cvText ?? '').slice(0, 12000),
     };
 
     if (!d.role.trim()) {
       return NextResponse.json({ error: 'role is required' }, { status: 400 });
     }
+    if (mode === 'cv-screen' && !d.cvText.trim()) {
+      return NextResponse.json({ error: 'cvText is required for cv-screen mode' }, { status: 400 });
+    }
 
     const { text } = await generateText({
       model: MODEL,
+      maxOutputTokens: 4096,
       system: `أنت "مستشار الموارد البشرية" في منصة كلميرون — خبير HR يفهم سوق العمل المصري والعربي جيداً.
 
 تُنشئ محتوى HR احترافياً وعملياً: وصف وظيفي جذاب، أسئلة مقابلة ذكية، تقييمات موضوعية، وعروض عمل قانونية.

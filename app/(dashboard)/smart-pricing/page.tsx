@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "motion/react";
 import {
   DollarSign, Sparkles, ArrowLeft, Loader2, CheckCircle2,
   Copy, Check, RefreshCw, AlertCircle, TrendingUp, Target,
-  Users, Zap,
+  Users, Zap, Download,
 } from "lucide-react";
 import Link from "next/link";
 import { AppShell } from "@/components/layout/AppShell";
@@ -179,6 +179,10 @@ export default function SmartPricingPage() {
                       <button onClick={() => { navigator.clipboard.writeText(result); setCopied(true); setTimeout(() => setCopied(false), 2000); }}
                         className="text-slate-400 hover:text-white transition-colors">
                         {copied ? <Check size={14} className="text-emerald-400" /> : <Copy size={14} />}
+                      </button>
+                      <button onClick={() => { const b = new Blob([result], { type: "text/markdown" }); const u = URL.createObjectURL(b); const a = document.createElement("a"); a.href = u; a.download = `pricing-strategy-${Date.now()}.md`; a.click(); URL.revokeObjectURL(u); }}
+                        className="text-slate-400 hover:text-white transition-colors" title="تحميل">
+                        <Download size={14} />
                       </button>
                     </div>
                   </div>

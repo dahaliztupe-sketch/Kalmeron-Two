@@ -38,6 +38,8 @@ import {
   Network,
   Video,
   CalendarDays,
+  FileText,
+  MessageSquare,
 } from "lucide-react";
 
 export type NavItem = {
@@ -73,6 +75,9 @@ export const NAV_SECTIONS: NavSection[] = [
       { href: "/launchpad", label: "منصة الإطلاق", icon: Rocket, badge: "جديد", badgeColor: "violet" },
       { href: "/plan", label: "الأهداف والخطة", icon: Target },
       { href: "/cash-runway", label: "المدرج المالي", icon: Calculator },
+      { href: "/cap-table", label: "إدارة الحصص", icon: PieChart, badge: "جديد", badgeColor: "violet" },
+      { href: "/term-sheet-analyzer", label: "محلل Term Sheet", icon: FileText, badge: "جديد", badgeColor: "amber" },
+      { href: "/benchmarking", label: "قارن شركتك", icon: BarChart3, badge: "جديد", badgeColor: "cyan" },
       { href: "/investor", label: "لوحة المستثمر", icon: LineChart },
       { href: "/meetings", label: "اجتماعات الفريق", icon: Video },
     ],
@@ -89,6 +94,7 @@ export const NAV_SECTIONS: NavSection[] = [
       { href: "/market-lab", label: "مختبر السوق", icon: FlaskConical },
       { href: "/market-intelligence", label: "استخبارات السوق", icon: Globe, badge: "جديد", badgeColor: "cyan" },
       { href: "/brand-voice", label: "صوت العلامة", icon: Sparkles },
+      { href: "/arabic-templates", label: "مكتبة النماذج العربية", icon: BookOpen, badge: "جديد", badgeColor: "emerald" },
       { href: "/contract-review", label: "مراجع العقود", icon: Scale, badge: "جديد", badgeColor: "amber" },
       { href: "/legal-ai", label: "المستشار القانوني", icon: Scale },
       { href: "/setup-egypt", label: "التأسيس في مصر", icon: MapPin },
@@ -108,6 +114,7 @@ export const NAV_SECTIONS: NavSection[] = [
       { href: "/operations", label: "غرفة العمليات", icon: Activity },
       { href: "/brain", label: "رسم المعرفة", icon: Network },
       { href: "/trending-tools", label: "أدوات AI الرائجة", icon: Flame },
+      { href: "/whatsapp-agent", label: "وكيل WhatsApp", icon: MessageSquare, badge: "جديد", badgeColor: "emerald" },
     ],
   },
   {
