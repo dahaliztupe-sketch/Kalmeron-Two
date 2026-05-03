@@ -6,14 +6,13 @@ import { DemoTabs } from "@/components/demo/DemoTabs";
 import { BrandLogo } from "@/components/brand/BrandLogo";
 
 export const metadata: Metadata = {
-  title: "جرّب كلميرون مباشرة — بدون تسجيل",
+  title: "تجربة كلميرون المباشرة",
   description:
-    "شوف كلميرون شغّال على 3 سيناريوهات حقيقية لرواد أعمال مصريين. بدون تسجيل، بدون بطاقة، بدون انتظار.",
+    "شاهد كيف يعمل كلميرون على 3 سيناريوهات حقيقية لرواد أعمال مصريين.",
   alternates: { canonical: "/demo" },
   openGraph: {
-    title: "جرّب كلميرون مباشرة — 3 سيناريوهات لرواد أعمال مصريين",
-    description:
-      "كافيه في المعادي، متجر إلكتروني للسعودية، تأسيس شركة قانونية. شوف المجلس بيتداول قدّامك.",
+    title: "تجربة كلميرون المباشرة — 3 سيناريوهات لرواد أعمال مصريين",
+    description: "كافيه في المعادي، متجر إلكتروني للسعودية، وتأسيس شركة قانونية.",
     url: "/demo",
   },
 };
@@ -21,7 +20,6 @@ export const metadata: Metadata = {
 export default function DemoPage() {
   return (
     <div className="min-h-screen bg-[#04060B] text-white" dir="rtl">
-      {/* Minimal header */}
       <header className="sticky top-0 z-40 border-b border-white/[0.06] bg-[#05070D]/80 backdrop-blur-xl">
         <div className="max-w-6xl mx-auto px-4 md:px-8 h-16 flex items-center justify-between">
           <BrandLogo size={36} />
@@ -47,24 +45,22 @@ export default function DemoPage() {
         <div className="absolute inset-0 bg-gradient-to-b from-indigo-950/30 via-transparent to-transparent pointer-events-none" />
         <div className="relative max-w-4xl mx-auto px-4 md:px-8 pt-16 pb-10 text-center">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-cyan-500/30 bg-cyan-500/5 text-[11px] uppercase tracking-[0.2em] text-cyan-200 font-bold mb-5">
-            عرض حيّ — بدون تسجيل
+            تجربة مباشرة
           </div>
           <h1 className="font-display text-3xl md:text-5xl font-extrabold leading-tight mb-4">
-            شوف <span className="brand-gradient-text">المجلس</span> بيشتغل قدّامك
+            شوف <span className="brand-gradient-text">كلميرون</span> بيشتغل قدّامك
           </h1>
           <p className="text-neutral-300 text-base md:text-lg max-w-2xl mx-auto leading-relaxed">
             3 سيناريوهات حقيقية لرواد أعمال مصريين. كل سيناريو يستغرق دقيقتين تقريباً
-            ويُريك كيف يتداول 4 خبراء داخل المنصّة قبل تسليم توصية واحدة قابلة للتنفيذ.
+            ويُريك كيف يعمل النظام قبل تسليم توصية قابلة للتنفيذ.
           </p>
         </div>
       </section>
 
-      {/* Scenarios — interactive client component */}
       <section className="max-w-4xl mx-auto px-4 md:px-8 pb-20">
         <DemoTabs scenarios={SCENARIOS} />
       </section>
 
-      {/* CTA */}
       <section className="border-t border-white/[0.06] bg-gradient-to-b from-transparent to-indigo-950/20">
         <div className="max-w-3xl mx-auto px-4 md:px-8 py-16 text-center">
           <h2 className="font-display text-2xl md:text-3xl font-extrabold text-white mb-3">

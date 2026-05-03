@@ -125,17 +125,16 @@ export default function DemoModePage() {
         <div>
           <div className="flex items-center gap-2 text-xs text-amber-300/90 mb-2">
             <Sparkles className="size-3.5" />
-            <span>وضع العرض على المستثمر</span>
+            <span>وضع العرض للمستثمر</span>
           </div>
           <h1 className="text-3xl sm:text-4xl font-bold text-white">
             تشغيل وضع العرض
           </h1>
           <p className="text-white/60 mt-2 max-w-2xl">
-            مفتاح واحد يحوّل المنصّة إلى نسخة &quot;آمنة للعرض&quot;: يخفي الميزات التجريبية، يفعّل الشارات الجاهزة، ويُبرز المسار الموصى به للمستثمر.
+            مفتاح واحد يهيّئ المنصّة لعرض المستثمر: يفعّل الشارات المناسبة ويُبرز المسار الموصى به.
           </p>
         </div>
 
-        {/* Big toggle */}
         <div className="rounded-2xl border border-white/10 bg-gradient-to-br from-slate-900/60 to-slate-950/60 p-8">
           <div className="flex flex-wrap items-center justify-between gap-6">
             <div className="flex items-center gap-4">
@@ -186,7 +185,6 @@ export default function DemoModePage() {
           </div>
         </div>
 
-        {/* What it does */}
         <div className="grid md:grid-cols-3 gap-4">
           <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
             <div className="rounded-xl bg-cyan-500/15 size-10 flex items-center justify-center mb-3">
@@ -194,7 +192,7 @@ export default function DemoModePage() {
             </div>
             <h3 className="text-white font-semibold mb-1">يُبرز المسار الموصى به</h3>
             <p className="text-sm text-white/60">
-              الوكلاء الستة الجاهزون للعرض يظهرون أوّلًا في الصفحة الرئيسية وفي قائمة الوكلاء.
+              المسارات الجاهزة للعرض تظهر أوّلًا في الصفحة الرئيسية وفي قائمة الوكلاء.
             </p>
           </div>
           <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
@@ -203,7 +201,7 @@ export default function DemoModePage() {
             </div>
             <h3 className="text-white font-semibold mb-1">يخفي ما هو غير مكتمل</h3>
             <p className="text-sm text-white/60">
-              الوكلاء التجريبيون يظهرون بشارة &quot;تجريبي&quot; لتجنّب الإحراج وقت الأسئلة.
+              العناصر غير الجاهزة تظهر بشارة واضحة لتجنّب الالتباس وقت العرض.
             </p>
           </div>
           <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
@@ -212,12 +210,11 @@ export default function DemoModePage() {
             </div>
             <h3 className="text-white font-semibold mb-1">يُحضّر بيانات الاستعراض</h3>
             <p className="text-sm text-white/60">
-              يُمكنك تحميل حساب نموذجي ببيانات شركة افتراضية حقيقية المظهر.
+              يُمكنك تحميل حساب نموذجي ببيانات شركة واقعية المظهر.
             </p>
           </div>
         </div>
 
-        {/* Seed demo data */}
         <section className="rounded-2xl border border-white/10 bg-white/[0.03] p-6">
           <div className="flex flex-wrap items-start justify-between gap-4 mb-4">
             <div className="flex items-start gap-3">
@@ -255,7 +252,7 @@ export default function DemoModePage() {
               ) : (
                 <Sparkles className="size-4" />
               )}
-              تعبئة بيانات العرض الآن
+              تعبئة بيانات الاستعراض الآن
             </button>
             {seeded && (
               <button
@@ -268,7 +265,7 @@ export default function DemoModePage() {
                 ) : (
                   <Trash2 className="size-4" />
                 )}
-                مسح بيانات العرض
+                مسح بيانات الاستعراض
               </button>
             )}
             <Link
@@ -285,7 +282,6 @@ export default function DemoModePage() {
           )}
         </section>
 
-        {/* Steps */}
         <section className="rounded-2xl border border-white/10 bg-white/[0.03] p-6">
           <h3 className="text-white font-semibold flex items-center gap-2 mb-4">
             <Hammer className="size-5 text-fuchsia-400" />

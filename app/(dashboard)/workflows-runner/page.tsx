@@ -5,8 +5,7 @@
  * ------------------------------------------------------------
  * Picks one of the WORKFLOW_LIBRARY specs, renders its inputs, posts to
  * /api/workflows/run, and streams the per-step results into a readable
- * timeline. Falls back to deterministic stubs if no model API key is
- * configured (the runner handles that internally).
+ * timeline.
  */
 
 import * as React from "react";
@@ -68,7 +67,7 @@ export default function WorkflowsRunnerPage() {
       <main id="kalmeron-main" dir="rtl" className="max-w-5xl mx-auto px-5 md:px-8 py-8 md:py-12">
         <header className="mb-8">
           <div className="inline-flex items-center gap-2 rounded-full border border-cyan-400/20 bg-cyan-500/[0.06] px-3 py-1 text-[11px] text-cyan-200 mb-3">
-            <WorkflowIcon className="w-3.5 h-3.5" aria-hidden /> مسارات العمل · تشغيل تجريبي
+            <WorkflowIcon className="w-3.5 h-3.5" aria-hidden /> مسارات العمل
           </div>
           <h1 className="text-2xl md:text-3xl font-extrabold mb-2">شغّل مساراً جاهزاً بنقرة واحدة</h1>
           <p className="text-sm text-neutral-400 leading-relaxed max-w-2xl">
