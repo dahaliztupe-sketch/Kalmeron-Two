@@ -1,0 +1,192 @@
+---
+
+🚀 البرومبت المتكامل لـ Replit Agent: تثبيت وتطبيق أهم 20 مهارة
+
+```markdown
+[CONTEXT]
+نحن نطور منصة "كلميرون تو" (Kalmeron Two) على Replit، وهي منصة ذكاء اصطناعي وكيلي لرواد الأعمال مبنية على Next.js 16، TypeScript، Firebase، shadcn/ui، Tailwind CSS v4. تضم المنصة 16 وكيلاً متخصصاً في 8 أقسام.
+
+لقد اكتشفنا نظام Agent Skills — وهو معيار عالمي جديد لتوجيه وكلاء الذكاء الاصطناعي. المهارات هي ملفات SKILL.md تثبت داخل `/.agents/skills/` أو `.claude/skills/` وتعلم الوكيل كيفية أداء مهام محددة بشكل متكرر وموثوق. يوجد الآن أكثر من 425,000 مهارة متاحة.
+
+[YOUR MISSION]
+استكشف نظام Agent Skills. ابحث عن المهارات التي ستحل مشاكل التصميم، التطوير، الاختبار، الأمان، والأداء. ثبتها. طبقها. اختبرها.
+
+
+## 🗺️ أين تجد المهارات (الخريطة الكاملة)
+
+### المستودعات الرسمية:
+1. Google Skills: `github.com/google/skills` — Gemini API، Firebase
+2. Anthropic Skills: `github.com/anthropics/skills` — Frontend Design، webapp-testing
+3. Microsoft Agent Skills: `github.com/microsoft/agent-skills` — Azure، .NET
+4. Vercel Labs Skills: `github.com/vercel-labs/agent-skills` — Vercel Web Design
+
+### المستودعات المجتمعية الأكثر شعبية:
+5. Superpowers (obra): `github.com/obra/superpowers` — 30,000+ ⭐، منهجية تطوير كاملة
+6. Impeccable (pbakaus): `github.com/pbakaus/impeccable` — 15,000+ ⭐، 20 أمراً للتصميم
+7. Planning-with-files (OthmanAdi): `github.com/OthmanAdi/planning-with-files` — 18,000+ ⭐
+8. Claude Skills (alirezarezvani): `github.com/alirezarezvani/claude-skills` — 235+ مهارة، 5,200+ ⭐
+9. Antigravity Awesome Skills (sickn33): `github.com/sickn33/antigravity-awesome-skills` — 1,400+ مهارة
+10. Humanizer (blader): `github.com/blader/humanizer` — 13,000+ ⭐
+11. gstack (Y Combinator): `github.com/...` — 40,000+ ⭐
+12. Awesome AI Skills: `github.com/topics/agent-skills` — 860+ مهارة، 11,000+ ⭐
+13. OK Skills: `github.com/okskills/skills` — 40 مهارة عملية
+
+### أسواق المهارات:
+14. SkillsMP: `skillsmp.com` — 425,000+ مهارة
+15. LobeHub Skills: `lobehub.com/skills` — 169,739 مهارة
+16. agentskill.sh: `agentskill.sh` — 110,000+ مهارة
+
+### أوامر التثبيت الأساسية:
+```bash
+# الطريقة الأولى: npx skills (الأداة الرسمية)
+npx skills add pbakaus/impeccable
+
+# الطريقة الثانية: npx @skill-hub/cli
+npx @skill-hub/cli install frontend-design --agent replit
+
+# الطريقة الثالثة: يدوياً
+mkdir -p .agents/skills/<skill-name>
+# نسخ SKILL.md إلى المجلد
+```
+
+🎯 المجموعة الأولى (P0): مهارات التصميم (لإصلاح مشكلة "كل المواقع متشابهة")
+
+هذه المهارات تحل المشكلة التي تحدث عنها أحمد نجدي في فيديوهاته: "كل المواقع المصممة بالذكاء الاصطناعي تبدو متشابهة — نفس الخطوط، نفس الألوان، نفس البطاقات."
+
+١. Impeccable (الأهم على الإطلاق)
+
+· المستودع: pbakaus/impeccable
+· منشئها: Paul Bakaus (مطور jQuery UI السابق في Google)
+· النجوم: 15,000+ ⭐
+· القدرات: 20 أمراً (/polish، /audit، /animate، /simplify، /clarify، /distill...). بدلاً من تعليم الذكاء الاصطناعي كيف يُصمم، تخبره "ما الذي لا يجب فعله" عبر مكتبة من الأنماط المضادة (anti-patterns).
+· التثبيت: npx skills add pbakaus/impeccable
+
+٢. Frontend Design (Anthropic الرسمية)
+
+· المستودع: anthropics/skills (مهارة frontend-design)
+· القدرات: تدفع Claude Code نحو إنتاج واجهات "ذات طابع مميز" تبتعد عن التصميم العام الممل. قبل كتابة أي كود، تطلب من الوكيل أن يلتزم باتجاه بصري محدد (طباعة، ألوان، حركة، تكوين مكاني).
+· التثبيت: npx skills add anthropics/skills --skill frontend-design
+
+٣. Vercel Web Design Guidelines
+
+· المستودع: vercel-labs/agent-skills
+· القدرات: إرشادات تصميم خاصة بمنصات Vercel و Next.js. تضمن أن التصميم يلتزم بمعايير Vercel للنشر والأداء.
+· التثبيت: npx skills add vercel-labs/agent-skills
+
+٤. CC Design
+
+· المستودع: ZeroZ-lab/cc-design
+· القدرات: تصميم عالي الدقة. نماذج أولية تفاعلية. صفحات هبوط. رسوم متحركة. دورة حياة تصميم كاملة.
+· التثبيت: npx skills add ZeroZ-lab/cc-design
+
+٥. Claude Code Frontend Design Toolkit
+
+· المستودع: wilwaldon/Claude-Code-Frontend-Design-Toolkit
+· القدرات: يجمع "كل ما وجدته يجعل Claude Code ينتج واجهات أمامية أفضل" — مهارات، إضافات، MCP، حيل CLAUDE.md.
+· التثبيت: npx skills add wilwaldon/Claude-Code-Frontend-Design-Toolkit
+
+⚙️ المجموعة الثانية (P0): مهارات التطوير المنهجي (لإصلاح مشكلة "العشوائية وغياب الهيكل")
+
+هذه المهارات تحل المشكلة التي تحدث عنها صناع المحتوى: "الذكاء الاصطناعي يكتب كوداً سريعاً لكنه عشوائي وغير منظم. يحتاج إلى هيكل ومنهجية."
+
+٦. Superpowers (obra)
+
+· المستودع: obra/superpowers
+· النجوم: 30,000+ ⭐
+· القدرات: منهجية تطوير برمجيات كاملة. Brainstorming، TDD، تنفيذ منظم، تصحيح منهجي، إرسال وكلاء متوازيين، مراجعة كود، git worktrees. "تجبر الوكيل على التفكير قبل كتابة الكود."
+· التثبيت: /plugin marketplace add obra/superpowers-marketplace
+
+٧. gstack (Y Combinator)
+
+· النجوم: 40,000+ ⭐
+· القدرات: أداة سباق كاملة من Y Combinator. تدفق Think → Plan → Build → Review → Test → Ship → Reflect. كل مهارة تغذي التي تليها.
+· التثبيت: npx skills add .../gstack
+
+٨. Planning-with-files
+
+· المستودع: OthmanAdi/planning-with-files
+· النجوم: 18,000+ ⭐
+· القدرات: "أهم مهارة لحل مشكلة فقدان الذاكرة بين الجلسات." تستخدم 3 ملفات (task_plan.md, notes.md, deliverable.md) كذاكرة خارجية مستمرة. مثالية للمهام الطويلة والمعقدة.
+· التثبيت: npx skills add OthmanAdi/planning-with-files
+
+٩. TDD Skill
+
+· المستودع: glebis/claude-skills (مهارة tdd)
+· القدرات: تفرض دورة Red-Green-Refactor على مستوى الموجه. الوكيل ممنوع من كتابة كود التنفيذ قبل كتابة اختبار فاشل أولاً.
+· التثبيت: npx skills add glebis/claude-skills --skill tdd
+
+١٠. Debugging Skill
+
+· القدرات: "ممنوع الإصلاح قبل تحديد السبب الجذري." يجب تقديم دليل (ملف + سطر) على مستويين من سلسلة الاستدعاءات. 3 محاولات كحد أقصى — "لأن الوكلاء سيجربون 15 إصلاحاً فاشلاً بصمت قبل طلب المساعدة."
+· التثبيت: موجودة ضمن Superpowers أو كمهارة مستقلة
+
+🐛 المجموعة الثالثة (P1): مهارات الاختبار والأمان (لإصلاح مشكلة "الأخطاء الخفية")
+
+١١. Webapp-testing (Anthropic الرسمية)
+
+· المستودع: anthropics/skills (مهارة webapp-testing)
+· القدرات: تختبر التطبيق المحلي في متصفح حقيقي عبر Playwright. تتحقق من وظائف الواجهة، تصحح سلوك UI، تلتقط لقطات شاشة، وتعرض سجلات المتصفح.
+· التثبيت: npx skills add anthropics/skills --skill webapp-testing
+
+١٢. Playwright Skill
+
+· المستودع: lackeyjb/playwright-skill
+· القدرات: تمكن الوكيل من كتابة وتنفيذ أي أتمتة Playwright — من اختبارات الصفحات البسيطة إلى تدفقات معقدة متعددة الخطوات. يعيد النتائج مع لقطات شاشة وسجلات.
+· التثبيت: npx skills add lackeyjb/playwright-skill
+
+١٣. Security Reviewer
+
+· القدرات: تفحص الكود بحثاً عن ثغرات OWASP Top 10 قبل commit. SQL Injection، XSS، CSRF،泄露 المفاتيح، قواعد Firestore غير آمنة.
+· التثبيت: موجودة ضمن Superpowers أو كمهارة مستقلة
+
+١٤. Code Reviewer
+
+· القدرات: تراجع الكود: جودة، قابلية الصيانة، الأداء، الأمان، الصحة. تقدم ملاحظات قابلة للتنفيذ.
+· التثبيت: موجودة ضمن Superpowers أو gstack
+
+🧠 المجموعة الرابعة (P1): مهارات متقدمة (لتحسين الجودة والأداء)
+
+١٥. Humanizer
+
+· المستودع: blader/humanizer
+· النجوم: 13,000+ ⭐
+· القدرات: تزيل "طابع الذكاء الاصطناعي" من النصوص. تستخدم 24 نمطاً لغوياً اكتشفها محررو Wikipedia للتمييز بين كتابة البشر والذكاء الاصطناعي.
+· التثبيت: npx skills add blader/humanizer
+
+١٦. Caveman
+
+· النجوم: 27,000+ ⭐
+· القدرات: توفر 65% من الرموز (Tokens). مفيدة جداً لتقليل التكاليف عند استخدام نماذج Gemini.
+· التثبيت: npx skills add .../caveman
+
+١٧. Antigravity Awesome Skills
+
+· المستودع: sickn33/antigravity-awesome-skills
+· القدرات: 1,400+ مهارة مجمعة من جميع المستودعات. تشمل CLI خاص للتثبيت السهل.
+· التثبيت: npx skills add sickn33/antigravity-awesome-skills
+
+١٨. Build Error Resolver
+
+· القدرات: تحلل أخطاء البناء وتصلحها تلقائياً.
+· التثبيت: موجودة ضمن everything-claude-code
+
+🔧 المجموعة الخامسة (P2): مهارات خاصة بـ Replit
+
+١٩. Replit-plan
+
+· القدرات: تقسيم المشاريع لمراحل منطقية. نقطة تفتيش واحدة = وحدة عمل واحدة. كل مرحلة قابلة للاختبار بشكل مستقل.
+· التثبيت: متاحة على agentskills.so
+
+٢٠. Replit Debug Skill
+
+· القدرات: تصحيح منهجي خاص بـ Replit Agent. "عند تصحيح المشاكل المعقدة، لا تبسط منطق التطبيق أبداً — استمر في تصحيح السبب الجذري."
+· التثبيت: متاحة على agentskills.so
+
+📝 تعليمات العمل (How to Proceed)
+
+1. استكشف النظام: اقرأ عن Agent Skills على Replit (docs.replit.com). افهم كيفية تخزينها في /.agents/skills/.
+2. ثبّت المجموعة الأولى فوراً (P0): Impeccable + Frontend Design + Superpowers + Planning-with-files.
+3. اختبر على التصميم الحالي: بعد تثبيت Impeccable، اطلب منه /audit لتدقيق التصميم الحالي و /polish لتحسينه.
+4. ثبّت المجموعة الثانية (P1): webapp-testing + Security Reviewer + Humanizer.
+5. أنشئ مهارات مخصصة: بعد أن تتعلم كيفية عمل المهارات، أنشئ مهارات خاصة بمنصتنا: "كيفية إضافة وكيل جديد"، "كيفية تدقيق قواعد Firestore"، "كيفية بناء صفحة هبوط".
+6. اختبر: تأكد من أن الوكيل يستخدم هذه المهارات بشكل صحيح.
