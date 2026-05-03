@@ -84,6 +84,11 @@ export default function ReferralsPage() {
           </div>
         </div>
 
+        <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
+          <div className="text-sm text-white/45">خطوة سريعة</div>
+          <div className="mt-1 text-white font-medium">انسخ الكود أو الرابط، ثم شاركه من هنا مباشرة مع فريقك أو جمهورك.</div>
+        </div>
+
         <div className="grid gap-4 md:grid-cols-3">
           <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/[0.06] p-5">
             <Gift className="w-6 h-6 text-emerald-400 mb-3" />

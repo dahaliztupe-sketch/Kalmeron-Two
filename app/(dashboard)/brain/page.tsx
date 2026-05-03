@@ -90,7 +90,7 @@ export default function BrainPage() {
             </div>
             <div>
               <h1 className="text-2xl font-bold text-white">الدماغ المشترك</h1>
-              <p className="text-sm text-text-secondary">كل ما يعرفه فريقك من المساعدين عن مشروعك</p>
+              <p className="text-sm text-text-secondary">كل ما يعرفه فريقك من المساعدين عن مشروعك، مع سجل واضح للملاحظات والإشارات المهمة</p>
             </div>
           </div>
           <button
@@ -121,6 +121,10 @@ export default function BrainPage() {
             </span>
           </div>
         )}
+
+        <div className="mb-6 rounded-2xl border border-cyan-500/20 bg-cyan-500/[0.04] p-4 text-sm text-cyan-100/90">
+          الدماغ يلتقط الملاحظات من المحادثات والعمليات والفرق. أضف أي إشارة مهمة هنا ليصبح القرار التالي أسرع.
+        </div>
 
         {/* Add finding */}
         <div className="mb-6 rounded-2xl border border-white/10 bg-white/[0.02] p-4">
