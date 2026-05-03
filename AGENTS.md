@@ -165,6 +165,8 @@ npm run embeddings-worker:dev   # 8099
 | `continual-learning` | microsoft/agent-skills | بناء حلقات تعلّم/ذاكرة للوكلاء |
 | `mcp-builder` | anthropics/skills | بناء MCP server (مثل `app/mcp-server/`) |
 | `skill-creator` | anthropics/skills | إنشاء/تحسين مهارة جديدة محلّيّة |
+| `kalmeron-ui-polish` | local | تحسين واجهات كلميرون العربية أولاً قبل التسليم |
+| `kalmeron-agent-builder` | local | إضافة أو توسيع وكيل جديد من الفكرة حتى الربط |
 
 **أوامر إدارة المهارات:**
 ```bash
