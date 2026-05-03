@@ -1,17 +1,112 @@
 {
   "version": 1,
   "skills": {
+    "3d-web-experience": {
+      "source": "sickn33/antigravity-awesome-skills",
+      "sourceType": "github",
+      "skillPath": "skills/3d-web-experience/SKILL.md"
+    },
+    "a11y-audit": {
+      "source": "alirezarezvani/claude-skills",
+      "sourceType": "github",
+      "skillPath": ".gemini/skills/a11y-audit/SKILL.md"
+    },
+    "ab-test-setup": {
+      "source": "sickn33/antigravity-awesome-skills",
+      "sourceType": "github",
+      "skillPath": "skills/ab-test-setup/SKILL.md"
+    },
+    "accessibility-compliance-accessibility-audit": {
+      "source": "sickn33/antigravity-awesome-skills",
+      "sourceType": "github",
+      "skillPath": "skills/accessibility-compliance-accessibility-audit/SKILL.md"
+    },
+    "adversarial-reviewer": {
+      "source": "alirezarezvani/claude-skills",
+      "sourceType": "github",
+      "skillPath": ".gemini/skills/adversarial-reviewer/SKILL.md"
+    },
+    "agent-designer": {
+      "source": "alirezarezvani/claude-skills",
+      "sourceType": "github",
+      "skillPath": ".gemini/skills/agent-designer/SKILL.md"
+    },
     "agent-tools": {
       "source": "inf-sh/skills",
       "sourceType": "github",
       "skillPath": "tools/agent-tools/SKILL.md",
       "computedHash": "3e8e1e6d9b56fa1126e09c589b171e786efee01c806623f7cb41dfde724b0274"
     },
+    "agile-product-owner": {
+      "source": "alirezarezvani/claude-skills",
+      "sourceType": "github",
+      "skillPath": ".gemini/skills/agile-product-owner/SKILL.md"
+    },
+    "ai-agent-development": {
+      "source": "sickn33/antigravity-awesome-skills",
+      "sourceType": "github",
+      "skillPath": "skills/ai-agent-development/SKILL.md"
+    },
+    "ai-agents-architect": {
+      "source": "sickn33/antigravity-awesome-skills",
+      "sourceType": "github",
+      "skillPath": "skills/ai-agents-architect/SKILL.md"
+    },
+    "ai-image-generator": {
+      "source": "jezweb/claude-skills",
+      "sourceType": "github",
+      "skillPath": "plugins/design-assets/skills/ai-image-generator/SKILL.md"
+    },
+    "ai-seo": {
+      "source": "alirezarezvani/claude-skills",
+      "sourceType": "github",
+      "skillPath": ".gemini/skills/ai-seo/SKILL.md"
+    },
+    "analytics-tracking": {
+      "source": "alirezarezvani/claude-skills",
+      "sourceType": "github",
+      "skillPath": ".gemini/skills/analytics-tracking/SKILL.md"
+    },
+    "api-design-principles": {
+      "source": "sickn33/antigravity-awesome-skills",
+      "sourceType": "github",
+      "skillPath": "skills/api-design-principles/SKILL.md"
+    },
+    "api-design-reviewer": {
+      "source": "alirezarezvani/claude-skills",
+      "sourceType": "github",
+      "skillPath": ".gemini/skills/api-design-reviewer/SKILL.md"
+    },
+    "api-test-suite-builder": {
+      "source": "alirezarezvani/claude-skills",
+      "sourceType": "github",
+      "skillPath": ".gemini/skills/api-test-suite-builder/SKILL.md"
+    },
+    "apple-hig-expert": {
+      "source": "alirezarezvani/claude-skills",
+      "sourceType": "github",
+      "skillPath": ".gemini/skills/apple-hig-expert/SKILL.md"
+    },
     "audit-website": {
       "source": "squirrelscan/skills",
       "sourceType": "github",
       "skillPath": "audit-website/SKILL.md",
       "computedHash": "2c060290f90340e8bb6009502ec936b8ebb3ff889332a43e24bf210528ebba9f"
+    },
+    "balanced": {
+      "source": "glebis/claude-skills",
+      "sourceType": "github",
+      "skillPath": "balanced/SKILL.md"
+    },
+    "brainstorming": {
+      "source": "obra/superpowers",
+      "sourceType": "github",
+      "skillPath": "skills/brainstorming/SKILL.md"
+    },
+    "brand-agency": {
+      "source": "glebis/claude-skills",
+      "sourceType": "github",
+      "skillPath": "brand-agency/SKILL.md"
     },
     "business-growth-skills": {
       "source": "alirezarezvani/claude-skills",
@@ -25,17 +120,77 @@
       "skillPath": "c-level-advisor/SKILL.md",
       "computedHash": "8c055a9ae9080fa546f1ddf645db737024ab6bc74016814ab5096bd40c65009c"
     },
+    "cc-design": {
+      "source": "ZeroZ-lab/cc-design",
+      "sourceType": "github",
+      "skillPath": "SKILL.md"
+    },
     "cloud-run-basics": {
       "source": "google/skills",
       "sourceType": "github",
       "skillPath": "skills/cloud/cloud-run-basics/SKILL.md",
       "computedHash": "bc11572a238ce911487c58f2f6ebbb947525fd1a69514a44842c904af6fce319"
     },
+    "code-to-prd": {
+      "source": "alirezarezvani/claude-skills",
+      "sourceType": "github",
+      "skillPath": "product-team/code-to-prd/skills/code-to-prd/SKILL.md"
+    },
+    "color-palette": {
+      "source": "jezweb/claude-skills",
+      "sourceType": "github",
+      "skillPath": "plugins/design-assets/skills/color-palette/SKILL.md"
+    },
+    "competitive-teardown": {
+      "source": "alirezarezvani/claude-skills",
+      "sourceType": "github",
+      "skillPath": ".gemini/skills/competitive-teardown/SKILL.md"
+    },
+    "content-creator": {
+      "source": "sickn33/antigravity-awesome-skills",
+      "sourceType": "github",
+      "skillPath": "skills/content-creator/SKILL.md"
+    },
+    "context-builder": {
+      "source": "glebis/claude-skills",
+      "sourceType": "github",
+      "skillPath": "context-builder/SKILL.md"
+    },
     "continual-learning": {
       "source": "microsoft/agent-skills",
       "sourceType": "github",
       "skillPath": ".github/skills/continual-learning/SKILL.md",
       "computedHash": "1f7c1a79d6ee166aac48591acbc9165778d2384fa9e84405099750b6e065c0c7"
+    },
+    "decision-toolkit": {
+      "source": "glebis/claude-skills",
+      "sourceType": "github",
+      "skillPath": "decision-toolkit/SKILL.md"
+    },
+    "deep-research": {
+      "source": "glebis/claude-skills",
+      "sourceType": "github",
+      "skillPath": "deep-research/SKILL.md"
+    },
+    "deep-research-jw": {
+      "source": "jezweb/claude-skills",
+      "sourceType": "github",
+      "skillPath": "plugins/dev-tools/skills/deep-research/SKILL.md"
+    },
+    "dispatching-parallel-agents": {
+      "source": "obra/superpowers",
+      "sourceType": "github",
+      "skillPath": "skills/dispatching-parallel-agents/SKILL.md"
+    },
+    "executing-plans": {
+      "source": "obra/superpowers",
+      "sourceType": "github",
+      "skillPath": "skills/executing-plans/SKILL.md"
+    },
+    "favicon-gen": {
+      "source": "jezweb/claude-skills",
+      "sourceType": "github",
+      "skillPath": "plugins/design-assets/skills/favicon-gen/SKILL.md"
     },
     "finance-skills": {
       "source": "alirezarezvani/claude-skills",
@@ -48,6 +203,11 @@
       "sourceType": "github",
       "skillPath": "skills/find-skills/SKILL.md",
       "computedHash": "9e1c8b3103f92fa8092568a44fe64858de7c5c9dc65ce4bea8f168080e889cfd"
+    },
+    "finishing-a-development-branch": {
+      "source": "obra/superpowers",
+      "sourceType": "github",
+      "skillPath": "skills/finishing-a-development-branch/SKILL.md"
     },
     "firebase-basics": {
       "source": "google/skills",
@@ -79,6 +239,16 @@
       "skillPath": "skills/cloud/gemini-api/SKILL.md",
       "computedHash": "445259b8086e10073300f8451dea10a2c62d8616723edf5d376eaf337f248a68"
     },
+    "geo-fundamentals": {
+      "source": "sickn33/antigravity-awesome-skills",
+      "sourceType": "github",
+      "skillPath": "skills/geo-fundamentals/SKILL.md"
+    },
+    "git-workflow": {
+      "source": "jezweb/claude-skills",
+      "sourceType": "github",
+      "skillPath": "plugins/dev-tools/skills/git-workflow/SKILL.md"
+    },
     "google-cloud-waf-cost-optimization": {
       "source": "google/skills",
       "sourceType": "github",
@@ -95,7 +265,62 @@
       "source": "google/skills",
       "sourceType": "github",
       "skillPath": "skills/cloud/google-cloud-waf-security/SKILL.md",
-      "computedHash": "f043ada8752152cb3ce4fc903f665552406fefb18ef3c0178839275feb9fdd5c"
+      "computedHash": "f3bc47f890f42a44db1007ab390709ec368e4b8c089baee6b0007182236ac474"
+    },
+    "humanizer": {
+      "source": "blader/humanizer",
+      "sourceType": "github",
+      "skillPath": "SKILL.md"
+    },
+    "i18n-localization": {
+      "source": "sickn33/antigravity-awesome-skills",
+      "sourceType": "github",
+      "skillPath": "skills/i18n-localization/SKILL.md"
+    },
+    "icon-set-generator": {
+      "source": "jezweb/claude-skills",
+      "sourceType": "github",
+      "skillPath": "plugins/design-assets/skills/icon-set-generator/SKILL.md"
+    },
+    "impeccable": {
+      "source": "pbakaus/impeccable",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/impeccable/SKILL.md"
+    },
+    "interview-coach": {
+      "source": "sickn33/antigravity-awesome-skills",
+      "sourceType": "github",
+      "skillPath": "skills/interview-coach/SKILL.md"
+    },
+    "kalmeron-agent-builder": {
+      "source": "local",
+      "sourceType": "local",
+      "skillPath": ".agents/skills/kalmeron-agent-builder/SKILL.md"
+    },
+    "kalmeron-seeds": {
+      "source": "local",
+      "sourceType": "local",
+      "skillPath": ".agents/skills/kalmeron-seeds/SKILL.md"
+    },
+    "kalmeron-ui-polish": {
+      "source": "local",
+      "sourceType": "local",
+      "skillPath": ".agents/skills/kalmeron-ui-polish/SKILL.md"
+    },
+    "landing-page-generator": {
+      "source": "sickn33/antigravity-awesome-skills",
+      "sourceType": "github",
+      "skillPath": "skills/landing-page-generator/SKILL.md"
+    },
+    "legal-advisor": {
+      "source": "sickn33/antigravity-awesome-skills",
+      "sourceType": "github",
+      "skillPath": "skills/legal-advisor/SKILL.md"
+    },
+    "marketing-psychology": {
+      "source": "sickn33/antigravity-awesome-skills",
+      "sourceType": "github",
+      "skillPath": "skills/marketing-psychology/SKILL.md"
     },
     "mcp-builder": {
       "source": "anthropics/skills",
@@ -103,11 +328,91 @@
       "skillPath": "skills/mcp-builder/SKILL.md",
       "computedHash": "826e46adf81e1372282e205c34e1a2ee876e72148007726e4a2512599d2fef7b"
     },
+    "mcp-builder-jw": {
+      "source": "jezweb/claude-skills",
+      "sourceType": "github",
+      "skillPath": "plugins/integrations/skills/mcp-builder/SKILL.md"
+    },
+    "nextjs-app-router-patterns": {
+      "source": "sickn33/antigravity-awesome-skills",
+      "sourceType": "github",
+      "skillPath": "skills/nextjs-app-router-patterns/SKILL.md"
+    },
+    "nextjs-best-practices": {
+      "source": "sickn33/antigravity-awesome-skills",
+      "sourceType": "github",
+      "skillPath": "skills/nextjs-best-practices/SKILL.md"
+    },
+    "performance-engineer": {
+      "source": "sickn33/antigravity-awesome-skills",
+      "sourceType": "github",
+      "skillPath": "skills/performance-engineer/SKILL.md"
+    },
+    "playwright-skill": {
+      "source": "lackeyjb/playwright-skill",
+      "sourceType": "github",
+      "skillPath": "skills/playwright-skill/SKILL.md"
+    },
+    "product-manager": {
+      "source": "sickn33/antigravity-awesome-skills",
+      "sourceType": "github",
+      "skillPath": "skills/product-manager/SKILL.md"
+    },
+    "product-manager-toolkit": {
+      "source": "sickn33/antigravity-awesome-skills",
+      "sourceType": "github",
+      "skillPath": "skills/product-manager-toolkit/SKILL.md"
+    },
     "product-skills": {
       "source": "alirezarezvani/claude-skills",
       "sourceType": "github",
       "skillPath": "product-team/SKILL.md",
       "computedHash": "e3dca3510a4f9f783ac235c5696363f548be8a61637ac4a81bd30d7705b8f13c"
+    },
+    "programmatic-seo": {
+      "source": "sickn33/antigravity-awesome-skills",
+      "sourceType": "github",
+      "skillPath": "skills/programmatic-seo/SKILL.md"
+    },
+    "react-best-practices": {
+      "source": "sickn33/antigravity-awesome-skills",
+      "sourceType": "github",
+      "skillPath": "skills/react-best-practices/SKILL.md"
+    },
+    "react-nextjs-development": {
+      "source": "sickn33/antigravity-awesome-skills",
+      "sourceType": "github",
+      "skillPath": "skills/react-nextjs-development/SKILL.md"
+    },
+    "react-patterns": {
+      "source": "sickn33/antigravity-awesome-skills",
+      "sourceType": "github",
+      "skillPath": "skills/react-patterns/SKILL.md"
+    },
+    "react-ui-patterns": {
+      "source": "sickn33/antigravity-awesome-skills",
+      "sourceType": "github",
+      "skillPath": "skills/react-ui-patterns/SKILL.md"
+    },
+    "receiving-code-review": {
+      "source": "obra/superpowers",
+      "sourceType": "github",
+      "skillPath": "skills/receiving-code-review/SKILL.md"
+    },
+    "requesting-code-review": {
+      "source": "obra/superpowers",
+      "sourceType": "github",
+      "skillPath": "skills/requesting-code-review/SKILL.md"
+    },
+    "research-summarizer": {
+      "source": "alirezarezvani/claude-skills",
+      "sourceType": "github",
+      "skillPath": "product-team/research-summarizer/skills/research-summarizer/SKILL.md"
+    },
+    "seo": {
+      "source": "sickn33/antigravity-awesome-skills",
+      "sourceType": "github",
+      "skillPath": "skills/seo/SKILL.md"
     },
     "seo-audit": {
       "source": "coreyhaines31/marketingskills",
@@ -122,10 +427,25 @@
       "computedHash": "a2c4e57faab8e31f3df91156edf2df1a5a7f6c242249b2d86ca11336c9183157"
     },
     "skill-creator": {
-      "source": "anthropics/skills",
+      "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
       "skillPath": "skills/skill-creator/SKILL.md",
       "computedHash": "5ea13a6d9f0d4bb694405d79acd00cadec0d21bb138c4dd10fcf3c500cb835c2"
+    },
+    "stripe-payments": {
+      "source": "jezweb/claude-skills",
+      "sourceType": "github",
+      "skillPath": "plugins/integrations/skills/stripe-payments/SKILL.md"
+    },
+    "subagent-driven-development": {
+      "source": "obra/superpowers",
+      "sourceType": "github",
+      "skillPath": "skills/subagent-driven-development/SKILL.md"
+    },
+    "systematic-debugging": {
+      "source": "obra/superpowers",
+      "sourceType": "github",
+      "skillPath": "skills/systematic-debugging/SKILL.md"
     },
     "tailwind-design-system": {
       "source": "wshobson/agents",
@@ -133,11 +453,36 @@
       "skillPath": "plugins/frontend-mobile-development/skills/tailwind-design-system/SKILL.md",
       "computedHash": "988d80e52c67c3692d43cc963b6a048a239895e88b272b061de55370d0f8efc3"
     },
+    "tdd": {
+      "source": "glebis/claude-skills",
+      "sourceType": "github",
+      "skillPath": "tdd/SKILL.md"
+    },
+    "test-driven-development": {
+      "source": "obra/superpowers",
+      "sourceType": "github",
+      "skillPath": "skills/test-driven-development/SKILL.md"
+    },
     "ui-ux-pro-max": {
       "source": "nextlevelbuilder/ui-ux-pro-max-skill",
       "sourceType": "github",
       "skillPath": ".claude/skills/ui-ux-pro-max/SKILL.md",
       "computedHash": "0a413bf988d06481f69bb81df2070741c3ba12dd9f1be2706d57f259c905992d"
+    },
+    "using-git-worktrees": {
+      "source": "obra/superpowers",
+      "sourceType": "github",
+      "skillPath": "skills/using-git-worktrees/SKILL.md"
+    },
+    "using-superpowers": {
+      "source": "obra/superpowers",
+      "sourceType": "github",
+      "skillPath": "skills/using-superpowers/SKILL.md"
+    },
+    "ux-audit": {
+      "source": "jezweb/claude-skills",
+      "sourceType": "github",
+      "skillPath": "plugins/dev-tools/skills/ux-audit/SKILL.md"
     },
     "vercel-composition-patterns": {
       "source": "vercel-labs/agent-skills",
@@ -151,11 +496,31 @@
       "skillPath": "skills/react-best-practices/SKILL.md",
       "computedHash": "ca7b0c0c6e5f2750043f7f0cd72d16ac4e2abc48f9b5500d047a4b77a2506212"
     },
+    "verification-before-completion": {
+      "source": "obra/superpowers",
+      "sourceType": "github",
+      "skillPath": "skills/verification-before-completion/SKILL.md"
+    },
+    "vitest": {
+      "source": "jezweb/claude-skills",
+      "sourceType": "github",
+      "skillPath": "plugins/dev-tools/skills/vitest/SKILL.md"
+    },
     "web-design-guidelines": {
       "source": "vercel-labs/agent-skills",
       "sourceType": "github",
       "skillPath": "skills/web-design-guidelines/SKILL.md",
       "computedHash": "f3bc47f890f42a44db1007ab390709ec368e4b8c089baee6b0007182236ac474"
+    },
+    "writing-plans": {
+      "source": "obra/superpowers",
+      "sourceType": "github",
+      "skillPath": "skills/writing-plans/SKILL.md"
+    },
+    "writing-skills": {
+      "source": "obra/superpowers",
+      "sourceType": "github",
+      "skillPath": "skills/writing-skills/SKILL.md"
     }
   }
 }

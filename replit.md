@@ -1,5 +1,29 @@
 # Kalmeron AI (ai-studio-applet)
 
+## Agent Skills — 99 مهارة مثبتة (2026-05-03)
+
+### المصادر المستخدمة
+| المستودع | المهارات المضافة |
+|---|---|
+| `pbakaus/impeccable` | impeccable (UI/UX mastery) |
+| `obra/superpowers` | 14 مهارة: brainstorming, systematic-debugging, tdd, writing-plans, verification-before-completion, … |
+| `lackeyjb/playwright-skill` | playwright-skill (browser automation & testing) |
+| `blader/humanizer` | humanizer (Arabic/English text quality) |
+| `ZeroZ-lab/cc-design` | cc-design (high-fidelity HTML prototyping) |
+| `glebis/claude-skills` | deep-research, tdd, decision-toolkit, context-builder, balanced, brand-agency |
+| `jezweb/claude-skills` | ai-image-generator, color-palette, favicon-gen, icon-set-generator, git-workflow, ux-audit, vitest, stripe-payments, mcp-builder-jw, deep-research-jw |
+| `sickn33/antigravity-awesome-skills` | 20+ مهارة: nextjs-*, react-*, seo, landing-page-generator, i18n-localization, 3d-web-experience, performance-engineer, … |
+| `alirezarezvani/claude-skills` | c-level-advisor (28 sub-skill), business-growth-skills, product-skills, a11y-audit, adversarial-reviewer, competitive-teardown, apple-hig-expert, … |
+
+### Workflows النشطة
+- **Start application** → Next.js 16 dev server على port 5000
+- **PDF Worker** → FastAPI Arabic PDF extraction على port 8000
+- **Egypt Calc** → FastAPI Egyptian tax calculator على port 8008
+- **Embeddings Worker** → FastAPI multilingual embeddings على port 8099
+- **LLM Judge** → FastAPI LLM evaluator على port 8080
+
+---
+
 ## جلسة 2026-05-03 — الجولة السابعة: إكمال T001–T008 الشامل (أحدث تحديث)
 
 ### ملخص الجولة السابعة — إكمال جميع المراحل المتبقية

@@ -1,0 +1,104 @@
+# ============================================
+# 🚀 أمر شامل لاستنساخ جميع مهارات Agent Skills المهمة
+# ============================================
+
+# 1. إنشاء المجلدات الرئيسية
+mkdir -p ~/skills-repos
+mkdir -p ~/skills-repos/official
+mkdir -p ~/skills-repos/community
+mkdir -p ~/skills-repos/design
+mkdir -p ~/skills-repos/testing
+mkdir -p ~/skills-repos/methodology
+mkdir -p ~/skills-repos/text-quality
+mkdir -p .agents/skills
+
+cd ~/skills-repos
+
+# ------------------------------------------
+# 🎨 الفئة 1: مستودعات التصميم (Design)
+# ------------------------------------------
+
+# 1. Impeccable (15,000+ ⭐) - الأهم للتصميم
+git clone https://github.com/pbakaus/impeccable.git design/impeccable 2>/dev/null || echo "⚠️ Impeccable already exists"
+
+# 2. Frontend Design (Anthropic الرسمية)
+git clone https://github.com/anthropics/skills.git official/anthropic-skills 2>/dev/null || echo "⚠️ Anthropic Skills already exists"
+
+# 3. Vercel Labs Agent Skills
+git clone https://github.com/vercel-labs/agent-skills.git official/vercel-skills 2>/dev/null || echo "⚠️ Vercel Skills already exists"
+
+# 4. Claude Code Frontend Design Toolkit
+git clone https://github.com/wilwaldon/Claude-Code-Frontend-Design-Toolkit.git design/frontend-toolkit 2>/dev/null || echo "⚠️ Frontend Toolkit already exists"
+
+# 5. CC Design
+git clone https://github.com/ZeroZ-lab/cc-design.git design/cc-design 2>/dev/null || echo "⚠️ CC Design already exists"
+
+# ------------------------------------------
+# ⚙️ الفئة 2: مستودعات المنهجية والتطوير (Methodology)
+# ------------------------------------------
+
+# 6. Superpowers (30,000+ ⭐)
+git clone https://github.com/obra/superpowers.git methodology/superpowers 2>/dev/null || echo "⚠️ Superpowers already exists"
+
+# 7. Planning-with-files (18,000+ ⭐)
+git clone https://github.com/OthmanAdi/planning-with-files.git methodology/planning-with-files 2>/dev/null || echo "⚠️ Planning-with-files already exists"
+
+# 8. Claude Skills (alirezarezvani) (235+ مهارة، 5,200+ ⭐)
+git clone https://github.com/alirezarezvani/claude-skills.git community/claude-skills 2>/dev/null || echo "⚠️ Claude Skills already exists"
+
+# ------------------------------------------
+# 🐛 الفئة 3: مستودعات الاختبار والتصحيح (Testing)
+# ------------------------------------------
+
+# 9. Playwright Skill
+git clone https://github.com/lackeyjb/playwright-skill.git testing/playwright-skill 2>/dev/null || echo "⚠️ Playwright Skill already exists"
+
+# 10. TDD + Debugging (glebis)
+git clone https://github.com/glebis/claude-skills.git testing/glebis-skills 2>/dev/null || echo "⚠️ Glebis Skills already exists"
+
+# ------------------------------------------
+# 🧠 الفئة 4: مستودعات جودة النصوص والأداء (Text Quality)
+# ------------------------------------------
+
+# 11. Humanizer (13,000+ ⭐)
+git clone https://github.com/blader/humanizer.git text-quality/humanizer 2>/dev/null || echo "⚠️ Humanizer already exists"
+
+# ------------------------------------------
+# 📦 الفئة 5: مستودعات إضافية مفيدة
+# ------------------------------------------
+
+# 12. jezweb Claude Skills (shadcn/ui, Tailwind, Landing Page)
+git clone https://github.com/jezweb/claude-skills.git community/jezweb-skills 2>/dev/null || echo "⚠️ Jezweb Skills already exists"
+
+# 13. Antigravity Awesome Skills (1,400+ مهارة)
+git clone https://github.com/sickn33/antigravity-awesome-skills.git community/antigravity-skills 2>/dev/null || echo "⚠️ Antigravity Skills already exists"
+
+# 14. OK Skills
+git clone https://github.com/okskills/skills.git community/ok-skills 2>/dev/null || echo "⚠️ OK Skills already exists"
+
+# 15. Google Gemini Skills
+git clone https://github.com/google/skills.git official/google-skills 2>/dev/null || echo "⚠️ Google Skills already exists"
+
+# ------------------------------------------
+# 📊 عرض ملخص
+# ------------------------------------------
+echo ""
+echo "========================================"
+echo "✅ تم استنساخ جميع المستودعات!"
+echo "========================================"
+echo ""
+echo "📁 الموقع: ~/skills-repos/"
+echo ""
+echo "📊 إحصائيات:"
+echo "  🎨 التصميم: $(ls -d design/*/ 2>/dev/null | wc -l) مستودعات"
+echo "  ⚙️ المنهجية: $(ls -d methodology/*/ 2>/dev/null | wc -l) مستودعات"
+echo "  🐛 الاختبار: $(ls -d testing/*/ 2>/dev/null | wc -l) مستودعات"
+echo "  🧠 النصوص: $(ls -d text-quality/*/ 2>/dev/null | wc -l) مستودعات"
+echo "  📦 المجتمع: $(ls -d community/*/ 2>/dev/null | wc -l) مستودعات"
+echo "  🏢 الرسمية: $(ls -d official/*/ 2>/dev/null | wc -l) مستودعات"
+echo ""
+echo "📂 المهارات موجودة الآن في ~/skills-repos/ جاهزة للتحليل"
+echo ""
+
+
+نريد إستخدام السكيلز و نستخرجها من المستودعات
