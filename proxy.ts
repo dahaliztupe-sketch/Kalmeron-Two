@@ -68,6 +68,7 @@ const PROTECTED_PREFIXES = [
   '/email-ai',
   '/sales-coach',
   '/profile',
+  '/weekly-report',
 ];
 
 function isProtectedPath(pathname: string): boolean {

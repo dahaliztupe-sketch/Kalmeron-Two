@@ -37,6 +37,7 @@ import {
   ShoppingCart,
   Network,
   Video,
+  CalendarDays,
 } from "lucide-react";
 
 export type NavItem = {
@@ -60,6 +61,7 @@ export const NAV_SECTIONS: NavSection[] = [
       { href: "/dashboard", label: "لوحة القيادة", icon: LayoutDashboard, exact: true },
       { href: "/chat", label: "المساعد الذكي", icon: MessageSquareText, badge: "AI", badgeColor: "cyan" },
       { href: "/daily-brief", label: "إيجاز الصباح", icon: Sun },
+      { href: "/weekly-report", label: "التقرير الأسبوعي", icon: CalendarDays, badge: "جديد", badgeColor: "violet" },
       { href: "/inbox", label: "الموافقات", icon: Inbox },
     ],
   },
