@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { NotificationPermissionBanner } from "@/components/ui/NotificationPermissionBanner";
 import { RunwayAlarmBanner } from "@/components/runway/RunwayAlarmBanner";
+import { PageSkeleton } from "@/components/ui/PageSkeleton";
 import { SmartHubSection } from "@/src/components/dashboard/SmartHubSection";
 import { CompanyHealthScore } from "@/src/components/dashboard/CompanyHealthScore";
 import { GoalsProgress } from "@/src/components/dashboard/GoalsProgress";
@@ -165,10 +166,7 @@ export default function DashboardPage() {
         <SmartHubSection />
 
         {loading ? (
-          <div className="flex flex-col items-center justify-center py-24 gap-3">
-            <Loader2 className="w-8 h-8 animate-spin text-indigo-400" />
-            <p className="text-text-secondary text-sm">{t("loading")}</p>
-          </div>
+          <PageSkeleton />
         ) : error || !data ? (
           <div className="glass-panel p-6 rounded-2xl text-rose-300 text-sm">{error || t("noData")}</div>
         ) : (

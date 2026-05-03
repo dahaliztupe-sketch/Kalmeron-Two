@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { AppShell } from "@/components/layout/AppShell";
 import { useAuth } from "@/contexts/AuthContext";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -18,6 +18,7 @@ import {
   Upload,
   AlertTriangle,
   Check,
+  Loader2,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
@@ -75,28 +76,67 @@ export default function SettingsPage() {
   const [emailProduct, setEmailProduct] = useState(true);
   const [inappMentions, setInappMentions] = useState(true);
   const [inappWeekly, setInappWeekly] = useState(false);
+  const [loadingPrefs, setLoadingPrefs] = useState(false);
+  const [savingPrefs, setSavingPrefs] = useState(false);
 
   const [isDeleting, setIsDeleting] = useState(false);
 
+  // Load notification preferences
+  useEffect(() => {
+    if (!user) return;
+    setLoadingPrefs(true);
+    user.getIdToken().then(token => {
+      return fetch("/api/user/notification-prefs", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+    }).then(r => r.json()).then(j => {
+      if (j.ok && j.prefs) {
+        setEmailMarketing(j.prefs.emailMarketing ?? true);
+        setEmailProduct(j.prefs.emailProduct ?? true);
+        setInappMentions(j.prefs.inappMentions ?? true);
+        setInappWeekly(j.prefs.inappWeekly ?? false);
+      }
+    }).catch(() => {}).finally(() => setLoadingPrefs(false));
+  }, [user]);
+
   const saveProfile = async () => {
+    if (!user) return;
     setSavingProfile(true);
     try {
+      const token = await user.getIdToken();
       const res = await fetch("/api/user/update", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          userId: user?.uid,
-          name,
-          startup_stage: stage,
-          industry,
-        }),
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ name, startup_stage: stage, industry }),
       });
       if (res.ok) toast.success("تم حفظ التغييرات بنجاح.");
       else throw new Error();
     } catch {
-      toast.message("تم حفظ التغييرات محلياً (تحقق من الاتصال بالخادم).");
+      toast.error("تعذّر حفظ التغييرات. حاول مرة أخرى.");
     } finally {
       setSavingProfile(false);
+    }
+  };
+
+  const saveNotificationPrefs = async () => {
+    if (!user) return;
+    setSavingPrefs(true);
+    try {
+      const token = await user.getIdToken();
+      const res = await fetch("/api/user/notification-prefs", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ emailMarketing, emailProduct, inappMentions, inappWeekly }),
+      });
+      if (res.ok) toast.success("تم حفظ تفضيلات الإشعارات بنجاح.");
+      else throw new Error();
+    } catch {
+      toast.error("تعذّر حفظ التفضيلات. حاول مرة أخرى.");
+    } finally {
+      setSavingPrefs(false);
     }
   };
 
@@ -261,7 +301,7 @@ export default function SettingsPage() {
                     disabled={savingProfile}
                     className="bg-brand-cyan text-black hover:bg-brand-cyan/90 font-bold"
                   >
-                    <Check className="ml-2 h-4 w-4" />
+                    {savingProfile ? <Loader2 className="ml-2 h-4 w-4 animate-spin" /> : <Check className="ml-2 h-4 w-4" />}
                     {savingProfile ? "جارٍ الحفظ..." : "حفظ التغييرات"}
                   </Button>
                 </div>
@@ -341,48 +381,59 @@ export default function SettingsPage() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="space-y-1">
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-neutral-500 mb-2">
-                    البريد الإلكتروني
-                  </h3>
-                  <Toggle
-                    checked={emailMarketing}
-                    onChange={setEmailMarketing}
-                    label="نشرات وفعاليات"
-                    description="فرص تمويل، مسابقات ريادة الأعمال، وتحديثات السوق."
-                  />
-                  <Toggle
-                    checked={emailProduct}
-                    onChange={setEmailProduct}
-                    label="تحديثات المنتج"
-                    description="ميزات جديدة، أمساعدين جدد، وتحسينات داخل كلميرون."
-                  />
-                </div>
-                <div className="border-t border-white/10 mt-4 pt-4 space-y-1">
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-neutral-500 mb-2">
-                    داخل التطبيق
-                  </h3>
-                  <Toggle
-                    checked={inappMentions}
-                    onChange={setInappMentions}
-                    label="تنبيهات المحادثة"
-                    description="عند انتهاء مساعد من تحليل أو خطة طويلة."
-                  />
-                  <Toggle
-                    checked={inappWeekly}
-                    onChange={setInappWeekly}
-                    label="ملخص أسبوعي"
-                    description="ملخص لأنشطتك ومقترحات جديدة كل أسبوع."
-                  />
-                </div>
-                <div className="flex justify-end mt-6">
-                  <Button
-                    onClick={() => toast.success("تم حفظ تفضيلات الإشعارات.")}
-                    className="bg-brand-cyan text-black hover:bg-brand-cyan/90 font-bold"
-                  >
-                    حفظ التفضيلات
-                  </Button>
-                </div>
+                {loadingPrefs ? (
+                  <div className="flex items-center gap-2 py-6 text-neutral-500">
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <span className="text-sm">جارٍ تحميل التفضيلات...</span>
+                  </div>
+                ) : (
+                  <>
+                    <div className="space-y-1">
+                      <h3 className="text-xs font-bold uppercase tracking-wider text-neutral-500 mb-2">
+                        البريد الإلكتروني
+                      </h3>
+                      <Toggle
+                        checked={emailMarketing}
+                        onChange={setEmailMarketing}
+                        label="نشرات وفعاليات"
+                        description="فرص تمويل، مسابقات ريادة الأعمال، وتحديثات السوق."
+                      />
+                      <Toggle
+                        checked={emailProduct}
+                        onChange={setEmailProduct}
+                        label="تحديثات المنتج"
+                        description="ميزات جديدة، أمساعدين جدد، وتحسينات داخل كلميرون."
+                      />
+                    </div>
+                    <div className="border-t border-white/10 mt-4 pt-4 space-y-1">
+                      <h3 className="text-xs font-bold uppercase tracking-wider text-neutral-500 mb-2">
+                        داخل التطبيق
+                      </h3>
+                      <Toggle
+                        checked={inappMentions}
+                        onChange={setInappMentions}
+                        label="تنبيهات المحادثة"
+                        description="عند انتهاء مساعد من تحليل أو خطة طويلة."
+                      />
+                      <Toggle
+                        checked={inappWeekly}
+                        onChange={setInappWeekly}
+                        label="ملخص أسبوعي"
+                        description="ملخص لأنشطتك ومقترحات جديدة كل أسبوع."
+                      />
+                    </div>
+                    <div className="flex justify-end mt-6">
+                      <Button
+                        onClick={saveNotificationPrefs}
+                        disabled={savingPrefs}
+                        className="bg-brand-cyan text-black hover:bg-brand-cyan/90 font-bold"
+                      >
+                        {savingPrefs ? <Loader2 className="ml-2 h-4 w-4 animate-spin" /> : <Check className="ml-2 h-4 w-4" />}
+                        {savingPrefs ? "جارٍ الحفظ..." : "حفظ التفضيلات"}
+                      </Button>
+                    </div>
+                  </>
+                )}
               </CardContent>
             </Card>
           </TabsContent>

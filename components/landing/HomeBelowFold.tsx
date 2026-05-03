@@ -7,6 +7,7 @@ import {
   Briefcase, Scale, FlaskConical, Bot,
   Check, CheckCircle2, XCircle,
   Star, Trophy, Users, TrendingUp, Clock, Zap,
+  MessageSquare, BarChart3, Rocket, FileText,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -77,6 +78,102 @@ const DEPARTMENTS = [
     gradient: "from-rose-500 to-red-500",
     border: "border-rose-500/20 hover:border-rose-400/50",
     glowColor: "rgba(244,63,94,0.12)",
+  },
+];
+
+// ─── HOW IT WORKS STEPS ───────────────────────────────────────────────────────
+
+const HOW_IT_WORKS = [
+  {
+    step: "١",
+    icon: FileText,
+    title: "أخبرنا عن مشروعك",
+    desc: "أدخل فكرتك وقطاعك ومرحلة شركتك — في دقيقتين فقط، بدون أي خبرة تقنية.",
+    color: "from-cyan-500 to-indigo-500",
+    border: "border-cyan-500/20",
+    glow: "rgba(56,189,248,0.08)",
+  },
+  {
+    step: "٢",
+    icon: Brain,
+    title: "يتعلم كلميرون سياقك",
+    desc: "الذكاء الاصطناعي يبني ذاكرة كاملة عن شركتك وسوقك وأهدافك — تزداد دقةً مع الوقت.",
+    color: "from-indigo-500 to-violet-500",
+    border: "border-indigo-500/20",
+    glow: "rgba(99,102,241,0.08)",
+  },
+  {
+    step: "٣",
+    icon: MessageSquare,
+    title: "تحدّث مع فريقك الكامل",
+    desc: "اسأل أي سؤال — الاستراتيجية، المالية، القانوني، التسويق — الإجابة فورية ودقيقة.",
+    color: "from-violet-500 to-fuchsia-500",
+    border: "border-violet-500/20",
+    glow: "rgba(139,92,246,0.08)",
+  },
+  {
+    step: "٤",
+    icon: Rocket,
+    title: "ابنِ وأطلق بثقة",
+    desc: "من خطة الأعمال للعقود للنماذج المالية — كل شيء جاهز للتنفيذ وللعرض على المستثمرين.",
+    color: "from-fuchsia-500 to-rose-500",
+    border: "border-fuchsia-500/20",
+    glow: "rgba(217,70,239,0.08)",
+  },
+];
+
+// ─── FEATURES BENTO ───────────────────────────────────────────────────────────
+
+const FEATURES_BENTO = [
+  {
+    icon: Brain,
+    title: "ذاكرة مؤسسية ذكية",
+    desc: "كلميرون يتذكر كل شيء قلته — اسم مشروعك، منافسيك، أهدافك، قراراتك السابقة.",
+    span: "md:col-span-2",
+    gradient: "from-cyan-500/10 to-indigo-500/5",
+    border: "border-cyan-500/15",
+    tag: "الميزة الأساسية",
+    tagColor: "bg-cyan-500/10 text-cyan-300 border-cyan-500/20",
+  },
+  {
+    icon: BarChart3,
+    title: "نماذج مالية للمستثمرين",
+    desc: "DCF، P&L، وتوقعات ثلاث سنوات في دقائق.",
+    span: "",
+    gradient: "from-emerald-500/10 to-cyan-500/5",
+    border: "border-emerald-500/15",
+    tag: "CFO الذكي",
+    tagColor: "bg-emerald-500/10 text-emerald-300 border-emerald-500/20",
+  },
+  {
+    icon: FlaskConical,
+    title: "اختبر فكرتك قبل الإطلاق",
+    desc: "محادثة مع عملاء افتراضيين تكشف نقاط الألم والاعتراضات قبل أن تنفق قرشاً.",
+    span: "",
+    gradient: "from-fuchsia-500/10 to-pink-500/5",
+    border: "border-fuchsia-500/15",
+    tag: "مختبر السوق",
+    tagColor: "bg-fuchsia-500/10 text-fuchsia-300 border-fuchsia-500/20",
+  },
+  {
+    icon: Scale,
+    title: "عقود قانونية جاهزة",
+    desc: "عقود مؤسسين، NDA، عقود خدمات — محررة باحترافية ومتوافقة مع التشريعات.",
+    span: "",
+    gradient: "from-amber-500/10 to-orange-500/5",
+    border: "border-amber-500/15",
+    tag: "القانوني",
+    tagColor: "bg-amber-500/10 text-amber-300 border-amber-500/20",
+  },
+  {
+    icon: Radar,
+    title: "رادار الفرص التمويلية",
+    desc: "تنبيهات يومية بجولات التمويل، المسابقات، والحاضنات — مع تقدير مدى ملاءمتها لشركتك.",
+    span: "md:col-span-2",
+    gradient: "from-violet-500/10 to-purple-500/5",
+    border: "border-violet-500/15",
+    tag: "رادار الفرص",
+    tagColor: "bg-violet-500/10 text-violet-300 border-violet-500/20",
   },
 ];
 
@@ -174,6 +271,146 @@ function StatsStrip() {
   );
 }
 
+// ─── HOW IT WORKS ────────────────────────────────────────────────────────────
+
+function HowItWorks() {
+  return (
+    <section id="how-it-works" className="relative px-4 py-16 md:py-24">
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] rounded-full bg-indigo-600/4 blur-[120px]" />
+      </div>
+      <div className="relative max-w-5xl mx-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="text-center mb-14"
+        >
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-white/[0.08] bg-white/[0.04] text-[11px] text-indigo-200 mb-5">
+            <Sparkles className="w-3 h-3" /> كيف يعمل كلميرون؟
+          </div>
+          <h2 className="font-display text-2xl sm:text-3xl md:text-4xl font-extrabold text-white mb-4 leading-tight">
+            أربع خطوات للوصول
+            <br />
+            <span className="brand-gradient-text">من الفكرة لشركة حقيقية</span>
+          </h2>
+          <p className="text-neutral-400 text-base max-w-xl mx-auto">
+            البداية سهلة — لا تحتاج خبرة تقنية، فقط فكرتك وطموحك.
+          </p>
+        </motion.div>
+
+        <div className="relative">
+          {/* Connector line (desktop) */}
+          <div className="hidden md:block absolute top-12 left-[12.5%] right-[12.5%] h-px bg-gradient-to-r from-cyan-500/20 via-violet-500/20 to-fuchsia-500/20" />
+
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 md:gap-4">
+            {HOW_IT_WORKS.map((step, i) => {
+              const Icon = step.icon;
+              return (
+                <motion.div
+                  key={step.step}
+                  initial={{ opacity: 0, y: 24 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.1 }}
+                  className="relative flex flex-col items-center text-center"
+                >
+                  {/* Step circle */}
+                  <div className={`relative w-20 h-20 rounded-2xl bg-gradient-to-br ${step.color} p-[1px] mb-5 shadow-lg`}>
+                    <div
+                      className="w-full h-full rounded-2xl flex items-center justify-center"
+                      style={{ background: `radial-gradient(circle at 50% 0%, ${step.glow}, #0A0E1B 70%)` }}
+                    >
+                      <Icon className="w-7 h-7 text-white" />
+                    </div>
+                    <div className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-dark-bg border border-white/[0.08] flex items-center justify-center text-[11px] font-black text-neutral-400">
+                      {step.step}
+                    </div>
+                  </div>
+                  <h3 className="font-bold text-white text-[15px] mb-2 leading-snug">{step.title}</h3>
+                  <p className="text-xs text-neutral-500 leading-relaxed">{step.desc}</p>
+                </motion.div>
+              );
+            })}
+          </div>
+        </div>
+
+        <motion.div
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          className="text-center mt-12"
+        >
+          <Link
+            href="/auth/signup"
+            className="inline-flex items-center gap-2 btn-primary rounded-full px-7 py-3.5 text-sm font-bold"
+          >
+            ابدأ رحلتك الآن <ArrowLeft className="w-4 h-4" />
+          </Link>
+        </motion.div>
+      </div>
+    </section>
+  );
+}
+
+// ─── FEATURES BENTO SECTION ──────────────────────────────────────────────────
+
+function FeaturesBento() {
+  return (
+    <section id="features" className="relative px-4 py-16 md:py-24">
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <div className="absolute bottom-0 right-0 w-[400px] h-[300px] rounded-full bg-fuchsia-600/4 blur-[100px]" />
+      </div>
+      <div className="relative max-w-6xl mx-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="text-center mb-12"
+        >
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-white/[0.08] bg-white/[0.04] text-[11px] text-fuchsia-200 mb-5">
+            <Zap className="w-3 h-3" /> الميزات الأساسية
+          </div>
+          <h2 className="font-display text-2xl sm:text-3xl md:text-4xl font-extrabold text-white mb-4">
+            كل ما تحتاجه —
+            <span className="brand-gradient-text"> في مكان واحد</span>
+          </h2>
+        </motion.div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {FEATURES_BENTO.map((f, i) => {
+            const Icon = f.icon;
+            return (
+              <motion.div
+                key={f.title}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.07 }}
+                className={`group relative rounded-2xl border ${f.border} p-5 md:p-6 overflow-hidden ${f.span}`}
+                style={{ background: `linear-gradient(135deg, ${f.gradient.includes("cyan") ? "rgba(6,182,212,0.04)" : f.gradient.includes("emerald") ? "rgba(16,185,129,0.04)" : f.gradient.includes("fuchsia") ? "rgba(217,70,239,0.04)" : f.gradient.includes("amber") ? "rgba(245,158,11,0.04)" : "rgba(139,92,246,0.04)"} 0%, transparent 60%)` }}
+              >
+                <div className="flex items-start gap-4">
+                  <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${f.gradient} flex items-center justify-center shrink-0`}>
+                    <Icon className="w-5 h-5 text-white" />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2 mb-2 flex-wrap">
+                      <span className="font-bold text-white text-[15px]">{f.title}</span>
+                      <span className={`text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border ${f.tagColor}`}>{f.tag}</span>
+                    </div>
+                    <p className="text-sm text-neutral-400 leading-relaxed">{f.desc}</p>
+                  </div>
+                </div>
+              </motion.div>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 // ─── DEPARTMENTS SECTION ─────────────────────────────────────────────────────
 
 function DepartmentsSection() {
@@ -216,7 +453,6 @@ function DepartmentsSection() {
                 className={`group relative rounded-2xl border ${dept.border} transition-all duration-300 p-5 md:p-6 cursor-default overflow-hidden`}
                 style={{ background: "rgba(255,255,255,0.025)" }}
               >
-                {/* Hover glow */}
                 <div
                   className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
                   style={{ background: `radial-gradient(ellipse at 50% 0%, ${dept.glowColor}, transparent 70%)` }}
@@ -286,7 +522,6 @@ function ComparisonSection() {
           className="rounded-2xl border border-white/[0.07] overflow-hidden"
           style={{ background: "rgba(255,255,255,0.02)" }}
         >
-          {/* Header row */}
           <div
             className="grid grid-cols-4 border-b border-white/[0.07]"
             style={{ background: "rgba(255,255,255,0.03)" }}
@@ -458,6 +693,7 @@ function SiteFooter() {
     {
       title: "المنصة",
       links: [
+        { href: "#how-it-works", label: "كيف يعمل" },
         { href: "#departments", label: "الأقسام" },
         { href: "/pricing", label: "الأسعار" },
         { href: "#compare", label: "المقارنة" },
@@ -493,7 +729,6 @@ function SiteFooter() {
     >
       <div className="max-w-6xl mx-auto">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
-          {/* Brand col */}
           <div className="col-span-2 md:col-span-1">
             <BrandLogo size={36} iconOnly showWordmark={false} />
             <p className="mt-4 text-sm text-neutral-500 leading-relaxed max-w-[200px]">
@@ -505,7 +740,6 @@ function SiteFooter() {
             </div>
           </div>
 
-          {/* Link cols */}
           {cols.map((col) => (
             <div key={col.title}>
               <h4 className="text-[11px] font-bold uppercase tracking-[0.18em] text-neutral-600 mb-4">{col.title}</h4>
@@ -544,6 +778,8 @@ export default function HomeBelowFold() {
   return (
     <>
       <StatsStrip />
+      <HowItWorks />
+      <FeaturesBento />
       <DepartmentsSection />
       <ComparisonSection />
       <TestimonialsSection />

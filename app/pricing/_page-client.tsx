@@ -14,6 +14,7 @@ import { PricingComparison } from "@/components/pricing/PricingComparison";
 import { PricingFAQ } from "@/components/pricing/PricingFAQ";
 import { PricingTrust } from "@/components/pricing/PricingTrust";
 import { PricingEnterpriseBanner } from "@/components/pricing/PricingEnterpriseBanner";
+import { FawryDialog } from "@/components/billing/FawryDialog";
 import { toast } from "sonner";
 
 export type BillingCycle = "monthly" | "annual";
@@ -24,10 +25,10 @@ export default function PricingPage() {
   const [loadingPlan, setLoadingPlan] = useState<PlanId | null>(null);
   const [billing, setBilling] = useState<BillingCycle>("monthly");
   const [billingAvailable, setBillingAvailable] = useState<boolean>(true);
+  const [fawryOpen, setFawryOpen] = useState(false);
+  const [fawryPlan, setFawryPlan] = useState<PlanId>("starter");
+  const [authToken, setAuthToken] = useState<string | null>(null);
 
-  // Probe whether self-serve Stripe billing is configured. If the server has
-  // no Stripe price IDs, we surface a soft banner instead of letting the user
-  // click into a silent failure.
   useEffect(() => {
     let cancelled = false;
     (async () => {
@@ -37,22 +38,19 @@ export default function PricingPage() {
         const data = await res.json();
         if (!cancelled) setBillingAvailable(Boolean(data.stripeConfigured));
       } catch {
-        // Network error → leave the banner hidden; the checkout endpoint has
-        // its own 503 fallback that explains the error in Arabic.
+        // Network error – leave banner hidden
       }
     })();
-    return () => {
-      cancelled = true;
-    };
+    return () => { cancelled = true; };
   }, []);
 
   useEffect(() => {
     const load = async () => {
       if (!user) return;
       const token = await user.getIdToken().catch(() => null);
-      if (!token) return;
+      if (token) setAuthToken(token);
       const res = await fetch("/api/user/credits", {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
         cache: "no-store",
       });
       if (!res.ok) return;
@@ -75,30 +73,51 @@ export default function PricingPage() {
       toast.message("سيتواصل معك فريق المبيعات قريباً للخطة المؤسسية.");
       return;
     }
-    if (planId !== "free" && !billingAvailable) {
-      toast.error("الفوترة الذاتية غير مفعّلة حالياً. تواصل مع المبيعات للترقية.");
+    if (planId === "free") {
+      setLoadingPlan(planId);
+      try {
+        const token = await user.getIdToken().catch(() => null);
+        const res = await fetch("/api/user/plan", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+          body: JSON.stringify({ plan: planId }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data?.error || "فشل التبديل");
+        setCurrentPlan(planId);
+        toast.success(data.message || `تم التبديل إلى ${PLANS[planId].nameAr}.`);
+      } catch (e: unknown) {
+        toast.error(e instanceof Error ? e.message : "حدث خطأ.");
+      } finally {
+        setLoadingPlan(null);
+      }
       return;
     }
-    setLoadingPlan(planId);
-    try {
-      const token = await user.getIdToken().catch(() => null);
-      if (!token) throw new Error("no token");
-      const res = await fetch("/api/user/plan", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ plan: planId }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data?.error || "فشل التبديل");
-      setCurrentPlan(planId);
-      toast.success(data.message || `تم التبديل إلى ${PLANS[planId].nameAr}.`);
-    } catch (e: unknown) {
-      toast.error(e instanceof Error ? e.message : "حدث خطأ أثناء تغيير الخطة.");
-    } finally {
-      setLoadingPlan(null);
+
+    // For paid plans: if Stripe is available, use normal flow; else offer Fawry
+    if (billingAvailable) {
+      setLoadingPlan(planId);
+      try {
+        const token = await user.getIdToken().catch(() => null);
+        if (!token) throw new Error("no token");
+        const res = await fetch("/api/billing/checkout", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+          body: JSON.stringify({ plan: planId, cycle: billing }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data?.error || "فشل إنشاء الجلسة");
+        if (data.url) window.location.href = data.url;
+        else toast.success(data.message || "تم التحديث.");
+      } catch (e: unknown) {
+        toast.error(e instanceof Error ? e.message : "حدث خطأ أثناء الدفع.");
+      } finally {
+        setLoadingPlan(null);
+      }
+    } else {
+      // Open Fawry dialog for EGP payment
+      setFawryPlan(planId);
+      setFawryOpen(true);
     }
   };
 
@@ -110,85 +129,74 @@ export default function PricingPage() {
 
   const content = (
     <div className={user ? "-m-4 md:-m-8" : ""}>
-        {/* HERO with mesh gradient + starfield */}
-        <PricingHero billing={billing} setBilling={setBilling} />
+      <PricingHero billing={billing} setBilling={setBilling} />
 
-        {/* Stripe-not-configured banner (soft) */}
-        {!billingAvailable && (
-          <div className="max-w-7xl mx-auto px-4 md:px-8 -mt-10 mb-4 relative z-20">
-            <div className="rounded-2xl border border-amber-400/30 bg-amber-400/[0.06] backdrop-blur-xl px-5 py-3 flex items-start gap-3 text-sm text-amber-100">
-              <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5 text-amber-300" />
-              <div className="flex-1 leading-relaxed">
-                الفوترة الذاتية عبر Stripe قيد الإعداد حالياً. للترقية الفورية،
-                <Link
-                  href="/contact?intent=billing"
-                  className="ms-1 font-bold text-amber-200 underline decoration-dotted underline-offset-4 hover:text-white"
-                >
-                  تواصل مع فريق المبيعات
-                </Link>
-                — سنعالج طلبك يدوياً خلال يوم عمل.
-              </div>
+      {/* Fawry / EGP payment banner */}
+      {!billingAvailable && (
+        <div className="max-w-7xl mx-auto px-4 md:px-8 -mt-10 mb-4 relative z-20">
+          <div className="rounded-2xl border border-amber-400/30 bg-amber-400/[0.06] backdrop-blur-xl px-5 py-3 flex items-start gap-3 text-sm text-amber-100">
+            <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5 text-amber-300" />
+            <div className="flex-1 leading-relaxed">
+              الدفع بالجنيه المصري متاح عبر{" "}
+              <span className="font-bold text-amber-200">فوري</span> — اختر خطتك وستفتح نافذة الدفع تلقائياً.
             </div>
           </div>
-        )}
-
-        {/* DESKTOP: 3-column premium card grid (Enterprise rendered as banner below) */}
-        <div className="hidden lg:block px-8 -mt-16 relative z-10">
-          <PricingDesktop
-            plans={mainPlanList}
-            currentPlan={currentPlan}
-            loadingPlan={loadingPlan}
-            billing={billing}
-            onSelect={handleSelect}
-            billingAvailable={billingAvailable}
-          />
         </div>
+      )}
 
-        {/* MOBILE / TABLET: snap carousel + sticky CTA — also 3 cards */}
-        <div className="lg:hidden px-4 -mt-8 relative z-10">
-          <PricingMobile
-            plans={mainPlanList}
-            currentPlan={currentPlan}
-            loadingPlan={loadingPlan}
-            billing={billing}
-            onSelect={handleSelect}
-            billingAvailable={billingAvailable}
-          />
-        </div>
+      <div className="hidden lg:block px-8 -mt-16 relative z-10">
+        <PricingDesktop
+          plans={mainPlanList}
+          currentPlan={currentPlan}
+          loadingPlan={loadingPlan}
+          billing={billing}
+          onSelect={handleSelect}
+          billingAvailable={billingAvailable}
+        />
+      </div>
 
-        {/* ENTERPRISE banner (replaces the old 4th column) */}
-        <PricingEnterpriseBanner plan={enterprisePlan} />
+      <div className="lg:hidden px-4 -mt-8 relative z-10">
+        <PricingMobile
+          plans={mainPlanList}
+          currentPlan={currentPlan}
+          loadingPlan={loadingPlan}
+          billing={billing}
+          onSelect={handleSelect}
+          billingAvailable={billingAvailable}
+        />
+      </div>
 
-        {/* TRUST strip */}
-        <div className="px-4 md:px-8 mt-16 md:mt-24">
-          <PricingTrust />
-        </div>
+      <PricingEnterpriseBanner plan={enterprisePlan} />
 
-        {/* FEATURE COMPARISON — horizontal scroll on mobile */}
-        <div className="px-4 md:px-8 mt-20">
-          <PricingComparison
-            plans={[...mainPlanList, enterprisePlan]}
-            currentPlan={currentPlan}
-          />
-        </div>
+      <div className="px-4 md:px-8 mt-16 md:mt-24">
+        <PricingTrust />
+      </div>
 
-        {/* FAQ */}
-        <div className="px-4 md:px-8 mt-16 md:mt-24 mb-16">
-          <PricingFAQ />
-        </div>
+      <div className="px-4 md:px-8 mt-20">
+        <PricingComparison
+          plans={[...mainPlanList, enterprisePlan]}
+          currentPlan={currentPlan}
+        />
+      </div>
+
+      <div className="px-4 md:px-8 mt-16 md:mt-24 mb-16">
+        <PricingFAQ />
+      </div>
+
+      <FawryDialog
+        open={fawryOpen}
+        onClose={() => setFawryOpen(false)}
+        planId={fawryPlan}
+        cycle={billing}
+        authToken={authToken}
+      />
     </div>
   );
 
-  // Render the public (logged-out) shell as the SSR/initial output so search
-  // engines and the QA crawler can see the <h1> and full content immediately.
-  // Once auth resolves we swap to the authenticated AppShell on the client.
   if (!authLoading && user) {
     return <AppShell>{content}</AppShell>;
   }
 
-  // Public (logged-out) view: minimal header + pricing content.
-  // Also shown during the brief authLoading window — better than a blank page
-  // for both perceived-performance and SEO/SSR.
   return (
     <div className="min-h-screen bg-dark-bg text-white" dir="rtl">
       <header className="sticky top-0 z-40 border-b border-white/[0.06] bg-[#05070D]/80 backdrop-blur-xl">

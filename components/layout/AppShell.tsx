@@ -19,6 +19,7 @@ import { AnimatedBrandMark } from "@/components/brand/AnimatedBrandMark";
 import Loading from "@/app/loading";
 import { NAV_SECTIONS } from "@/src/lib/navigation";
 import { CommandPalette, useCommandPaletteShortcut } from "@/components/ui/CommandPalette";
+import { UpgradeBanner } from "@/components/billing/UpgradeBanner";
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const { user, dbUser, loading, signOut: logout } = useAuth();
@@ -237,6 +238,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         {/* Page Content — body is the scroll container; pb leaves room for
             the mobile bottom nav (env(safe-area-inset-bottom) included). */}
         <div className="flex-1 w-full pb-[calc(7rem+env(safe-area-inset-bottom))] md:pb-0">
+          <UpgradeBanner />
           <AnimatePresence mode="wait">
             <motion.div
               key={pathname}
