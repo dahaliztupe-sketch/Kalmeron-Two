@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { NotificationPermissionBanner } from "@/components/ui/NotificationPermissionBanner";
 import { RunwayAlarmBanner } from "@/components/runway/RunwayAlarmBanner";
+import { WelcomeToast } from "@/components/onboarding/WelcomeToast";
 import { PageSkeleton } from "@/components/ui/PageSkeleton";
 import { SmartHubSection } from "@/src/components/dashboard/SmartHubSection";
 import { CompanyHealthScore } from "@/src/components/dashboard/CompanyHealthScore";
@@ -138,6 +139,7 @@ export default function DashboardPage() {
 
   return (
     <AppShell>
+      <WelcomeToast />
       <div dir="rtl" className="max-w-7xl mx-auto">
         <div className="flex items-center justify-between mb-6">
           <div>
