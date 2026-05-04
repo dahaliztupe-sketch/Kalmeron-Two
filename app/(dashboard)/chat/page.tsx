@@ -34,6 +34,12 @@ import { ThoughtChain, type Phase } from "@/components/chat/ThoughtChain";
 import { VoiceInputButton } from "@/components/chat/VoiceInputButton";
 
 // ── Slash command definitions ──────────────────────────────────────────────
+/**
+ * Slash command definitions.
+ * `agentName` matches the agent `name` field in AgentRegistry
+ * (src/ai/agents/registry.ts) — sent as uiContext.agentName to the
+ * chat API so the supervisor can pin-route to the correct graph node.
+ */
 const SLASH_COMMANDS: Array<{
   cmd: string;
   aliases?: string[];
@@ -42,94 +48,167 @@ const SLASH_COMMANDS: Array<{
   icon: LucideIcon;
   color: string;
   prompt: string;
+  agentName: string;
 }> = [
   {
     cmd: "/cfo", aliases: ["/مالي", "/financial"],
     label: "المدير المالي", description: "تحليل مالي وتدفق نقدي",
     icon: Briefcase, color: "amber",
     prompt: "كـ CFO متخصص في السوق المصري، حلّل وضعي المالي وقدّم توصياتك: ",
+    agentName: "cfo-agent",
   },
   {
     cmd: "/legal", aliases: ["/قانوني", "/law"],
     label: "المرشد القانوني", description: "قانون الشركات المصري",
     icon: Scale, color: "violet",
     prompt: "كـ مستشار قانوني متخصص في الشركات المصرية، أجب على سؤالي القانوني: ",
+    agentName: "legal-guide",
   },
   {
     cmd: "/marketing", aliases: ["/تسويق", "/market"],
     label: "استراتيجي التسويق", description: "خطة تسويق وقنوات نمو",
     icon: Megaphone, color: "rose",
     prompt: "كـ استراتيجي تسويق متخصص في الأسواق العربية، ضع لي خطة لـ: ",
+    agentName: "marketing-strategist",
   },
   {
     cmd: "/idea", aliases: ["/فكرة", "/analyze"],
     label: "محلّل الأفكار", description: "تحليل SWOT وجدوى المشروع",
     icon: Brain, color: "cyan",
     prompt: "حلّل هذه الفكرة بشكل شامل مع SWOT وحجم السوق والمخاطر: ",
+    agentName: "idea-validator",
   },
   {
     cmd: "/plan", aliases: ["/خطة", "/business"],
     label: "بنّاء خطة العمل", description: "خطة عمل كاملة",
     icon: FileText, color: "indigo",
     prompt: "ابنِ خطة عمل تفصيلية احترافية لـ: ",
+    agentName: "plan-builder",
   },
   {
     cmd: "/opportunities", aliases: ["/فرص", "/funding"],
     label: "رادار الفرص", description: "تمويل وفرص ريادية",
     icon: Radar, color: "emerald",
     prompt: "ابحث عن أحدث فرص التمويل والمنح والمسابقات لـ: ",
+    agentName: "opportunity-radar",
   },
   {
     cmd: "/ceo", aliases: ["/رئيس", "/strategy"],
     label: "المدير التنفيذي", description: "استراتيجية ورؤية شاملة",
     icon: Building2, color: "indigo",
     prompt: "كـ CEO استراتيجي، قيّم موقفي الاستراتيجي وقدّم رؤيتك بشأن: ",
+    agentName: "ceo-agent",
   },
   {
     cmd: "/sales", aliases: ["/مبيعات", "/sell"],
     label: "مدرب المبيعات", description: "استراتيجية مبيعات",
     icon: TrendingUp, color: "emerald",
     prompt: "كـ مدرب مبيعات محترف، ساعدني على تحسين مبيعاتي لـ: ",
+    agentName: "sales-coach",
   },
   {
     cmd: "/hr", aliases: ["/موارد", "/team"],
     label: "مستشار التوظيف", description: "بناء الفريق والتوظيف",
     icon: UserCheck, color: "rose",
     prompt: "ساعدني في بناء فريقي وتوظيف المواهب المناسبة لـ: ",
+    agentName: "hiring-advisor",
   },
   {
     cmd: "/tech", aliases: ["/تقني", "/cto"],
     label: "مدير التقنية", description: "استراتيجية تقنية وبنية تحتية",
     icon: Code, color: "cyan",
     prompt: "كـ CTO متخصص في الشركات الناشئة، أشاركك التحدي التقني: ",
+    agentName: "cto-agent",
   },
 ];
 
-const AGENT_CHIP_KEYS = [
-  { key: "ideaAnalyst", icon: Brain, color: "cyan" },
-  { key: "businessPlan", icon: FileText, color: "indigo" },
-  { key: "mistakeShield", icon: ShieldAlert, color: "rose" },
-  { key: "opportunityRadar", icon: Radar, color: "emerald" },
-  { key: "cfo", icon: Briefcase, color: "amber" },
-  { key: "legal", icon: Scale, color: "violet" },
-] as const;
 
 const EMPTY_STATE_KEYS = [
   "pharmacy", "marketing", "saas", "breakeven", "company", "subscription",
 ] as const;
 
+/**
+ * Council agents.
+ * `agentName` maps to AgentRegistry keys in src/ai/agents/registry.ts.
+ * `agentRoleAr` is passed to runCouncilSafe as the role/system-prompt injection.
+ */
 const COUNCIL_AGENTS: Array<{
   id: string;
   label: string;
   icon: LucideIcon;
   color: string;
+  agentName: string;
+  agentRoleAr: string;
 }> = [
-  { id: "ceo", label: "المدير التنفيذي", icon: Building2, color: "indigo" },
-  { id: "cfo", label: "المالية", icon: Briefcase, color: "amber" },
-  { id: "cmo", label: "التسويق", icon: Megaphone, color: "rose" },
-  { id: "legal", label: "القانوني", icon: Scale, color: "violet" },
-  { id: "ops", label: "العمليات", icon: Zap, color: "emerald" },
+  {
+    id: "ceo", label: "المدير التنفيذي", icon: Building2, color: "indigo",
+    agentName: "ceo-agent",
+    agentRoleAr: "المدير التنفيذي الاستراتيجي المتخصص في قيادة الشركات الناشئة المصرية",
+  },
+  {
+    id: "cfo", label: "المالية", icon: Briefcase, color: "amber",
+    agentName: "cfo-agent",
+    agentRoleAr: "المدير المالي المتخصص في النمذجة المالية والتدفق النقدي للسوق المصري",
+  },
+  {
+    id: "cmo", label: "التسويق", icon: Megaphone, color: "rose",
+    agentName: "marketing-strategist",
+    agentRoleAr: "استراتيجي التسويق الرقمي المتخصص في الأسواق العربية وبناء العلامة التجارية",
+  },
+  {
+    id: "legal", label: "القانوني", icon: Scale, color: "violet",
+    agentName: "legal-guide",
+    agentRoleAr: "المستشار القانوني المتخصص في قانون الشركات والملكية الفكرية في مصر",
+  },
+  {
+    id: "ops", label: "العمليات", icon: Zap, color: "emerald",
+    agentName: "operations-manager",
+    agentRoleAr: "مدير العمليات المتخصص في بناء الأنظمة والعمليات القابلة للتوسع",
+  },
 ];
+
+// ── Stage-based Quick Prompts ───────────────────────────────────────────────
+const STAGE_PROMPTS: Record<string, Array<{ text: string; icon: LucideIcon; color: string }>> = {
+  idea: [
+    { text: "حلّل فكرتي في السوق المصري وقيّم جدواها", icon: Brain, color: "cyan" },
+    { text: "ما حجم السوق المستهدف وفرص النمو؟", icon: TrendingUp, color: "emerald" },
+    { text: "كيف أتحقق من صحة فكرتي بأقل تكلفة؟", icon: Zap, color: "amber" },
+    { text: "ما الأخطاء الشائعة في مرحلة الفكرة؟", icon: ShieldAlert, color: "rose" },
+    { text: "ابنِ لي MVP بسيط لاختبار الفكرة", icon: FileText, color: "indigo" },
+    { text: "ابحث عن فرص تمويل مبكر لمشروعي", icon: Radar, color: "violet" },
+  ],
+  validation: [
+    { text: "كيف أختبر فرضيات مشروعي مع العملاء؟", icon: Brain, color: "cyan" },
+    { text: "ما مقاييس Product-Market Fit في مرحلتي؟", icon: TrendingUp, color: "emerald" },
+    { text: "كيف أحصل على أول 100 عميل في مصر؟", icon: Megaphone, color: "rose" },
+    { text: "ما نموذج التسعير الأمثل لمشروعي؟", icon: Briefcase, color: "amber" },
+    { text: "حلّل منافسيّ في السوق المصري", icon: Radar, color: "indigo" },
+    { text: "ما الشكل القانوني الأنسب لمشروعي؟", icon: Scale, color: "violet" },
+  ],
+  growth: [
+    { text: "كيف أوسّع نطاق عملياتي للمرحلة القادمة؟", icon: TrendingUp, color: "emerald" },
+    { text: "استراتيجية النمو الأمثل لمرحلتي الحالية", icon: Brain, color: "cyan" },
+    { text: "كيف أبني فريق مبيعات فعّال في مصر؟", icon: UserCheck, color: "rose" },
+    { text: "كيف أستعدّ لجولة تمويل Series A؟", icon: Briefcase, color: "amber" },
+    { text: "ما مؤشرات الأداء التي يهتم بها المستثمرون؟", icon: FileText, color: "indigo" },
+    { text: "كيف أدخل أسواقاً عربية جديدة؟", icon: Building2, color: "violet" },
+  ],
+  default: [
+    { text: "حلّل فكرتي وقيّم جدواها في السوق المصري", icon: Brain, color: "cyan" },
+    { text: "ابنِ خطة عمل احترافية لمشروعي", icon: FileText, color: "indigo" },
+    { text: "ابحث عن فرص تمويل ومنح متاحة لي", icon: Radar, color: "emerald" },
+    { text: "حلّل وضعي المالي وقدّم توصياتك", icon: Briefcase, color: "amber" },
+    { text: "ما الأخطاء الشائعة لرواد الأعمال في مصر؟", icon: ShieldAlert, color: "rose" },
+    { text: "استشارة قانونية لتأسيس شركتي في مصر", icon: Scale, color: "violet" },
+  ],
+};
+
+function getDailyPrompts(stage: string): Array<{ text: string; icon: LucideIcon; color: string }> {
+  const pool = STAGE_PROMPTS[stage] ?? STAGE_PROMPTS.default;
+  const dayIndex = Math.floor(Date.now() / (1000 * 60 * 60 * 24));
+  const offset = dayIndex % pool.length;
+  return [...pool.slice(offset), ...pool.slice(0, offset)].slice(0, 6);
+}
 
 type Citation = {
   index: number;
@@ -236,34 +315,85 @@ function CopyButton({ text }: { text: string }) {
 function FeedbackButtons({ messageId, feedback, onFeedback }: {
   messageId: string;
   feedback?: "good" | "bad" | null;
-  onFeedback: (id: string, val: "good" | "bad") => void;
+  onFeedback: (id: string, val: "good" | "bad", comment?: string) => void;
 }) {
+  const [showComment, setShowComment] = useState(false);
+  const [comment, setComment] = useState("");
+
+  const handleBad = () => {
+    if (feedback === "bad") return;
+    setShowComment(true);
+  };
+
+  const submitBad = () => {
+    onFeedback(messageId, "bad", comment.trim() || undefined);
+    setShowComment(false);
+    setComment("");
+  };
+
   return (
-    <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
-      <button
-        onClick={() => onFeedback(messageId, "good")}
-        className={cn(
-          "p-1.5 rounded-lg transition-all",
-          feedback === "good"
-            ? "text-emerald-400 bg-emerald-500/10"
-            : "text-neutral-500 hover:text-emerald-400 hover:bg-emerald-500/10"
+    <div className="flex flex-col gap-1">
+      <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+        <button
+          onClick={() => onFeedback(messageId, "good")}
+          className={cn(
+            "p-1.5 rounded-lg transition-all",
+            feedback === "good"
+              ? "text-emerald-400 bg-emerald-500/10"
+              : "text-neutral-500 hover:text-emerald-400 hover:bg-emerald-500/10"
+          )}
+          title="إجابة جيدة"
+        >
+          <ThumbsUp className="w-3.5 h-3.5" />
+        </button>
+        <button
+          onClick={handleBad}
+          className={cn(
+            "p-1.5 rounded-lg transition-all",
+            feedback === "bad"
+              ? "text-rose-400 bg-rose-500/10"
+              : "text-neutral-500 hover:text-rose-400 hover:bg-rose-500/10"
+          )}
+          title="إجابة سيئة"
+        >
+          <ThumbsDown className="w-3.5 h-3.5" />
+        </button>
+      </div>
+      <AnimatePresence>
+        {showComment && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            className="overflow-hidden"
+          >
+            <div className="mt-1 p-2.5 rounded-xl border border-rose-500/20 bg-rose-500/5 space-y-2">
+              <p className="text-[10px] text-rose-300">ما الذي لم يعجبك؟ (اختياري)</p>
+              <textarea
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
+                placeholder="معلومة غير دقيقة، إجابة غير مفيدة..."
+                rows={2}
+                className="w-full bg-transparent border border-white/10 rounded-lg p-2 text-xs text-neutral-300 placeholder-neutral-600 outline-none focus:border-rose-500/30 resize-none"
+              />
+              <div className="flex gap-1.5 justify-end">
+                <button
+                  onClick={() => { setShowComment(false); setComment(""); }}
+                  className="text-[10px] text-neutral-500 hover:text-white px-2 py-1 rounded-lg hover:bg-white/10 transition-all"
+                >
+                  إلغاء
+                </button>
+                <button
+                  onClick={submitBad}
+                  className="text-[10px] text-rose-300 bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/20 px-2 py-1 rounded-lg transition-all"
+                >
+                  إرسال
+                </button>
+              </div>
+            </div>
+          </motion.div>
         )}
-        title="إجابة جيدة"
-      >
-        <ThumbsUp className="w-3.5 h-3.5" />
-      </button>
-      <button
-        onClick={() => onFeedback(messageId, "bad")}
-        className={cn(
-          "p-1.5 rounded-lg transition-all",
-          feedback === "bad"
-            ? "text-rose-400 bg-rose-500/10"
-            : "text-neutral-500 hover:text-rose-400 hover:bg-rose-500/10"
-        )}
-        title="إجابة سيئة"
-      >
-        <ThumbsDown className="w-3.5 h-3.5" />
-      </button>
+      </AnimatePresence>
     </div>
   );
 }
@@ -450,6 +580,7 @@ function ChatSidebar({
 }) {
   const t = useTranslations("Chat.sidebar");
   const [search, setSearch] = useState("");
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
 
   const filtered = useMemo(() => {
     if (!search.trim()) return conversations;
@@ -462,6 +593,18 @@ function ChatSidebar({
   }, [conversations, search]);
 
   const groups = useMemo(() => groupConversationsByDate(filtered), [filtered]);
+
+  const handleDeleteClick = (e: React.MouseEvent, id: string) => {
+    e.stopPropagation();
+    setDeleteConfirmId(id);
+  };
+
+  const confirmDelete = () => {
+    if (deleteConfirmId) {
+      onDelete(deleteConfirmId);
+      setDeleteConfirmId(null);
+    }
+  };
 
   return (
     <AnimatePresence>
@@ -504,34 +647,58 @@ function ChatSidebar({
                     {group.label}
                   </p>
                   {group.items.map((conv) => (
-                    <motion.button
-                      key={conv.id}
-                      whileTap={{ scale: 0.98 }}
-                      onClick={() => onSelect(conv.id)}
-                      className={cn(
-                        "w-full text-right group flex items-start gap-2 px-3 py-2.5 rounded-xl transition-all mb-0.5",
-                        activeId === conv.id
-                          ? "bg-indigo-500/15 border border-indigo-500/20"
-                          : "hover:bg-white/5 border border-transparent"
+                    <div key={conv.id}>
+                      {deleteConfirmId === conv.id ? (
+                        <motion.div
+                          initial={{ opacity: 0, scale: 0.95 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          className="flex items-center gap-1.5 px-2 py-2 rounded-xl bg-rose-500/10 border border-rose-500/20 mb-0.5"
+                          dir="rtl"
+                        >
+                          <span className="flex-1 text-[10px] text-rose-300 leading-tight">حذف هذه المحادثة؟</span>
+                          <button
+                            onClick={confirmDelete}
+                            className="text-[10px] font-medium text-rose-400 hover:text-rose-300 bg-rose-500/20 hover:bg-rose-500/30 px-2 py-1 rounded-lg transition-all"
+                          >
+                            حذف
+                          </button>
+                          <button
+                            onClick={() => setDeleteConfirmId(null)}
+                            className="text-[10px] text-neutral-500 hover:text-white bg-white/5 hover:bg-white/10 px-2 py-1 rounded-lg transition-all"
+                          >
+                            إلغاء
+                          </button>
+                        </motion.div>
+                      ) : (
+                        <motion.button
+                          whileTap={{ scale: 0.98 }}
+                          onClick={() => onSelect(conv.id)}
+                          className={cn(
+                            "w-full text-right group flex items-start gap-2 px-3 py-2.5 rounded-xl transition-all mb-0.5",
+                            activeId === conv.id
+                              ? "bg-indigo-500/15 border border-indigo-500/20"
+                              : "hover:bg-white/5 border border-transparent"
+                          )}
+                        >
+                          <MessageSquare className="w-3.5 h-3.5 text-neutral-500 mt-0.5 shrink-0" />
+                          <div className="flex-1 min-w-0">
+                            <div className="text-xs font-medium text-neutral-200 truncate">
+                              {conv.title}
+                            </div>
+                            <div className="text-[10px] text-neutral-600 truncate mt-0.5">
+                              {conv.lastMessage}
+                            </div>
+                          </div>
+                          <button
+                            onClick={(e) => handleDeleteClick(e, conv.id)}
+                            title={t("deleteThread")}
+                            className="shrink-0 p-1 rounded-lg opacity-0 group-hover:opacity-100 hover:bg-red-500/20 hover:text-rose-400 text-neutral-600 transition-all"
+                          >
+                            <Trash2 className="w-3 h-3" />
+                          </button>
+                        </motion.button>
                       )}
-                    >
-                      <MessageSquare className="w-3.5 h-3.5 text-neutral-500 mt-0.5 shrink-0" />
-                      <div className="flex-1 min-w-0">
-                        <div className="text-xs font-medium text-neutral-200 truncate">
-                          {conv.title}
-                        </div>
-                        <div className="text-[10px] text-neutral-600 truncate mt-0.5">
-                          {conv.lastMessage}
-                        </div>
-                      </div>
-                      <button
-                        onClick={(e) => { e.stopPropagation(); onDelete(conv.id); }}
-                        title={t("deleteThread")}
-                        className="shrink-0 p-1 rounded-lg opacity-0 group-hover:opacity-100 hover:bg-red-500/20 hover:text-rose-400 text-neutral-600 transition-all"
-                      >
-                        <Trash2 className="w-3 h-3" />
-                      </button>
-                    </motion.button>
+                    </div>
                   ))}
                 </div>
               ))
@@ -662,7 +829,7 @@ function CouncilPanel({
 
       <div className="flex-1 overflow-y-auto p-3 space-y-3 scrollbar-thin">
         {COUNCIL_AGENTS.map((agent) => {
-          const resp = responses.find((r) => r.agentId === agent.id);
+          const resp = responses.find((r) => r.agentId === agent.agentName);
           const Icon = agent.icon;
           return (
             <div key={agent.id} className="rounded-xl border border-white/[0.06] bg-white/[0.02] overflow-hidden">
@@ -730,7 +897,7 @@ function MessageBubble({ m, isStreaming, activePhases, onFeedback }: {
   m: ChatMessage;
   isStreaming: boolean;
   activePhases: Phase[];
-  onFeedback?: (id: string, val: "good" | "bad") => void;
+  onFeedback?: (id: string, val: "good" | "bad", comment?: string) => void;
 }) {
   const tChat = useTranslations("Chat");
   const isUser = m.role === "user";
@@ -845,8 +1012,6 @@ function MessageBubble({ m, isStreaming, activePhases, onFeedback }: {
 function ChatPageContent() {
   const tChat = useTranslations("Chat");
   const tToasts = useTranslations("Chat.toasts");
-  const tChipsRaw = useTranslations("Chat.agentChips");
-  const tChips = tChipsRaw as unknown as (k: string) => string;
   const tInput = useTranslations("Chat.input");
   const tCommon = useTranslations("Common");
   const tDash = useTranslations("Dashboard");
@@ -866,6 +1031,7 @@ function ChatPageContent() {
   const [activeConvId, setActiveConvId] = useState<string>("default-chat");
   const [savedPrompts, setSavedPrompts] = useState<SavedPrompt[]>([]);
   const [showSavedPrompts, setShowSavedPrompts] = useState(false);
+  const [userStage, setUserStage] = useState<string>("default");
 
   // Slash command state
   const [slashQuery, setSlashQuery] = useState<string | null>(null);
@@ -881,6 +1047,37 @@ function ChatPageContent() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const abortRef = useRef<AbortController | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // ── Fetch user profile stage ─────────────────────────────────────────────
+  useEffect(() => {
+    if (!user) return;
+    getDoc(doc(db, "users", user.uid))
+      .then((snap) => {
+        if (snap.exists()) {
+          const stage = snap.data()?.stage;
+          if (stage && typeof stage === "string") setUserStage(stage);
+        }
+      })
+      .catch(() => {});
+  }, [user]);
+
+  // ── Mobile: visualViewport keyboard avoidance ─────────────────────────────
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const vv = window.visualViewport;
+    if (!vv) return;
+    const handler = () => {
+      const offset = Math.max(0, window.innerHeight - vv.height - (vv.offsetTop || 0));
+      document.documentElement.style.setProperty("--keyboard-offset", `${offset}px`);
+    };
+    vv.addEventListener("resize", handler);
+    vv.addEventListener("scroll", handler);
+    return () => {
+      vv.removeEventListener("resize", handler);
+      vv.removeEventListener("scroll", handler);
+      document.documentElement.style.removeProperty("--keyboard-offset");
+    };
+  }, []);
 
   // ── Conversation management ──────────────────────────────────────────────
   const loadConversations = useCallback(async () => {
@@ -990,7 +1187,9 @@ function ChatPageContent() {
           messages: baseMessages.map((m) => ({ role: m.role, content: m.content })),
           isGuest: !user,
           threadId: user?.uid ? `thread-${user.uid}` : undefined,
-          uiContext: activeAgent ? { agentHint: activeAgent.cmd } : {},
+          uiContext: activeAgent
+            ? { agentHint: activeAgent.cmd, agentName: activeAgent.agentName }
+            : {},
         }),
       });
 
@@ -1080,56 +1279,85 @@ function ChatPageContent() {
     }
   };
 
-  // ── Council mode ─────────────────────────────────────────────────────────
+  // ── Council mode (SSE per-agent streaming) ───────────────────────────────
   const openCouncil = async () => {
     const question = input.trim() || (messages.length > 0 ? messages[messages.length - 1].content : "");
     if (!question) { toast.error("اكتب سؤالك أولاً ثم اسأل المجلس"); return; }
     setCouncilQuestion(question);
     setCouncilOpen(true);
     setCouncilLoading(true);
+    // Use agentName (registry key) as agentId so it matches the SSE stream events
     setCouncilResponses(
-      COUNCIL_AGENTS.map((a) => ({ agentId: a.id, label: a.label, content: "", streaming: true }))
+      COUNCIL_AGENTS.map((a) => ({ agentId: a.agentName, label: a.label, content: "", streaming: true }))
     );
 
     const token = user ? await user.getIdToken().catch(() => null) : null;
 
-    // Fire all council agents in parallel
-    await Promise.all(
-      COUNCIL_AGENTS.map(async (agent) => {
-        try {
-          const res = await fetch("/api/council", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              ...(token ? { Authorization: `Bearer ${token}` } : {}),
-            },
-            body: JSON.stringify({
-              agentName: agent.id,
-              agentDisplayNameAr: agent.label,
-              message: question,
-              mode: "fast",
-            }),
-          });
-          if (!res.ok) throw new Error(`HTTP ${res.status}`);
-          const data = (await res.json()) as { markdown?: string; error?: string };
-          setCouncilResponses((prev) =>
-            prev.map((r) =>
-              r.agentId === agent.id
-                ? { ...r, content: data.markdown || "لا يوجد رد", streaming: false }
-                : r
-            )
-          );
-        } catch {
-          setCouncilResponses((prev) =>
-            prev.map((r) =>
-              r.agentId === agent.id
-                ? { ...r, content: "تعذّر الحصول على رأي هذا الوكيل", streaming: false }
-                : r
-            )
-          );
+    try {
+      const res = await fetch("/api/council/stream", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({
+          question,
+          agentIds: COUNCIL_AGENTS.map((a) => a.agentName),
+          mode: "fast",
+        }),
+      });
+
+      if (!res.ok || !res.body) throw new Error(`HTTP ${res.status}`);
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+
+      // Parse SSE events from the stream
+      const parseEvents = (chunk: string) => {
+        buffer += chunk;
+        const parts = buffer.split("\n\n");
+        buffer = parts.pop() ?? "";
+        for (const part of parts) {
+          const eventLine = part.split("\n").find((l) => l.startsWith("event: "));
+          const dataLine = part.split("\n").find((l) => l.startsWith("data: "));
+          if (!eventLine || !dataLine) continue;
+          const event = eventLine.slice(7).trim();
+          let data: Record<string, unknown> = {};
+          try { data = JSON.parse(dataLine.slice(5)); } catch { continue; }
+
+          if (event === "agent_done") {
+            const { agentId, markdown, error } = data as {
+              agentId: string; markdown?: string; error?: string;
+            };
+            setCouncilResponses((prev) =>
+              prev.map((r) =>
+                r.agentId === agentId
+                  ? {
+                      ...r,
+                      content: markdown || (error ? `تعذّر الحصول على رأي هذا الوكيل` : "لا يوجد رد"),
+                      streaming: false,
+                    }
+                  : r
+              )
+            );
+          }
         }
-      })
-    );
+      };
+
+      // Read the SSE stream
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        parseEvents(decoder.decode(value, { stream: true }));
+      }
+    } catch {
+      // Mark all still-streaming agents as failed
+      setCouncilResponses((prev) =>
+        prev.map((r) => r.streaming ? { ...r, content: "تعذّر الحصول على رأي هذا الوكيل", streaming: false } : r)
+      );
+    }
+
     setCouncilLoading(false);
   };
 
@@ -1232,7 +1460,7 @@ function ChatPageContent() {
     setSavedPrompts((prev) => prev.filter((p) => p.id !== id));
   };
 
-  const onFeedback = useCallback(async (messageId: string, val: "good" | "bad") => {
+  const onFeedback = useCallback(async (messageId: string, val: "good" | "bad", comment?: string) => {
     setMessages((prev) => prev.map((m) => m.id === messageId ? { ...m, feedback: val } : m));
     if (!user) return;
     try {
@@ -1245,19 +1473,20 @@ function ChatPageContent() {
         );
         await updateDoc(chatRef, { messages: updated });
       }
-      // Store in dedicated feedbacks collection
+      // Store in dedicated feedbacks collection with optional comment
       const fbRef = doc(db, "feedbacks", `${user.uid}_${messageId}`);
       await setDoc(fbRef, {
         userId: user.uid,
         messageId,
         conversationId: activeConvId,
         rating: val,
+        comment: comment || null,
         timestamp: serverTimestamp(),
         agentId: messages.find((m) => m.id === messageId)?.agentId || null,
       });
     } catch {}
     toast.success(
-      val === "good" ? "شكراً! سيساعدنا ذلك في التحسين 🎯" : "شكراً على ملاحظتك 🙏"
+      val === "good" ? "شكراً! سيساعدنا ذلك في التحسين" : "شكراً على ملاحظتك، سنعمل على التحسين"
     );
   }, [user, activeConvId, messages]);
 
@@ -1454,40 +1683,60 @@ function ChatPageContent() {
           {/* Input area */}
           <div
             className="shrink-0 border-t border-white/[0.06] bg-black/30 backdrop-blur-md p-3"
-            style={{ paddingBottom: "max(12px, env(safe-area-inset-bottom))" }}
+            style={{
+              paddingBottom: "max(12px, env(safe-area-inset-bottom))",
+              marginBottom: "var(--keyboard-offset, 0px)",
+            }}
           >
-            {/* Agent chips */}
-            <div className="flex flex-wrap gap-1.5 mb-3 justify-center">
-              {AGENT_CHIP_KEYS.map((chip) => {
-                const Icon = chip.icon;
-                const label = tChips(`${chip.key}.label`);
-                const prompt = tChips(`${chip.key}.prompt`);
-                return (
-                  <button
-                    key={chip.key}
-                    type="button"
-                    onClick={() => setInput(prompt)}
-                    className={cn(
-                      "flex items-center gap-1.5 text-[11px] px-3 py-1.5 rounded-full border transition-all",
-                      chipColorClasses(chip.color)
-                    )}
-                  >
-                    <Icon className="w-3 h-3" />
-                    {label}
-                  </button>
-                );
-              })}
+            {/* Quick Prompts — stage-aware, daily rotation */}
+            {messages.length === 0 && (
+              <div className="flex flex-wrap gap-1.5 mb-3 justify-center">
+                {getDailyPrompts(userStage).map((prompt, i) => {
+                  const Icon = prompt.icon;
+                  return (
+                    <motion.button
+                      key={i}
+                      initial={{ opacity: 0, y: 4 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: i * 0.04 }}
+                      type="button"
+                      onClick={() => { setInput(prompt.text); textareaRef.current?.focus(); }}
+                      className={cn(
+                        "flex items-center gap-1.5 text-[11px] px-3 py-1.5 rounded-full border transition-all",
+                        chipColorClasses(prompt.color)
+                      )}
+                    >
+                      <Icon className="w-3 h-3" />
+                      <span className="max-w-[140px] truncate">{prompt.text}</span>
+                    </motion.button>
+                  );
+                })}
 
-              {/* Council button */}
-              <button
-                type="button"
-                onClick={openCouncil}
-                className="flex items-center gap-1.5 text-[11px] px-3 py-1.5 rounded-full border bg-indigo-500/10 border-indigo-400/30 text-indigo-300 hover:bg-indigo-500/20 transition-all"
-              >
-                <Users className="w-3 h-3" />
-                اسأل المجلس
-              </button>
-            </div>
+                {/* Council button */}
+                <button
+                  type="button"
+                  onClick={openCouncil}
+                  className="flex items-center gap-1.5 text-[11px] px-3 py-1.5 rounded-full border bg-indigo-500/10 border-indigo-400/30 text-indigo-300 hover:bg-indigo-500/20 transition-all"
+                >
+                  <Users className="w-3 h-3" />
+                  اسأل المجلس
+                </button>
+              </div>
+            )}
+
+            {/* Compact Council button when chat is active */}
+            {messages.length > 0 && (
+              <div className="flex justify-end mb-2">
+                <button
+                  type="button"
+                  onClick={openCouncil}
+                  className="flex items-center gap-1.5 text-[11px] px-3 py-1.5 rounded-full border bg-indigo-500/10 border-indigo-400/30 text-indigo-300 hover:bg-indigo-500/20 transition-all"
+                >
+                  <Users className="w-3 h-3" />
+                  اسأل المجلس
+                </button>
+              </div>
+            )}
 
             {/* PDF context badge */}
             {pdfContext && (
