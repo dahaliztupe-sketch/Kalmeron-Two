@@ -33,6 +33,14 @@ import { ctoAgentAction } from '@/src/ai/agents/cto/agent';
 import { cloAgentAction } from '@/src/ai/agents/clo/agent';
 import { chroAgentAction } from '@/src/ai/agents/chro/agent';
 import { csoAgentAction } from '@/src/ai/agents/cso/agent';
+import { competitorIntelAction } from '@/src/ai/agents/competitor-intel/agent';
+import { quickCheckInAction } from '@/src/ai/agents/wellbeing-coach/agent';
+import { salesCoachAction } from '@/src/ai/agents/sales-coach/agent';
+import { contentCreatorAction } from '@/src/ai/agents/content-creator/agent';
+import { financialModelingAction } from '@/src/ai/agents/financial-modeling/agent';
+import { pitchDeckAction } from '@/src/ai/agents/pitch-deck/agent';
+import { productManagerAction } from '@/src/ai/agents/product-manager/agent';
+import { hiringAdvisorAction } from '@/src/ai/agents/hiring-advisor/agent';
 
 /**
  * مفتاح تشغيل "مجلس الإدارة الافتراضي" (Panel of Experts) لكل وكيل.
@@ -145,6 +153,16 @@ const INTENT_CLASSIFIER_PROMPT = `أنت المنسق الذكي لمنصة كل
 - REAL_ESTATE: عندما يسأل عن عقارات استثمارية أو حساب ROI أو صفقات عقارية.
 - ADMIN: عندما يسأل عن مراقبة النظام، سجلات، أو لوحة الإدارة.
 
+━━ وكلاء التخصص العميق ━━
+- COMPETITOR_INTEL: عندما يسأل عن المنافسين، تحليل المنافسة، مقارنة الشركات، أو نقاط قوة وضعف المنافسين.
+- WELLBEING_COACH: عندما يتحدث عن ضغوط العمل، الإرهاق، التوازن بين العمل والحياة، الصحة النفسية، أو الرفاه الشخصي.
+- SALES_COACH: عندما يسأل عن تقنيات البيع، إقناع العملاء، التعامل مع الاعتراضات، أو تحسين معدل الإغلاق.
+- CONTENT_CREATOR: عندما يطلب كتابة محتوى، منشورات سوشيال ميديا، مقالات، سكريبت فيديو، أو نصوص إعلانية.
+- FINANCIAL_MODELING: عندما يطلب نموذج DCF، unit economics، LTV/CAC، three-statement model، أو تقييم الشركة (Valuation).
+- PITCH_DECK: عندما يطلب إنشاء Pitch Deck، عرض استثماري، شرائح للمستثمرين، أو تجهيز عرض لجولة تمويل.
+- PRODUCT_MANAGER: عندما يسأل عن PRD، User Stories، roadmap المنتج، أولويات الميزات (RICE)، أو مؤشرات المنتج.
+- HIRING_ADVISOR: عندما يسأل عن توظيف، استراتيجية التعيين، وصف وظيفي، مقابلات العمل، أو بناء الفريق.
+
 ━━ المجلس التنفيذي C-Suite ━━
 - CEO_AGENT: عندما يطلب رأي الرئيس التنفيذي، قراراً استراتيجياً شاملاً يمسّ الشركة ككل، أو يسأل عن رؤية القيادة العليا.
 - COO_AGENT: عندما يسأل عن تحسين العمليات، الكفاءة التشغيلية، OKRs، تنظيم سير العمل، أو قياس الأداء.
@@ -171,14 +189,25 @@ function heuristicIntent(message: string): string {
   if (/(حوكمة\s+قانونية|clo|امتثال\s+تنظيمي|مخاطر\s+قانونية\s+استراتيجية)/i.test(m)) return 'CLO_AGENT';
   if (/(موارد\s+بشرية\s+استراتيجية|chro|فريق\s+قيادي|ثقافة\s+مؤسسية|استقطاب\s+مواهب)/i.test(m)) return 'CHRO_AGENT';
   if (/(توسع\s+استراتيجي|cso|استحواذ|اندماج|رؤية\s+مستقبلية|فرص\s+استراتيجية)/i.test(m)) return 'CSO_AGENT';
-  // Specialized Agents
+  // ── وكلاء التخصص العميق أولاً (أكثر دقة) ───────────────────────────
+  // Specialist agents run BEFORE broad agents to avoid false captures.
+  // Example: "شركة" in LEGAL_GUIDE would wrongly swallow competitor queries.
+  if (/(dcf|unit\s+economics|ltv|cac|three\s+statement|valuation|تقييم\s+الشركة|نموذج\s+مالي|payback\s+period|magic\s+number)/i.test(m)) return 'FINANCIAL_MODELING';
+  if (/(pitch\s+deck|عرض\s+استثماري|شرائح\s+للمستثمرين|investor\s+presentation|جولة\s+تمويل|seed\s+round)/i.test(m)) return 'PITCH_DECK';
+  if (/(prd|user\s+stories|roadmap\s+المنتج|أولويات\s+ميزات|rice|north\s+star|product\s+manager|مدير\s+منتج)/i.test(m)) return 'PRODUCT_MANAGER';
+  if (/(منافس|منافسين|تحليل\s+المنافس|competitor|مقارنة\s+شركات|نقاط\s+قوة\s+المنافس)/i.test(m)) return 'COMPETITOR_INTEL';
+  if (/(ضغط\s+العمل|إرهاق|burnout|توازن|صحة\s+نفسية|رفاه|wellbeing|اكتئاب|قلق|تعب)/i.test(m)) return 'WELLBEING_COACH';
+  if (/(مبيعات|بيع|إقناع\s+العميل|اعتراض|إغلاق\s+الصفقة|sales\s+pitch|cold\s+call|conversion)/i.test(m)) return 'SALES_COACH';
+  if (/(اكتب\s+محتوى|منشور\s+سوشيال|فيديو\s+سكريبت|content\s+creator|hashtag|caption|thread\s+تويتر)/i.test(m)) return 'CONTENT_CREATOR';
+  if (/(توظيف|تعيين|وصف\s+وظيفي|مقابلة\s+عمل|hiring|recruitment|job\s+description|بناء\s+الفريق)/i.test(m)) return 'HIRING_ADVISOR';
+  // ── الوكلاء العامة (أوسع نطاقاً — تأتي بعد المتخصصة) ────────────────
   if (/(مال(ي|ية)?|cash[\s-]?flow|تدفق نقدي|توقعات\s+مالية|breakeven|نقطة\s+التعادل|cfo|الفلوس|إيرادات|تكاليف|ضريب|ضراي?ب|tax|تأمين(ات)?|insurance|راتب|اجر|مرتب|payroll|صافي|اجمالي\s*تكلفة)/i.test(m)) return 'CFO_AGENT';
-  if (/(قانون|عقد|تأسيس|شركة|تشريع|legal|محام)/i.test(m)) return 'LEGAL_GUIDE';
+  if (/(قانون|عقد|تأسيس\s+شركة|تشريع|legal|محام)/i.test(m)) return 'LEGAL_GUIDE';
   if (/(عقار|إيجار|شقة|أرض|roi|عائد\s+الاستثمار|real\s*estate)/i.test(m)) return 'REAL_ESTATE';
   if (/(منحة|مسابقة|تمويل|هاكاثون|grant|funding)/i.test(m)) return 'OPPORTUNITY_RADAR';
   if (/(قصة\s+نجاح|كيف\s+نجحت|success|case\s+study|متحف)/i.test(m)) return 'SUCCESS_MUSEUM';
   if (/(خطأ|أخطاء|تحذير|مخاطر|risk|warning)/i.test(m)) return 'MISTAKE_SHIELD';
-  if (/(خطة|business\s*plan|plan|خطوات\s+تنفيذ|roadmap)/i.test(m)) return 'PLAN_BUILDER';
+  if (/(خطة|business\s*plan|خطوات\s+تنفيذ)/i.test(m)) return 'PLAN_BUILDER';
   if (/(فكرة|swot|جدوى|تقييم\s+فكرة|validate)/i.test(m)) return 'IDEA_VALIDATOR';
   return 'GENERAL_CHAT';
 }
@@ -228,6 +257,9 @@ async function routerNode(state: typeof SupervisorState.State) {
     'IDEA_VALIDATOR', 'PLAN_BUILDER', 'MISTAKE_SHIELD',
     'SUCCESS_MUSEUM', 'OPPORTUNITY_RADAR', 'CFO_AGENT',
     'LEGAL_GUIDE', 'REAL_ESTATE', 'ADMIN',
+    'COMPETITOR_INTEL', 'WELLBEING_COACH', 'SALES_COACH',
+    'CONTENT_CREATOR', 'FINANCIAL_MODELING', 'PITCH_DECK',
+    'PRODUCT_MANAGER', 'HIRING_ADVISOR',
     'CEO_AGENT', 'COO_AGENT', 'CMO_AGENT', 'CTO_AGENT',
     'CLO_AGENT', 'CHRO_AGENT', 'CSO_AGENT',
     'GENERAL_CHAT',
@@ -245,6 +277,14 @@ async function routerNode(state: typeof SupervisorState.State) {
     LEGAL_GUIDE: 'legal_guide_node',
     REAL_ESTATE: 'real_estate_node',
     ADMIN: 'admin_node',
+    COMPETITOR_INTEL: 'competitor_intel_node',
+    WELLBEING_COACH: 'wellbeing_coach_node',
+    SALES_COACH: 'sales_coach_node',
+    CONTENT_CREATOR: 'content_creator_node',
+    FINANCIAL_MODELING: 'financial_modeling_node',
+    PITCH_DECK: 'pitch_deck_node',
+    PRODUCT_MANAGER: 'product_manager_node',
+    HIRING_ADVISOR: 'hiring_advisor_node',
     CEO_AGENT: 'ceo_agent_node',
     COO_AGENT: 'coo_agent_node',
     CMO_AGENT: 'cmo_agent_node',
@@ -718,6 +758,248 @@ async function csoAgentNode(state: typeof SupervisorState.State) {
   }
 }
 
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// وكلاء التخصص العميق — Deep Specialist Nodes
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+async function competitorIntelNode(state: typeof SupervisorState.State) {
+  const lastMessage = state.messages[state.messages.length - 1]?.content as string;
+  let draft = '';
+  try {
+    const industryMatch = lastMessage.match(/قطاع\s+["«»]?([^"«»،,]+)["«»]?/) ||
+      lastMessage.match(/industry[:\s]+([^\n،,]+)/i);
+    const companyMatch = lastMessage.match(/شركة\s+["«»]?([^"«»،,\s]+)["«»]?/);
+    const industry = industryMatch ? industryMatch[1].trim() : lastMessage.slice(0, 60);
+    const company = companyMatch ? companyMatch[1].trim() : undefined;
+    draft = await competitorIntelAction(industry, company);
+  } catch (e) {
+    draft = '';
+  }
+  const text = await withCouncil({
+    agentName: 'competitor-intel',
+    agentDisplayNameAr: 'محلل المنافسين',
+    agentRoleAr: 'خبير استخباراتي متخصص في تحليل المنافسين وتحديد الفجوات التنافسية للسوق المصري',
+    userMessage: lastMessage,
+    uiContext: state.uiContext,
+    userId: state.userId,
+    draft,
+    fallback: draft || 'حدث خطأ في تحليل المنافسين. يرجى المحاولة مجدداً.',
+  });
+  return { messages: [new AIMessage(text)] };
+}
+
+async function wellbeingCoachNode(state: typeof SupervisorState.State) {
+  const lastMessage = state.messages[state.messages.length - 1]?.content as string;
+  let draft = '';
+  try {
+    draft = await quickCheckInAction(lastMessage);
+  } catch (e) {
+    draft = '';
+  }
+  const text = await withCouncil({
+    agentName: 'wellbeing-coach',
+    agentDisplayNameAr: 'مدرب الرفاه النفسي',
+    agentRoleAr: 'مدرب متخصص في رفاه رواد الأعمال ومساعدتهم على إدارة الضغط والتوازن بين العمل والحياة الشخصية',
+    userMessage: lastMessage,
+    uiContext: state.uiContext,
+    userId: state.userId,
+    draft,
+    fallback: draft || 'حدث خطأ في وكيل الرفاه النفسي. يرجى المحاولة مجدداً.',
+  });
+  return { messages: [new AIMessage(text)] };
+}
+
+async function salesCoachNode(state: typeof SupervisorState.State) {
+  const lastMessage = state.messages[state.messages.length - 1]?.content as string;
+  let draft = '';
+  try {
+    const productMatch = lastMessage.match(/منتج\s+["«»]?([^"«»،,]+)["«»]?/) ||
+      lastMessage.match(/product[:\s]+([^\n،,]+)/i);
+    const targetMatch = lastMessage.match(/عميل\s+["«»]?([^"«»،,]+)["«»]?/) ||
+      lastMessage.match(/(?:لـ|لـِ|للـ)\s+["«»]?([^"«»،,]+)["«»]?/);
+    const product = productMatch ? productMatch[1].trim() : lastMessage.slice(0, 50);
+    const target = targetMatch ? targetMatch[1].trim() : 'السوق المصري';
+    const challengeMatch = lastMessage.match(/تحدي[:\s]+([^\n.]+)/);
+    const challenge = challengeMatch ? challengeMatch[1].trim() : lastMessage;
+    draft = await salesCoachAction(product, target, challenge);
+  } catch (e) {
+    draft = '';
+  }
+  const text = await withCouncil({
+    agentName: 'sales-coach',
+    agentDisplayNameAr: 'مدرب المبيعات',
+    agentRoleAr: 'مدرب مبيعات متخصص في بناء استراتيجيات البيع وتقنيات الإقناع للسوق المصري',
+    userMessage: lastMessage,
+    uiContext: state.uiContext,
+    userId: state.userId,
+    draft,
+    fallback: draft || 'حدث خطأ في وكيل مدرب المبيعات. يرجى المحاولة مجدداً.',
+  });
+  return { messages: [new AIMessage(text)] };
+}
+
+async function contentCreatorNode(state: typeof SupervisorState.State) {
+  const lastMessage = state.messages[state.messages.length - 1]?.content as string;
+  let draft = '';
+  try {
+    const typeMap: Record<string, 'social-post' | 'blog-article' | 'video-script' | 'email' | 'ad-copy' | 'thread'> = {
+      'منشور': 'social-post', 'سوشيال': 'social-post', 'مقال': 'blog-article',
+      'فيديو': 'video-script', 'إيميل': 'email', 'email': 'email',
+      'إعلان': 'ad-copy', 'thread': 'thread',
+    };
+    let contentType: 'social-post' | 'blog-article' | 'video-script' | 'email' | 'ad-copy' | 'case-study' | 'thread' = 'social-post';
+    for (const [kw, t] of Object.entries(typeMap)) {
+      if (lastMessage.toLowerCase().includes(kw)) { contentType = t; break; }
+    }
+    const result = await contentCreatorAction({
+      contentType,
+      topic: lastMessage,
+      tone: 'inspiring',
+    });
+    draft = typeof result === 'string' ? result : result.content;
+  } catch (e) {
+    draft = '';
+  }
+  const text = await withCouncil({
+    agentName: 'content-creator',
+    agentDisplayNameAr: 'منشئ المحتوى',
+    agentRoleAr: 'متخصص في إنشاء محتوى رقمي جذاب وفعّال للعلامات التجارية العربية عبر جميع المنصات',
+    userMessage: lastMessage,
+    uiContext: state.uiContext,
+    userId: state.userId,
+    draft,
+    fallback: draft || 'حدث خطأ في وكيل منشئ المحتوى. يرجى المحاولة مجدداً.',
+  });
+  return { messages: [new AIMessage(text)] };
+}
+
+async function financialModelingNode(state: typeof SupervisorState.State) {
+  const lastMessage = state.messages[state.messages.length - 1]?.content as string;
+  let draft = '';
+  try {
+    const typeMap: Record<string, 'dcf' | 'unit-economics' | 'three-statement' | 'valuation' | 'scenario'> = {
+      'dcf': 'dcf', 'unit economics': 'unit-economics', 'ltv': 'unit-economics',
+      'cac': 'unit-economics', 'three statement': 'three-statement', 'valuation': 'valuation',
+      'تقييم': 'valuation', 'سيناريو': 'scenario', 'scenario': 'scenario',
+    };
+    let modelType: 'dcf' | 'unit-economics' | 'three-statement' | 'valuation' | 'scenario' = 'scenario';
+    for (const [kw, t] of Object.entries(typeMap)) {
+      if (lastMessage.toLowerCase().includes(kw)) { modelType = t; break; }
+    }
+    const result = await financialModelingAction({
+      modelType,
+      businessData: { description: lastMessage },
+      horizon: 3,
+    });
+    draft = typeof result === 'string' ? result : result.model;
+  } catch (e) {
+    draft = '';
+  }
+  const text = await withCouncil({
+    agentName: 'financial-modeling',
+    agentDisplayNameAr: 'خبير النمذجة المالية',
+    agentRoleAr: 'خبير في بناء النماذج المالية المتقدمة (DCF، Unit Economics، Valuation) للشركات الناشئة في مصر',
+    userMessage: lastMessage,
+    uiContext: state.uiContext,
+    userId: state.userId,
+    draft,
+    fallback: draft || 'حدث خطأ في وكيل النمذجة المالية. يرجى المحاولة مجدداً.',
+  });
+  return { messages: [new AIMessage(text)] };
+}
+
+async function pitchDeckNode(state: typeof SupervisorState.State) {
+  const lastMessage = state.messages[state.messages.length - 1]?.content as string;
+  const uiContext = (state.uiContext || {}) as Record<string, unknown>;
+  let draft = '';
+  try {
+    const result = await pitchDeckAction({
+      business: {
+        name: (uiContext.companyName as string) || 'شركتي الناشئة',
+        sector: (uiContext.industry as string) || 'تقنية',
+        problem: lastMessage,
+        solution: 'حل مبتكر للسوق المصري',
+        stage: (uiContext.stage as string) || 'seed',
+      },
+      format: 'full-narrative',
+    });
+    draft = typeof result === 'string' ? result : result.deck;
+  } catch (e) {
+    draft = '';
+  }
+  const text = await withCouncil({
+    agentName: 'pitch-deck',
+    agentDisplayNameAr: 'منشئ عروض الاستثمار',
+    agentRoleAr: 'خبير في إنشاء Pitch Decks مقنعة للمستثمرين في السوق المصري والخليجي',
+    userMessage: lastMessage,
+    uiContext: state.uiContext,
+    userId: state.userId,
+    draft,
+    fallback: draft || 'حدث خطأ في وكيل عروض الاستثمار. يرجى المحاولة مجدداً.',
+  });
+  return { messages: [new AIMessage(text)] };
+}
+
+async function productManagerNode(state: typeof SupervisorState.State) {
+  const lastMessage = state.messages[state.messages.length - 1]?.content as string;
+  let draft = '';
+  try {
+    const taskMap: Record<string, 'write-prd' | 'prioritize-features' | 'create-roadmap' | 'user-stories' | 'define-metrics'> = {
+      'prd': 'write-prd', 'user stories': 'user-stories', 'user story': 'user-stories',
+      'roadmap': 'create-roadmap', 'أولويات': 'prioritize-features', 'rice': 'prioritize-features',
+      'metrics': 'define-metrics', 'مؤشرات': 'define-metrics', 'north star': 'define-metrics',
+    };
+    let task: 'write-prd' | 'prioritize-features' | 'create-roadmap' | 'user-stories' | 'define-metrics' = 'write-prd';
+    for (const [kw, t] of Object.entries(taskMap)) {
+      if (lastMessage.toLowerCase().includes(kw)) { task = t; break; }
+    }
+    const result = await productManagerAction({
+      task,
+      productContext: lastMessage,
+    });
+    draft = typeof result === 'string' ? result : result.output;
+  } catch (e) {
+    draft = '';
+  }
+  const text = await withCouncil({
+    agentName: 'product-manager',
+    agentDisplayNameAr: 'مدير المنتج',
+    agentRoleAr: 'مدير منتج متمرس يبني PRDs وخرائط طريق وأولويات ميزات للمنتجات الرقمية',
+    userMessage: lastMessage,
+    uiContext: state.uiContext,
+    userId: state.userId,
+    draft,
+    fallback: draft || 'حدث خطأ في وكيل مدير المنتج. يرجى المحاولة مجدداً.',
+  });
+  return { messages: [new AIMessage(text)] };
+}
+
+async function hiringAdvisorNode(state: typeof SupervisorState.State) {
+  const lastMessage = state.messages[state.messages.length - 1]?.content as string;
+  const uiContext = (state.uiContext || {}) as Record<string, unknown>;
+  let draft = '';
+  try {
+    const roleMatch = lastMessage.match(/(?:توظيف|تعيين|أبحث\s+عن)\s+["«»]?([^"«»،,\n]+)["«»]?/) ||
+      lastMessage.match(/(?:hire|hiring)\s+(?:a\s+)?([^\n،,]+)/i);
+    const role = roleMatch ? roleMatch[1].trim() : lastMessage.slice(0, 60);
+    const stage = (uiContext.stage as string) || 'startup';
+    draft = await hiringAdvisorAction(role, stage);
+  } catch (e) {
+    draft = '';
+  }
+  const text = await withCouncil({
+    agentName: 'hiring-advisor',
+    agentDisplayNameAr: 'مستشار التوظيف',
+    agentRoleAr: 'مستشار توظيف متخصص في بناء فرق العمل للشركات الناشئة في السوق المصري',
+    userMessage: lastMessage,
+    uiContext: state.uiContext,
+    userId: state.userId,
+    draft,
+    fallback: draft || 'حدث خطأ في وكيل مستشار التوظيف. يرجى المحاولة مجدداً.',
+  });
+  return { messages: [new AIMessage(text)] };
+}
+
 async function adminNode(state: typeof SupervisorState.State) {
   return {
     messages: [new AIMessage('🔒 وكلاء الإدارة (الأمن، تجربة المستخدم، الامتثال) يراقبون استقرار النظام. يُرجى الانتقال للوحة الإدارة للتفاصيل.')],
@@ -764,6 +1046,15 @@ export const supervisorWorkflow = new StateGraph(SupervisorState)
   .addNode('real_estate_node', realEstateNode)
   .addNode('admin_node', adminNode)
   .addNode('general_chat_node', generalChatNode)
+  // وكلاء التخصص العميق
+  .addNode('competitor_intel_node', competitorIntelNode)
+  .addNode('wellbeing_coach_node', wellbeingCoachNode)
+  .addNode('sales_coach_node', salesCoachNode)
+  .addNode('content_creator_node', contentCreatorNode)
+  .addNode('financial_modeling_node', financialModelingNode)
+  .addNode('pitch_deck_node', pitchDeckNode)
+  .addNode('product_manager_node', productManagerNode)
+  .addNode('hiring_advisor_node', hiringAdvisorNode)
   // المجلس التنفيذي C-Suite
   .addNode('ceo_agent_node', ceoAgentNode)
   .addNode('coo_agent_node', cooAgentNode)
@@ -784,6 +1075,14 @@ export const supervisorWorkflow = new StateGraph(SupervisorState)
   .addEdge('real_estate_node', END)
   .addEdge('admin_node', END)
   .addEdge('general_chat_node', END)
+  .addEdge('competitor_intel_node', END)
+  .addEdge('wellbeing_coach_node', END)
+  .addEdge('sales_coach_node', END)
+  .addEdge('content_creator_node', END)
+  .addEdge('financial_modeling_node', END)
+  .addEdge('pitch_deck_node', END)
+  .addEdge('product_manager_node', END)
+  .addEdge('hiring_advisor_node', END)
   .addEdge('ceo_agent_node', END)
   .addEdge('coo_agent_node', END)
   .addEdge('cmo_agent_node', END)
