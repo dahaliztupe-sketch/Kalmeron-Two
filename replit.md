@@ -128,3 +128,19 @@
 - `app/(dashboard)/wellbeing/page.tsx` — i18n لجميع النصوص
 - `app/(dashboard)/weekly-report/_weekly-client.tsx` — TypeScript fix
 - `components/ui/PageSkeleton.tsx` — TypeScript fix
+
+---
+
+## ملاحظة بنية المسارات — صفحات خارج مجموعة (dashboard)
+
+**مهم:** بعض الصفحات مُوجَّهة خارج `app/(dashboard)/` مباشرةً في `app/`. هذه الصفحات لها API ومنطق كامل ولا يجب إنشاء نسخ مكررة منها في `(dashboard)` لأن ذلك يسبب تعارض مسارات.
+
+### الصفحات ذات المسارات الكنونية في `app/` (وليس `app/(dashboard)/`)
+| المسار | الملف الرئيسي | الملف العميل |
+|---|---|---|
+| `/operations` | `app/operations/page.tsx` | `app/operations/_page-client.tsx` |
+| `/market-lab` | `app/market-lab/page.tsx` | `app/market-lab/_page-client.tsx` |
+| `/investor-deck` | `app/investor-deck/page.tsx` | — |
+| `/market-lab/results/[id]` | `app/market-lab/results/[experimentId]/` | — |
+
+هذه الصفحات تستخدم `AppShell` مباشرةً وتحمي المسار عبر `AuthGuard` من داخل الصفحة أو عبر middleware.
