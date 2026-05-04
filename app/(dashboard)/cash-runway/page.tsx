@@ -178,18 +178,18 @@ export default function CashRunwayPage() {
                 {result.kind === "infinite"
                   ? t("infinite")
                   : result.kind === "noCash"
-                  ? "رصيدك صفر — أدخل الأرقام أو تحرّك فوراً."
+                  ? t("noCash")
                   : result.kind === "noBurn"
                   ? t("noBurn")
                   : result.kind === "warning"
-                  ? `أقلّ من ${inputs.thresholdMonths} شهر — ستصلك تنبيهات يوميّة على لوحة القيادة.`
+                  ? t("warningBelow", { months: inputs.thresholdMonths })
                   : t("healthy")}
               </p>
 
               {result.kind !== "infinite" && result.kind !== "noBurn" && result.netBurnEgp > 0 && (
                 <div className="mt-3 inline-flex items-center gap-2 text-xs text-text-secondary">
                   <span className="px-2 py-1 rounded-md bg-black/30 border border-white/10">
-                    صافي الحرق الشهري: <strong className="text-white">{fmt(result.netBurnEgp)}</strong> ج.م
+                    {t("netBurnLabel")} <strong className="text-white">{fmt(result.netBurnEgp)}</strong> {t("currency")}
                   </span>
                 </div>
               )}
@@ -212,7 +212,7 @@ export default function CashRunwayPage() {
                 <Sparkles className="w-4 h-4 text-cyan-300" />
               )}
               <h2 className="font-display text-lg font-bold text-white">
-                {result.belowThreshold ? "إجراءات يمكنك اتخاذها هذا الأسبوع" : "تحرّكات تنمويّة مقترحة"}
+                {result.belowThreshold ? t("urgentActions") : t("growthMoves")}
               </h2>
             </div>
             <ul className="space-y-2.5">
@@ -227,7 +227,7 @@ export default function CashRunwayPage() {
                     </p>
                     {typeof rec.monthsGained === "number" && rec.monthsGained > 0 && (
                       <span className="text-xs font-bold text-emerald-300 whitespace-nowrap px-2 py-0.5 rounded-md bg-emerald-500/15">
-                        +{rec.monthsGained} شهر تقديريّاً
+                        {t("monthsGained", { months: rec.monthsGained })}
                       </span>
                     )}
                   </div>
@@ -246,14 +246,14 @@ export default function CashRunwayPage() {
             className="text-sm text-text-secondary hover:text-white inline-flex items-center gap-1.5"
           >
             <ArrowLeft className="w-4 h-4 icon-flip" />
-            العودة للوحة
+            {t("backToDashboard")}
           </Link>
           <Link
             href="/chat?q=ساعدني في تحسين الـ runway"
             className="btn-primary inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold"
           >
             <Sparkles className="w-4 h-4" />
-            استشر CFO
+            {t("consultCfo")}
           </Link>
         </div>
       </div>

@@ -42,7 +42,7 @@ export function PageSkeleton() {
         </div>
         <div className="space-y-3">
           {Array.from({ length: 5 }).map((_, i) => (
-            <Bone key={i} className="h-12 w-full" style={{ opacity: 1 - i * 0.12 }} />
+            <Bone key={i} className="h-12 w-full" />
           ))}
         </div>
       </div>

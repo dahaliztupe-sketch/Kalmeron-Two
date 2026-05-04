@@ -82,3 +82,49 @@
 - `dailyBalance` = الرصيد المتبقي (ليس `usedToday`)
 - `dailyLimit` = الحد اليومي الكلي
 - `usedPct = ((dailyLimit - dailyBalance) / dailyLimit) * 100`
+
+---
+
+## جلسة 2026-05-04 — جولة T1+T3-C/D + Wellbeing i18n + TypeScript fixes
+
+### ✅ T1 — CashRunway i18n (مكتمل)
+- **`messages/ar.json` + `messages/en.json`**: أُضيفت ٩ مفاتيح جديدة في namespace `CashRunway`:
+  `noCash`, `warningBelow`, `netBurnLabel`, `currency`, `urgentActions`, `growthMoves`, `monthsGained`, `backToDashboard`, `consultCfo`
+- **`app/(dashboard)/cash-runway/page.tsx`**: كلّ النصوص الـ hardcoded استُبدلت بـ `t()` — صفر عربي مُضمَّن
+
+### ✅ T3-C — API Keys Page Redesign (مكتمل)
+- **`app/(dashboard)/settings/api-keys/page.tsx`**: إعادة تصميم كاملة من `PageShell` بسيطة إلى `AppShell` dark premium
+  - مثال شكل المفتاح (`kal_sk_live_…`) مع code block
+  - Scopes كبطاقات مع `ShieldCheck` icons
+  - نموذج إنشاء قابل للطيّ (AnimatePresence collapsible)
+  - عرض المفتاح الجديد مرة واحدة مع زر النسخ
+  - Chips ملوّنة cyan عند الاختيار
+  - استخدام `useTranslations("ApiKeys")` + `useTranslations("ComingSoon")`
+
+### ✅ T3-D — Webhooks Page Redesign (مكتمل)
+- **`app/(dashboard)/settings/webhooks/page.tsx`**: إعادة تصميم كاملة بنفس النمط
+  - شبكة الأحداث المدعومة مع كود + وصف عربي من i18n
+  - نموذج اشتراك قابل للطيّ بـ violet accent
+  - عرض السر الموقِّع مرة واحدة مع CopyBtn
+  - قائمة الاشتراكات مع event chips بـ violet
+  - استخدام `useTranslations("Webhooks")` + `useTranslations("ComingSoon")`
+
+### ✅ T1 — Wellbeing i18n (مكتمل)
+- **`messages/ar.json` + `messages/en.json`**: أُضيفت ٣٠+ مفتاح جديد في namespace `Wellbeing`:
+  `pageTitle`, `pageSubtitle`, `backToDashboard`, `assessmentTitle/Desc/Duration`, `checkinTitle/Desc/Duration`, `whyTitle`, `stat1-3`, `qLabels.*`, `qSubs.*`, `ratings[]`, `cancel`, `back`, `checkinPrompt/Hint/Placeholder`, `sendBtn`, `analyzingBtn`, `coachLabel`, `yourResult`, `wellbeingScore`, `contextLabel/Placeholder`, `analyzeBtn/Loading`, `analysisLabel`, `resetBtn`, `verdicts.*`
+- **`app/(dashboard)/wellbeing/page.tsx`**: إضافة `useTranslations("Wellbeing")` — صفر نص عربي مُضمَّن
+
+### ✅ T8 — TypeScript Zero-Error (مكتمل)
+- **`app/(dashboard)/weekly-report/_weekly-client.tsx`**: إصلاح `ease: "easeOut" as const` للتوافق مع `motion/react Variants` type
+- **`components/ui/PageSkeleton.tsx`**: إزالة `style={{ opacity }}` من Bone (prop غير مدعوم)
+- **نتيجة `npx tsc --noEmit`**: صفر أخطاء ✅
+
+### الملفات المُعدَّلة (هذه الجلسة)
+- `messages/ar.json` — +39 مفتاح جديد
+- `messages/en.json` — +39 مفتاح جديد
+- `app/(dashboard)/cash-runway/page.tsx` — i18n لجميع النصوص
+- `app/(dashboard)/settings/api-keys/page.tsx` — إعادة تصميم كاملة
+- `app/(dashboard)/settings/webhooks/page.tsx` — إعادة تصميم كاملة
+- `app/(dashboard)/wellbeing/page.tsx` — i18n لجميع النصوص
+- `app/(dashboard)/weekly-report/_weekly-client.tsx` — TypeScript fix
+- `components/ui/PageSkeleton.tsx` — TypeScript fix
