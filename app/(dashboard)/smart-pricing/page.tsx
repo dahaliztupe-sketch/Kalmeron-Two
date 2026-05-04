@@ -11,6 +11,7 @@ import Link from "next/link";
 import { AppShell } from "@/components/layout/AppShell";
 import { useAuth } from "@/contexts/AuthContext";
 import ReactMarkdown from "react-markdown";
+import { useTranslations } from "next-intl";
 
 const PRICING_MODELS = [
   { value: "subscription", label: "اشتراك شهري / سنوي (SaaS)" },
@@ -31,6 +32,7 @@ const CURRENCY_OPTIONS = [
 
 export default function SmartPricingPage() {
   const { user } = useAuth();
+  const t = useTranslations("SmartPricing");
   const [product, setProduct] = useState("");
   const [model, setModel] = useState("subscription");
   const [segment, setSegment] = useState("");
@@ -66,12 +68,17 @@ export default function SmartPricingPage() {
 
   const inputClass = "w-full bg-slate-900/70 border border-slate-700/50 rounded-xl px-4 py-2.5 text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500/50 text-sm";
 
+  const QUICK_STATS = [
+    { icon: Target, statKey: "valueBased", color: "text-emerald-400" },
+    { icon: Users, statKey: "egyptMarket", color: "text-cyan-400" },
+    { icon: TrendingUp, statKey: "marginIncrease", color: "text-violet-400" },
+  ];
+
   return (
     <AppShell>
       <div className="min-h-screen bg-[#0a0a0f] text-white" dir="rtl">
         <div className="max-w-4xl mx-auto px-4 py-8 space-y-8">
 
-          {/* Header */}
           <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="flex items-center gap-4">
             <Link href="/dashboard" className="text-slate-400 hover:text-white transition-colors">
               <ArrowLeft size={20} />
@@ -79,48 +86,42 @@ export default function SmartPricingPage() {
             <div>
               <h1 className="text-2xl font-bold flex items-center gap-2">
                 <DollarSign className="text-emerald-400" size={24} />
-                استراتيجية التسعير الذكي
+                {t("title")}
               </h1>
-              <p className="text-slate-400 text-sm mt-1">احصل على استراتيجية تسعير مثالية للسوق المصري والعربي</p>
+              <p className="text-slate-400 text-sm mt-1">{t("subtitle")}</p>
             </div>
           </motion.div>
 
-          {/* Quick Stats */}
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
             className="grid grid-cols-3 gap-3">
-            {[
-              { icon: Target, label: "تسعير مبني على القيمة", color: "text-emerald-400" },
-              { icon: Users, label: "مُكيَّف للسوق المصري", color: "text-cyan-400" },
-              { icon: TrendingUp, label: "زيادة هامش الربح", color: "text-violet-400" },
-            ].map(({ icon: Icon, label, color }) => (
-              <div key={label} className="bg-slate-800/40 border border-slate-700/40 rounded-xl p-3 flex items-center gap-2">
+            {QUICK_STATS.map(({ icon: Icon, statKey, color }) => (
+              <div key={statKey} className="bg-slate-800/40 border border-slate-700/40 rounded-xl p-3 flex items-center gap-2">
                 <Icon size={16} className={color} />
-                <span className="text-slate-300 text-xs">{label}</span>
+                <span className="text-slate-300 text-xs">{t(`stats.${statKey}`)}</span>
               </div>
             ))}
           </motion.div>
 
-          {/* Form */}
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}
             className="bg-slate-800/40 border border-slate-700/50 rounded-2xl p-6 space-y-4">
 
             <div className="flex items-center gap-2 mb-1">
               <Sparkles className="text-emerald-400" size={18} />
-              <span className="font-semibold text-emerald-400">بيانات المنتج/الخدمة</span>
+              <span className="font-semibold text-emerald-400">{t("formTitle")}</span>
             </div>
 
             <div className="space-y-3">
               <div>
-                <label className="text-slate-400 text-xs block mb-1.5">وصف المنتج/الخدمة *</label>
+                <label className="text-slate-400 text-xs block mb-1.5">{t("productLabel")}</label>
                 <textarea value={product} onChange={e => setProduct(e.target.value)}
-                  placeholder="مثال: منصة SaaS لإدارة المخزون للمطاعم، تُوفّر على العمل يومياً 2-3 ساعات..."
+                  placeholder={t("productPlaceholder")}
                   rows={3}
                   className="w-full bg-slate-900/70 border border-slate-700/50 rounded-xl px-4 py-3 text-white placeholder-slate-500 resize-none focus:outline-none focus:border-emerald-500/50 text-sm" />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-slate-400 text-xs block mb-1.5">نموذج التسعير</label>
+                  <label className="text-slate-400 text-xs block mb-1.5">{t("modelLabel")}</label>
                   <select value={model} onChange={e => setModel(e.target.value)} className={inputClass}>
                     {PRICING_MODELS.map(({ value, label }) => (
                       <option key={value} value={value}>{label}</option>
@@ -128,7 +129,7 @@ export default function SmartPricingPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="text-slate-400 text-xs block mb-1.5">العملة</label>
+                  <label className="text-slate-400 text-xs block mb-1.5">{t("currencyLabel")}</label>
                   <select value={currency} onChange={e => setCurrency(e.target.value)} className={inputClass}>
                     {CURRENCY_OPTIONS.map(({ value, label }) => (
                       <option key={value} value={value}>{label}</option>
@@ -136,19 +137,19 @@ export default function SmartPricingPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="text-slate-400 text-xs block mb-1.5">الشريحة المستهدفة</label>
+                  <label className="text-slate-400 text-xs block mb-1.5">{t("segmentLabel")}</label>
                   <input value={segment} onChange={e => setSegment(e.target.value)}
-                    placeholder="مثال: PMEs مصرية 10-50 موظف" className={inputClass} />
+                    placeholder={t("segmentPlaceholder")} className={inputClass} />
                 </div>
                 <div>
-                  <label className="text-slate-400 text-xs block mb-1.5">تكلفة تقديم الخدمة (COGS)</label>
+                  <label className="text-slate-400 text-xs block mb-1.5">{t("cogsLabel")}</label>
                   <input value={cogs} onChange={e => setCogs(e.target.value)}
-                    placeholder="مثال: 200 جنيه/شهر/عميل" className={inputClass} />
+                    placeholder={t("cogsPlaceholder")} className={inputClass} />
                 </div>
                 <div className="col-span-2">
-                  <label className="text-slate-400 text-xs block mb-1.5">أسعار المنافسين</label>
+                  <label className="text-slate-400 text-xs block mb-1.5">{t("competitorsLabel")}</label>
                   <input value={competitors} onChange={e => setCompetitors(e.target.value)}
-                    placeholder="مثال: المنافس أ = 500 جنيه/شهر، المنافس ب = 300 جنيه/شهر" className={inputClass} />
+                    placeholder={t("competitorsPlaceholder")} className={inputClass} />
                 </div>
               </div>
             </div>
@@ -156,7 +157,7 @@ export default function SmartPricingPage() {
             <button onClick={handleSubmit} disabled={loading || !product.trim()}
               className="flex items-center gap-2 bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-500 hover:to-green-500 text-white px-5 py-2.5 rounded-xl text-sm font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed">
               {loading ? <Loader2 size={16} className="animate-spin" /> : <Zap size={16} />}
-              {loading ? "جاري بناء الاستراتيجية..." : "ابنِ استراتيجية التسعير"}
+              {loading ? t("buildingButton") : t("buildButton")}
             </button>
 
             <AnimatePresence>
@@ -171,7 +172,7 @@ export default function SmartPricingPage() {
                   className="bg-slate-900/50 border border-emerald-500/20 rounded-xl p-5 space-y-3">
                   <div className="flex items-center justify-between">
                     <span className="text-emerald-400 text-sm font-medium flex items-center gap-1">
-                      <CheckCircle2 size={14} /> استراتيجية التسعير الذكي
+                      <CheckCircle2 size={14} /> {t("resultTitle")}
                     </span>
                     <div className="flex gap-2">
                       <button onClick={() => { setResult(""); setProduct(""); }}
@@ -196,18 +197,17 @@ export default function SmartPricingPage() {
             </AnimatePresence>
           </motion.div>
 
-          {/* Quick Links */}
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }}
             className="grid grid-cols-3 gap-3">
             {[
-              { href: "/ideas/analyze", label: "مختبر الأفكار", icon: "🧠" },
-              { href: "/customer-discovery", label: "اكتشاف العملاء", icon: "🎯" },
-              { href: "/competitor-watch", label: "رصد المنافسين", icon: "👁️" },
-            ].map(({ href, label, icon }) => (
+              { href: "/ideas/analyze", labelKey: "ideaAnalyst", icon: "🧠" },
+              { href: "/customer-discovery", labelKey: "customerDiscovery", icon: "🎯" },
+              { href: "/competitor-watch", labelKey: "competitorWatch", icon: "👁️" },
+            ].map(({ href, labelKey, icon }) => (
               <Link key={href} href={href}
                 className="bg-slate-800/40 border border-slate-700/30 hover:border-slate-600/50 rounded-xl p-4 text-center transition-all group">
                 <div className="text-2xl mb-1">{icon}</div>
-                <div className="text-slate-300 text-sm font-medium group-hover:text-white transition-colors">{label}</div>
+                <div className="text-slate-300 text-sm font-medium group-hover:text-white transition-colors">{t(`quickLinks.${labelKey}`)}</div>
               </Link>
             ))}
           </motion.div>

@@ -10,6 +10,7 @@ import {
 import Link from "next/link";
 import { AppShell } from "@/components/layout/AppShell";
 import { useAuth } from "@/contexts/AuthContext";
+import { useTranslations } from "next-intl";
 
 const CONTRACT_TYPES = [
   "عقد شراكة / مؤسسين", "عقد توظيف", "عقد استشارة / Freelance",
@@ -30,6 +31,7 @@ const PARTY_ROLES = [
 
 export default function ContractReviewPage() {
   const { user } = useAuth();
+  const t = useTranslations("ContractReview");
   const [contractText, setContractText] = useState("");
   const [contractType, setContractType] = useState("");
   const [partyRole, setPartyRole] = useState("");
@@ -92,13 +94,13 @@ export default function ContractReviewPage() {
           <div>
             <div className="flex items-center gap-2 mb-2">
               <Scale className="w-4 h-4 text-amber-400" />
-              <span className="text-xs text-amber-400 font-medium uppercase tracking-wide">Contract Reviewer AI</span>
+              <span className="text-xs text-amber-400 font-medium uppercase tracking-wide">{t("eyebrow")}</span>
             </div>
-            <h1 className="font-display text-3xl md:text-4xl font-extrabold text-white mb-2">مراجع العقود</h1>
-            <p className="text-white/50 max-w-xl text-sm">الصق نص العقد وسيستخرج الوكيل الذكي البنود الخطرة والناقصة قبل أن توقّع.</p>
+            <h1 className="font-display text-3xl md:text-4xl font-extrabold text-white mb-2">{t("title")}</h1>
+            <p className="text-white/50 max-w-xl text-sm">{t("subtitle")}</p>
           </div>
           <Link href="/dashboard" className="flex items-center gap-1.5 text-sm text-white/40 hover:text-white/70 transition-colors">
-            <ArrowLeft className="w-4 h-4" /> لوحة القيادة
+            <ArrowLeft className="w-4 h-4" /> {t("dashboard")}
           </Link>
         </div>
 
@@ -106,7 +108,7 @@ export default function ContractReviewPage() {
         <div className="flex items-start gap-3 rounded-xl border border-amber-500/20 bg-amber-500/5 p-4">
           <Shield className="w-4 h-4 text-amber-400 mt-0.5 shrink-0" />
           <p className="text-amber-200/80 text-xs leading-relaxed">
-            هذا التحليل لأغراض التوعية والمراجعة الأولية فقط. دائماً استشر محامياً مرخّصاً قبل التوقيع على أي عقد.
+            {t("disclaimer")}
           </p>
         </div>
 
@@ -115,18 +117,18 @@ export default function ContractReviewPage() {
             {/* Contract Type + Role */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
-                <label className="block text-xs text-white/50 mb-2 font-medium">نوع العقد</label>
+                <label className="block text-xs text-white/50 mb-2 font-medium">{t("contractTypeLabel")}</label>
                 <select value={contractType} onChange={e => setContractType(e.target.value)}
                   className="w-full bg-transparent text-white text-sm focus:outline-none">
-                  <option value="" className="bg-[#0a0a1a]">اختر نوع العقد...</option>
+                  <option value="" className="bg-[#0a0a1a]">{t("selectContractType")}</option>
                   {CONTRACT_TYPES.map(t => <option key={t} value={t} className="bg-[#0a0a1a]">{t}</option>)}
                 </select>
               </div>
               <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
-                <label className="block text-xs text-white/50 mb-2 font-medium">دورك في العقد</label>
+                <label className="block text-xs text-white/50 mb-2 font-medium">{t("partyRoleLabel")}</label>
                 <select value={partyRole} onChange={e => setPartyRole(e.target.value)}
                   className="w-full bg-transparent text-white text-sm focus:outline-none">
-                  <option value="" className="bg-[#0a0a1a]">اختر دورك...</option>
+                  <option value="" className="bg-[#0a0a1a]">{t("selectRole")}</option>
                   {PARTY_ROLES.map(r => <option key={r.value} value={r.value} className="bg-[#0a0a1a]">{r.label}</option>)}
                 </select>
               </div>
@@ -135,23 +137,23 @@ export default function ContractReviewPage() {
             {/* Contract Text */}
             <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
               <div className="flex items-center justify-between mb-3">
-                <label className="text-sm font-semibold text-white">نص العقد</label>
+                <label className="text-sm font-semibold text-white">{t("contractTextLabel")}</label>
                 <div className="flex items-center gap-2">
                   <span className="text-xs text-white/30">{contractText.length.toLocaleString("ar-EG")} حرف</span>
                   <button onClick={handlePaste} className="flex items-center gap-1.5 text-xs text-amber-400 hover:text-amber-300 transition-colors border border-amber-500/20 rounded-lg px-2.5 py-1">
-                    <Upload className="w-3 h-3" /> لصق من الحافظة
+                    <Upload className="w-3 h-3" /> {t("pasteFromClipboard")}
                   </button>
                 </div>
               </div>
               <textarea
                 value={contractText}
                 onChange={e => setContractText(e.target.value)}
-                placeholder="الصق نص العقد هنا... (الحد الأقصى ١٥٬٠٠٠ حرف)"
+                placeholder={t("textPlaceholder")}
                 rows={12}
                 className="w-full rounded-xl bg-white/[0.04] border border-white/[0.07] text-white/90 placeholder:text-white/20 p-4 text-sm resize-y focus:outline-none focus:border-amber-500/40 transition-colors font-mono leading-relaxed"
               />
               {contractText.length < 50 && contractText.length > 0 && (
-                <p className="text-xs text-rose-400 mt-2">النص قصير جداً — الحد الأدنى ٥٠ حرفاً</p>
+                <p className="text-xs text-rose-400 mt-2">{t("tooShortError")}</p>
               )}
             </div>
 
@@ -159,16 +161,16 @@ export default function ContractReviewPage() {
             <div className="rounded-2xl border border-white/[0.07] bg-white/[0.02]">
               <button onClick={() => setShowAdvanced(v => !v)}
                 className="w-full flex items-center justify-between p-4 text-sm text-white/60 hover:text-white/80 transition-colors">
-                <span>خيارات إضافية</span>
+                <span>{t("advancedOptions")}</span>
                 {showAdvanced ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
               </button>
               {showAdvanced && (
                 <div className="px-4 pb-4">
-                  <label className="block text-xs text-white/50 mb-2">مخاوف محددة تريد التركيز عليها</label>
+                  <label className="block text-xs text-white/50 mb-2">{t("specificConcernsLabel")}</label>
                   <textarea
                     value={specificConcerns}
                     onChange={e => setSpecificConcerns(e.target.value)}
-                    placeholder="مثلاً: قلق من بند التعويض، أريد التحقق من بنود إنهاء العقد..."
+                    placeholder={t("specificConcernsPlaceholder")}
                     rows={3}
                     className="w-full rounded-xl bg-white/[0.04] border border-white/[0.07] text-white/90 placeholder:text-white/20 p-3 text-sm resize-none focus:outline-none focus:border-amber-500/40 transition-colors"
                   />
@@ -180,7 +182,7 @@ export default function ContractReviewPage() {
             <button onClick={handleReview} disabled={!canSubmit}
               className="w-full flex items-center justify-center gap-3 py-3.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold text-sm hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-lg shadow-amber-500/20">
               {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Scale className="w-5 h-5" />}
-              {loading ? "يراجع العقد..." : "راجع العقد بالذكاء الاصطناعي"}
+              {loading ? t("reviewing") : t("reviewButton")}
             </button>
 
             {error && (
@@ -196,31 +198,31 @@ export default function ContractReviewPage() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                  <span className="text-sm font-semibold text-white">اكتمل التحليل</span>
+                  <span className="text-sm font-semibold text-white">{t("analysisComplete")}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <button onClick={copyResult}
                     className="flex items-center gap-1.5 text-xs text-white/50 hover:text-white/80 border border-white/10 rounded-lg px-3 py-1.5 transition-colors">
                     {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
-                    {copied ? "تم النسخ" : "نسخ"}
+                    {copied ? t("copied") : t("copy")}
                   </button>
                   <button onClick={reset}
                     className="flex items-center gap-1.5 text-xs text-amber-400 hover:text-amber-300 border border-amber-500/20 rounded-lg px-3 py-1.5 transition-colors">
-                    <FileText className="w-3 h-3" /> عقد جديد
+                    <FileText className="w-3 h-3" /> {t("newContract")}
                   </button>
                 </div>
               </div>
               <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6">
                 <div className="flex items-center gap-2 mb-4">
                   <Scale className="w-4 h-4 text-amber-400" />
-                  <span className="text-sm font-semibold text-white">تقرير مراجعة العقد</span>
+                  <span className="text-sm font-semibold text-white">{t("reportTitle")}</span>
                   {contractType && <span className="text-xs text-white/40 border border-white/10 rounded-full px-2.5 py-0.5">{contractType}</span>}
                 </div>
                 <div className="prose prose-invert prose-sm max-w-none text-white/80 leading-relaxed whitespace-pre-wrap">{result}</div>
               </div>
               <div className="flex items-center gap-3 rounded-xl border border-amber-500/20 bg-amber-500/5 p-4">
                 <Shield className="w-4 h-4 text-amber-400 shrink-0" />
-                <p className="text-amber-200/80 text-xs">هذا التحليل للتوعية فقط. استشر محامياً مرخّصاً قبل التوقيع.</p>
+                <p className="text-amber-200/80 text-xs">{t("footerDisclaimer")}</p>
               </div>
             </motion.div>
           </AnimatePresence>

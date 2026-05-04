@@ -470,5 +470,341 @@
       "stable": "⚡ مستقر — هناك فرصة لتحسين الراحة والدعم المحيط.",
       "atRisk": "🔴 تحتاج توقفاً — خذ يوماً للراحة وتحدّث مع شخص تثق به قبل المضي قُدُماً."
     }
+  },
+  "FinancialModel": {
+    "title": "النموذج المالي الذكي",
+    "subtitle": "توقعات مالية، نقطة التعادل، وهوامش الربح بمساعدة الذكاء الاصطناعي",
+    "modes": {
+      "model": "التوقعات المالية",
+      "breakeven": "نقطة التعادل",
+      "uniteconomics": "اقتصاديات الوحدة"
+    },
+    "formTitle": {
+      "model": "بيانات التوقع المالي",
+      "breakeven": "حساب نقطة التعادل",
+      "uniteconomics": "اقتصاديات الوحدة (Unit Economics)"
+    },
+    "businessTypeLabel": "نوع النشاط التجاري",
+    "horizonLabel": "الأفق الزمني",
+    "descriptionLabel": "وصف النشاط التجاري *",
+    "descriptionPlaceholder": "مثال: منصة SaaS لإدارة المطاعم، اشتراك شهري 500 جنيه/مطعم، هدف 200 مطعم السنة الأولى...",
+    "initialRevenueLabel": "الإيراد الشهري الابتدائي",
+    "initialRevenuePlaceholder": "مثال: 5000 جنيه/شهر",
+    "growthRateLabel": "معدل النمو الشهري المستهدف",
+    "growthRatePlaceholder": "مثال: 15% شهرياً",
+    "fixedCostsLabel": "التكاليف الثابتة الشهرية",
+    "fixedCostsPlaceholder": "مثال: رواتب 20,000 + إيجار 3,000 = 23,000 جنيه",
+    "variableCostsLabel": "التكاليف المتغيرة (لكل وحدة/عميل)",
+    "variableCostsPlaceholder": "مثال: 50 جنيه/عميل (استضافة + دعم)",
+    "buildButton": "ابنِ النموذج المالي",
+    "buildingButton": "جاري البناء...",
+    "resultTitle": {
+      "model": "التوقعات المالية",
+      "breakeven": "تحليل نقطة التعادل",
+      "uniteconomics": "تحليل Unit Economics"
+    },
+    "quickLinks": {
+      "cashRunway": "المدرج المالي",
+      "smartPricing": "التسعير الذكي",
+      "investor": "لوحة المستثمر"
+    }
+  },
+  "LegalAI": {
+    "title": "المستشار القانوني الذكي",
+    "subtitle": "إرشادات قانونية مبسّطة للشركات الناشئة المصرية",
+    "disclaimer": "⚖️ تنبيه: هذه المعلومات للإرشاد العام فقط وليست استشارة قانونية متخصصة. استشر محامياً مرخّصاً في الشؤون القانونية المهمة.",
+    "modes": {
+      "contract": { "label": "مسوّدة عقود", "desc": "مسوّدات عقود مبسّطة بالقانون المصري" },
+      "compliance": { "label": "الامتثال القانوني", "desc": "التزامات قانونية للشركات الناشئة" },
+      "ip": { "label": "الملكية الفكرية", "desc": "حماية المنتج والعلامة التجارية" },
+      "disputes": { "label": "النزاعات التجارية", "desc": "فهم خياراتك في النزاعات" }
+    },
+    "contractTypeLabel": "نوع العقد",
+    "descriptionLabel": "وصف الموضوع *",
+    "partiesLabel": "أطراف العقد",
+    "specificTermsLabel": "بنود خاصة تريد تضمينها",
+    "partiesPlaceholder": "مثال: شركة X (صاحب العمل) — أحمد محمد (الموظف)",
+    "specificTermsPlaceholder": "مثال: حظر منافسة سنتين، سرية المعلومات، عمل عن بُعد",
+    "descriptionPlaceholders": {
+      "contract": "مثال: عقد عمل لمطوّر بدوام كامل، راتب 15,000 جنيه، مدة سنة قابلة للتجديد...",
+      "compliance": "مثال: شركة SaaS تجمع بيانات عملاء مصريين، ما الالتزامات القانونية؟",
+      "ip": "مثال: لدي تطبيق جوال وأريد حماية الكود واسم العلامة التجارية...",
+      "disputes": "مثال: عميل لم يدفع فاتورة منذ 3 أشهر رغم التذكير المتكرر..."
+    },
+    "prepareButton": "أعدّ {mode}",
+    "preparingButton": "جاري الإعداد...",
+    "quickLinks": {
+      "contractReview": "مراجع العقود",
+      "founderAgreement": "اتفاقية المؤسسين",
+      "setupEgypt": "التأسيس في مصر"
+    }
+  },
+  "TermSheet": {
+    "title": "محلل عروض الاستثمار (Term Sheet)",
+    "subtitle": "افهم كل بند في عرض الاستثمار قبل التوقيع — الصق النص أو ارفع PDF",
+    "disclaimer": "هذا التحليل للإرشاد العام. استشر محامياً متخصصاً في صفقات الاستثمار قبل التوقيع على أي وثيقة قانونية.",
+    "roundTypeLabel": "نوع الجولة",
+    "investmentAmountLabel": "مبلغ الاستثمار",
+    "investmentAmountPlaceholder": "مثال: 500,000 دولار",
+    "pasteText": "لصق النص",
+    "uploadPdf": "رفع PDF",
+    "termSheetLabel": "نص الـ Term Sheet *",
+    "insertExample": "أدرج مثالاً",
+    "textareaPlaceholder": "الصق نص الـ Term Sheet هنا... (يمكن أن يكون نصاً عربياً أو إنجليزياً أو مزيجاً منهما)",
+    "charCount": "{count} حرف",
+    "dragDropText": "اسحب ملف PDF هنا أو اضغط للاختيار",
+    "dragDropHint": "PDF حتى 10 MB",
+    "extracting": "جاري استخراج النص من PDF...",
+    "extractedChars": "{count} حرف مُستخرَج",
+    "previewLabel": "معاينة النص المُستخرَج:",
+    "analyzeButton": "حلّل الـ Term Sheet",
+    "analyzing": "جاري التحليل...",
+    "newAnalysis": "تحليل جديد",
+    "resultTitle": "تحليل الـ Term Sheet",
+    "pdfOnlyError": "يرجى رفع ملف PDF فقط",
+    "quickLinks": {
+      "capTable": "إدارة الحصص",
+      "legalAi": "المستشار القانوني",
+      "investor": "لوحة المستثمر"
+    }
+  },
+  "SmartPricing": {
+    "title": "استراتيجية التسعير الذكي",
+    "subtitle": "احصل على استراتيجية تسعير مثالية للسوق المصري والعربي",
+    "stats": {
+      "valueBased": "تسعير مبني على القيمة",
+      "egyptMarket": "مُكيَّف للسوق المصري",
+      "marginIncrease": "زيادة هامش الربح"
+    },
+    "formTitle": "بيانات المنتج/الخدمة",
+    "productLabel": "وصف المنتج/الخدمة *",
+    "productPlaceholder": "مثال: منصة SaaS لإدارة المخزون للمطاعم، تُوفّر على العمل يومياً 2-3 ساعات...",
+    "modelLabel": "نموذج التسعير",
+    "currencyLabel": "العملة",
+    "segmentLabel": "الشريحة المستهدفة",
+    "segmentPlaceholder": "مثال: PMEs مصرية 10-50 موظف",
+    "cogsLabel": "تكلفة تقديم الخدمة (COGS)",
+    "cogsPlaceholder": "مثال: 200 جنيه/شهر/عميل",
+    "competitorsLabel": "أسعار المنافسين",
+    "competitorsPlaceholder": "مثال: المنافس أ = 500 جنيه/شهر، المنافس ب = 300 جنيه/شهر",
+    "buildButton": "ابنِ استراتيجية التسعير",
+    "buildingButton": "جاري بناء الاستراتيجية...",
+    "resultTitle": "استراتيجية التسعير الذكي",
+    "quickLinks": {
+      "ideaAnalyst": "مختبر الأفكار",
+      "customerDiscovery": "اكتشاف العملاء",
+      "competitorWatch": "رصد المنافسين"
+    }
+  },
+  "EgyptCalc": {
+    "eyebrow": "حاسبة الضرائب والرسوم المصرية",
+    "title": "الحاسبة المصرية الشاملة",
+    "subtitle": "حسابات دقيقة وفق أحدث قوانين الضرائب والتأمينات الاجتماعية المصرية · بيانات محدّثة ٢٠٢٥",
+    "tabs": {
+      "income-tax": "ضريبة الدخل",
+      "social": "التأمينات الاجتماعية",
+      "total-cost": "تكلفة الموظف الكاملة",
+      "vat": "ضريبة القيمة المضافة",
+      "fawry": "رسوم فوري",
+      "instapay": "رسوم إنستاباي"
+    },
+    "labels": {
+      "annualGross": "الراتب السنوي الإجمالي",
+      "annualGrossHint": "مجموع الراتب قبل أي خصومات",
+      "annualGrossInfo": "الإعفاء الشخصي: ٢٠٬٠٠٠ جنيه · الشريحة الأولى المعفاة: أول ٤٠٬٠٠٠ جنيه",
+      "monthlyWage": "الراتب الشهري",
+      "monthlyWageHint": "الحد الأدنى ٢٬٠٠٠ · الحد الأقصى ١٤٬٥٠٠ جنيه",
+      "monthlyGross": "الراتب الشهري الإجمالي",
+      "months": "عدد الشهور",
+      "monthsHint": "١٣ أو ١٤ شهر للشركات التي تصرف بدل إجازة / مكافأة",
+      "vatAmount": "المبلغ",
+      "vatRate": "معدل الضريبة",
+      "vatInclusive": "المبلغ يشمل الضريبة",
+      "transactionAmount": "مبلغ المعاملة",
+      "mdrLabel": "معدل خصم التاجر (MDR)",
+      "instapayHint": "رسوم إنستاباي / ميزة للتحويلات البنكية"
+    },
+    "vatRates": {
+      "normal": "١٤٪ عادي",
+      "reduced": "٥٪ مخفّض"
+    },
+    "mdrRates": {
+      "normal": "١.٥٪ عادي",
+      "reduced": "١٪ مخفّض",
+      "high": "٢٪ مرتفع"
+    },
+    "calculateButton": "احسب الآن",
+    "calculating": "يحسب...",
+    "emptyTitle": "أدخل البيانات واضغط «احسب»",
+    "emptySubtitle": "النتائج مبنية على أحدث قوانين الضرائب المصرية ٢٠٢٥",
+    "loadingText": "يحسب بدقة...",
+    "updatedAs": "محدّث حسب بيانات {date}",
+    "currency": "جنيه",
+    "results": {
+      "incomeTax": "نتيجة ضريبة الدخل",
+      "social": "نتيجة التأمينات الاجتماعية",
+      "totalCost": "التكلفة الكاملة للموظف",
+      "vat": "نتيجة ضريبة القيمة المضافة",
+      "fawry": "نتيجة رسوم فوري",
+      "instapay": "نتيجة رسوم إنستاباي",
+      "annualTax": "الضريبة السنوية",
+      "monthlyTax": "الضريبة الشهرية",
+      "annualGross": "الراتب السنوي الإجمالي",
+      "taxableIncome": "الدخل الخاضع للضريبة (بعد الإعفاء)",
+      "effectiveRate": "المعدل الفعلي للضريبة",
+      "marginalRate": "الشريحة الهامشية",
+      "netAnnual": "صافي الراتب السنوي (بعد الضريبة)",
+      "taxBreakdown": "تفصيل الشرائح الضريبية",
+      "bracket": "الشريحة",
+      "rate": "المعدل",
+      "tax": "الضريبة",
+      "employeeContrib": "اشتراك الموظف",
+      "employerContrib": "اشتراك صاحب العمل",
+      "insurableWage": "الأجر التأميني الفعلي",
+      "employeeRate": "نسبة الموظف (١١٪)",
+      "employerRate": "نسبة صاحب العمل (١٨.٧٥٪)",
+      "totalContrib": "إجمالي الاشتراك الشهري",
+      "employeeNet": "صافي راتب الموظف",
+      "socialInfo": "الأجر التأميني محدود بين ٢٬٠٠٠ و١٤٬٥٠٠ جنيه · قانون ١٤٨/٢٠١٩",
+      "annualTotal": "إجمالي التكلفة السنوية على الشركة",
+      "monthlyGross": "الراتب الشهري الإجمالي",
+      "employerInsurance": "تأمينات صاحب العمل (شهرياً)",
+      "totalMonthlyCost": "إجمالي التكلفة الشهرية",
+      "numMonths": "عدد الشهور",
+      "fullAnnual": "الإجمالي السنوي الكامل",
+      "vatAmount": "مبلغ الضريبة",
+      "totalWithVat": "الإجمالي شاملاً الضريبة",
+      "baseAmount": "المبلغ الأساسي (بدون ضريبة)",
+      "vatValue": "قيمة الضريبة",
+      "totalWithVatRow": "الإجمالي (مع الضريبة)",
+      "appliedRate": "معدل الضريبة المطبّق",
+      "vatInfo": "القانون ٦٧/٢٠١٦ · المعدل العادي ١٤٪ · المعدل المخفّض ٥٪ لبعض السلع",
+      "customerFee": "رسوم العميل",
+      "merchantNet": "يصلك كتاجر",
+      "transactionAmount": "مبلغ المعاملة",
+      "customerFeeFixed": "رسوم العميل (ثابتة)",
+      "merchantDiscount": "خصم التاجر (MDR)",
+      "merchantNetRow": "صافي ما يصل للتاجر",
+      "feeLabel": "الرسوم",
+      "netReceived": "صافي المبلغ المستلم",
+      "instapayInfo": "إنستاباي / شبكة ميزة — رسوم مسطّحة ٢ جنيه لكل تحويل أو نسبة مئوية صغيرة"
+    }
+  },
+  "ContractReview": {
+    "eyebrow": "Contract Reviewer AI",
+    "title": "مراجع العقود",
+    "subtitle": "الصق نص العقد وسيستخرج الوكيل الذكي البنود الخطرة والناقصة قبل أن توقّع.",
+    "disclaimer": "هذا التحليل لأغراض التوعية والمراجعة الأولية فقط. دائماً استشر محامياً مرخّصاً قبل التوقيع على أي عقد.",
+    "contractTypeLabel": "نوع العقد",
+    "selectContractType": "اختر نوع العقد...",
+    "partyRoleLabel": "دورك في العقد",
+    "selectRole": "اختر دورك...",
+    "contractTextLabel": "نص العقد",
+    "pasteFromClipboard": "لصق من الحافظة",
+    "textPlaceholder": "الصق نص العقد هنا... (الحد الأقصى ١٥٬٠٠٠ حرف)",
+    "tooShortError": "النص قصير جداً — الحد الأدنى ٥٠ حرفاً",
+    "advancedOptions": "خيارات إضافية",
+    "specificConcernsLabel": "مخاوف محددة تريد التركيز عليها",
+    "specificConcernsPlaceholder": "مثلاً: قلق من بند التعويض، أريد التحقق من بنود إنهاء العقد...",
+    "reviewButton": "راجع العقد بالذكاء الاصطناعي",
+    "reviewing": "يراجع العقد...",
+    "analysisComplete": "اكتمل التحليل",
+    "copy": "نسخ",
+    "copied": "تم النسخ",
+    "newContract": "عقد جديد",
+    "reportTitle": "تقرير مراجعة العقد",
+    "footerDisclaimer": "هذا التحليل للتوعية فقط. استشر محامياً مرخّصاً قبل التوقيع.",
+    "dashboard": "لوحة القيادة"
+  },
+  "ArabicTemplates": {
+    "title": "مكتبة النماذج القانونية والتجارية العربية",
+    "subtitle": "نماذج احترافية جاهزة وقابلة للتخصيص بالذكاء الاصطناعي",
+    "popularBadge": "الأكثر استخداماً",
+    "changeTemplate": "تغيير النموذج",
+    "generateButton": "أنشئ النموذج بالذكاء الاصطناعي",
+    "generatingButton": "جاري إنشاء النموذج...",
+    "downloadButton": "تحميل .md",
+    "copyButton": "نسخ",
+    "copiedButton": "تم النسخ",
+    "editButton": "تعديل",
+    "readyLabel": "جاهز للتنزيل",
+    "disclaimer": "⚠️ هذا النموذج للإرشاد العام. يُنصح بمراجعة محامٍ متخصص قبل الاستخدام الرسمي.",
+    "categories": {
+      "توظيف": "توظيف",
+      "قانوني": "قانوني",
+      "تأسيس": "تأسيس",
+      "استثمار": "استثمار",
+      "أعمال": "أعمال"
+    },
+    "quickLinks": {
+      "legalAi": "المستشار القانوني",
+      "contractReview": "مراجع العقود",
+      "founderAgreement": "اتفاقية المؤسسين"
+    }
+  },
+  "SetupEgypt": {
+    "title": "التأسيس في مصر",
+    "subtitle": "دليل خطوة بخطوة لتأسيس شركتك الناشئة في مصر",
+    "stats": {
+      "stepsLabel": "عدد الخطوات",
+      "stepsValue": "{count} خطوات",
+      "durationLabel": "المدة الإجمالية",
+      "costLabel": "التكلفة التقريبية"
+    },
+    "aiSection": {
+      "title": "اسأل مستشار التأسيس",
+      "placeholder": "مثال: ما الفرق بين الـ LLC والـ JSC؟ أو: كيف أسجل شركة تقنية في مصر؟",
+      "askButton": "اسأل",
+      "asking": "جاري الإجابة...",
+      "answerLabel": "إجابة المستشار"
+    },
+    "stepsSection": {
+      "tipsLabel": "نصائح مهمة",
+      "warningsLabel": "تحذيرات"
+    },
+    "disclaimer": "هذا الدليل لأغراض توعوية فقط. قوانين التأسيس تتغير — تحقق دائماً مع محامٍ مرخّص أو بوابة GAFI الرسمية قبل اتخاذ أي قرار قانوني."
+  },
+  "HR": {
+    "eyebrow": "الموارد البشرية · AI Recruitment",
+    "title": "فرقة الموارد البشرية",
+    "subtitle": "أتمتة التوظيف من تحديد الأدوار، إلى فحص وتقييم ومقارنة CVs متعددة بالذكاء الاصطناعي.",
+    "tabs": {
+      "pipeline": "خطة التوظيف",
+      "cvScreen": "فحص السير الذاتية"
+    },
+    "pipeline": {
+      "jobTitleLabel": "المسمى الوظيفي / نوع المنتج",
+      "jobTitlePlaceholder": "تطبيق جوال للتوصيل",
+      "stageLabel": "مرحلة الشركة",
+      "budgetLabel": "ميزانية الرواتب الشهرية (EGP)",
+      "budgetPlaceholder": "50000",
+      "runButton": "تشغيل فرقة التوظيف",
+      "running": "جاري التشغيل...",
+      "progressTitle": "تقدّم الفرقة",
+      "resultTitle": "خطة التوظيف الكاملة",
+      "copy": "نسخ",
+      "copied": "تم",
+      "download": "تحميل",
+      "successToast": "انتهت فرقة التوظيف!"
+    },
+    "cvScreen": {
+      "title": "فحص ومقارنة السير الذاتية",
+      "desc": "ارفع حتى 10 ملفات PDF دفعةً واحدة — Gemini يحلل كل سيرة على حدة ثم يقارنها ويرتبها.",
+      "roleLabel": "المسمى الوظيفي *",
+      "requirementsLabel": "المتطلبات الأساسية (اختياري)",
+      "requirementsPlaceholder": "مثال: Python, 5 سنوات, ماجستير",
+      "dropZoneText": "اسحب ملفات PDF أو اضغط للاختيار (حتى 10 ملفات)",
+      "candidateLabel": "المرشح {index}",
+      "extracting": "جاري الاستخراج...",
+      "extractedChars": "{count} حرف مستخرَج",
+      "analyzeButton": "حلّل السيرة الذاتية",
+      "analyzeMultipleButton": "حلّل وقارن {count} سير ذاتية",
+      "analyzing": "جاري التحليل والمقارنة...",
+      "reportTitle": "تقرير الفحص والمقارنة",
+      "copy": "نسخ",
+      "copied": "تم",
+      "download": "تحميل",
+      "successToast": "تم تحليل {count} سير ذاتية!"
+    }
   }
 }

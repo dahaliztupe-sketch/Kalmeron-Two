@@ -470,5 +470,341 @@
       "stable": "⚡ Stable — there's room to improve rest and your support circle.",
       "atRisk": "🔴 At risk — take a day off and talk to someone you trust before pushing forward."
     }
+  },
+  "FinancialModel": {
+    "title": "AI Financial Model",
+    "subtitle": "Financial projections, break-even analysis, and profit margins powered by AI",
+    "modes": {
+      "model": "Financial Projections",
+      "breakeven": "Break-Even",
+      "uniteconomics": "Unit Economics"
+    },
+    "formTitle": {
+      "model": "Financial Projection Data",
+      "breakeven": "Break-Even Calculation",
+      "uniteconomics": "Unit Economics"
+    },
+    "businessTypeLabel": "Business type",
+    "horizonLabel": "Time horizon",
+    "descriptionLabel": "Business description *",
+    "descriptionPlaceholder": "e.g. SaaS platform for restaurant management, monthly subscription 500 EGP/restaurant, targeting 200 restaurants in year one...",
+    "initialRevenueLabel": "Initial monthly revenue",
+    "initialRevenuePlaceholder": "e.g. 5,000 EGP/month",
+    "growthRateLabel": "Target monthly growth rate",
+    "growthRatePlaceholder": "e.g. 15% per month",
+    "fixedCostsLabel": "Monthly fixed costs",
+    "fixedCostsPlaceholder": "e.g. Salaries 20,000 + Rent 3,000 = 23,000 EGP",
+    "variableCostsLabel": "Variable costs (per unit/customer)",
+    "variableCostsPlaceholder": "e.g. 50 EGP/customer (hosting + support)",
+    "buildButton": "Build financial model",
+    "buildingButton": "Building...",
+    "resultTitle": {
+      "model": "Financial Projections",
+      "breakeven": "Break-Even Analysis",
+      "uniteconomics": "Unit Economics Analysis"
+    },
+    "quickLinks": {
+      "cashRunway": "Cash Runway",
+      "smartPricing": "Smart Pricing",
+      "investor": "Investor Dashboard"
+    }
+  },
+  "LegalAI": {
+    "title": "AI Legal Advisor",
+    "subtitle": "Simplified legal guidance for Egyptian startups",
+    "disclaimer": "⚖️ Disclaimer: This information is for general guidance only and is not specialised legal advice. Consult a licensed attorney for important legal matters.",
+    "modes": {
+      "contract": { "label": "Contract Drafting", "desc": "Simplified contract drafts under Egyptian law" },
+      "compliance": { "label": "Legal Compliance", "desc": "Legal obligations for startups" },
+      "ip": { "label": "Intellectual Property", "desc": "Protect your product and trademark" },
+      "disputes": { "label": "Commercial Disputes", "desc": "Understand your options in disputes" }
+    },
+    "contractTypeLabel": "Contract type",
+    "descriptionLabel": "Topic description *",
+    "partiesLabel": "Contract parties",
+    "specificTermsLabel": "Special terms to include",
+    "partiesPlaceholder": "e.g. Company X (Employer) — Ahmed Mohamed (Employee)",
+    "specificTermsPlaceholder": "e.g. 2-year non-compete, confidentiality, remote work",
+    "descriptionPlaceholders": {
+      "contract": "e.g. Full-time developer employment contract, salary 15,000 EGP, one year renewable...",
+      "compliance": "e.g. SaaS company collecting data from Egyptian clients — what are the legal obligations?",
+      "ip": "e.g. I have a mobile app and want to protect the code and trademark...",
+      "disputes": "e.g. A client hasn't paid an invoice for 3 months despite repeated reminders..."
+    },
+    "prepareButton": "Prepare {mode}",
+    "preparingButton": "Preparing...",
+    "quickLinks": {
+      "contractReview": "Contract Review",
+      "founderAgreement": "Founders Agreement",
+      "setupEgypt": "Setup in Egypt"
+    }
+  },
+  "TermSheet": {
+    "title": "Term Sheet Analyzer",
+    "subtitle": "Understand every clause in an investment offer before signing — paste the text or upload a PDF",
+    "disclaimer": "This analysis is for general guidance only. Consult a specialist attorney for investment deals before signing any legal document.",
+    "roundTypeLabel": "Round type",
+    "investmentAmountLabel": "Investment amount",
+    "investmentAmountPlaceholder": "e.g. $500,000",
+    "pasteText": "Paste text",
+    "uploadPdf": "Upload PDF",
+    "termSheetLabel": "Term Sheet text *",
+    "insertExample": "Insert example",
+    "textareaPlaceholder": "Paste the Term Sheet text here... (Arabic, English, or mixed)",
+    "charCount": "{count} characters",
+    "dragDropText": "Drag a PDF here or click to choose",
+    "dragDropHint": "PDF up to 10 MB",
+    "extracting": "Extracting text from PDF...",
+    "extractedChars": "{count} characters extracted",
+    "previewLabel": "Preview of extracted text:",
+    "analyzeButton": "Analyse Term Sheet",
+    "analyzing": "Analysing...",
+    "newAnalysis": "New analysis",
+    "resultTitle": "Term Sheet Analysis",
+    "pdfOnlyError": "Please upload a PDF file only",
+    "quickLinks": {
+      "capTable": "Cap Table",
+      "legalAi": "Legal Advisor",
+      "investor": "Investor Dashboard"
+    }
+  },
+  "SmartPricing": {
+    "title": "Smart Pricing Strategy",
+    "subtitle": "Get the optimal pricing strategy for the Egyptian and Arab market",
+    "stats": {
+      "valueBased": "Value-based pricing",
+      "egyptMarket": "Tailored for the Egyptian market",
+      "marginIncrease": "Increase profit margin"
+    },
+    "formTitle": "Product / Service Data",
+    "productLabel": "Product / service description *",
+    "productPlaceholder": "e.g. SaaS inventory management platform for restaurants, saving 2–3 hours of work per day...",
+    "modelLabel": "Pricing model",
+    "currencyLabel": "Currency",
+    "segmentLabel": "Target segment",
+    "segmentPlaceholder": "e.g. Egyptian SMEs, 10–50 employees",
+    "cogsLabel": "Cost of goods sold (COGS)",
+    "cogsPlaceholder": "e.g. 200 EGP/month/customer",
+    "competitorsLabel": "Competitor pricing",
+    "competitorsPlaceholder": "e.g. Competitor A = 500 EGP/month, Competitor B = 300 EGP/month",
+    "buildButton": "Build pricing strategy",
+    "buildingButton": "Building strategy...",
+    "resultTitle": "Smart Pricing Strategy",
+    "quickLinks": {
+      "ideaAnalyst": "Idea Lab",
+      "customerDiscovery": "Customer Discovery",
+      "competitorWatch": "Competitor Watch"
+    }
+  },
+  "EgyptCalc": {
+    "eyebrow": "Egyptian Tax & Fees Calculator",
+    "title": "Egyptian All-in-One Calculator",
+    "subtitle": "Accurate calculations based on the latest Egyptian tax and social insurance laws · Data updated 2025",
+    "tabs": {
+      "income-tax": "Income Tax",
+      "social": "Social Insurance",
+      "total-cost": "Full Employee Cost",
+      "vat": "VAT",
+      "fawry": "Fawry Fees",
+      "instapay": "InstaPay Fees"
+    },
+    "labels": {
+      "annualGross": "Annual gross salary",
+      "annualGrossHint": "Total salary before any deductions",
+      "annualGrossInfo": "Personal exemption: 20,000 EGP · First tax-free bracket: first 40,000 EGP",
+      "monthlyWage": "Monthly salary",
+      "monthlyWageHint": "Min 2,000 · Max 14,500 EGP",
+      "monthlyGross": "Monthly gross salary",
+      "months": "Number of months",
+      "monthsHint": "13 or 14 months for companies paying holiday/bonus allowances",
+      "vatAmount": "Amount",
+      "vatRate": "Tax rate",
+      "vatInclusive": "Amount includes VAT",
+      "transactionAmount": "Transaction amount",
+      "mdrLabel": "Merchant Discount Rate (MDR)",
+      "instapayHint": "InstaPay / Meeza bank transfer fees"
+    },
+    "vatRates": {
+      "normal": "14% standard",
+      "reduced": "5% reduced"
+    },
+    "mdrRates": {
+      "normal": "1.5% standard",
+      "reduced": "1% reduced",
+      "high": "2% high"
+    },
+    "calculateButton": "Calculate",
+    "calculating": "Calculating...",
+    "emptyTitle": "Enter data and press «Calculate»",
+    "emptySubtitle": "Results are based on the latest Egyptian tax laws 2025",
+    "loadingText": "Calculating accurately...",
+    "updatedAs": "Updated as of {date}",
+    "currency": "EGP",
+    "results": {
+      "incomeTax": "Income Tax Result",
+      "social": "Social Insurance Result",
+      "totalCost": "Full Employee Cost",
+      "vat": "VAT Result",
+      "fawry": "Fawry Fees Result",
+      "instapay": "InstaPay Fees Result",
+      "annualTax": "Annual tax",
+      "monthlyTax": "Monthly tax",
+      "annualGross": "Annual gross salary",
+      "taxableIncome": "Taxable income (after exemption)",
+      "effectiveRate": "Effective tax rate",
+      "marginalRate": "Marginal bracket",
+      "netAnnual": "Net annual salary (after tax)",
+      "taxBreakdown": "Tax bracket breakdown",
+      "bracket": "Bracket",
+      "rate": "Rate",
+      "tax": "Tax",
+      "employeeContrib": "Employee contribution",
+      "employerContrib": "Employer contribution",
+      "insurableWage": "Effective insurable wage",
+      "employeeRate": "Employee rate (11%)",
+      "employerRate": "Employer rate (18.75%)",
+      "totalContrib": "Total monthly contribution",
+      "employeeNet": "Employee net salary",
+      "socialInfo": "Insurable wage capped between 2,000 and 14,500 EGP · Law 148/2019",
+      "annualTotal": "Total annual cost to company",
+      "monthlyGross": "Monthly gross salary",
+      "employerInsurance": "Employer insurance (monthly)",
+      "totalMonthlyCost": "Total monthly cost",
+      "numMonths": "Number of months",
+      "fullAnnual": "Total annual amount",
+      "vatAmount": "VAT amount",
+      "totalWithVat": "Total including VAT",
+      "baseAmount": "Base amount (excl. VAT)",
+      "vatValue": "VAT value",
+      "totalWithVatRow": "Total (incl. VAT)",
+      "appliedRate": "Applied tax rate",
+      "vatInfo": "Law 67/2016 · Standard rate 14% · Reduced rate 5% for certain goods",
+      "customerFee": "Customer fee",
+      "merchantNet": "You receive (merchant)",
+      "transactionAmount": "Transaction amount",
+      "customerFeeFixed": "Customer fee (fixed)",
+      "merchantDiscount": "Merchant discount (MDR)",
+      "merchantNetRow": "Net amount to merchant",
+      "feeLabel": "Fee",
+      "netReceived": "Net amount received",
+      "instapayInfo": "InstaPay / Meeza — flat 2 EGP per transfer or a small percentage"
+    }
+  },
+  "ContractReview": {
+    "eyebrow": "Contract Reviewer AI",
+    "title": "Contract Review",
+    "subtitle": "Paste the contract text and the AI agent will extract dangerous and missing clauses before you sign.",
+    "disclaimer": "This analysis is for awareness and initial review only. Always consult a licensed attorney before signing any contract.",
+    "contractTypeLabel": "Contract type",
+    "selectContractType": "Select contract type...",
+    "partyRoleLabel": "Your role in the contract",
+    "selectRole": "Select your role...",
+    "contractTextLabel": "Contract text",
+    "pasteFromClipboard": "Paste from clipboard",
+    "textPlaceholder": "Paste the contract text here... (max 15,000 characters)",
+    "tooShortError": "Text is too short — minimum 50 characters",
+    "advancedOptions": "Advanced options",
+    "specificConcernsLabel": "Specific concerns to focus on",
+    "specificConcernsPlaceholder": "e.g. Concerned about the indemnity clause, want to verify termination terms...",
+    "reviewButton": "Review contract with AI",
+    "reviewing": "Reviewing contract...",
+    "analysisComplete": "Analysis complete",
+    "copy": "Copy",
+    "copied": "Copied",
+    "newContract": "New contract",
+    "reportTitle": "Contract Review Report",
+    "footerDisclaimer": "This analysis is for awareness only. Consult a licensed attorney before signing.",
+    "dashboard": "Dashboard"
+  },
+  "ArabicTemplates": {
+    "title": "Arabic Legal & Business Template Library",
+    "subtitle": "Professional templates ready to customise with AI",
+    "popularBadge": "Most used",
+    "changeTemplate": "Change template",
+    "generateButton": "Generate template with AI",
+    "generatingButton": "Generating template...",
+    "downloadButton": "Download .md",
+    "copyButton": "Copy",
+    "copiedButton": "Copied",
+    "editButton": "Edit",
+    "readyLabel": "Ready to download",
+    "disclaimer": "⚠️ This template is for general guidance. Review with a specialist attorney before official use.",
+    "categories": {
+      "توظيف": "Employment",
+      "قانوني": "Legal",
+      "تأسيس": "Founding",
+      "استثمار": "Investment",
+      "أعمال": "Business"
+    },
+    "quickLinks": {
+      "legalAi": "Legal Advisor",
+      "contractReview": "Contract Review",
+      "founderAgreement": "Founders Agreement"
+    }
+  },
+  "SetupEgypt": {
+    "title": "Setup in Egypt",
+    "subtitle": "Step-by-step guide to incorporating your startup in Egypt",
+    "stats": {
+      "stepsLabel": "Number of steps",
+      "stepsValue": "{count} steps",
+      "durationLabel": "Total duration",
+      "costLabel": "Estimated cost"
+    },
+    "aiSection": {
+      "title": "Ask the Incorporation Advisor",
+      "placeholder": "e.g. What is the difference between an LLC and a JSC? Or: How do I register a tech company in Egypt?",
+      "askButton": "Ask",
+      "asking": "Getting answer...",
+      "answerLabel": "Advisor's answer"
+    },
+    "stepsSection": {
+      "tipsLabel": "Key tips",
+      "warningsLabel": "Warnings"
+    },
+    "disclaimer": "This guide is for awareness purposes only. Incorporation laws change — always verify with a licensed attorney or the official GAFI portal before making any legal decision."
+  },
+  "HR": {
+    "eyebrow": "HR · AI Recruitment",
+    "title": "HR Team",
+    "subtitle": "Automate hiring from role definition to screening, evaluating, and comparing multiple CVs with AI.",
+    "tabs": {
+      "pipeline": "Hiring Plan",
+      "cvScreen": "CV Screening"
+    },
+    "pipeline": {
+      "jobTitleLabel": "Job title / product type",
+      "jobTitlePlaceholder": "Delivery mobile app",
+      "stageLabel": "Company stage",
+      "budgetLabel": "Monthly salary budget (EGP)",
+      "budgetPlaceholder": "50000",
+      "runButton": "Run hiring team",
+      "running": "Running...",
+      "progressTitle": "Team progress",
+      "resultTitle": "Complete Hiring Plan",
+      "copy": "Copy",
+      "copied": "Done",
+      "download": "Download",
+      "successToast": "Hiring team finished!"
+    },
+    "cvScreen": {
+      "title": "CV Screening & Comparison",
+      "desc": "Upload up to 10 PDF files at once — Gemini analyses each CV individually then compares and ranks them.",
+      "roleLabel": "Job title *",
+      "requirementsLabel": "Core requirements (optional)",
+      "requirementsPlaceholder": "e.g. Python, 5 years, Master's degree",
+      "dropZoneText": "Drag PDF files or click to choose (up to 10 files)",
+      "candidateLabel": "Candidate {index}",
+      "extracting": "Extracting...",
+      "extractedChars": "{count} characters extracted",
+      "analyzeButton": "Analyse CV",
+      "analyzeMultipleButton": "Analyse & compare {count} CVs",
+      "analyzing": "Analysing and comparing...",
+      "reportTitle": "Screening & Comparison Report",
+      "copy": "Copy",
+      "copied": "Done",
+      "download": "Download",
+      "successToast": "Analysed {count} CVs!"
+    }
   }
 }

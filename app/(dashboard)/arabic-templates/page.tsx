@@ -11,6 +11,7 @@ import Link from "next/link";
 import { AppShell } from "@/components/layout/AppShell";
 import { useAuth } from "@/contexts/AuthContext";
 import ReactMarkdown from "react-markdown";
+import { useTranslations } from "next-intl";
 
 interface Template {
   id: string;
@@ -150,6 +151,7 @@ const CATEGORY_COLORS: Record<string, string> = {
 
 export default function ArabicTemplatesPage() {
   const { user } = useAuth();
+  const trans = useTranslations("ArabicTemplates");
   const [selected, setSelected] = useState<Template | null>(null);
   const [fields, setFields] = useState<Record<string, string>>({});
   const [result, setResult] = useState("");
@@ -209,9 +211,9 @@ export default function ArabicTemplatesPage() {
             <div>
               <h1 className="text-2xl font-bold flex items-center gap-2">
                 <BookOpen className="text-emerald-400" size={24} />
-                مكتبة النماذج القانونية والتجارية العربية
+                {t("title")}
               </h1>
-              <p className="text-slate-400 text-sm mt-1">نماذج احترافية جاهزة وقابلة للتخصيص بالذكاء الاصطناعي</p>
+              <p className="text-slate-400 text-sm mt-1">{t("subtitle")}</p>
             </div>
           </motion.div>
 
@@ -227,7 +229,7 @@ export default function ArabicTemplatesPage() {
                   className={`text-right p-5 rounded-2xl border transition-all hover:scale-[1.02] relative ${t.bg} hover:shadow-lg`}>
                   {t.popular && (
                     <span className="absolute top-3 left-3 text-[10px] font-bold text-amber-400 bg-amber-500/10 border border-amber-500/20 rounded-full px-2 py-0.5">
-                      الأكثر استخداماً
+                      {trans("popularBadge")}
                     </span>
                   )}
                   <t.icon size={22} className={`${t.color} mb-3`} />
@@ -251,7 +253,7 @@ export default function ArabicTemplatesPage() {
                 </div>
                 <button onClick={() => { setSelected(null); setResult(""); setError(""); }}
                   className="text-sm text-slate-400 hover:text-white transition-colors flex items-center gap-1">
-                  <RefreshCw size={13} /> تغيير النموذج
+                  <RefreshCw size={13} /> {trans("changeTemplate")}
                 </button>
               </div>
 
@@ -284,7 +286,7 @@ export default function ArabicTemplatesPage() {
                   <button onClick={handleGenerate} disabled={loading}
                     className="flex items-center gap-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white px-5 py-2.5 rounded-xl text-sm font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed">
                     {loading ? <Loader2 size={16} className="animate-spin" /> : <BookOpen size={16} />}
-                    {loading ? "جاري إنشاء النموذج..." : "أنشئ النموذج بالذكاء الاصطناعي"}
+                    {loading ? trans("generatingButton") : trans("generateButton")}
                   </button>
                 </>
               ) : (
@@ -293,21 +295,21 @@ export default function ArabicTemplatesPage() {
                     className="bg-slate-900/50 border border-emerald-500/20 rounded-xl p-5 space-y-3">
                     <div className="flex items-center justify-between">
                       <span className="text-emerald-400 text-sm font-medium flex items-center gap-1">
-                        <CheckCircle2 size={14} /> {selected.title} — جاهز للتنزيل
+                        <CheckCircle2 size={14} /> {selected.title} — {trans("readyLabel")}
                       </span>
                       <div className="flex items-center gap-2">
                         <button onClick={handleDownload}
                           className="flex items-center gap-1.5 text-xs text-slate-400 hover:text-white border border-slate-700 rounded-lg px-3 py-1.5 transition-colors">
-                          <Download size={12} /> تحميل .md
+                          <Download size={12} /> {trans("downloadButton")}
                         </button>
                         <button onClick={() => { navigator.clipboard.writeText(result); setCopied(true); setTimeout(() => setCopied(false), 2000); }}
                           className="flex items-center gap-1.5 text-xs text-slate-400 hover:text-white border border-slate-700 rounded-lg px-3 py-1.5 transition-colors">
                           {copied ? <Check size={12} className="text-emerald-400" /> : <Copy size={12} />}
-                          {copied ? "تم النسخ" : "نسخ"}
+                          {copied ? trans("copiedButton") : trans("copyButton")}
                         </button>
                         <button onClick={() => setResult("")}
                           className="flex items-center gap-1.5 text-xs text-slate-400 hover:text-white border border-slate-700 rounded-lg px-3 py-1.5 transition-colors">
-                          <RefreshCw size={12} /> تعديل
+                          <RefreshCw size={12} /> {trans("editButton")}
                         </button>
                       </div>
                     </div>
@@ -317,7 +319,7 @@ export default function ArabicTemplatesPage() {
                       <ReactMarkdown>{result}</ReactMarkdown>
                     </div>
                     <div className="text-xs text-amber-400/70 border-t border-slate-700 pt-3">
-                      ⚠️ هذا النموذج للإرشاد العام. يُنصح بمراجعة محامٍ متخصص قبل الاستخدام الرسمي.
+                      {trans("disclaimer")}
                     </div>
                   </motion.div>
                 </AnimatePresence>
@@ -328,14 +330,14 @@ export default function ArabicTemplatesPage() {
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }}
             className="grid grid-cols-3 gap-3">
             {[
-              { href: "/legal-ai", label: "المستشار القانوني", icon: "⚖️" },
-              { href: "/contract-review", label: "مراجع العقود", icon: "📜" },
-              { href: "/founder-agreement", label: "اتفاقية المؤسسين", icon: "🤝" },
-            ].map(({ href, label, icon }) => (
+              { href: "/legal-ai", labelKey: "legalAi", icon: "⚖️" },
+              { href: "/contract-review", labelKey: "contractReview", icon: "📜" },
+              { href: "/founder-agreement", labelKey: "founderAgreement", icon: "🤝" },
+            ].map(({ href, labelKey, icon }) => (
               <Link key={href} href={href}
                 className="bg-slate-800/40 border border-slate-700/30 hover:border-slate-600/50 rounded-xl p-4 text-center transition-all group">
                 <div className="text-2xl mb-1">{icon}</div>
-                <div className="text-slate-300 text-sm font-medium group-hover:text-white transition-colors">{label}</div>
+                <div className="text-slate-300 text-sm font-medium group-hover:text-white transition-colors">{trans(`quickLinks.${labelKey}`)}</div>
               </Link>
             ))}
           </motion.div>

@@ -11,6 +11,7 @@ import Link from "next/link";
 import { AppShell } from "@/components/layout/AppShell";
 import { useAuth } from "@/contexts/AuthContext";
 import { cn } from "@/src/lib/utils";
+import { useTranslations } from "next-intl";
 
 const fmt = (n: number) =>
   new Intl.NumberFormat("ar-EG", { maximumFractionDigits: 2 }).format(n);
@@ -19,13 +20,13 @@ const pct = (n: number) => `${(n * 100).toFixed(1)}٪`;
 
 type CalcTab = "income-tax" | "social" | "total-cost" | "vat" | "fawry" | "instapay";
 
-const TABS: { id: CalcTab; label: string; icon: React.ComponentType<{ className?: string }>; color: string }[] = [
-  { id: "income-tax", label: "ضريبة الدخل", icon: DollarSign, color: "from-emerald-500 to-teal-500" },
-  { id: "social", label: "التأمينات الاجتماعية", icon: Users, color: "from-blue-500 to-indigo-500" },
-  { id: "total-cost", label: "تكلفة الموظف الكاملة", icon: Building2, color: "from-violet-500 to-purple-500" },
-  { id: "vat", label: "ضريبة القيمة المضافة", icon: Percent, color: "from-amber-500 to-orange-500" },
-  { id: "fawry", label: "رسوم فوري", icon: CreditCard, color: "from-rose-500 to-pink-500" },
-  { id: "instapay", label: "رسوم إنستاباي", icon: Smartphone, color: "from-cyan-500 to-blue-500" },
+const TAB_META: { id: CalcTab; icon: React.ComponentType<{ className?: string }>; color: string }[] = [
+  { id: "income-tax", icon: DollarSign, color: "from-emerald-500 to-teal-500" },
+  { id: "social", icon: Users, color: "from-blue-500 to-indigo-500" },
+  { id: "total-cost", icon: Building2, color: "from-violet-500 to-purple-500" },
+  { id: "vat", icon: Percent, color: "from-amber-500 to-orange-500" },
+  { id: "fawry", icon: CreditCard, color: "from-rose-500 to-pink-500" },
+  { id: "instapay", icon: Smartphone, color: "from-cyan-500 to-blue-500" },
 ];
 
 interface IncomeTaxResult {
@@ -124,6 +125,8 @@ function ResultRow({ label, value, highlight }: { label: string; value: string; 
 
 export default function EgyptCalcPage() {
   const { user } = useAuth();
+  const t = useTranslations("EgyptCalc");
+  const TABS = TAB_META.map(m => ({ ...m, label: t(`tabs.${m.id}`) }));
   const [tab, setTab] = useState<CalcTab>("income-tax");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -201,13 +204,13 @@ export default function EgyptCalcPage() {
         <div className="mb-6">
           <div className="inline-flex items-center gap-2 text-xs text-cyan-300 font-semibold uppercase tracking-wider mb-2">
             <Calculator className="w-3.5 h-3.5" />
-            حاسبة الضرائب والرسوم المصرية
+            {t("eyebrow")}
           </div>
           <h1 className="font-display text-3xl md:text-4xl font-extrabold text-white mb-2">
-            الحاسبة المصرية الشاملة
+            {t("title")}
           </h1>
           <p className="text-text-secondary">
-            حسابات دقيقة وفق أحدث قوانين الضرائب والتأمينات الاجتماعية المصرية · بيانات محدّثة ٢٠٢٥
+            {t("subtitle")}
           </p>
         </div>
 
@@ -254,15 +257,15 @@ export default function EgyptCalcPage() {
                 {tab === "income-tax" && (
                   <>
                     <NumInput
-                      label="الراتب السنوي الإجمالي"
+                      label={t("form.annualGrossLabel")}
                       value={annualGross}
                       onChange={setAnnualGross}
-                      hint="مجموع الراتب قبل أي خصومات"
+                      hint={t("form.annualGrossHint")}
                     />
                     <div className="glass-panel rounded-xl p-3 flex items-start gap-2">
                       <Info className="w-4 h-4 text-brand-cyan shrink-0 mt-0.5" />
                       <p className="text-xs text-text-secondary leading-relaxed">
-                        الإعفاء الشخصي: <strong className="text-white">٢٠٬٠٠٠ جنيه</strong> · الشريحة الأولى المعفاة: أول ٤٠٬٠٠٠ جنيه
+                        {t("form.incomeTaxNote")}
                       </p>
                     </div>
                   </>
@@ -270,22 +273,22 @@ export default function EgyptCalcPage() {
 
                 {tab === "social" && (
                   <NumInput
-                    label="الراتب الشهري"
+                    label={t("form.monthlyWageLabel")}
                     value={monthlyWage}
                     onChange={setMonthlyWage}
-                    hint="الحد الأدنى ٢٬٠٠٠ · الحد الأقصى ١٤٬٥٠٠ جنيه"
+                    hint={t("form.monthlyWageHint")}
                   />
                 )}
 
                 {tab === "total-cost" && (
                   <>
                     <NumInput
-                      label="الراتب الشهري الإجمالي"
+                      label={t("form.monthlyGrossLabel")}
                       value={monthlyGross}
                       onChange={setMonthlyGross}
                     />
                     <div className="space-y-1.5">
-                      <label className="block text-sm font-semibold text-white">عدد الشهور</label>
+                      <label className="block text-sm font-semibold text-white">{t("form.monthsLabel")}</label>
                       <div className="flex gap-2">
                         {["12", "13", "14"].map(m => (
                           <button
@@ -302,7 +305,7 @@ export default function EgyptCalcPage() {
                           </button>
                         ))}
                       </div>
-                      <p className="text-xs text-text-secondary">١٣ أو ١٤ شهر للشركات التي تصرف بدل إجازة / مكافأة</p>
+                      <p className="text-xs text-text-secondary">{t("form.monthsHint")}</p>
                     </div>
                   </>
                 )}
@@ -310,16 +313,16 @@ export default function EgyptCalcPage() {
                 {tab === "vat" && (
                   <>
                     <NumInput
-                      label="المبلغ"
+                      label={t("form.amountLabel")}
                       value={vatAmount}
                       onChange={setVatAmount}
                     />
                     <div className="space-y-1.5">
-                      <label className="block text-sm font-semibold text-white">معدل الضريبة</label>
+                      <label className="block text-sm font-semibold text-white">{t("form.vatRateLabel")}</label>
                       <div className="flex gap-2">
                         {[
-                          { val: "0.14", label: "١٤٪ عادي" },
-                          { val: "0.05", label: "٥٪ مخفّض" },
+                          { val: "0.14", label: t("form.vatStandard") },
+                          { val: "0.05", label: t("form.vatReduced") },
                         ].map(r => (
                           <button
                             key={r.val}
@@ -337,7 +340,7 @@ export default function EgyptCalcPage() {
                       </div>
                     </div>
                     <div className="flex items-center justify-between gap-3">
-                      <span className="text-sm text-text-secondary">المبلغ يشمل الضريبة</span>
+                      <span className="text-sm text-text-secondary">{t("form.vatInclusive")}</span>
                       <button
                         onClick={() => setVatInclusive(v => !v)}
                         className={cn(
@@ -357,17 +360,17 @@ export default function EgyptCalcPage() {
                 {tab === "fawry" && (
                   <>
                     <NumInput
-                      label="مبلغ المعاملة"
+                      label={t("form.transactionAmountLabel")}
                       value={fawryAmount}
                       onChange={setFawryAmount}
                     />
                     <div className="space-y-1.5">
-                      <label className="block text-sm font-semibold text-white">معدل خصم التاجر (MDR)</label>
+                      <label className="block text-sm font-semibold text-white">{t("form.mdrLabel")}</label>
                       <div className="flex gap-2">
                         {[
-                          { val: "0.015", label: "١.٥٪ عادي" },
-                          { val: "0.01", label: "١٪ مخفّض" },
-                          { val: "0.02", label: "٢٪ مرتفع" },
+                          { val: "0.015", label: t("form.mdrStandard") },
+                          { val: "0.01", label: t("form.mdrReduced") },
+                          { val: "0.02", label: t("form.mdrHigh") },
                         ].map(r => (
                           <button
                             key={r.val}
@@ -389,10 +392,10 @@ export default function EgyptCalcPage() {
 
                 {tab === "instapay" && (
                   <NumInput
-                    label="مبلغ المعاملة"
+                    label={t("form.transactionAmountLabel")}
                     value={instapayAmount}
                     onChange={setInstapayAmount}
-                    hint="رسوم إنستاباي / ميزة للتحويلات البنكية"
+                    hint={t("form.instapayHint")}
                   />
                 )}
               </motion.div>
@@ -412,7 +415,7 @@ export default function EgyptCalcPage() {
               )}
             >
               {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
-              {loading ? "يحسب..." : "احسب الآن"}
+              {loading ? t("form.calculating") : t("form.calculateButton")}
             </button>
           </div>
 
@@ -428,8 +431,8 @@ export default function EgyptCalcPage() {
                     <currentTab.icon className="w-8 h-8 text-white" />
                   </div>
                   <div>
-                    <p className="text-white font-bold mb-1">أدخل البيانات واضغط «احسب»</p>
-                    <p className="text-text-secondary text-sm">النتائج مبنية على أحدث قوانين الضرائب المصرية ٢٠٢٥</p>
+                    <p className="text-white font-bold mb-1">{t("emptyState.prompt")}</p>
+                    <p className="text-text-secondary text-sm">{t("emptyState.note")}</p>
                   </div>
                 </motion.div>
               )}
@@ -441,7 +444,7 @@ export default function EgyptCalcPage() {
                   className="glass-panel rounded-2xl p-8 text-center h-full flex flex-col items-center justify-center gap-3"
                 >
                   <Loader2 className="w-8 h-8 text-brand-cyan animate-spin" />
-                  <p className="text-text-secondary text-sm">يحسب بدقة...</p>
+                  <p className="text-text-secondary text-sm">{t("emptyState.calculating")}</p>
                 </motion.div>
               )}
 
@@ -453,23 +456,23 @@ export default function EgyptCalcPage() {
                 >
                   <div className="flex items-center gap-2 text-sm text-emerald-300 font-semibold">
                     <CheckCircle2 className="w-4 h-4" />
-                    نتيجة ضريبة الدخل
+                    {t("results.incomeTaxTitle")}
                   </div>
                   {(() => {
                     const r = result as IncomeTaxResult;
                     return (
                       <>
                         <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-4 text-center">
-                          <p className="text-xs text-emerald-300 mb-1">الضريبة السنوية</p>
+                          <p className="text-xs text-emerald-300 mb-1">{t("results.annualTaxLabel")}</p>
                           <p className="text-3xl font-extrabold text-white">{fmt(r.annual_tax)}</p>
-                          <p className="text-sm text-text-secondary">جنيه مصري</p>
+                          <p className="text-sm text-text-secondary">{t("results.egp")}</p>
                         </div>
-                        <ResultRow label="الراتب السنوي الإجمالي" value={`${fmt(r.annual_gross)} ج.م`} />
-                        <ResultRow label="الدخل الخاضع للضريبة (بعد الإعفاء)" value={`${fmt(r.taxable_after_exemption)} ج.م`} />
-                        <ResultRow label="الضريبة الشهرية" value={`${fmt(r.monthly_tax)} ج.م`} highlight />
-                        <ResultRow label="المعدل الفعلي للضريبة" value={pct(r.effective_rate)} />
-                        <ResultRow label="الشريحة الهامشية" value={pct(r.marginal_rate)} />
-                        <ResultRow label="صافي الراتب السنوي (بعد الضريبة)" value={`${fmt(r.annual_gross - r.annual_tax)} ج.م`} />
+                        <ResultRow label={t("results.annualGross")} value={`${fmt(r.annual_gross)} ج.م`} />
+                        <ResultRow label={t("results.taxableIncome")} value={`${fmt(r.taxable_after_exemption)} ج.م`} />
+                        <ResultRow label={t("results.monthlyTax")} value={`${fmt(r.monthly_tax)} ج.م`} highlight />
+                        <ResultRow label={t("results.effectiveRate")} value={pct(r.effective_rate)} />
+                        <ResultRow label={t("results.marginalRate")} value={pct(r.marginal_rate)} />
+                        <ResultRow label={t("results.annualNet")} value={`${fmt(r.annual_gross - r.annual_tax)} ج.م`} />
 
                         {r.breakdown.length > 0 && (
                           <div>
@@ -478,7 +481,7 @@ export default function EgyptCalcPage() {
                               className="flex items-center gap-1.5 text-sm text-brand-cyan hover:text-white transition-colors"
                             >
                               {showBreakdown ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-                              تفصيل الشرائح الضريبية
+                              {t("results.breakdownToggle")}
                             </button>
                             <AnimatePresence>
                               {showBreakdown && (
@@ -492,9 +495,9 @@ export default function EgyptCalcPage() {
                                     <table className="w-full text-xs">
                                       <thead>
                                         <tr className="border-b border-white/10">
-                                          <th className="text-right py-2 px-3 text-text-secondary font-semibold">الشريحة</th>
-                                          <th className="text-center py-2 px-3 text-text-secondary font-semibold">المعدل</th>
-                                          <th className="text-left py-2 px-3 text-text-secondary font-semibold">الضريبة</th>
+                                          <th className="text-right py-2 px-3 text-text-secondary font-semibold">{t("results.bracketCol")}</th>
+                                          <th className="text-center py-2 px-3 text-text-secondary font-semibold">{t("results.rateCol")}</th>
+                                          <th className="text-left py-2 px-3 text-text-secondary font-semibold">{t("results.taxCol")}</th>
                                         </tr>
                                       </thead>
                                       <tbody>
@@ -515,7 +518,7 @@ export default function EgyptCalcPage() {
                             </AnimatePresence>
                           </div>
                         )}
-                        <p className="text-xs text-text-secondary/60 text-center">محدّث حسب بيانات {r.as_of}</p>
+                        <p className="text-xs text-text-secondary/60 text-center">{t("results.updatedAs", { date: r.as_of })}</p>
                       </>
                     );
                   })()}
@@ -530,7 +533,7 @@ export default function EgyptCalcPage() {
                 >
                   <div className="flex items-center gap-2 text-sm text-blue-300 font-semibold">
                     <CheckCircle2 className="w-4 h-4" />
-                    نتيجة التأمينات الاجتماعية
+                    {t("results.socialTitle")}
                   </div>
                   {(() => {
                     const r = result as SocialResult;
@@ -538,26 +541,26 @@ export default function EgyptCalcPage() {
                       <>
                         <div className="grid grid-cols-2 gap-3">
                           <div className="bg-blue-500/10 border border-blue-500/20 rounded-xl p-3 text-center">
-                            <p className="text-xs text-blue-300 mb-1">اشتراك الموظف</p>
+                            <p className="text-xs text-blue-300 mb-1">{t("results.employeeContrib")}</p>
                             <p className="text-xl font-extrabold text-white">{fmt(r.employee_contribution)}</p>
-                            <p className="text-xs text-text-secondary">جنيه / شهر</p>
+                            <p className="text-xs text-text-secondary">{t("results.egpPerMonth")}</p>
                           </div>
                           <div className="bg-violet-500/10 border border-violet-500/20 rounded-xl p-3 text-center">
-                            <p className="text-xs text-violet-300 mb-1">اشتراك صاحب العمل</p>
+                            <p className="text-xs text-violet-300 mb-1">{t("results.employerContrib")}</p>
                             <p className="text-xl font-extrabold text-white">{fmt(r.employer_contribution)}</p>
-                            <p className="text-xs text-text-secondary">جنيه / شهر</p>
+                            <p className="text-xs text-text-secondary">{t("results.egpPerMonth")}</p>
                           </div>
                         </div>
-                        <ResultRow label="الأجر التأميني الفعلي" value={`${fmt(r.insurable_wage)} ج.م`} />
-                        <ResultRow label="نسبة الموظف (١١٪)" value={`${fmt(r.employee_contribution)} ج.م`} />
-                        <ResultRow label="نسبة صاحب العمل (١٨.٧٥٪)" value={`${fmt(r.employer_contribution)} ج.م`} />
-                        <ResultRow label="إجمالي الاشتراك الشهري" value={`${fmt(r.total_contribution)} ج.م`} highlight />
-                        <ResultRow label="صافي راتب الموظف" value={`${fmt(r.employee_net)} ج.م`} />
+                        <ResultRow label={t("results.insurableWage")} value={`${fmt(r.insurable_wage)} ج.م`} />
+                        <ResultRow label={t("results.employeeRate")} value={`${fmt(r.employee_contribution)} ج.م`} />
+                        <ResultRow label={t("results.employerRate")} value={`${fmt(r.employer_contribution)} ج.م`} />
+                        <ResultRow label={t("results.totalMonthlyContrib")} value={`${fmt(r.total_contribution)} ج.م`} highlight />
+                        <ResultRow label={t("results.employeeNet")} value={`${fmt(r.employee_net)} ج.م`} />
                         <div className="glass-panel rounded-xl p-3 flex items-start gap-2">
                           <Info className="w-4 h-4 text-brand-cyan shrink-0 mt-0.5" />
-                          <p className="text-xs text-text-secondary">الأجر التأميني محدود بين ٢٬٠٠٠ و١٤٬٥٠٠ جنيه · قانون ١٤٨/٢٠١٩</p>
+                          <p className="text-xs text-text-secondary">{t("results.socialNote")}</p>
                         </div>
-                        <p className="text-xs text-text-secondary/60 text-center">محدّث حسب بيانات {r.as_of}</p>
+                        <p className="text-xs text-text-secondary/60 text-center">{t("results.updatedAs", { date: r.as_of })}</p>
                       </>
                     );
                   })()}
@@ -572,23 +575,23 @@ export default function EgyptCalcPage() {
                 >
                   <div className="flex items-center gap-2 text-sm text-violet-300 font-semibold">
                     <CheckCircle2 className="w-4 h-4" />
-                    التكلفة الكاملة للموظف
+                    {t("results.totalCostTitle")}
                   </div>
                   {(() => {
                     const r = result as TotalCostResult;
                     return (
                       <>
                         <div className="bg-violet-500/10 border border-violet-500/20 rounded-xl p-4 text-center">
-                          <p className="text-xs text-violet-300 mb-1">إجمالي التكلفة السنوية على الشركة</p>
+                          <p className="text-xs text-violet-300 mb-1">{t("results.totalAnnualCostLabel")}</p>
                           <p className="text-3xl font-extrabold text-white">{fmt(r.total_annual_cost)}</p>
-                          <p className="text-sm text-text-secondary">جنيه مصري</p>
+                          <p className="text-sm text-text-secondary">{t("results.egp")}</p>
                         </div>
-                        <ResultRow label="الراتب الشهري الإجمالي" value={`${fmt(r.monthly_gross)} ج.م`} />
-                        <ResultRow label="تأمينات صاحب العمل (شهرياً)" value={`${fmt(r.social_insurance.employer_contribution)} ج.م`} />
-                        <ResultRow label="إجمالي التكلفة الشهرية" value={`${fmt(r.total_monthly_cost)} ج.م`} highlight />
-                        <ResultRow label="عدد الشهور" value={`${r.months} شهر`} />
-                        <ResultRow label="الإجمالي السنوي الكامل" value={`${fmt(r.total_annual_cost)} ج.م`} />
-                        <p className="text-xs text-text-secondary/60 text-center">محدّث حسب بيانات {r.as_of}</p>
+                        <ResultRow label={t("results.monthlyGross")} value={`${fmt(r.monthly_gross)} ج.م`} />
+                        <ResultRow label={t("results.employerSocialMonthly")} value={`${fmt(r.social_insurance.employer_contribution)} ج.م`} />
+                        <ResultRow label={t("results.totalMonthlyCost")} value={`${fmt(r.total_monthly_cost)} ج.م`} highlight />
+                        <ResultRow label={t("results.months")} value={`${r.months}`} />
+                        <ResultRow label={t("results.totalAnnualFull")} value={`${fmt(r.total_annual_cost)} ج.م`} />
+                        <p className="text-xs text-text-secondary/60 text-center">{t("results.updatedAs", { date: r.as_of })}</p>
                       </>
                     );
                   })()}
@@ -603,7 +606,7 @@ export default function EgyptCalcPage() {
                 >
                   <div className="flex items-center gap-2 text-sm text-amber-300 font-semibold">
                     <CheckCircle2 className="w-4 h-4" />
-                    نتيجة ضريبة القيمة المضافة
+                    {t("results.vatTitle")}
                   </div>
                   {(() => {
                     const r = result as VATResult;
@@ -611,25 +614,25 @@ export default function EgyptCalcPage() {
                       <>
                         <div className="grid grid-cols-2 gap-3">
                           <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-3 text-center">
-                            <p className="text-xs text-amber-300 mb-1">مبلغ الضريبة</p>
+                            <p className="text-xs text-amber-300 mb-1">{t("results.vatAmount")}</p>
                             <p className="text-2xl font-extrabold text-white">{fmt(r.vat_amount)}</p>
-                            <p className="text-xs text-text-secondary">جنيه</p>
+                            <p className="text-xs text-text-secondary">{t("results.egp")}</p>
                           </div>
                           <div className="bg-orange-500/10 border border-orange-500/20 rounded-xl p-3 text-center">
-                            <p className="text-xs text-orange-300 mb-1">الإجمالي شاملاً الضريبة</p>
+                            <p className="text-xs text-orange-300 mb-1">{t("results.totalWithVat")}</p>
                             <p className="text-2xl font-extrabold text-white">{fmt(r.total_with_vat)}</p>
-                            <p className="text-xs text-text-secondary">جنيه</p>
+                            <p className="text-xs text-text-secondary">{t("results.egp")}</p>
                           </div>
                         </div>
-                        <ResultRow label="المبلغ الأساسي (بدون ضريبة)" value={`${fmt(r.base_amount)} ج.م`} />
-                        <ResultRow label="قيمة الضريبة" value={`${fmt(r.vat_amount)} ج.م`} />
-                        <ResultRow label="الإجمالي (مع الضريبة)" value={`${fmt(r.total_with_vat)} ج.م`} highlight />
-                        <ResultRow label="معدل الضريبة المطبّق" value={pct(r.rate)} />
+                        <ResultRow label={t("results.baseAmount")} value={`${fmt(r.base_amount)} ج.م`} />
+                        <ResultRow label={t("results.vatValue")} value={`${fmt(r.vat_amount)} ج.م`} />
+                        <ResultRow label={t("results.totalIncVat")} value={`${fmt(r.total_with_vat)} ج.م`} highlight />
+                        <ResultRow label={t("results.appliedRate")} value={pct(r.rate)} />
                         <div className="glass-panel rounded-xl p-3 flex items-start gap-2">
                           <Info className="w-4 h-4 text-brand-cyan shrink-0 mt-0.5" />
-                          <p className="text-xs text-text-secondary">القانون ٦٧/٢٠١٦ · المعدل العادي ١٤٪ · المعدل المخفّض ٥٪ لبعض السلع</p>
+                          <p className="text-xs text-text-secondary">{t("results.vatNote")}</p>
                         </div>
-                        <p className="text-xs text-text-secondary/60 text-center">محدّث حسب بيانات {r.as_of}</p>
+                        <p className="text-xs text-text-secondary/60 text-center">{t("results.updatedAs", { date: r.as_of })}</p>
                       </>
                     );
                   })()}
@@ -644,7 +647,7 @@ export default function EgyptCalcPage() {
                 >
                   <div className="flex items-center gap-2 text-sm text-rose-300 font-semibold">
                     <CheckCircle2 className="w-4 h-4" />
-                    نتيجة رسوم فوري
+                    {t("results.fawryTitle")}
                   </div>
                   {(() => {
                     const r = result as FawryResult;
@@ -652,21 +655,21 @@ export default function EgyptCalcPage() {
                       <>
                         <div className="grid grid-cols-2 gap-3">
                           <div className="bg-rose-500/10 border border-rose-500/20 rounded-xl p-3 text-center">
-                            <p className="text-xs text-rose-300 mb-1">رسوم العميل</p>
+                            <p className="text-xs text-rose-300 mb-1">{t("results.customerFee")}</p>
                             <p className="text-2xl font-extrabold text-white">{fmt(r.customer_fee)}</p>
-                            <p className="text-xs text-text-secondary">جنيه</p>
+                            <p className="text-xs text-text-secondary">{t("results.egp")}</p>
                           </div>
                           <div className="bg-pink-500/10 border border-pink-500/20 rounded-xl p-3 text-center">
-                            <p className="text-xs text-pink-300 mb-1">يصلك كتاجر</p>
+                            <p className="text-xs text-pink-300 mb-1">{t("results.merchantNet")}</p>
                             <p className="text-2xl font-extrabold text-white">{fmt(r.merchant_net)}</p>
-                            <p className="text-xs text-text-secondary">جنيه</p>
+                            <p className="text-xs text-text-secondary">{t("results.egp")}</p>
                           </div>
                         </div>
-                        <ResultRow label="مبلغ المعاملة" value={`${fmt(r.transaction_amount)} ج.م`} />
-                        <ResultRow label="رسوم العميل (ثابتة)" value={`${fmt(r.customer_fee)} ج.م`} />
-                        <ResultRow label="خصم التاجر (MDR)" value={`${fmt(r.merchant_discount)} ج.م`} />
-                        <ResultRow label="صافي ما يصل للتاجر" value={`${fmt(r.merchant_net)} ج.م`} highlight />
-                        <p className="text-xs text-text-secondary/60 text-center">محدّث حسب بيانات {r.as_of}</p>
+                        <ResultRow label={t("results.transactionAmount")} value={`${fmt(r.transaction_amount)} ج.م`} />
+                        <ResultRow label={t("results.customerFeeFixed")} value={`${fmt(r.customer_fee)} ج.م`} />
+                        <ResultRow label={t("results.merchantDiscount")} value={`${fmt(r.merchant_discount)} ج.م`} />
+                        <ResultRow label={t("results.netToMerchant")} value={`${fmt(r.merchant_net)} ج.م`} highlight />
+                        <p className="text-xs text-text-secondary/60 text-center">{t("results.updatedAs", { date: r.as_of })}</p>
                       </>
                     );
                   })()}
@@ -681,25 +684,25 @@ export default function EgyptCalcPage() {
                 >
                   <div className="flex items-center gap-2 text-sm text-cyan-300 font-semibold">
                     <CheckCircle2 className="w-4 h-4" />
-                    نتيجة رسوم إنستاباي
+                    {t("results.instapayTitle")}
                   </div>
                   {(() => {
                     const r = result as InstapayResult;
                     return (
                       <>
                         <div className="bg-cyan-500/10 border border-cyan-500/20 rounded-xl p-4 text-center">
-                          <p className="text-xs text-cyan-300 mb-1">الرسوم</p>
+                          <p className="text-xs text-cyan-300 mb-1">{t("results.feeLabel")}</p>
                           <p className="text-3xl font-extrabold text-white">{fmt(r.fee)}</p>
-                          <p className="text-sm text-text-secondary">جنيه</p>
+                          <p className="text-sm text-text-secondary">{t("results.egp")}</p>
                         </div>
-                        <ResultRow label="مبلغ المعاملة" value={`${fmt(r.transaction_amount)} ج.م`} />
-                        <ResultRow label="الرسوم" value={`${fmt(r.fee)} ج.م`} />
-                        <ResultRow label="صافي المبلغ المستلم" value={`${fmt(r.net_received)} ج.م`} highlight />
+                        <ResultRow label={t("results.transactionAmount")} value={`${fmt(r.transaction_amount)} ج.م`} />
+                        <ResultRow label={t("results.feeLabel")} value={`${fmt(r.fee)} ج.م`} />
+                        <ResultRow label={t("results.netReceived")} value={`${fmt(r.net_received)} ج.م`} highlight />
                         <div className="glass-panel rounded-xl p-3 flex items-start gap-2">
                           <Info className="w-4 h-4 text-brand-cyan shrink-0 mt-0.5" />
-                          <p className="text-xs text-text-secondary">إنستاباي / شبكة ميزة — رسوم مسطّحة ٢ جنيه لكل تحويل أو نسبة مئوية صغيرة</p>
+                          <p className="text-xs text-text-secondary">{t("results.instapayNote")}</p>
                         </div>
-                        <p className="text-xs text-text-secondary/60 text-center">محدّث حسب بيانات {r.as_of}</p>
+                        <p className="text-xs text-text-secondary/60 text-center">{t("results.updatedAs", { date: r.as_of })}</p>
                       </>
                     );
                   })()}
@@ -711,7 +714,7 @@ export default function EgyptCalcPage() {
 
         <div className="mt-8 glass-panel rounded-2xl p-5">
           <p className="text-xs text-text-secondary/60 text-center leading-relaxed">
-            ⚠️ هذه الحاسبة للأغراض التوجيهية فقط. استشر محاسباً قانونياً لأي قرارات ضريبية رسمية. · تستند البيانات إلى القانون ٩١/٢٠٠٥ وتعديلاته حتى ٢٠٢٥.
+            {t("disclaimer")}
           </p>
         </div>
       </div>

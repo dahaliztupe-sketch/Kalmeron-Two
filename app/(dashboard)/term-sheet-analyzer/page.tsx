@@ -10,6 +10,7 @@ import Link from "next/link";
 import { AppShell } from "@/components/layout/AppShell";
 import { useAuth } from "@/contexts/AuthContext";
 import ReactMarkdown from "react-markdown";
+import { useTranslations } from "next-intl";
 
 const ROUND_TYPES = ["Pre-Seed", "Seed", "Series A", "Series B", "Series C+", "Convertible Note", "SAFE"];
 
@@ -29,6 +30,7 @@ type InputMode = "text" | "pdf";
 
 export default function TermSheetAnalyzerPage() {
   const { user } = useAuth();
+  const t = useTranslations("TermSheet");
   const [inputMode, setInputMode] = useState<InputMode>("text");
   const [termSheetText, setTermSheetText] = useState("");
   const [investmentAmount, setInvestmentAmount] = useState("");
@@ -85,7 +87,7 @@ export default function TermSheetAnalyzerPage() {
     e.preventDefault();
     const file = e.dataTransfer.files?.[0];
     if (file && file.type === "application/pdf") handlePdfUpload(file);
-    else setPdfError("يرجى رفع ملف PDF فقط");
+    else setPdfError(t("pdfOnlyError"));
   };
 
   const handleAnalyze = useCallback(async () => {
@@ -129,16 +131,16 @@ export default function TermSheetAnalyzerPage() {
             <div>
               <h1 className="text-2xl font-bold flex items-center gap-2">
                 <FileText className="text-blue-400" size={24} />
-                محلل عروض الاستثمار (Term Sheet)
+                {t("title")}
               </h1>
-              <p className="text-slate-400 text-sm mt-1">افهم كل بند في عرض الاستثمار قبل التوقيع — الصق النص أو ارفع PDF</p>
+              <p className="text-slate-400 text-sm mt-1">{t("subtitle")}</p>
             </div>
           </motion.div>
 
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.05 }}
             className="bg-blue-900/10 border border-blue-500/20 rounded-xl p-3 text-blue-300 text-xs flex items-start gap-2">
             <ShieldAlert size={14} className="mt-0.5 shrink-0" />
-            <span>هذا التحليل للإرشاد العام. استشر محامياً متخصصاً في صفقات الاستثمار قبل التوقيع على أي وثيقة قانونية.</span>
+            <span>{t("disclaimer")}</span>
           </motion.div>
 
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
@@ -146,46 +148,46 @@ export default function TermSheetAnalyzerPage() {
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="text-slate-400 text-xs block mb-1.5">نوع الجولة</label>
+                <label className="text-slate-400 text-xs block mb-1.5">{t("roundTypeLabel")}</label>
                 <select value={roundType} onChange={e => setRoundType(e.target.value)} className={inputClass}>
                   {ROUND_TYPES.map(r => <option key={r} value={r}>{r}</option>)}
                 </select>
               </div>
               <div>
-                <label className="text-slate-400 text-xs block mb-1.5">مبلغ الاستثمار</label>
+                <label className="text-slate-400 text-xs block mb-1.5">{t("investmentAmountLabel")}</label>
                 <input value={investmentAmount} onChange={e => setInvestmentAmount(e.target.value)}
-                  placeholder="مثال: 500,000 دولار" className={inputClass} />
+                  placeholder={t("investmentAmountPlaceholder")} className={inputClass} />
               </div>
             </div>
 
             <div className="flex gap-2">
               <button onClick={() => setInputMode("text")}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-sm transition-all ${inputMode === "text" ? "bg-blue-600 text-white" : "bg-slate-800 text-slate-400 hover:text-white border border-slate-700/50"}`}>
-                <FileText size={13} /> لصق النص
+                <FileText size={13} /> {t("pasteText")}
               </button>
               <button onClick={() => setInputMode("pdf")}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-sm transition-all ${inputMode === "pdf" ? "bg-blue-600 text-white" : "bg-slate-800 text-slate-400 hover:text-white border border-slate-700/50"}`}>
-                <Upload size={13} /> رفع PDF
+                <Upload size={13} /> {t("uploadPdf")}
               </button>
             </div>
 
             {inputMode === "text" ? (
               <div>
                 <div className="flex items-center justify-between mb-1.5">
-                  <label className="text-slate-400 text-xs">نص الـ Term Sheet *</label>
+                  <label className="text-slate-400 text-xs">{t("termSheetLabel")}</label>
                   <button onClick={() => setTermSheetText(EXAMPLE_TERM_SHEET)}
                     className="text-xs text-blue-400 hover:text-blue-300 transition-colors">
-                    أدرج مثالاً
+                    {t("insertExample")}
                   </button>
                 </div>
                 <textarea
                   value={termSheetText}
                   onChange={e => setTermSheetText(e.target.value)}
-                  placeholder="الصق نص الـ Term Sheet هنا... (يمكن أن يكون نصاً عربياً أو إنجليزياً أو مزيجاً منهما)"
+                  placeholder={t("textareaPlaceholder")}
                   rows={12}
                   className="w-full bg-slate-900/70 border border-slate-700/50 rounded-xl px-4 py-3 text-white placeholder-slate-500 resize-none focus:outline-none focus:border-blue-500/50 text-sm font-mono leading-relaxed"
                 />
-                <p className="text-xs text-slate-600 mt-1">{termSheetText.length} حرف</p>
+                <p className="text-xs text-slate-600 mt-1">{t("charCount", { count: termSheetText.length })}</p>
               </div>
             ) : (
               <div className="space-y-3">
@@ -200,13 +202,13 @@ export default function TermSheetAnalyzerPage() {
                     {pdfLoading ? (
                       <div className="flex flex-col items-center gap-2">
                         <Loader2 size={24} className="animate-spin text-blue-400" />
-                        <p className="text-sm text-slate-400">جاري استخراج النص من PDF...</p>
+                        <p className="text-sm text-slate-400">{t("extracting")}</p>
                       </div>
                     ) : (
                       <div className="flex flex-col items-center gap-2">
                         <Upload size={24} className="text-slate-500 group-hover:text-blue-400 transition-colors" />
-                        <p className="text-sm text-slate-400 group-hover:text-slate-300">اسحب ملف PDF هنا أو اضغط للاختيار</p>
-                        <p className="text-xs text-slate-600">PDF حتى 10 MB</p>
+                        <p className="text-sm text-slate-400 group-hover:text-slate-300">{t("dragDropText")}</p>
+                        <p className="text-xs text-slate-600">{t("dragDropHint")}</p>
                       </div>
                     )}
                   </div>
@@ -216,7 +218,7 @@ export default function TermSheetAnalyzerPage() {
                       <FileText size={18} className="text-blue-400" />
                       <div>
                         <p className="text-sm text-white">{pdfFileName}</p>
-                        <p className="text-xs text-slate-400">{termSheetText.length} حرف مُستخرَج</p>
+                        <p className="text-xs text-slate-400">{t("extractedChars", { count: termSheetText.length })}</p>
                       </div>
                     </div>
                     <button onClick={clearPdf} className="text-slate-500 hover:text-rose-400 transition-colors">
@@ -233,7 +235,7 @@ export default function TermSheetAnalyzerPage() {
 
                 {termSheetText && (
                   <div className="bg-slate-900/40 border border-slate-700/30 rounded-xl p-3 max-h-48 overflow-y-auto">
-                    <p className="text-xs text-slate-500 mb-1">معاينة النص المُستخرَج:</p>
+                    <p className="text-xs text-slate-500 mb-1">{t("previewLabel")}</p>
                     <p className="text-xs text-slate-400 whitespace-pre-wrap font-mono">{termSheetText.slice(0, 800)}...</p>
                   </div>
                 )}
@@ -245,12 +247,12 @@ export default function TermSheetAnalyzerPage() {
                 disabled={loading || termSheetText.trim().length < 50}
                 className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white px-5 py-2.5 rounded-xl text-sm font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed">
                 {loading ? <Loader2 size={16} className="animate-spin" /> : <Scale size={16} />}
-                {loading ? "جاري التحليل..." : "حلّل الـ Term Sheet"}
+                {loading ? t("analyzing") : t("analyzeButton")}
               </button>
               {result && (
                 <button onClick={() => { setResult(""); setTermSheetText(""); setPdfFileName(""); }}
                   className="flex items-center gap-1.5 text-sm text-slate-400 hover:text-white transition-colors">
-                  <RefreshCw size={14} /> تحليل جديد
+                  <RefreshCw size={14} /> {t("newAnalysis")}
                 </button>
               )}
             </div>
@@ -267,7 +269,7 @@ export default function TermSheetAnalyzerPage() {
                   className="bg-slate-900/50 border border-blue-500/20 rounded-xl p-5 space-y-3">
                   <div className="flex items-center justify-between">
                     <span className="text-blue-400 text-sm font-medium flex items-center gap-1">
-                      <CheckCircle2 size={14} /> تحليل الـ Term Sheet
+                      <CheckCircle2 size={14} /> {t("resultTitle")}
                     </span>
                     <button onClick={() => { navigator.clipboard.writeText(result); setCopied(true); setTimeout(() => setCopied(false), 2000); }}
                       className="text-slate-400 hover:text-white transition-colors">
@@ -287,14 +289,14 @@ export default function TermSheetAnalyzerPage() {
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}
             className="grid grid-cols-3 gap-3">
             {[
-              { href: "/cap-table", label: "إدارة الحصص", icon: "📊" },
-              { href: "/legal-ai", label: "المستشار القانوني", icon: "⚖️" },
-              { href: "/investor", label: "لوحة المستثمر", icon: "💼" },
-            ].map(({ href, label, icon }) => (
+              { href: "/cap-table", labelKey: "capTable", icon: "📊" },
+              { href: "/legal-ai", labelKey: "legalAi", icon: "⚖️" },
+              { href: "/investor", labelKey: "investor", icon: "💼" },
+            ].map(({ href, labelKey, icon }) => (
               <Link key={href} href={href}
                 className="bg-slate-800/40 border border-slate-700/30 hover:border-slate-600/50 rounded-xl p-4 text-center transition-all group">
                 <div className="text-2xl mb-1">{icon}</div>
-                <div className="text-slate-300 text-sm font-medium group-hover:text-white transition-colors">{label}</div>
+                <div className="text-slate-300 text-sm font-medium group-hover:text-white transition-colors">{t(`quickLinks.${labelKey}`)}</div>
               </Link>
             ))}
           </motion.div>

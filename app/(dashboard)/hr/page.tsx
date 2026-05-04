@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { AppShell } from "@/components/layout/AppShell";
 import { useAuth } from "@/contexts/AuthContext";
+import { useTranslations } from "next-intl";
 import { motion, AnimatePresence } from "motion/react";
 import ReactMarkdown from "react-markdown";
 import { toast } from "sonner";
@@ -38,6 +39,7 @@ type Tab = 'pipeline' | 'cv-screen';
 
 export default function HRDashboard() {
   const { user } = useAuth();
+  const t = useTranslations("HR");
   const [tab, setTab] = useState<Tab>('pipeline');
 
   // Pipeline state
@@ -190,28 +192,28 @@ export default function HRDashboard() {
 
         <motion.div initial={{ opacity: 0, y: -12 }} animate={{ opacity: 1, y: 0 }} className="mb-6">
           <div className="inline-flex items-center gap-2 rounded-full border border-blue-400/20 bg-blue-500/[0.06] px-3 py-1 text-[11px] text-blue-200 mb-3">
-            <Users className="w-3.5 h-3.5" />الموارد البشرية · AI Recruitment
+            <Users className="w-3.5 h-3.5" />{t("eyebrow")}
           </div>
           <h1 className="text-2xl md:text-3xl font-extrabold flex items-center gap-3 mb-2">
-            <Users className="w-7 h-7 text-blue-400" />فرقة الموارد البشرية
+            <Users className="w-7 h-7 text-blue-400" />{t("title")}
           </h1>
           <p className="text-neutral-400 text-sm max-w-xl">
-            أتمتة التوظيف من تحديد الأدوار، إلى فحص وتقييم ومقارنة CVs متعددة بالذكاء الاصطناعي.
+            {t("subtitle")}
           </p>
         </motion.div>
 
         {/* Tabs */}
         <div className="flex gap-2 mb-6 border-b border-neutral-800">
           {([
-            { id: 'pipeline' as Tab, label: 'خطة التوظيف', icon: Play },
-            { id: 'cv-screen' as Tab, label: 'فحص السير الذاتية', icon: Upload },
-          ]).map(({ id, label, icon: Icon }) => (
+            { id: 'pipeline' as Tab, labelKey: 'pipeline', icon: Play },
+            { id: 'cv-screen' as Tab, labelKey: 'cvScreen', icon: Upload },
+          ]).map(({ id, labelKey, icon: Icon }) => (
             <button key={id} onClick={() => setTab(id)}
               className={cn(
                 'flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 transition-all -mb-px',
                 tab === id ? 'border-blue-500 text-blue-400' : 'border-transparent text-neutral-500 hover:text-neutral-300',
               )}>
-              <Icon className="w-4 h-4" />{label}
+              <Icon className="w-4 h-4" />{t(`tabs.${labelKey}`)}
             </button>
           ))}
         </div>
@@ -224,18 +226,18 @@ export default function HRDashboard() {
               <form onSubmit={startHRCrew} className="bg-neutral-900/60 border border-neutral-700/50 rounded-2xl p-6 mb-6">
                 <div className="grid md:grid-cols-3 gap-4 mb-4">
                   <div className="md:col-span-1">
-                    <label className="block text-xs text-neutral-400 mb-1.5">المسمى الوظيفي / نوع المنتج</label>
+                    <label className="block text-xs text-neutral-400 mb-1.5">{t("pipeline.jobTitleLabel")}</label>
                     <input type="text" value={jobTitle} onChange={e => setJobTitle(e.target.value)}
-                      placeholder="تطبيق جوال للتوصيل" className={inputCls} required />
+                      placeholder={t("pipeline.jobTitlePlaceholder")} className={inputCls} required />
                   </div>
                   <div>
-                    <label className="block text-xs text-neutral-400 mb-1.5">مرحلة الشركة</label>
+                    <label className="block text-xs text-neutral-400 mb-1.5">{t("pipeline.stageLabel")}</label>
                     <select value={stage} onChange={e => setStage(e.target.value)} className={inputCls}>
                       <option>Pre-Seed</option><option>Seed</option><option>Series A</option>
                     </select>
                   </div>
                   <div>
-                    <label className="block text-xs text-neutral-400 mb-1.5">ميزانية الرواتب الشهرية (EGP)</label>
+                    <label className="block text-xs text-neutral-400 mb-1.5">{t("pipeline.budgetLabel")}</label>
                     <input type="number" value={budget} onChange={e => setBudget(e.target.value)}
                       placeholder="50000" className={inputCls} />
                   </div>
@@ -244,7 +246,7 @@ export default function HRDashboard() {
                   <button type="submit" disabled={!jobTitle.trim() || isRunning}
                     className="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-bold py-2.5 px-6 rounded-xl flex items-center gap-2 text-sm transition-all">
                     {isRunning ? <Loader2 className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4" />}
-                    {isRunning ? 'جاري التشغيل...' : 'تشغيل فرقة التوظيف'}
+                    {isRunning ? t("pipeline.running") : t("pipeline.runButton")}
                   </button>
                 </div>
               </form>
@@ -253,7 +255,7 @@ export default function HRDashboard() {
                 {(isRunning || finalResult) && (
                   <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}
                     className="mb-6 bg-neutral-900/60 border border-neutral-700/50 rounded-2xl p-5">
-                    <h3 className="text-sm font-semibold text-neutral-300 mb-4">تقدّم الفرقة</h3>
+                    <h3 className="text-sm font-semibold text-neutral-300 mb-4">{t("pipeline.progress")}</h3>
                     <div className="space-y-3">
                       {steps.map(step => (
                         <div key={step.id} className="flex items-center gap-3">
@@ -282,16 +284,16 @@ export default function HRDashboard() {
                   <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
                     className="bg-neutral-900/60 border border-neutral-700/50 rounded-2xl overflow-hidden">
                     <div className="flex items-center justify-between px-5 py-3 border-b border-neutral-800">
-                      <span className="text-sm font-semibold text-neutral-200">خطة التوظيف الكاملة</span>
+                      <span className="text-sm font-semibold text-neutral-200">{t("pipeline.fullPlan")}</span>
                       <div className="flex items-center gap-3">
                         <button onClick={async () => { await navigator.clipboard.writeText(finalResult); setCopied(true); setTimeout(() => setCopied(false), 2000); }}
                           className="flex items-center gap-1.5 text-xs text-neutral-400 hover:text-white transition-colors">
                           {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
-                          {copied ? 'تم' : 'نسخ'}
+                          {copied ? t("copied") : t("copy")}
                         </button>
                         <button onClick={() => { const b = new Blob([finalResult], { type: 'text/markdown' }); const u = URL.createObjectURL(b); const a = document.createElement('a'); a.href = u; a.download = `hiring-plan-${Date.now()}.md`; a.click(); URL.revokeObjectURL(u); }}
                           className="flex items-center gap-1.5 text-xs text-neutral-400 hover:text-white transition-colors">
-                          <Download className="w-3.5 h-3.5" />تحميل
+                          <Download className="w-3.5 h-3.5" />{t("download")}
                         </button>
                       </div>
                     </div>
@@ -314,21 +316,21 @@ export default function HRDashboard() {
               <div className="bg-neutral-900/60 border border-neutral-700/50 rounded-2xl p-6 space-y-4">
                 <div>
                   <h2 className="font-bold text-base flex items-center gap-2 mb-1">
-                    <Upload className="w-5 h-5 text-blue-400" />فحص ومقارنة السير الذاتية
+                    <Upload className="w-5 h-5 text-blue-400" />{t("cvScreen.sectionTitle")}
                   </h2>
-                  <p className="text-neutral-400 text-xs">ارفع حتى 10 ملفات PDF دفعةً واحدة — Gemini يحلل كل سيرة على حدة ثم يقارنها ويرتبها.</p>
+                  <p className="text-neutral-400 text-xs">{t("cvScreen.sectionSubtitle")}</p>
                 </div>
 
                 <div className="grid md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs text-neutral-400 mb-1.5">المسمى الوظيفي *</label>
+                    <label className="block text-xs text-neutral-400 mb-1.5">{t("cvScreen.roleLabel")}</label>
                     <input value={cvRole} onChange={e => setCvRole(e.target.value)}
-                      placeholder="مثال: Senior Backend Engineer" className={inputCls} />
+                      placeholder={t("cvScreen.rolePlaceholder")} className={inputCls} />
                   </div>
                   <div>
-                    <label className="block text-xs text-neutral-400 mb-1.5">المتطلبات الأساسية (اختياري)</label>
+                    <label className="block text-xs text-neutral-400 mb-1.5">{t("cvScreen.requirementsLabel")}</label>
                     <input value={cvRequirements} onChange={e => setCvRequirements(e.target.value)}
-                      placeholder="مثال: Python, 5 سنوات, ماجستير" className={inputCls} />
+                      placeholder={t("cvScreen.requirementsPlaceholder")} className={inputCls} />
                   </div>
                 </div>
 
@@ -343,7 +345,7 @@ export default function HRDashboard() {
                   onDragOver={e => e.preventDefault()}
                   className="border-2 border-dashed border-neutral-700 hover:border-blue-500/50 rounded-xl p-6 text-center cursor-pointer transition-all group">
                   <Plus className="w-6 h-6 text-neutral-500 group-hover:text-blue-400 transition-colors mx-auto mb-2" />
-                  <p className="text-sm text-neutral-400 group-hover:text-neutral-300">اسحب ملفات PDF أو اضغط للاختيار (حتى 10 ملفات)</p>
+                  <p className="text-sm text-neutral-400 group-hover:text-neutral-300">{t("cvScreen.dropZoneText")}</p>
                 </div>
 
                 {/* CV list */}
@@ -360,11 +362,11 @@ export default function HRDashboard() {
                         )}
                         <FileText className="w-4 h-4 text-neutral-500 shrink-0" />
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm text-white truncate">المرشح {idx + 1}: {entry.file.name}</p>
+                          <p className="text-sm text-white truncate">{t("cvScreen.candidateLabel", { num: idx + 1 })}: {entry.file.name}</p>
                           <p className="text-xs text-neutral-500">
-                            {entry.loading ? 'جاري الاستخراج...' :
+                            {entry.loading ? t("cvScreen.extracting") :
                              entry.error ? entry.error :
-                             `${entry.text.length.toLocaleString()} حرف مستخرَج`}
+                             t("cvScreen.charsExtracted", { count: entry.text.length.toLocaleString() })}
                           </p>
                         </div>
                         <button onClick={() => removeCv(entry.id)}
@@ -380,10 +382,10 @@ export default function HRDashboard() {
                   disabled={!cvEntries.some(e => e.text.trim()) || !cvRole.trim() || comparing}
                   className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-2.5 px-6 rounded-xl text-sm transition-all">
                   {comparing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
-                  {comparing ? 'جاري التحليل والمقارنة...' :
+                  {comparing ? t("cvScreen.analyzing") :
                    cvEntries.filter(e => e.text.trim()).length > 1
-                     ? `حلّل وقارن ${cvEntries.filter(e => e.text.trim()).length} سير ذاتية`
-                     : 'حلّل السيرة الذاتية'}
+                     ? t("cvScreen.analyzeMultiple", { count: cvEntries.filter(e => e.text.trim()).length })
+                     : t("cvScreen.analyzeSingle")}
                 </button>
               </div>
 
@@ -393,17 +395,17 @@ export default function HRDashboard() {
                     className="bg-neutral-900/60 border border-blue-500/20 rounded-2xl overflow-hidden">
                     <div className="flex items-center justify-between px-5 py-3 border-b border-neutral-800">
                       <span className="text-sm font-semibold text-blue-300 flex items-center gap-2">
-                        <CheckCircle2 className="w-4 h-4" />تقرير الفحص والمقارنة
+                        <CheckCircle2 className="w-4 h-4" />{t("cvScreen.reportTitle")}
                       </span>
                       <div className="flex items-center gap-3">
                         <button onClick={async () => { await navigator.clipboard.writeText(comparisonResult); setCompCopied(true); setTimeout(() => setCompCopied(false), 2000); }}
                           className="flex items-center gap-1.5 text-xs text-neutral-400 hover:text-white transition-colors">
                           {compCopied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
-                          {compCopied ? 'تم' : 'نسخ'}
+                          {compCopied ? t("copied") : t("copy")}
                         </button>
                         <button onClick={() => { const b = new Blob([comparisonResult], { type: 'text/markdown' }); const u = URL.createObjectURL(b); const a = document.createElement('a'); a.href = u; a.download = `cv-report-${Date.now()}.md`; a.click(); URL.revokeObjectURL(u); }}
                           className="flex items-center gap-1.5 text-xs text-neutral-400 hover:text-white transition-colors">
-                          <Download className="w-3.5 h-3.5" />تحميل
+                          <Download className="w-3.5 h-3.5" />{t("download")}
                         </button>
                       </div>
                     </div>

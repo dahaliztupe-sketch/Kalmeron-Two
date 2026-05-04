@@ -10,6 +10,7 @@ import {
 import Link from "next/link";
 import { AppShell } from "@/components/layout/AppShell";
 import { useAuth } from "@/contexts/AuthContext";
+import { useTranslations } from "next-intl";
 
 interface Step {
   id: number;
@@ -130,6 +131,7 @@ const SETUP_STEPS: Step[] = [
 
 export default function SetupEgyptPage() {
   const { user } = useAuth();
+  const t = useTranslations("SetupEgypt");
   const [expandedStep, setExpandedStep] = useState<number | null>(null);
   const [aiQuestion, setAiQuestion] = useState("");
   const [aiAnswer, setAiAnswer] = useState("");
@@ -185,10 +187,10 @@ export default function SetupEgyptPage() {
             <div>
               <h1 className="text-2xl font-bold flex items-center gap-2">
                 <MapPin className="text-emerald-400" size={24} />
-                التأسيس في مصر
+                {t("title")}
               </h1>
               <p className="text-slate-400 text-sm mt-1">
-                دليل خطوة بخطوة لتأسيس شركتك الناشئة في مصر
+                {t("subtitle")}
               </p>
             </div>
           </motion.div>
@@ -201,9 +203,9 @@ export default function SetupEgyptPage() {
             className="grid grid-cols-3 gap-4"
           >
             {[
-              { icon: Building2, label: "عدد الخطوات", value: `${SETUP_STEPS.length} خطوات`, color: "text-emerald-400" },
-              { icon: Clock, label: "المدة الإجمالية", value: totalDuration, color: "text-amber-400" },
-              { icon: DollarSign, label: "التكلفة التقريبية", value: totalCost, color: "text-cyan-400" },
+              { icon: Building2, label: t("stats.stepsLabel"), value: t("stats.stepsValue", { count: SETUP_STEPS.length }), color: "text-emerald-400" },
+              { icon: Clock, label: t("stats.durationLabel"), value: totalDuration, color: "text-amber-400" },
+              { icon: DollarSign, label: t("stats.costLabel"), value: totalCost, color: "text-cyan-400" },
             ].map(({ icon: Icon, label, value, color }) => (
               <div key={label} className="bg-slate-800/40 border border-slate-700/40 rounded-xl p-4 text-center">
                 <Icon size={20} className={`${color} mx-auto mb-1`} />
@@ -222,12 +224,12 @@ export default function SetupEgyptPage() {
           >
             <div className="flex items-center gap-2 mb-1">
               <Sparkles className="text-emerald-400" size={18} />
-              <span className="font-semibold text-emerald-400">اسأل مستشار التأسيس</span>
+              <span className="font-semibold text-emerald-400">{t("aiSection.title")}</span>
             </div>
             <textarea
               value={aiQuestion}
               onChange={e => setAiQuestion(e.target.value)}
-              placeholder="مثال: ما الفرق بين الـ LLC والـ JSC؟ أو: كيف أسجل شركة تقنية في مصر؟"
+              placeholder={t("aiSection.placeholder")}
               rows={2}
               className="w-full bg-slate-900/70 border border-slate-700/50 rounded-xl px-4 py-3 text-white placeholder-slate-500 resize-none focus:outline-none focus:border-emerald-500/50 text-sm"
             />
@@ -237,7 +239,7 @@ export default function SetupEgyptPage() {
               className="flex items-center gap-2 bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-500 hover:to-green-500 text-white px-5 py-2.5 rounded-xl text-sm font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? <Loader2 size={16} className="animate-spin" /> : <Sparkles size={16} />}
-              {loading ? "جاري الإجابة..." : "اسأل"}
+              {loading ? t("aiSection.asking") : t("aiSection.askButton")}
             </button>
 
             <AnimatePresence>
@@ -252,7 +254,7 @@ export default function SetupEgyptPage() {
                   className="bg-slate-900/50 border border-emerald-500/20 rounded-xl p-5 space-y-3">
                   <div className="flex items-center justify-between">
                     <span className="text-emerald-400 text-sm font-medium flex items-center gap-1">
-                      <CheckCircle2 size={14} /> إجابة المستشار
+                      <CheckCircle2 size={14} /> {t("aiSection.answerLabel")}
                     </span>
                     <button onClick={handleCopy} className="text-slate-400 hover:text-white transition-colors">
                       {copied ? <Check size={16} className="text-emerald-400" /> : <Copy size={16} />}
@@ -312,7 +314,7 @@ export default function SetupEgyptPage() {
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
                           <h4 className="text-emerald-400 text-xs font-semibold flex items-center gap-1">
-                            <Shield size={12} /> نصائح مهمة
+                            <Shield size={12} /> {t("stepsSection.tipsLabel")}
                           </h4>
                           <ul className="space-y-1">
                             {step.tips.map(tip => (
@@ -327,7 +329,7 @@ export default function SetupEgyptPage() {
                         {step.warnings.length > 0 && (
                           <div className="space-y-2">
                             <h4 className="text-amber-400 text-xs font-semibold flex items-center gap-1">
-                              <AlertTriangle size={12} /> تحذيرات
+                              <AlertTriangle size={12} /> {t("stepsSection.warningsLabel")}
                             </h4>
                             <ul className="space-y-1">
                               {step.warnings.map(warn => (
@@ -356,7 +358,7 @@ export default function SetupEgyptPage() {
           >
             <AlertTriangle size={16} className="text-amber-400 mt-0.5 shrink-0" />
             <p className="text-amber-200/80 text-xs leading-relaxed">
-              هذا الدليل لأغراض توعوية فقط. قوانين التأسيس تتغير — تحقق دائماً مع محامٍ مرخّص أو بوابة GAFI الرسمية قبل اتخاذ أي قرار قانوني.
+              {t("disclaimer")}
             </p>
           </motion.div>
 
