@@ -123,7 +123,8 @@
       "newConversation": "New conversation",
       "noConversations": "No conversations yet — ask your first question",
       "secureFooter": "Your conversations are fully protected and encrypted",
-      "deleteThread": "Delete conversation"
+      "deleteThread": "Delete conversation",
+      "searchPlaceholder": "Search conversations..."
     },
     "agentChips": {
       "ideaAnalyst": {
@@ -183,7 +184,13 @@
       "connectionLost": "Connection lost — reconnecting automatically…",
       "messageTooLong": "Message is too long — shorten it slightly and resend.",
       "genericError": "An unexpected error occurred — please try again."
-    }
+    },
+    "council": {
+      "button": "Ask the Council",
+      "title": "Expert Council",
+      "thinking": "Waiting for response..."
+    },
+    "slashHint": "Type / for agent commands · Shift+Enter for new line"
   },
   "Dashboard": {
     "header": "Dashboard",
@@ -426,7 +433,13 @@
       "purpose": "Does your work feel genuinely meaningful?",
       "social": "Do you have people who support and listen to you?"
     },
-    "ratings": ["Very poor", "Poor", "Average", "Good", "Excellent"],
+    "ratings": [
+      "Very poor",
+      "Poor",
+      "Average",
+      "Good",
+      "Excellent"
+    ],
     "cancel": "Cancel",
     "back": "Back",
     "checkinPrompt": "How are you doing today?",
@@ -514,10 +527,22 @@
     "subtitle": "Simplified legal guidance for Egyptian startups",
     "disclaimer": "⚖️ Disclaimer: This information is for general guidance only and is not specialised legal advice. Consult a licensed attorney for important legal matters.",
     "modes": {
-      "contract": { "label": "Contract Drafting", "desc": "Simplified contract drafts under Egyptian law" },
-      "compliance": { "label": "Legal Compliance", "desc": "Legal obligations for startups" },
-      "ip": { "label": "Intellectual Property", "desc": "Protect your product and trademark" },
-      "disputes": { "label": "Commercial Disputes", "desc": "Understand your options in disputes" }
+      "contract": {
+        "label": "Contract Drafting",
+        "desc": "Simplified contract drafts under Egyptian law"
+      },
+      "compliance": {
+        "label": "Legal Compliance",
+        "desc": "Legal obligations for startups"
+      },
+      "ip": {
+        "label": "Intellectual Property",
+        "desc": "Protect your product and trademark"
+      },
+      "disputes": {
+        "label": "Commercial Disputes",
+        "desc": "Understand your options in disputes"
+      }
     },
     "contractTypeLabel": "Contract type",
     "descriptionLabel": "Topic description *",
