@@ -131,6 +131,38 @@
 
 ---
 
+## جلسة 2026-05-05 — جولة T3-A + T3-E Dashboard & Departments Polish
+
+### ✅ T3-E — Departments Pages Use Cases + Open-in-Chat (مكتمل)
+- **`app/(dashboard)/departments/[department]/page.tsx`**: تحسين شامل
+  - قسم "سيناريوهات استخدام" جديد لكل قسم (٣ بطاقات حقيقية مع prompt مخصص)
+  - كل بطاقة Use Case هي `Link` يفتح `/chat?q=...` مباشرة
+  - كل بطاقة عضو (Agent) أصبحت `Link` تفتح محادثة مع ذلك المساعد
+  - hover effect "افتح في المحادثة" لكل بطاقة عضو
+  - بند "متكامل مع" في header القسم يعرض integrations ذات الصلة
+  - محتوى حقيقي لـ ٧ أقسام: Marketing, Sales, Operations, Finance, HR, Support, Legal
+
+### ✅ T3-A — Dashboard First-Time Tour (مكتمل)
+- **`components/dashboard/FirstTimeTour.tsx`**: مكوّن جديد كامل
+  - Overlay بـ backdrop blur + AnimatePresence لـ exit animation سلس
+  - ٥ خطوات تفاعلية: أهلاً → Quick Actions → Team Activity → Cost → انطلق
+  - تتبع localStorage بـ `kalmeron_tour_done_v1` — يُعرض مرة واحدة فقط
+  - زر "تخطّي الجولة" + progress pills في الأسفل
+- **`app/(dashboard)/dashboard/page.tsx`**: دمج `<FirstTimeTour />` بعد `<WelcomeToast />`
+
+### ✅ T3-A — Empty Activity State (مكتمل)
+- **`app/(dashboard)/dashboard/page.tsx`**: تحسين Empty State لنشاط الفريق
+  - أيقونة Sparkles مع glow effect
+  - عنوان + وصف تعليمي للمستخدمين الجدد
+  - زر "ابدأ محادثة" gradient + رابث "تصفّح الأقسام"
+
+### الملفات المُعدَّلة (هذه الجلسة)
+- `app/(dashboard)/departments/[department]/page.tsx` — إعادة بناء كاملة
+- `components/dashboard/FirstTimeTour.tsx` — مكوّن جديد
+- `app/(dashboard)/dashboard/page.tsx` — FirstTimeTour + Empty Activity State
+
+---
+
 ## ملاحظة بنية المسارات — صفحات خارج مجموعة (dashboard)
 
 **مهم:** بعض الصفحات مُوجَّهة خارج `app/(dashboard)/` مباشرةً في `app/`. هذه الصفحات لها API ومنطق كامل ولا يجب إنشاء نسخ مكررة منها في `(dashboard)` لأن ذلك يسبب تعارض مسارات.

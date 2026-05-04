@@ -15,6 +15,7 @@ import {
 import { NotificationPermissionBanner } from "@/components/ui/NotificationPermissionBanner";
 import { RunwayAlarmBanner } from "@/components/runway/RunwayAlarmBanner";
 import { WelcomeToast } from "@/components/onboarding/WelcomeToast";
+import { FirstTimeTour } from "@/components/dashboard/FirstTimeTour";
 import { PageSkeleton } from "@/components/ui/PageSkeleton";
 import { SmartHubSection } from "@/src/components/dashboard/SmartHubSection";
 import { CompanyHealthScore } from "@/src/components/dashboard/CompanyHealthScore";
@@ -140,6 +141,7 @@ export default function DashboardPage() {
   return (
     <AppShell>
       <WelcomeToast />
+      <FirstTimeTour />
       <div dir="rtl" className="max-w-7xl mx-auto">
         <div className="flex items-center justify-between mb-6">
           <div>
@@ -261,12 +263,32 @@ export default function DashboardPage() {
                   </Link>
                 </div>
                 {data.teamActivity.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center py-8 text-center">
-                    <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center mb-3">
-                      <Sparkles className="w-5 h-5 text-indigo-400" />
+                  <div className="flex flex-col items-center justify-center py-10 text-center">
+                    <div className="relative w-16 h-16 mb-4">
+                      <div className="absolute inset-0 rounded-2xl bg-indigo-500/10 border border-indigo-500/20" />
+                      <div className="absolute inset-0 rounded-2xl bg-indigo-500/5 blur-xl" />
+                      <div className="relative w-full h-full flex items-center justify-center">
+                        <Sparkles className="w-7 h-7 text-indigo-400" />
+                      </div>
                     </div>
-                    <p className="text-text-secondary text-sm">{t("noActivity")}</p>
-                    <Link href="/chat" className="text-xs text-brand-cyan mt-2 hover:underline">{t("startConversation")}</Link>
+                    <p className="text-white font-semibold text-sm mb-1">{t("noActivity")}</p>
+                    <p className="text-text-secondary text-xs mb-4 max-w-[200px] leading-relaxed">
+                      ابدأ محادثتك الأولى مع أي مساعد ذكي وستظهر الأنشطة هنا فور انطلاقها.
+                    </p>
+                    <div className="flex flex-col sm:flex-row items-center gap-2">
+                      <Link
+                        href="/chat"
+                        className="inline-flex items-center gap-2 bg-gradient-to-r from-indigo-500/20 to-cyan-500/10 border border-indigo-500/30 text-indigo-300 text-xs font-bold px-4 py-2 rounded-xl hover:border-indigo-400/60 hover:text-indigo-200 transition-all"
+                      >
+                        <MessageSquare className="w-3.5 h-3.5" /> {t("startConversation")}
+                      </Link>
+                      <Link
+                        href="/departments/marketing"
+                        className="text-xs text-text-secondary hover:text-white transition-colors"
+                      >
+                        أو تصفّح الأقسام
+                      </Link>
+                    </div>
                   </div>
                 ) : (
                   <ul className="space-y-3">

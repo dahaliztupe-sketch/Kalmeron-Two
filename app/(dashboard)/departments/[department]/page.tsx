@@ -1,6 +1,10 @@
 import { notFound } from "next/navigation";
 import { AppShell } from "@/components/layout/AppShell";
-import { Megaphone, TrendingUp, Settings, Wallet, Users, Heart, Scale, Activity, Bot, FileText } from "lucide-react";
+import {
+  Megaphone, TrendingUp, Settings, Wallet, Users, Heart, Scale,
+  Activity, Bot, FileText, ArrowLeft, Lightbulb, MessageSquare,
+  Link2,
+} from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/src/lib/utils";
 
@@ -18,6 +22,12 @@ const DEPARTMENTS = {
       { id: "content_creator",        name: "صانع المحتوى",         role: "كتابة وإنتاج المحتوى" },
       { id: "seo_manager",            name: "مدير السيو",           role: "تحسين محركات البحث" },
     ],
+    useCases: [
+      { icon: "📣", title: "حملة إطلاق منتج جديد", desc: "يضع استراتيجية كاملة — قنوات، رسائل، جدول زمني، وميزانية مبدئية.", prompt: "ساعدني في تخطيط حملة إطلاق لمنتجي الجديد" },
+      { icon: "🎯", title: "تعريف العميل المثالي (ICP)", desc: "يبني بروفايل دقيق لعميلك المثالي من بيانات السوق المصري والخليجي.", prompt: "حلّل وعرّف العميل المثالي لشركتي" },
+      { icon: "📝", title: "محتوى يولّد عملاء", desc: "يكتب مقالات، منشورات، وسكريبتات فيديو تحوّل الزوار لعملاء.", prompt: "اكتب محتوى تسويقي لمنتجي يولّد عملاء جدد" },
+    ],
+    integrations: ["Meta Ads", "Google Analytics", "LinkedIn"],
   },
   sales: {
     name: "المبيعات",
@@ -31,6 +41,12 @@ const DEPARTMENTS = {
       { id: "sales_pitch_deck_creator", name: "مصمم العرض البيعي",          role: "صنع عروض احترافية" },
       { id: "sales_pipeline_analyst",   name: "محلل خط المبيعات",           role: "تتبع الصفقات" },
     ],
+    useCases: [
+      { icon: "📞", title: "سكريبت مكالمة مبيعات", desc: "يكتب سكريبت محادثة احترافي يعالج أبرز الاعتراضات في السوق المصري.", prompt: "اكتب لي سكريبت مبيعات لمنتجي" },
+      { icon: "💼", title: "عرض تقديمي للعميل", desc: "يبني Pitch Deck مخصّصاً لكل عميل محتمل بدراسة احتياجاته مسبقاً.", prompt: "ساعدني في بناء عرض تقديمي بيعي لعميل محتمل" },
+      { icon: "🔍", title: "تأهيل وفلترة الليدز", desc: "يصمّم معايير BANT مخصصة ويصنّف الليدز حسب الأولوية.", prompt: "ساعدني في تأهيل وترتيب الليدز حسب الأولوية" },
+    ],
+    integrations: ["HubSpot", "Google Sheets", "WhatsApp Business"],
   },
   operations: {
     name: "العمليات",
@@ -45,6 +61,12 @@ const DEPARTMENTS = {
       { id: "qa_manager",        name: "مدير الجودة",         role: "اختبار وضمان الجودة" },
       { id: "ux_optimization",   name: "محسّن تجربة المستخدم", role: "تحسين الـ UX" },
     ],
+    useCases: [
+      { icon: "🗺️", title: "خارطة طريق المنتج", desc: "يبني Roadmap واضح مع أولويات ومبررات تقنية وتجارية.", prompt: "ساعدني في بناء خارطة طريق لمنتجي" },
+      { icon: "⚙️", title: "تصميم عمليات الشركة", desc: "يوثّق ويحسّن الإجراءات التشغيلية ويقترح أدوات للأتمتة.", prompt: "ساعدني في تصميم وتوثيق العمليات التشغيلية" },
+      { icon: "🧪", title: "خطة اختبار MVP", desc: "يصمّم خطة اختبار شاملة وأسئلة Validation للمستخدمين الأوائل.", prompt: "ساعدني في وضع خطة اختبار لـ MVP الخاص بي" },
+    ],
+    integrations: ["Notion", "Jira", "GitHub"],
   },
   finance: {
     name: "المالية",
@@ -58,6 +80,12 @@ const DEPARTMENTS = {
       { id: "legal_compliance",        name: "الامتثال القانوني المالي", role: "ضوابط مالية وتنظيمية" },
       { id: "equity_manager",          name: "مدير الأسهم",            role: "إدارة هيكل الملكية" },
     ],
+    useCases: [
+      { icon: "📊", title: "نموذج مالي لـ ١٨ شهر", desc: "يبني P&L و Cash Flow و Break-Even مع سيناريوهات متفائل/محافظ.", prompt: "ابنِ لي نموذج مالي لمشروعي للـ ١٨ شهر القادمة" },
+      { icon: "💰", title: "تقييم شركتك الناشئة", desc: "يحسب Valuation بـ ٣ طرق (DCF, Comparables, Berkus) ويبرر الرقم.", prompt: "ساعدني في تقييم شركتي الناشئة" },
+      { icon: "📋", title: "Term Sheet Analysis", desc: "يشرح بنود Term Sheet بالعربية ويحدّد البنود القابلة للتفاوض.", prompt: "فسّر لي هذا الـ Term Sheet وما يجب التفاوض عليه" },
+    ],
+    integrations: ["QuickBooks", "Excel", "Fawry"],
   },
   hr: {
     name: "الموارد البشرية",
@@ -71,6 +99,12 @@ const DEPARTMENTS = {
       { id: "operations_manager",       name: "مدير العمليات",         role: "تنسيق العمليات اليومية" },
       { id: "process_optimizer",        name: "محسّن العمليات",        role: "تحسين الإنتاجية" },
     ],
+    useCases: [
+      { icon: "👤", title: "وصف وظيفي جاذب للمواهب", desc: "يكتب JD احترافي يستقطب الكفاءات المناسبة بلغة واضحة.", prompt: "اكتب لي وصف وظيفي جذاب لوظيفة في شركتي" },
+      { icon: "🏢", title: "هيكل تنظيمي للمرحلة القادمة", desc: "يقترح الهيكل المناسب لمرحلة نموّك مع خطة التوظيف.", prompt: "ساعدني في تصميم الهيكل التنظيمي لشركتي" },
+      { icon: "✨", title: "ثقافة وقيم الشركة", desc: "يصيغ القيم الجوهرية والثقافة بطريقة قابلة للتطبيق لا للاقتباس.", prompt: "ساعدني في صياغة قيم وثقافة شركتي" },
+    ],
+    integrations: ["Bayt.com", "LinkedIn Jobs", "Slack"],
   },
   support: {
     name: "خدمة العملاء",
@@ -83,6 +117,12 @@ const DEPARTMENTS = {
       { id: "ticket_manager",          name: "مدير التذاكر",      role: "تصنيف وحل التذاكر" },
       { id: "csat_analyst",            name: "محلل رضا العملاء",   role: "قياس CSAT/NPS" },
     ],
+    useCases: [
+      { icon: "📚", title: "قاعدة معرفة من صفر", desc: "يبني هيكل قاعدة المعرفة ويكتب أول ١٠ مقالات بناءً على أكثر الأسئلة تكراراً.", prompt: "ساعدني في بناء قاعدة معرفة لخدمة العملاء" },
+      { icon: "💬", title: "ردود جاهزة للشكاوى", desc: "يكتب مكتبة ردود احترافية للحالات الأكثر شيوعاً بنبرة إيجابية.", prompt: "اكتب لي ردوداً جاهزة للشكاوى الشائعة" },
+      { icon: "📈", title: "مقاييس رضا العملاء", desc: "يصمّم نظام CSAT/NPS مناسب لحجم شركتك ويفسّر النتائج.", prompt: "ساعدني في قياس وتحليل رضا عملائي" },
+    ],
+    integrations: ["Zendesk", "WhatsApp Business", "Freshdesk"],
   },
   legal: {
     name: "القانونية",
@@ -96,6 +136,12 @@ const DEPARTMENTS = {
       { id: "contract_drafter",               name: "صياغة العقود",            role: "إعداد ومراجعة العقود" },
       { id: "investment_agreement_specialist", name: "متخصص اتفاقيات الاستثمار", role: "صياغة عقود الاستثمار" },
     ],
+    useCases: [
+      { icon: "🤝", title: "اتفاقية المؤسسين", desc: "يبني اتفاقية شاملة (Vesting، IP، Exit، Dispute) تحمي كل الأطراف.", prompt: "ساعدني في صياغة اتفاقية مؤسسين لشركتي" },
+      { icon: "📜", title: "مراجعة عقد تجاري", desc: "يحلّل العقد، يستخرج البنود الخطرة، ويقترح تعديلات.", prompt: "راجع هذا العقد واستخرج البنود الخطرة" },
+      { icon: "🔒", title: "الامتثال لقانون ١٥١", desc: "يحدّد متطلبات حماية البيانات الواجبة على شركتك في مصر.", prompt: "ما متطلبات الامتثال لقانون ١٥١ لشركتي؟" },
+    ],
+    integrations: ["قانون ١٥١", "PDPL", "حماية الملكية الفكرية"],
   },
 } as const;
 
@@ -113,7 +159,8 @@ export default async function DepartmentPage({ params }: { params: Promise<{ dep
 
   return (
     <AppShell>
-      <div dir="rtl" className="max-w-6xl mx-auto space-y-8">
+      <div dir="rtl" className="max-w-6xl mx-auto space-y-6">
+
         {/* Department Header */}
         <div className="glass-panel rounded-3xl p-8 relative overflow-hidden">
           <div className={`absolute -top-20 -right-20 w-72 h-72 rounded-full blur-3xl opacity-20 bg-gradient-to-br ${dep.color}`} />
@@ -129,28 +176,61 @@ export default async function DepartmentPage({ params }: { params: Promise<{ dep
                 </span>
               </div>
               <p className="text-text-secondary leading-relaxed">{dep.description}</p>
-              <div className="mt-4 flex items-center gap-2 text-xs text-text-secondary">
-                <Bot className="w-3.5 h-3.5" /> {dep.agents.length} مساعدين متخصصون
+              <div className="mt-4 flex items-center gap-4 text-xs text-text-secondary flex-wrap">
+                <span className="flex items-center gap-1.5">
+                  <Bot className="w-3.5 h-3.5" /> {dep.agents.length} مساعدين متخصصون
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <Link2 className="w-3.5 h-3.5" /> متكامل مع: {dep.integrations.join(" · ")}
+                </span>
               </div>
             </div>
           </div>
         </div>
 
+        {/* Use Cases */}
+        <section>
+          <h2 className="text-sm font-semibold text-neutral-400 mb-3 flex items-center gap-2">
+            <Lightbulb className="w-4 h-4 text-amber-400" /> سيناريوهات استخدام
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            {dep.useCases.map((uc) => (
+              <Link
+                key={uc.prompt}
+                href={`/chat?q=${encodeURIComponent(uc.prompt)}`}
+                className="group glass-panel rounded-2xl p-5 hover:border-white/20 transition-all flex flex-col gap-3"
+              >
+                <div className="flex items-start gap-3">
+                  <span className="text-2xl shrink-0">{uc.icon}</span>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-bold text-white leading-snug mb-1">{uc.title}</p>
+                    <p className="text-xs text-text-secondary leading-relaxed">{uc.desc}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-1.5 text-xs text-brand-cyan font-medium opacity-0 group-hover:opacity-100 transition-opacity">
+                  <MessageSquare className="w-3.5 h-3.5" /> افتح في المحادثة
+                  <ArrowLeft className="w-3 h-3" />
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+
         {/* Members */}
         <section>
-          <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-            <Users className="w-5 h-5 text-brand-cyan" /> الأعضاء
+          <h2 className="text-sm font-semibold text-neutral-400 mb-3 flex items-center gap-2">
+            <Users className="w-4 h-4 text-brand-cyan" /> الأعضاء
           </h2>
-          {/* Bento Grid: البطاقة الأولى مزدوجة الحجم لإبراز قائد القسم */}
           <div className="grid grid-cols-2 md:grid-cols-4 auto-rows-[140px] gap-4">
             {dep.agents.map((agent, i) => {
               const isLead = i === 0;
               const isWide = i % 5 === 3;
               return (
-                <div
+                <Link
                   key={agent.id}
+                  href={`/chat?q=${encodeURIComponent(`تحدث مع ${agent.name} — ${agent.role}`)}`}
                   className={cn(
-                    "glass-panel rounded-2xl p-5 hover:border-white/20 transition-all relative overflow-hidden flex flex-col",
+                    "glass-panel rounded-2xl p-5 hover:border-white/20 transition-all relative overflow-hidden flex flex-col group",
                     isLead && "col-span-2 row-span-2",
                     isWide && "col-span-2"
                   )}
@@ -182,10 +262,13 @@ export default async function DepartmentPage({ params }: { params: Promise<{ dep
                       </p>
                     </div>
                   </div>
-                  <div className="mt-auto text-[10px] text-text-secondary/60 font-mono uppercase tracking-wider">
-                    {agent.id}
+                  <div className="mt-auto flex items-center justify-between">
+                    <span className="text-[10px] text-text-secondary/50 font-mono uppercase tracking-wider">{agent.id}</span>
+                    <span className="text-[10px] text-brand-cyan opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
+                      <MessageSquare className="w-3 h-3" /> محادثة
+                    </span>
                   </div>
-                </div>
+                </Link>
               );
             })}
           </div>
@@ -197,16 +280,17 @@ export default async function DepartmentPage({ params }: { params: Promise<{ dep
             <Activity className="w-5 h-5 text-brand-blue" />
             <div>
               <p className="text-white font-bold">ابدأ مهمة لقسم {dep.name}</p>
-              <p className="text-xs text-text-secondary">سيتولى منسق القسم توزيع العمل على المساعدين.</p>
+              <p className="text-xs text-text-secondary">سيتولى منسق القسم توزيع العمل على المساعدين المتخصصين.</p>
             </div>
           </div>
           <Link
             href="/chat"
-            className="inline-flex items-center gap-2 bg-gradient-to-r from-brand-cyan to-brand-blue text-white font-bold px-5 py-2.5 rounded-xl text-sm hover:opacity-90 transition-opacity"
+            className="inline-flex items-center gap-2 bg-gradient-to-r from-brand-cyan to-brand-blue text-white font-bold px-5 py-2.5 rounded-xl text-sm hover:opacity-90 transition-opacity shrink-0"
           >
             <FileText className="w-4 h-4" /> تكليف القسم بمهمة
           </Link>
         </section>
+
       </div>
     </AppShell>
   );
