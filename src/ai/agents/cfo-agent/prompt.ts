@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { z } from 'zod';
 
 export const CFO_SYSTEM_PROMPT = `أنت المدير المالي التنفيذي (CFO) في منظومة كلميرون — حارس رأس المال ومهندس النمو المستدام.

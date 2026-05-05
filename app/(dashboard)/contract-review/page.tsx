@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import {
   FileText, Sparkles, ArrowLeft, Loader2, AlertTriangle,
   CheckCircle2, Upload, Shield, Scale, ChevronDown, ChevronUp,
-  Copy, Check,
+  Copy, Check, FileUp, X, AlertCircle,
 } from "lucide-react";
 import Link from "next/link";
 import { AppShell } from "@/components/layout/AppShell";
@@ -41,6 +41,9 @@ export default function ContractReviewPage() {
   const [error, setError] = useState("");
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [pdfUploading, setPdfUploading] = useState(false);
+  const [pdfFileName, setPdfFileName] = useState("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const canSubmit = contractText.trim().length >= 50 && !loading;
 
@@ -67,6 +70,42 @@ export default function ContractReviewPage() {
     }
   }, [contractText, contractType, partyRole, specificConcerns, user, canSubmit]);
 
+  const handlePdfUpload = useCallback(async (file: File) => {
+    if (!user) { setError("يجب تسجيل الدخول لرفع ملفات PDF"); return; }
+    if (!file.type.includes("pdf")) { setError("يُقبل فقط ملفات PDF"); return; }
+    if (file.size > 10 * 1024 * 1024) { setError("حجم الملف يتجاوز الحد المسموح (10 MB)"); return; }
+    setPdfUploading(true);
+    setPdfFileName(file.name);
+    setError("");
+    try {
+      const token = await user.getIdToken();
+      const formData = new FormData();
+      formData.append("file", file);
+      const res = await fetch("/api/extract-pdf", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+        body: formData,
+      });
+      const data = await res.json() as { text?: string; error?: string };
+      if (!res.ok) throw new Error(data.error || "فشل استخراج النص من الـ PDF");
+      if (data.text && data.text.trim().length >= 50) {
+        setContractText(data.text.slice(0, 15000));
+      } else {
+        throw new Error("لم يتمكن النظام من استخراج نص كافٍ من الـ PDF — تأكد من أن الملف نصي وليس صور ممسوحة ضوئياً");
+      }
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "خطأ في رفع الملف");
+      setPdfFileName("");
+    } finally {
+      setPdfUploading(false);
+    }
+  }, [user]);
+
+  const handleFileChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) handlePdfUpload(file);
+  }, [handlePdfUpload]);
+
   const handlePaste = useCallback(async () => {
     try {
       const text = await navigator.clipboard.readText();
@@ -84,7 +123,7 @@ export default function ContractReviewPage() {
     } catch { /* silent */ }
   }, [result]);
 
-  const reset = () => { setContractText(""); setResult(""); setError(""); setContractType(""); setPartyRole(""); setSpecificConcerns(""); };
+  const reset = () => { setContractText(""); setResult(""); setError(""); setContractType(""); setPartyRole(""); setSpecificConcerns(""); setPdfFileName(""); };
 
   return (
     <AppShell>
@@ -134,6 +173,51 @@ export default function ContractReviewPage() {
               </div>
             </div>
 
+            {/* PDF Upload */}
+            <div
+              className="rounded-2xl border-2 border-dashed border-amber-500/20 bg-amber-500/[0.03] p-5 cursor-pointer hover:border-amber-500/40 transition-colors"
+              onClick={() => fileInputRef.current?.click()}
+              onDragOver={e => e.preventDefault()}
+              onDrop={e => { e.preventDefault(); const f = e.dataTransfer.files[0]; if (f) handlePdfUpload(f); }}
+            >
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="application/pdf"
+                className="hidden"
+                onChange={handleFileChange}
+              />
+              <div className="flex items-center gap-4">
+                <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center shrink-0">
+                  {pdfUploading ? <Loader2 className="w-5 h-5 text-amber-400 animate-spin" /> : <FileUp className="w-5 h-5 text-amber-400" />}
+                </div>
+                <div className="flex-1 min-w-0">
+                  {pdfFileName ? (
+                    <div className="flex items-center gap-2">
+                      <FileText className="w-4 h-4 text-emerald-400 shrink-0" />
+                      <span className="text-sm text-emerald-400 truncate">{pdfFileName}</span>
+                      <button onClick={e => { e.stopPropagation(); setPdfFileName(""); setContractText(""); }} className="text-white/30 hover:text-rose-400 transition-colors">
+                        <X className="w-3 h-3" />
+                      </button>
+                    </div>
+                  ) : (
+                    <>
+                      <p className="text-sm font-medium text-white/80">ارفع ملف العقد PDF</p>
+                      <p className="text-xs text-white/40 mt-0.5">اسحب وأفلت أو اضغط للاختيار — حد أقصى 10 MB</p>
+                    </>
+                  )}
+                </div>
+                {pdfUploading && <span className="text-xs text-amber-400">جاري استخراج النص...</span>}
+              </div>
+            </div>
+
+            {/* Divider */}
+            <div className="flex items-center gap-3">
+              <div className="flex-1 h-px bg-white/[0.07]" />
+              <span className="text-xs text-white/30">أو أدخل النص مباشرة</span>
+              <div className="flex-1 h-px bg-white/[0.07]" />
+            </div>
+
             {/* Contract Text */}
             <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
               <div className="flex items-center justify-between mb-3">
@@ -149,7 +233,7 @@ export default function ContractReviewPage() {
                 value={contractText}
                 onChange={e => setContractText(e.target.value)}
                 placeholder={t("textPlaceholder")}
-                rows={12}
+                rows={10}
                 className="w-full rounded-xl bg-white/[0.04] border border-white/[0.07] text-white/90 placeholder:text-white/20 p-4 text-sm resize-y focus:outline-none focus:border-amber-500/40 transition-colors font-mono leading-relaxed"
               />
               {contractText.length < 50 && contractText.length > 0 && (

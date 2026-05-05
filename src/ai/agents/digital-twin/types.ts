@@ -1,4 +1,3 @@
-// @ts-nocheck
 export interface StartupDigitalTwin {
   startupId: string;
   userId: string;

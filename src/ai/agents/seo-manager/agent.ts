@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * SEO Manager — مدير تحسين محركات البحث
  * Department: التسويق | Reports to: CMO

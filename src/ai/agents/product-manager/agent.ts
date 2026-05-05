@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Product Manager — مدير المنتج
  * Department: التقنية والمنتج | Reports to: CTO

@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Cash Runway Manager — مدير السيولة والمدرج النقدي
  * Department: المالية | Reports to: CFO

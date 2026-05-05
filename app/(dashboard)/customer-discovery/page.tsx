@@ -4,7 +4,7 @@ import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import {
   Users, Sparkles, ArrowLeft, Loader2, Plus, Trash2,
-  MessageSquare, FileText, Target, CheckCircle2, Copy, Check,
+  MessageSquare, FileText, Target, CheckCircle2, Copy, Check, Download,
 } from "lucide-react";
 import Link from "next/link";
 import { AppShell } from "@/components/layout/AppShell";
@@ -81,6 +81,28 @@ export default function CustomerDiscoveryPage() {
     setCopied(true);
     setTimeout(() => setCopied(false), 1500);
   };
+
+  const exportPersonaPdf = useCallback(async () => {
+    if (!result || !user) return;
+    try {
+      const token = await user.getIdToken();
+      const res = await fetch("/api/customer-discovery/persona-pdf", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ personaText: result, businessIdea, targetSegment }),
+      });
+      if (!res.ok) throw new Error("فشل التصدير");
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `persona-card-${Date.now()}.pdf`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch {
+      // silent — user can copy text manually
+    }
+  }, [result, user, businessIdea, targetSegment]);
 
   return (
     <AppShell>
@@ -227,6 +249,12 @@ export default function CustomerDiscoveryPage() {
                     {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
                     {copied ? "تم النسخ" : "نسخ"}
                   </button>
+                  {tab === "discovery" && (
+                    <button onClick={exportPersonaPdf}
+                      className="flex items-center gap-1.5 text-xs text-emerald-400 hover:text-emerald-300 border border-emerald-500/20 rounded-lg px-3 py-1.5 transition-colors">
+                      <Download className="w-3 h-3" /> تصدير Persona PDF
+                    </button>
+                  )}
                   <button onClick={() => setResult("")}
                     className="text-xs text-cyan-400 hover:text-cyan-300 border border-cyan-500/20 rounded-lg px-3 py-1.5 transition-colors">
                     تحليل جديد

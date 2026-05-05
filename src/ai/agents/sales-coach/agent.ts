@@ -1,11 +1,10 @@
-// @ts-nocheck
 import { generateText } from 'ai';
 import { MODELS } from '@/src/lib/gemini';
 import { instrumentAgent } from '@/src/lib/observability/agent-instrumentation';
 import { getCurrentLearnedSkillsAddon } from '@/src/lib/learning/context';
 import { SALES_COACH_PROMPT } from './prompt';
 
-export async function salesCoachAction(product: string, target: string, challenge?: string) {
+export async function salesCoachAction(product: string, target: string, challenge?: string): Promise<string> {
   return instrumentAgent(
     'sales_coach',
     async () => {

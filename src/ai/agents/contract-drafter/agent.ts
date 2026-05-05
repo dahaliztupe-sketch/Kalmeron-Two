@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Contract Drafter — محرّر العقود القانونية
  * Department: القانونية | Reports to: CLO

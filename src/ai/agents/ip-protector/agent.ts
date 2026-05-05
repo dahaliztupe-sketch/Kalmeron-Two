@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * IP Protection Expert — خبير حماية الملكية الفكرية
  * Department: القانونية | Reports to: CLO

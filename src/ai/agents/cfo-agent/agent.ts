@@ -1,33 +1,67 @@
-// @ts-nocheck
 import { generateText } from 'ai';
 import { MODELS } from '@/src/lib/gemini';
 import { CFO_SYSTEM_PROMPT } from './prompt';
 import * as tools from './tools';
 import { instrumentAgent } from '@/src/lib/observability/agent-instrumentation';
 import { getCurrentLearnedSkillsAddon } from '@/src/lib/learning/context';
+import { z } from 'zod';
 
-export async function cfoAgentAction(task: string, parameters: unknown) {
+export const ScenarioAnalysisSchema = z.object({
+  baseModel: z.record(z.string(), z.unknown()),
+  scenario: z.object({
+    variable: z.string(),
+    changePercent: z.number(),
+  }),
+});
+
+export const InvestmentEvalSchema = z.object({
+  cashflows: z.array(z.number()),
+  discountRate: z.number(),
+  initialInvestment: z.number(),
+});
+
+export type CfoTask = 'analyze-scenario' | 'evaluate-investment' | 'general';
+
+export interface CfoInput {
+  task: CfoTask;
+  parameters: Record<string, unknown>;
+}
+
+export async function cfoAgentAction(task: string, parameters: Record<string, unknown>): Promise<string> {
+  const usedTools: string[] = [];
   return instrumentAgent(
     'cfo_agent',
     async () => {
       let result: unknown;
-      const usedTools: string[] = [];
 
       switch (task) {
-        case 'analyze-scenario':
-          usedTools.push('finance.scenario');
-          result = await tools.runScenarioAnalysis(parameters.baseModel, parameters.scenario);
+        case 'analyze-scenario': {
+          const parsed = ScenarioAnalysisSchema.safeParse(parameters);
+          if (!parsed.success) {
+            result = { error: 'بيانات السيناريو غير مكتملة — يلزم baseModel وscenario.variable وscenario.changePercent' };
+          } else {
+            usedTools.push('finance.scenario');
+            result = await tools.runScenarioAnalysis(
+              parsed.data.baseModel,
+              parsed.data.scenario,
+            );
+          }
           break;
-        case 'evaluate-investment':
-          usedTools.push('finance.evaluate');
-          result = await tools.evaluateInvestment(parameters);
+        }
+        case 'evaluate-investment': {
+          const parsed = InvestmentEvalSchema.safeParse(parameters);
+          if (!parsed.success) {
+            result = { error: 'بيانات الاستثمار غير مكتملة — يلزم cashflows وdiscountRate وinitialInvestment' };
+          } else {
+            usedTools.push('finance.evaluate');
+            result = await tools.evaluateInvestment(parsed.data);
+          }
           break;
+        }
         default:
-          result = 'المهمة غير مدعومة حالياً';
+          result = 'المهمة غير مدعومة حالياً — المهام المدعومة: analyze-scenario, evaluate-investment';
       }
 
-      // حقن المهارات المُتعلَّمة (إن وجدت) في system prompt — يجعل الوكيل
-      // يستفيد من تجاربه السابقة قبل توليد الجواب.
       const learnedAddon = getCurrentLearnedSkillsAddon();
       const systemPrompt = learnedAddon
         ? `${CFO_SYSTEM_PROMPT}\n\n${learnedAddon}`
@@ -41,6 +75,25 @@ export async function cfoAgentAction(task: string, parameters: unknown) {
 
       return text;
     },
-    { model: 'gemini-pro', input: { task, parameters }, toolsUsed: ['finance.' + task] }
+    { model: 'gemini-pro', input: { task, parameters }, toolsUsed: usedTools ?? ['finance.' + task] }
   );
 }
+
+// Helper for inline CFO queries without a specific tool
+export async function cfoQueryAction(query: string, context?: string): Promise<string> {
+  return instrumentAgent(
+    'cfo_agent',
+    async () => {
+      const learnedAddon = getCurrentLearnedSkillsAddon();
+      const systemPrompt = learnedAddon ? `${CFO_SYSTEM_PROMPT}\n\n${learnedAddon}` : CFO_SYSTEM_PROMPT;
+      const { text } = await generateText({
+        model: MODELS.PRO,
+        system: systemPrompt,
+        prompt: context ? `السياق: ${context}\n\nالسؤال: ${query}` : query,
+      });
+      return text;
+    },
+    { model: 'gemini-pro', input: { query }, toolsUsed: ['cfo.query'] }
+  );
+}
+

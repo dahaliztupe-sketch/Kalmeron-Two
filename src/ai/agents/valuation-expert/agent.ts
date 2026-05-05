@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Valuation Expert — خبير التقييم
  * Department: المالية | Reports to: CFO

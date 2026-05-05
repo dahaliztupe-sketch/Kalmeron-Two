@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { z } from 'zod';
 import { validateIdea } from '@/src/agents/idea-validator/agent';
 import { buildBusinessPlanStream } from '@/src/agents/plan-builder/agent';

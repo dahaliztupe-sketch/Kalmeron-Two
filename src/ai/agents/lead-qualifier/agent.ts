@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Lead Qualifier — مؤهّل العملاء المحتملين
  * Department: المبيعات | Reports to: CMO/VP Sales

@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * egypt-calc-tool — Deterministic tax/insurance calculator wired to the
  * Egypt-Calc Python sidecar (Phase C7).

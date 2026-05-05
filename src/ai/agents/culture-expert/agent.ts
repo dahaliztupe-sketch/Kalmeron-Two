@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Company Culture Expert — خبير الثقافة المؤسسية
  * Department: الموارد البشرية | Reports to: CHRO

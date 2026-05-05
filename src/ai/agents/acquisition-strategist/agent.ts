@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Acquisition Strategist — استراتيجي اكتساب العملاء
  * Department: التسويق | Reports to: CMO

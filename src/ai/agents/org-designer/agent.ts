@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Org Structure Designer — مصمّم الهيكل التنظيمي
  * Department: الموارد البشرية | Reports to: CHRO

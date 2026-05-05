@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Pitch Deck Creator — منشئ عروض الاستثمار
  * Department: المبيعات + الاستراتيجية | Reports to: CSO/CMO

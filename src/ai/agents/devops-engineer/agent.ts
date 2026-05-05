@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * DevOps Engineer — مهندس DevOps
  * Department: التقنية | Reports to: CTO

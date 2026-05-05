@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * QA Manager — مدير ضبط الجودة
  * Department: التقنية | Reports to: CTO

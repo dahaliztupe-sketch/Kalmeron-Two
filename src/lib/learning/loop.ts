@@ -94,6 +94,90 @@ interface DistilledSkill {
 // 1) extractSkillFromTask
 // -----------------------------------------------------------------------------
 
+/**
+ * Returns the last N conversation turns for a specific agent from
+ * `users/{uid}/agent_memory/{agentId}` — used to build per-agent context
+ * without polluting global learned skills.
+ */
+export async function getAgentMemory(
+  workspaceId: string,
+  agentId: string,
+  limit = 10
+): Promise<{ role: 'user' | 'assistant'; content: string; createdAt?: string }[]> {
+  if (!workspaceId || !agentId) return [];
+  try {
+    const snap = await adminDb
+      .collection('users')
+      .doc(workspaceId)
+      .collection('agent_memory')
+      .doc(agentId)
+      .collection('turns')
+      .orderBy('createdAt', 'desc')
+      .limit(limit)
+      .get();
+    if (snap.empty) return [];
+    return snap.docs.map(d => {
+      const data = d.data() as { role?: string; content?: string; createdAt?: string };
+      return {
+        role: (data.role === 'assistant' ? 'assistant' : 'user') as 'user' | 'assistant',
+        content: String(data.content ?? ''),
+        createdAt: data.createdAt,
+      };
+    }).reverse();
+  } catch (e) {
+    logErr('getAgentMemory', e);
+    return [];
+  }
+}
+
+/**
+ * Appends a turn to `users/{uid}/agent_memory/{agentId}/turns`.
+ * Automatically enforces the 10-turn rolling window by deleting old docs.
+ */
+export async function appendAgentMemoryTurn(
+  workspaceId: string,
+  agentId: string,
+  turn: { role: 'user' | 'assistant'; content: string }
+): Promise<void> {
+  if (!workspaceId || !agentId) return;
+  try {
+    const collRef = adminDb
+      .collection('users')
+      .doc(workspaceId)
+      .collection('agent_memory')
+      .doc(agentId)
+      .collection('turns');
+
+    await collRef.add({ ...turn, createdAt: new Date().toISOString() });
+
+    // Prune to last 10 turns (rolling window)
+    const all = await collRef.orderBy('createdAt', 'asc').get();
+    if (all.size > 10) {
+      const toDelete = all.docs.slice(0, all.size - 10);
+      const batch = adminDb.batch();
+      toDelete.forEach(d => batch.delete(d.ref));
+      await batch.commit();
+    }
+  } catch (e) {
+    logErr('appendAgentMemoryTurn', e);
+  }
+}
+
+/**
+ * Builds a short "recent context" string from the last N turns of an agent's
+ * memory, ready to prepend to a system prompt.
+ */
+export async function buildAgentContextAddon(
+  workspaceId: string,
+  agentId: string,
+  limit = 5
+): Promise<string> {
+  const turns = await getAgentMemory(workspaceId, agentId, limit);
+  if (turns.length === 0) return '';
+  const lines = turns.map(t => `[${t.role === 'user' ? 'المستخدم' : 'الوكيل'}]: ${t.content.slice(0, 500)}`);
+  return `\n\n--- السياق من المحادثات السابقة (${agentId}) ---\n${lines.join('\n')}\n---`;
+}
+
 export interface ExtractInput {
   workspaceId: string;
   agentType: string;

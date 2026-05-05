@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Ads Campaign Manager — مدير الحملات الإعلانية
  * Department: التسويق | Reports to: CMO

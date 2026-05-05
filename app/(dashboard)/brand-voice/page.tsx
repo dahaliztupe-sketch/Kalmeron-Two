@@ -6,7 +6,7 @@ import { motion } from "motion/react";
 import {
   Mic, Save, Sparkles, Check, RefreshCw, AlertCircle,
   Volume2, MessageSquare, Pen, Star, Target,
-  ChevronDown, ChevronUp,
+  ChevronDown, ChevronUp, Download,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { doc, getDoc, setDoc, serverTimestamp } from "firebase/firestore";
@@ -54,6 +54,7 @@ export default function BrandVoicePage() {
   const [error, setError] = useState<string | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [generatingPreview, setGeneratingPreview] = useState(false);
+  const [exportingBrandBook, setExportingBrandBook] = useState(false);
 
   useEffect(() => {
     if (!user) return;
@@ -81,6 +82,45 @@ export default function BrandVoicePage() {
       setError("تعذّر الحفظ. حاول مرة أخرى.");
     }
     setSaving(false);
+  };
+
+  const handleExportBrandBook = async () => {
+    if (!data.name) { setError("أدخل اسم العلامة التجارية أولاً"); return; }
+    setExportingBrandBook(true);
+    try {
+      const token = await user?.getIdToken().catch(() => null);
+      const headers: Record<string, string> = { "Content-Type": "application/json" };
+      if (token) headers["Authorization"] = `Bearer ${token}`;
+
+      const res = await fetch("/api/brand-book", {
+        method: "POST",
+        headers,
+        body: JSON.stringify({
+          brandName: data.name,
+          tagline: data.tagline,
+          targetAudience: data.audience,
+          brandVoice: { tone: data.tone, personality: "", communicationStyle: "" },
+          communicationRules: data.avoid ? [`تجنّب: ${data.avoid}`] : [],
+          messagingPillars: data.values ? data.values.split(/[،,\n]/).map(s => s.trim()).filter(Boolean) : [],
+          colorSuggestions: [],
+          rawText: preview ?? "",
+        }),
+      });
+
+      if (!res.ok) throw new Error("فشل التصدير");
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const ext = res.headers.get("Content-Type")?.includes("pdf") ? "pdf" : "html";
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `brand-book-${data.name}-${Date.now()}.${ext}`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch {
+      setError("تعذّر تصدير Brand Book — حاول مرة أخرى");
+    } finally {
+      setExportingBrandBook(false);
+    }
   };
 
   const handleGeneratePreview = async () => {
@@ -306,6 +346,24 @@ export default function BrandVoicePage() {
               {error}
             </div>
           )}
+
+          {/* Export Brand Book */}
+          <button
+            onClick={handleExportBrandBook}
+            disabled={exportingBrandBook || !data.name}
+            className={cn(
+              "w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl",
+              "text-sm font-bold transition-all duration-200 border",
+              "border-amber-500/30 bg-amber-500/10 text-amber-300",
+              "hover:bg-amber-500/20 disabled:opacity-50"
+            )}
+          >
+            {exportingBrandBook ? (
+              <><RefreshCw className="w-4 h-4 animate-spin" /> جاري التصدير...</>
+            ) : (
+              <><Download className="w-4 h-4" /> تصدير Brand Book</>
+            )}
+          </button>
 
           {/* Save Button */}
           <button

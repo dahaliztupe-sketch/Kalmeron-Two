@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Knowledge Base Builder — بنّاء قاعدة المعرفة
  * Department: دعم العملاء | Reports to: COO

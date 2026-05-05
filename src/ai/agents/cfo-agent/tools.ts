@@ -1,4 +1,3 @@
-// @ts-nocheck
 import * as math from 'mathjs';
 
 // أداة تحليل السيناريوهات

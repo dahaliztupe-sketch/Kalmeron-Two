@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { globalGraphTools } from '@/src/lib/memory/graph-tools';
 import { Agent } from '@mastra/core';
 import { z } from 'zod';

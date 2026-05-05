@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Thin instrumented runners for admin Mastra agents so any invocation
  * appears in the drift dashboard and Langfuse traces automatically.

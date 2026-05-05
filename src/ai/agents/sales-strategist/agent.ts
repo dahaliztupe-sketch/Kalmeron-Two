@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Sales Strategy Developer — مطوّر استراتيجية المبيعات
  * Department: المبيعات | Reports to: CMO

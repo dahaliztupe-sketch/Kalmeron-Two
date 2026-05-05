@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Data Privacy Auditor — مدقّق حماية البيانات
  * Department: القانونية | Reports to: CLO

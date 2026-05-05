@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Financial Modeling Expert — خبير النمذجة المالية
  * Department: المالية | Reports to: CFO

@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { Agent } from '@mastra/core';
 import { z } from 'zod';
 import { instrumentAgent } from '@/src/lib/observability/agent-instrumentation';

@@ -1,11 +1,10 @@
-// @ts-nocheck
 import { generateText } from 'ai';
 import { MODELS } from '@/src/lib/gemini';
 import { instrumentAgent } from '@/src/lib/observability/agent-instrumentation';
 import { getCurrentLearnedSkillsAddon } from '@/src/lib/learning/context';
 import { OPERATIONS_MANAGER_PROMPT } from './prompt';
 
-export async function operationsManagerAction(challenge: string, context?: string) {
+export async function operationsManagerAction(challenge: string, context?: string): Promise<string> {
   return instrumentAgent(
     'operations_manager',
     async () => {

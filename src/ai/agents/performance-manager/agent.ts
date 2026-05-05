@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Performance Manager — مدير الأداء والتطوير المهني
  * Department: الموارد البشرية | Reports to: CHRO

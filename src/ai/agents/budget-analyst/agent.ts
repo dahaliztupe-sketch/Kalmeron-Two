@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Budget Analyst — محلّل الميزانية
  * Department: المالية | Reports to: CFO

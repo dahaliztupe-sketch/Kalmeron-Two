@@ -1,11 +1,10 @@
-// @ts-nocheck
 import { generateText } from 'ai';
 import { MODELS } from '@/src/lib/gemini';
 import { instrumentAgent } from '@/src/lib/observability/agent-instrumentation';
 import { getCurrentLearnedSkillsAddon } from '@/src/lib/learning/context';
 import { MARKETING_STRATEGIST_PROMPT } from './prompt';
 
-export async function marketingStrategistAction(business: string, budget?: string, goals?: string) {
+export async function marketingStrategistAction(business: string, budget?: string, goals?: string): Promise<string> {
   return instrumentAgent(
     'marketing_strategist',
     async () => {

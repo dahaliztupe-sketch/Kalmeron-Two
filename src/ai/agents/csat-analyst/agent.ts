@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * CSAT Analyst — محلّل رضا العملاء
  * Department: دعم العملاء | Reports to: COO

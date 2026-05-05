@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Content Creator — منشئ المحتوى الرقمي
  * Department: التسويق | Reports to: CMO

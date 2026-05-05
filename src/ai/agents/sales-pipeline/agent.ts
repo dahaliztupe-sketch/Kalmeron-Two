@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Sales Pipeline Analyst — محلّل خط المبيعات
  * Department: المبيعات | Reports to: CMO/VP Sales

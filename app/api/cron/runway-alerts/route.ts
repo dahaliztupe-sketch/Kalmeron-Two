@@ -159,20 +159,52 @@ export async function GET(req: NextRequest) {
           inputs,
         });
 
+        const nowIso = new Date().toISOString();
+        const runwayResult = computeRunway(inputs);
+        const monthsLabel = fmtMonths(runwayResult.months);
+
+        // Write in-app notification to Firestore regardless of email
+        try {
+          await adminDb
+            .collection("users")
+            .doc(uid)
+            .collection("notifications")
+            .add({
+              type: "runway_alert",
+              title: `تنبيه: تبقّى ${monthsLabel} فقط من السيولة`,
+              body: `رصيدك النقدي تحت عتبة ${inputs.thresholdMonths} أشهر — اتخذ إجراء الآن.`,
+              href: "/cash-runway",
+              read: false,
+              severity: runwayResult.months <= 2 ? "critical" : "warning",
+              metadata: {
+                months: runwayResult.months,
+                threshold: inputs.thresholdMonths,
+                cashEgp: inputs.cashEgp,
+                monthlyBurnEgp: inputs.monthlyBurnEgp,
+              },
+              createdAt: nowIso,
+            });
+        } catch (notifErr) {
+          cronLogger.error(
+            { uid, err: notifErr instanceof Error ? notifErr.message : String(notifErr) },
+            "runway-alert-notification-error",
+          );
+        }
+
         if (emailEnabled) {
-          const result = await sendEmail({ to: email, subject, text, html });
-          if (result.delivered) {
+          const emailResult = await sendEmail({ to: email, subject, text, html });
+          if (emailResult.delivered) {
             summary.alertsSent++;
             await adminDb
               .collection("runway_snapshots")
               .doc(uid)
-              .update({ lastAlertAt: new Date().toISOString() });
+              .update({ lastAlertAt: nowIso });
           } else {
             summary.alertsSkippedNoEmail++;
           }
         } else {
           cronLogger.info(
-            { to: email, months: result.months, threshold: inputs.thresholdMonths },
+            { to: email, months: runwayResult.months, threshold: inputs.thresholdMonths },
             "runway-alert-dry-run",
           );
           summary.alertsSent++;

@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Equity Manager — مدير حقوق الملكية وجداول الرسملة
  * Department: المالية | Reports to: CFO

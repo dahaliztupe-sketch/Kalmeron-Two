@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Ticket Manager — مدير تذاكر الدعم
  * Department: دعم العملاء | Reports to: COO

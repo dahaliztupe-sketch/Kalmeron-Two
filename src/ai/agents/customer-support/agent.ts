@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { recordDriftSample } from '@/src/lib/observability/drift-detector';
 import { CUSTOMER_SUPPORT_PROMPT } from './prompt';
