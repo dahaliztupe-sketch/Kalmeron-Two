@@ -104,7 +104,7 @@ export default function CustomerDiscoveryPage() {
     } catch {
       // silent — user can copy text manually
     }
-  }, [result, user, businessIdea, targetSegment]);
+  }, [result, user, businessIdea, targetSegment, persona]);
 
   return (
     <AppShell>

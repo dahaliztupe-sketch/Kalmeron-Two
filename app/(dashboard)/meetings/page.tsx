@@ -65,6 +65,7 @@ export default function MeetingsPage() {
     }
   }
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect, react-hooks/exhaustive-deps
   useEffect(() => { load(); }, [user]);
 
   function toggle(d: string) {

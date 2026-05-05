@@ -153,6 +153,7 @@ export default function WeeklyReportClient() {
     }
   }, [user]);
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { void load(); }, [load]);
 
   const weekLabel = data

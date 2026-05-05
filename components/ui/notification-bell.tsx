@@ -68,6 +68,7 @@ export function NotificationBell() {
 
   useEffect(() => {
     if (!user) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     load();
     const t = setInterval(load, 30_000);
     return () => clearInterval(t);

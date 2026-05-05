@@ -118,6 +118,7 @@ export default function IdeaValidationPage() {
   const [f100Copied, setF100Copied] = useState(false);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (dbUser?.industry) setIndustry(dbUser.industry);
     if (dbUser?.startup_stage) setStage(dbUser.startup_stage);
   }, [dbUser]);

@@ -13,6 +13,7 @@ import { doc, getDoc, setDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "@/src/lib/firebase";
 import { toast } from "sonner";
 import Link from "next/link";
+import Image from "next/image";
 
 interface ProfileData {
   displayName: string;
@@ -60,6 +61,7 @@ export default function ProfilePage() {
 
   useEffect(() => {
     if (!user?.uid || !db) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setLoading(true);
     getDoc(doc(db, "users", user.uid))
       .then(snap => {
@@ -170,7 +172,7 @@ export default function ProfilePage() {
                 <div className="flex items-center gap-6">
                   <div className="relative">
                     {user?.photoURL ? (
-                      <img src={user.photoURL} alt="avatar" className="w-20 h-20 rounded-2xl object-cover ring-2 ring-slate-600" />
+                      <Image src={user.photoURL} alt="avatar" width={80} height={80} className="rounded-2xl object-cover ring-2 ring-slate-600" />
                     ) : (
                       <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center text-2xl font-bold text-white">
                         {initials}

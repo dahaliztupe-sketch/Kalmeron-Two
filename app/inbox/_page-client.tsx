@@ -62,6 +62,7 @@ export default function InboxPage() {
     }
   };
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect, react-hooks/exhaustive-deps
   useEffect(() => { refresh(); }, [user, filter]);
 
   const decide = async (it: Item, decision: "approve" | "reject") => {

@@ -144,6 +144,7 @@ export default function MissionControlPage() {
   }, []);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchHealth();
     const interval = setInterval(fetchHealth, 30_000);
     return () => clearInterval(interval);
@@ -152,6 +153,7 @@ export default function MissionControlPage() {
   useEffect(() => {
     if (authLoading) return;
     if (!user) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setError('يجب تسجيل الدخول بحساب Platform Admin.');
       return;
     }

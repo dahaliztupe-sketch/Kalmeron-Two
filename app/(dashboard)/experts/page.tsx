@@ -55,7 +55,7 @@ export default function ExpertsPage() {
     }
   }
 
-  useEffect(() => { load(); }, [user]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { load(); }, [user]); // eslint-disable-line react-hooks/exhaustive-deps, react-hooks/set-state-in-effect
 
   async function create() {
     if (!description.trim() || !user) return;

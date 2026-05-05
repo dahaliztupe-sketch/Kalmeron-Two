@@ -160,6 +160,9 @@
     "zod": "^4.4.2",
     "zod-validation-error": "^5.0.0"
   },
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "overrides": {
     "@qdrant/js-client-rest": "1.17.0",
     "undici": "^6.23.0",

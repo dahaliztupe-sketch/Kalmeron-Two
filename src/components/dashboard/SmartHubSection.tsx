@@ -95,6 +95,7 @@ export function SmartHubSection() {
 
   useEffect(() => {
     if (!user) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setBriefLoading(true);
     user.getIdToken().then((token) => {
       fetch("/api/operations/feed?limit=8", { headers: { Authorization: `Bearer ${token}` } })

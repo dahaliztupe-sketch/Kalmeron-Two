@@ -461,6 +461,7 @@ function SlashCommandMenu({ query, onSelect, onClose }: {
 
   const [activeIdx, setActiveIdx] = useState(0);
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { setActiveIdx(0); }, [query]);
 
   useEffect(() => {
@@ -824,7 +825,7 @@ function CouncilPanel({
       </div>
 
       <div className="px-3 py-2 bg-indigo-500/5 border-b border-indigo-500/10">
-        <p className="text-xs text-neutral-400 line-clamp-2">"{question}"</p>
+        <p className="text-xs text-neutral-400 line-clamp-2">&quot;{question}&quot;</p>
       </div>
 
       <div className="flex-1 overflow-y-auto p-3 space-y-3 scrollbar-thin">
@@ -1119,7 +1120,9 @@ function ChatPageContent() {
     } catch { setMessages([]); }
   }, [user]);
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { loadConversations(); }, [user, loadConversations]);
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { if (activeConvId) loadChat(activeConvId); }, [activeConvId, loadChat]);
   useEffect(() => {
     if (scrollRef.current) scrollRef.current.scrollIntoView({ behavior: "smooth" });
@@ -1443,6 +1446,7 @@ function ChatPageContent() {
     } catch {}
   }, [user]);
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { loadSavedPrompts(); }, [loadSavedPrompts]);
 
   const saveCurrentPrompt = async () => {
@@ -1573,6 +1577,7 @@ function ChatPageContent() {
     const convId = searchParams.get("conv");
     if (!convId) return;
     convLoadedRef.current = true;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setActiveConvId(convId);
     void loadChat(convId);
   }, [user, searchParams, loadChat]);

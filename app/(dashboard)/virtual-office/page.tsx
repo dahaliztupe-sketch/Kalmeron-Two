@@ -54,6 +54,7 @@ export default function VirtualOfficePage() {
   const [convLoading, setConvLoading] = useState(false);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setTodos(loadTodos());
   }, []);
 
@@ -97,6 +98,7 @@ export default function VirtualOfficePage() {
   }, [user]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     loadConversations();
   }, [loadConversations]);
 

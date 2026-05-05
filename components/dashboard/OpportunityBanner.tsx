@@ -58,6 +58,7 @@ export function OpportunityBanner({ opportunity }: { opportunity: Opportunity | 
   // the user dismissed a different (previous) opportunity.
   useEffect(() => {
     if (!opportunity?.id) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setDismissed(false);
       return;
     }

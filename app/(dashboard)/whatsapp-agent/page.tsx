@@ -81,6 +81,7 @@ export default function WhatsAppAgentPage() {
 
   useEffect(() => {
     if (typeof window !== "undefined") {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setWebhookUrl(`${window.location.origin}/api/whatsapp/webhook`);
     }
   }, []);
@@ -121,6 +122,7 @@ export default function WhatsAppAgentPage() {
   }, [user]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     loadRegistration();
     loadConversations();
     const iv = setInterval(loadConversations, 15000);

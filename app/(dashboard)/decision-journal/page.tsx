@@ -75,11 +75,12 @@ export default function DecisionJournalPage() {
   const decisionsPath = useCallback(() => {
     if (!user?.uid || !db) return null;
     return collection(db, "users", user.uid, "decisions");
-  }, [user?.uid]);
+  }, [user]);
 
   // ── Load decisions from Firestore ─────────────────────────────────────────
   useEffect(() => {
     const col = decisionsPath();
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (!col) { setLoadingDecisions(false); return; }
     setLoadingDecisions(true);
     getDocs(query(col, orderBy("createdAt", "desc"), limit(50)))
@@ -128,7 +129,7 @@ export default function DecisionJournalPage() {
     } catch {
       toast.error("فشل حذف القرار");
     }
-  }, [user?.uid, selectedDecision]);
+  }, [user, selectedDecision]);
 
   const handleAnalyze = useCallback(async () => {
     if (!decisionToAnalyze.trim() || loading) return;

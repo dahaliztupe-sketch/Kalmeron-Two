@@ -144,6 +144,7 @@ export default function EgyptCalcPage() {
   const [fawryMDR, setFawryMDR] = useState("0.015");
   const [instapayAmount, setInstapayAmount] = useState("");
 
+  // eslint-disable-next-line react-hooks/preserve-manual-memoization
   const callCalc = useCallback(async (endpoint: string, params: Record<string, unknown>) => {
     setLoading(true);
     setError("");

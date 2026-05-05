@@ -20,6 +20,7 @@ export function UpgradeBanner() {
   useEffect(() => {
     if (!user) return;
     const key = `upgrade_banner_dismissed_${new Date().toDateString()}`;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (sessionStorage.getItem(key)) { setDismissed(true); return; }
 
     const load = async () => {

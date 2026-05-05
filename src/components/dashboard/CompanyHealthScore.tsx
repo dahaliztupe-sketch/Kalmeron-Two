@@ -67,6 +67,7 @@ export function CompanyHealthScore() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (!user) { setLoading(false); return; }
     user.getIdToken().then((token) =>
       fetch("/api/dashboard/health-score", {

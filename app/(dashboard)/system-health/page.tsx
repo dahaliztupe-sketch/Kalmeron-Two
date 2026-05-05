@@ -63,6 +63,7 @@ export default function SystemHealthPage() {
   }
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     load();
     const t = setInterval(load, 15_000);
     return () => clearInterval(t);

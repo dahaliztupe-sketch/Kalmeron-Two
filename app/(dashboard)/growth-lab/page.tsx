@@ -74,7 +74,7 @@ export default function GrowthLabPage() {
     } finally {
       setLoading(false);
     }
-  }, [mode, experimentIdea, product, stage, currentMetrics, budget, challenge, loading, user, isExperiment, isSubmitDisabled]);
+  }, [mode, experimentIdea, product, stage, currentMetrics, budget, challenge, user, isExperiment, isSubmitDisabled]);
 
   const inputClass = "w-full bg-slate-900/70 border border-slate-700/50 rounded-xl px-4 py-2.5 text-white placeholder-slate-500 focus:outline-none focus:border-violet-500/50 text-sm";
   const currentMode = GROWTH_MODES.find(m => m.id === mode)!;

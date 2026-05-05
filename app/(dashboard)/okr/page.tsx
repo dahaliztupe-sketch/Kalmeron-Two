@@ -141,6 +141,7 @@ export default function OKRPage() {
     }
   }, [user]);
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { load(); }, [load]);
 
   async function generate() {

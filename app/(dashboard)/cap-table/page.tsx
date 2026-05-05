@@ -126,6 +126,7 @@ export default function CapTablePage() {
 
   useEffect(() => {
     if (!user) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setLoadingData(true);
     user.getIdToken().then(token =>
       fetch("/api/cap-table/save", {

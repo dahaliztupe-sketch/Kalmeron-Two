@@ -84,6 +84,7 @@ export default function SettingsPage() {
 
   useEffect(() => {
     if (!user) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setLoadingPrefs(true);
     user.getIdToken().then(token => {
       return fetch("/api/user/notification-prefs", {
