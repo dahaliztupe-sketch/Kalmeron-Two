@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { AppShell } from "@/components/layout/AppShell";
 import { useAuth } from "@/contexts/AuthContext";
 import {
@@ -39,24 +39,24 @@ export default function ExpertsPage() {
   const [asking, setAsking] = useState(false);
   const [searchQ, setSearchQ] = useState("");
 
-  useEffect(() => {
-    let mounted = true;
-    async function load() {
-      setLoading(true);
-      try {
-        const token = user ? await user.getIdToken().catch(() => null) : null;
-        const r = await fetch("/api/experts", {
-          headers: token ? { Authorization: `Bearer ${token}` } : {},
-        });
-        const j = await r.json();
-        if (mounted) setExperts(j.experts || []);
-      } catch { /* silent */ } finally {
-        if (mounted) setLoading(false);
-      }
+  const load = useCallback(async () => {
+    setLoading(true);
+    try {
+      const token = user ? await user.getIdToken().catch(() => null) : null;
+      const r = await fetch("/api/experts", {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
+      const j = await r.json();
+      setExperts(j.experts || []);
+    } catch { /* silent */ } finally {
+      setLoading(false);
     }
-    void load();
-    return () => { mounted = false; };
   }, [user]);
+
+  useEffect(() => {
+    async function run() { await load(); }
+    void run();
+  }, [load]);
 
   async function create() {
     if (!description.trim() || !user) return;

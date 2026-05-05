@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { AppShell } from "@/components/layout/AppShell";
 import { useAuth } from "@/contexts/AuthContext";
 import { apiJson } from "@/src/lib/api-client";
@@ -48,26 +48,24 @@ export default function NotificationsPage() {
   const [unread, setUnread] = useState(0);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+  const load = useCallback(async () => {
     if (!user) return;
-    let mounted = true;
-    async function load() {
-      setLoading(true);
-      try {
-        const res = await apiJson<{ items: NotifItem[]; unread: number }>("/api/account/notifications");
-        if (mounted) {
-          setItems(res.items || []);
-          setUnread(res.unread || 0);
-        }
-      } catch {
-        toast.error("تعذّر تحميل الإشعارات");
-      } finally {
-        if (mounted) setLoading(false);
-      }
+    setLoading(true);
+    try {
+      const res = await apiJson<{ items: NotifItem[]; unread: number }>("/api/account/notifications");
+      setItems(res.items || []);
+      setUnread(res.unread || 0);
+    } catch {
+      toast.error("تعذّر تحميل الإشعارات");
+    } finally {
+      setLoading(false);
     }
-    void load();
-    return () => { mounted = false; };
   }, [user]);
+
+  useEffect(() => {
+    async function run() { await load(); }
+    void run();
+  }, [load]);
 
   async function markAll() {
     try {

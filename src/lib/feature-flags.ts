@@ -1,18 +1,13 @@
 /**
- * Feature Flags — نظام إدارة الميزات بنمط Vercel Flags / LaunchDarkly.
+ * Feature Flags — نظام إدارة الميزات.
  *
- * يستخدم `@vercel/flags` كواجهة موحدة، مع دعم:
+ * Standalone implementation (no external flag SDK required).
+ * Supports:
  * - Edge / Node runtime
- * - تقييم على أساس المستخدم (userId, plan, country)
- * - Override عبر cookie لاختبار QA
- * - Fallback ثابت في التطوير
- *
- * مثال الاستخدام:
- *   import { showAdvancedAgents } from "@/src/lib/feature-flags";
- *   if (await showAdvancedAgents()) { ... }
+ * - User-level evaluation (userId, plan, country)
+ * - Cookie-based override for QA testing (`flag_<key>=on|off`)
+ * - Static fallback in development
  */
-
-import { flag } from "@vercel/flags/next";
 
 export interface FeatureFlagContext {
   userId?: string;
@@ -21,40 +16,40 @@ export interface FeatureFlagContext {
   email?: string;
 }
 
-/**
- * featureFlag — تعريف feature flag جديد. يحفظ التعريف في مكان واحد
- * ويتيح تقييمه من أي مكون (server / client / edge).
- */
-function featureFlag<T = boolean>(opts: {
+interface FlagOptions<T> {
   key: string;
   defaultValue: T;
   description?: string;
   decide?: (ctx: FeatureFlagContext) => T | Promise<T>;
-}) {
-  return flag<T>({
-    key: opts.key,
-    description: opts.description,
-    defaultValue: opts.defaultValue,
-    decide: async ({ headers, cookies }) => {
-      const override = cookies.get(`flag_${opts.key}`)?.value;
+}
+
+interface RequestLike {
+  headers: { get(name: string): string | null };
+  cookies: { get(name: string): { value: string } | undefined };
+}
+
+/**
+ * featureFlag — defines a feature flag. Returns an async function that
+ * evaluates the flag given the current request context.
+ */
+function featureFlag<T = boolean>(opts: FlagOptions<T>) {
+  return async (req?: RequestLike): Promise<T> => {
+    if (req) {
+      const override = req.cookies.get(`flag_${opts.key}`)?.value;
       if (override === "on") return true as unknown as T;
       if (override === "off") return false as unknown as T;
 
       const ctx: FeatureFlagContext = {
-        userId: headers.get("x-kalmeron-user-id") || undefined,
-        plan: (headers.get("x-kalmeron-plan") as FeatureFlagContext["plan"]) || "free",
-        country: headers.get("x-kalmeron-country") || undefined,
+        userId: req.headers.get("x-kalmeron-user-id") || undefined,
+        plan: (req.headers.get("x-kalmeron-plan") as FeatureFlagContext["plan"]) || "free",
+        country: req.headers.get("x-kalmeron-country") || undefined,
       };
       if (opts.decide) {
-        try {
-          return await opts.decide(ctx);
-        } catch {
-          return opts.defaultValue;
-        }
+        try { return await opts.decide(ctx); } catch { /* fall through */ }
       }
-      return opts.defaultValue;
-    },
-  });
+    }
+    return opts.defaultValue;
+  };
 }
 
 // === Flags المعرّفة ===

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { AppShell } from "@/components/layout/AppShell";
 import { useAuth } from "@/contexts/AuthContext";
 import { Users, Play, Loader2, CheckCircle2, Lightbulb, Clock, RefreshCw } from "lucide-react";
@@ -52,24 +52,22 @@ export default function MeetingsPage() {
   const [running, setRunning] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    let mounted = true;
-    async function load() {
-      try {
-        const token = user ? await user.getIdToken().catch(() => null) : null;
-        const r = await fetch("/api/meetings", { headers: token ? { Authorization: `Bearer ${token}` } : {}, cache: "no-store" });
-        const j = await r.json();
-        if (mounted) {
-          setMeetings(j.meetings || []);
-          setOpportunities(j.opportunities || []);
-        }
-      } catch { /* silent */ } finally {
-        if (mounted) setLoading(false);
-      }
+  const load = useCallback(async () => {
+    try {
+      const token = user ? await user.getIdToken().catch(() => null) : null;
+      const r = await fetch("/api/meetings", { headers: token ? { Authorization: `Bearer ${token}` } : {}, cache: "no-store" });
+      const j = await r.json();
+      setMeetings(j.meetings || []);
+      setOpportunities(j.opportunities || []);
+    } catch { /* silent */ } finally {
+      setLoading(false);
     }
-    void load();
-    return () => { mounted = false; };
   }, [user]);
+
+  useEffect(() => {
+    async function run() { await load(); }
+    void run();
+  }, [load]);
 
   function toggle(d: string) {
     setSelected((s) => (s.includes(d) ? s.filter((x) => x !== d) : [...s, d]));

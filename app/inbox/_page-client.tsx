@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { AppShell } from "@/components/layout/AppShell";
 import { useAuth } from "@/contexts/AuthContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -48,24 +48,24 @@ export default function InboxPage() {
   const [busyId, setBusyId] = useState<string | null>(null);
   const [filter, setFilter] = useState<string>("pending");
 
-  useEffect(() => {
-    let mounted = true;
-    async function refresh() {
-      if (!user) return;
-      setLoading(true);
-      try {
-        const token = await user.getIdToken();
-        const url = filter === "all" ? "/api/actions/inbox" : `/api/actions/inbox?status=${filter}`;
-        const r = await fetch(url, { headers: { Authorization: `Bearer ${token}` }, cache: "no-store" });
-        const j = await r.json();
-        if (mounted && r.ok) setItems(j.items || []);
-      } finally {
-        if (mounted) setLoading(false);
-      }
+  const refresh = useCallback(async () => {
+    if (!user) return;
+    setLoading(true);
+    try {
+      const token = await user.getIdToken();
+      const url = filter === "all" ? "/api/actions/inbox" : `/api/actions/inbox?status=${filter}`;
+      const r = await fetch(url, { headers: { Authorization: `Bearer ${token}` }, cache: "no-store" });
+      const j = await r.json();
+      if (r.ok) setItems(j.items || []);
+    } finally {
+      setLoading(false);
     }
-    void refresh();
-    return () => { mounted = false; };
   }, [user, filter]);
+
+  useEffect(() => {
+    async function run() { await refresh(); }
+    void run();
+  }, [refresh]);
 
   const decide = async (it: Item, decision: "approve" | "reject") => {
     if (!user) return;

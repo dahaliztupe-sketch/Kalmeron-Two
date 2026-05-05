@@ -169,7 +169,8 @@
     "axios": "^1.15.2",
     "uuid": "^14.0.0",
     "@tootallnate/once": "^3.0.1",
-    "postcss": "^8.5.12"
+    "postcss": "^8.5.12",
+    "zod": "^4.4.2"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.2.3",
