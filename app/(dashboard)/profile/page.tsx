@@ -61,14 +61,16 @@ export default function ProfilePage() {
 
   useEffect(() => {
     if (!user?.uid || !db) return;
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setLoading(true);
-    getDoc(doc(db, "users", user.uid))
-      .then(snap => {
+    let mounted = true;
+    async function loadProfile() {
+      setLoading(true);
+      try {
+        const snap = await getDoc(doc(db!, "users", user!.uid));
+        if (!mounted) return;
         if (snap.exists()) {
           const d = snap.data() as Partial<ProfileData>;
           setProfile({
-            displayName: d.displayName || user.displayName || "",
+            displayName: d.displayName || user!.displayName || "",
             companyName: d.companyName || "",
             role: d.role || "",
             phone: d.phone || "",
@@ -78,11 +80,16 @@ export default function ProfilePage() {
             stage: d.stage || "",
           });
         } else {
-          setProfile(p => ({ ...p, displayName: user.displayName || "" }));
+          setProfile(p => ({ ...p, displayName: user!.displayName || "" }));
         }
-      })
-      .catch(() => setError("تعذّر تحميل الملف الشخصي"))
-      .finally(() => setLoading(false));
+      } catch {
+        if (mounted) setError("تعذّر تحميل الملف الشخصي");
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    }
+    void loadProfile();
+    return () => { mounted = false; };
   }, [user]);
 
   const handleSave = useCallback(async () => {

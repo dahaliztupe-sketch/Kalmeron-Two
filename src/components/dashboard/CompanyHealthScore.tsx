@@ -67,17 +67,25 @@ export function CompanyHealthScore() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    if (!user) { setLoading(false); return; }
-    user.getIdToken().then((token) =>
-      fetch("/api/dashboard/health-score", {
-        headers: { Authorization: `Bearer ${token}` },
-        cache: "no-store",
-      })
-    ).then((r) => r.ok ? r.json() as Promise<ApiHealthScore> : null)
-      .then((j) => { if (j) setApiData(j); })
-      .catch(() => {})
-      .finally(() => setLoading(false));
+    let mounted = true;
+    async function fetchScore() {
+      if (!user) { setLoading(false); return; }
+      try {
+        const token = await user.getIdToken();
+        const r = await fetch("/api/dashboard/health-score", {
+          headers: { Authorization: `Bearer ${token}` },
+          cache: "no-store",
+        });
+        if (mounted && r.ok) {
+          const j = await r.json() as ApiHealthScore;
+          setApiData(j);
+        }
+      } catch { /* silent */ } finally {
+        if (mounted) setLoading(false);
+      }
+    }
+    void fetchScore();
+    return () => { mounted = false; };
   }, [user]);
 
   const overall = apiData?.overall ?? 0;

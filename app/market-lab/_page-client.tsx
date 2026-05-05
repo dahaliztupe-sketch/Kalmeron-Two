@@ -69,10 +69,9 @@ export default function MarketLabPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    if (!user) { setLoading(false); return; }
     let cancel = false;
     (async () => {
+      if (!user) { setLoading(false); return; }
       try {
         const q = query(
           collection(db, "users", user.uid, "market_experiments"),

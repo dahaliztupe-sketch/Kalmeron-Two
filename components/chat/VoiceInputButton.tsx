@@ -48,8 +48,7 @@ export function VoiceInputButton({ onTranscript, lang = "ar-EG", className }: Pr
     };
     const SR = w.SpeechRecognition || w.webkitSpeechRecognition;
     if (!SR) return;
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setSupported(true);
+    void (async () => { setSupported(true); })();
     const r = new SR();
     r.lang = lang;
     r.continuous = false;

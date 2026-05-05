@@ -48,15 +48,10 @@ function saveTodos(todos: TodoItem[]) {
 
 export default function VirtualOfficePage() {
   const { user } = useAuth();
-  const [todos, setTodos] = useState<TodoItem[]>([]);
+  const [todos, setTodos] = useState<TodoItem[]>(loadTodos);
   const [newTodo, setNewTodo] = useState("");
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [convLoading, setConvLoading] = useState(false);
-
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setTodos(loadTodos());
-  }, []);
 
   const persistTodos = (updated: TodoItem[]) => {
     setTodos(updated);
@@ -98,8 +93,8 @@ export default function VirtualOfficePage() {
   }, [user]);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    loadConversations();
+    async function run() { await loadConversations(); }
+    void run();
   }, [loadConversations]);
 
   const formatTime = (ts?: number) => {

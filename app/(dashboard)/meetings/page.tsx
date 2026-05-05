@@ -52,21 +52,24 @@ export default function MeetingsPage() {
   const [running, setRunning] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  async function load() {
-    try {
-      const token = user ? await user.getIdToken().catch(() => null) : null;
-      const r = await fetch("/api/meetings", { headers: token ? { Authorization: `Bearer ${token}` } : {}, cache: "no-store" });
-      const j = await r.json();
-      setMeetings(j.meetings || []);
-      setOpportunities(j.opportunities || []);
-    } catch {
-    } finally {
-      setLoading(false);
+  useEffect(() => {
+    let mounted = true;
+    async function load() {
+      try {
+        const token = user ? await user.getIdToken().catch(() => null) : null;
+        const r = await fetch("/api/meetings", { headers: token ? { Authorization: `Bearer ${token}` } : {}, cache: "no-store" });
+        const j = await r.json();
+        if (mounted) {
+          setMeetings(j.meetings || []);
+          setOpportunities(j.opportunities || []);
+        }
+      } catch { /* silent */ } finally {
+        if (mounted) setLoading(false);
+      }
     }
-  }
-
-  // eslint-disable-next-line react-hooks/set-state-in-effect, react-hooks/exhaustive-deps
-  useEffect(() => { load(); }, [user]);
+    void load();
+    return () => { mounted = false; };
+  }, [user]);
 
   function toggle(d: string) {
     setSelected((s) => (s.includes(d) ? s.filter((x) => x !== d) : [...s, d]));

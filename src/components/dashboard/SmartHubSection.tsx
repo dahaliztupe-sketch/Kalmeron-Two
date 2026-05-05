@@ -95,15 +95,27 @@ export function SmartHubSection() {
 
   useEffect(() => {
     if (!user) return;
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setBriefLoading(true);
-    user.getIdToken().then((token) => {
-      fetch("/api/operations/feed?limit=8", { headers: { Authorization: `Bearer ${token}` } })
-        .then((r) => r.json()).then(setOps).catch(() => {});
-      fetch("/api/daily-brief", { headers: { Authorization: `Bearer ${token}` } })
-        .then((r) => r.json()).then(setBrief).catch(() => {})
-        .finally(() => setBriefLoading(false));
-    });
+    let mounted = true;
+    async function loadBrief() {
+      setBriefLoading(true);
+      try {
+        const token = await user!.getIdToken();
+        const [opsRes, briefRes] = await Promise.all([
+          fetch("/api/operations/feed?limit=8", { headers: { Authorization: `Bearer ${token}` } }),
+          fetch("/api/daily-brief", { headers: { Authorization: `Bearer ${token}` } }),
+        ]);
+        if (mounted) {
+          const opsJson = await opsRes.json();
+          setOps(opsJson);
+          const briefJson = await briefRes.json();
+          setBrief(briefJson);
+        }
+      } catch { /* silent */ } finally {
+        if (mounted) setBriefLoading(false);
+      }
+    }
+    void loadBrief();
+    return () => { mounted = false; };
   }, [user]);
 
   const topRecipes = recipes.slice(0, 3);

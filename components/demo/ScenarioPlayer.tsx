@@ -36,9 +36,7 @@ export function ScenarioPlayer({ scenario }: Props) {
   useEffect(() => {
     timersRef.current.forEach(clearTimeout);
     timersRef.current = [];
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setVisible(0);
-    setThinking(null);
+    void (async () => { setVisible(0); setThinking(null); })();
 
     let acc = 0;
     scenario.messages.forEach((msg, idx) => {

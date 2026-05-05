@@ -115,14 +115,9 @@ export default function LearnedSkillsPage() {
   const [error, setError] = useState<string | null>(null);
   const [filterAgent, setFilterAgent] = useState<string>("all");
   const [expanded, setExpanded] = useState<string | null>(null);
-  const [workspaceId, setWorkspaceId] = useState<string>("");
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setWorkspaceId(localStorage.getItem(WORKSPACE_KEY) || "");
-    }
-  }, []);
+  const [workspaceId, setWorkspaceId] = useState<string>(() =>
+    typeof window !== "undefined" ? (localStorage.getItem(WORKSPACE_KEY) || "") : ""
+  );
 
   async function load(wid: string) {
     if (!wid) {
@@ -196,8 +191,8 @@ export default function LearnedSkillsPage() {
   }
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    if (workspaceId) load(workspaceId);
+    async function run() { if (workspaceId) await load(workspaceId); }
+    void run();
   }, [workspaceId]);
 
   const agents = useMemo(() => {

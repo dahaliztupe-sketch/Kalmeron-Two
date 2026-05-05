@@ -126,24 +126,29 @@ export default function CapTablePage() {
 
   useEffect(() => {
     if (!user) return;
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setLoadingData(true);
-    user.getIdToken().then(token =>
-      fetch("/api/cap-table/save", {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-    ).then(r => r.json()).then(data => {
-      if (data.capTable) {
-        const ct = data.capTable;
-        setCompanyName(ct.companyName ?? "");
-        if (Array.isArray(ct.shareholders) && ct.shareholders.length > 0) {
-          setShareholders(ct.shareholders);
+    let mounted = true;
+    async function loadCapTable() {
+      setLoadingData(true);
+      try {
+        const token = await user!.getIdToken();
+        const r = await fetch("/api/cap-table/save", { headers: { Authorization: `Bearer ${token}` } });
+        const data = await r.json();
+        if (mounted && data.capTable) {
+          const ct = data.capTable;
+          setCompanyName(ct.companyName ?? "");
+          if (Array.isArray(ct.shareholders) && ct.shareholders.length > 0) {
+            setShareholders(ct.shareholders);
+          }
+          if (Array.isArray(ct.history)) {
+            setHistory(ct.history);
+          }
         }
-        if (Array.isArray(ct.history)) {
-          setHistory(ct.history);
-        }
+      } catch { /* silent */ } finally {
+        if (mounted) setLoadingData(false);
       }
-    }).catch(() => {}).finally(() => setLoadingData(false));
+    }
+    void loadCapTable();
+    return () => { mounted = false; };
   }, [user]);
 
   const addShareholder = () => setShareholders(s => [...s, { id: mkId(), name: "", role: "", shares: 0, type: "founder" }]);

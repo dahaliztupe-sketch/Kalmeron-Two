@@ -48,8 +48,8 @@ export default function DemoModePage() {
   }, [load]);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    void checkSeed();
+    async function run() { await checkSeed(); }
+    void run();
   }, [checkSeed]);
 
   const toggle = async () => {

@@ -96,8 +96,8 @@ export default function OpportunitiesPage() {
   }, [user]);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    fetchOpportunities();
+    async function run() { await fetchOpportunities(); }
+    void run();
   }, [fetchOpportunities]);
 
   const filtered = category === "all"

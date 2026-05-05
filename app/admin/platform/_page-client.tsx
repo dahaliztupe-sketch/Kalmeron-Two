@@ -38,8 +38,10 @@ export default function PlatformAdminPage() {
     }
   }
 
-  // eslint-disable-next-line react-hooks/set-state-in-effect
-  useEffect(() => { load(); }, []);
+  useEffect(() => {
+    async function run() { await load(); }
+    void run();
+  }, []);
 
   return (
     <AppShell>

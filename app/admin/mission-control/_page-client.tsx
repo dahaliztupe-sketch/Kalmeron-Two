@@ -144,23 +144,19 @@ export default function MissionControlPage() {
   }, []);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    fetchHealth();
-    const interval = setInterval(fetchHealth, 30_000);
+    async function run() { await fetchHealth(); }
+    void run();
+    const interval = setInterval(() => void run(), 30_000);
     return () => clearInterval(interval);
   }, [fetchHealth]);
 
   useEffect(() => {
     if (authLoading) return;
-    if (!user) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setError('يجب تسجيل الدخول بحساب Platform Admin.');
-      return;
-    }
     let es: EventSource | null = null;
     let cancelled = false;
 
     (async () => {
+      if (!user) { setError('يجب تسجيل الدخول بحساب Platform Admin.'); return; }
       try {
         const token = await user.getIdToken();
         if (cancelled) return;

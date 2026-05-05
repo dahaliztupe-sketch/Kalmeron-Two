@@ -461,8 +461,10 @@ function SlashCommandMenu({ query, onSelect, onClose }: {
 
   const [activeIdx, setActiveIdx] = useState(0);
 
-  // eslint-disable-next-line react-hooks/set-state-in-effect
-  useEffect(() => { setActiveIdx(0); }, [query]);
+  useEffect(() => {
+    async function reset() { setActiveIdx(0); }
+    void reset();
+  }, [query]);
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -1120,10 +1122,14 @@ function ChatPageContent() {
     } catch { setMessages([]); }
   }, [user]);
 
-  // eslint-disable-next-line react-hooks/set-state-in-effect
-  useEffect(() => { loadConversations(); }, [user, loadConversations]);
-  // eslint-disable-next-line react-hooks/set-state-in-effect
-  useEffect(() => { if (activeConvId) loadChat(activeConvId); }, [activeConvId, loadChat]);
+  useEffect(() => {
+    async function run() { await loadConversations(); }
+    void run();
+  }, [user, loadConversations]);
+  useEffect(() => {
+    async function run() { if (activeConvId) await loadChat(activeConvId); }
+    void run();
+  }, [activeConvId, loadChat]);
   useEffect(() => {
     if (scrollRef.current) scrollRef.current.scrollIntoView({ behavior: "smooth" });
   }, [messages, activePhases]);
@@ -1446,8 +1452,10 @@ function ChatPageContent() {
     } catch {}
   }, [user]);
 
-  // eslint-disable-next-line react-hooks/set-state-in-effect
-  useEffect(() => { loadSavedPrompts(); }, [loadSavedPrompts]);
+  useEffect(() => {
+    async function run() { await loadSavedPrompts(); }
+    void run();
+  }, [loadSavedPrompts]);
 
   const saveCurrentPrompt = async () => {
     if (!user || !input.trim()) return;
@@ -1577,9 +1585,10 @@ function ChatPageContent() {
     const convId = searchParams.get("conv");
     if (!convId) return;
     convLoadedRef.current = true;
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setActiveConvId(convId);
-    void loadChat(convId);
+    void (async () => {
+      setActiveConvId(convId);
+      await loadChat(convId);
+    })();
   }, [user, searchParams, loadChat]);
 
   return (

@@ -39,23 +39,24 @@ export default function ExpertsPage() {
   const [asking, setAsking] = useState(false);
   const [searchQ, setSearchQ] = useState("");
 
-  async function load() {
-    setLoading(true);
-    try {
-      const token = user ? await user.getIdToken().catch(() => null) : null;
-      const r = await fetch("/api/experts", {
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-      });
-      const j = await r.json();
-      setExperts(j.experts || []);
-    } catch {
-      // ignore
-    } finally {
-      setLoading(false);
+  useEffect(() => {
+    let mounted = true;
+    async function load() {
+      setLoading(true);
+      try {
+        const token = user ? await user.getIdToken().catch(() => null) : null;
+        const r = await fetch("/api/experts", {
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+        });
+        const j = await r.json();
+        if (mounted) setExperts(j.experts || []);
+      } catch { /* silent */ } finally {
+        if (mounted) setLoading(false);
+      }
     }
-  }
-
-  useEffect(() => { load(); }, [user]); // eslint-disable-line react-hooks/exhaustive-deps, react-hooks/set-state-in-effect
+    void load();
+    return () => { mounted = false; };
+  }, [user]);
 
   async function create() {
     if (!description.trim() || !user) return;

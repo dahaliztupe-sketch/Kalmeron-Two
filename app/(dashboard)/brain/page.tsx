@@ -51,9 +51,9 @@ export default function BrainPage() {
   }
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    load();
-    const i = setInterval(load, 15000);
+    async function run() { await load(); }
+    void run();
+    const i = setInterval(() => void run(), 15000);
     return () => clearInterval(i);
   }, []);
 

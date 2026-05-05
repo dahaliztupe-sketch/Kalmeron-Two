@@ -35,7 +35,22 @@ export function DocumentUploader({ title = "مكتبة المستندات" }: { 
     }
   };
 
-  useEffect(() => { refresh(); /* eslint-disable-line */ }, [user]);
+  useEffect(() => {
+    if (!user) return;
+    let mounted = true;
+    async function run() {
+      try {
+        const token = await user!.getIdToken();
+        const r = await fetch("/api/rag/documents", { headers: { Authorization: `Bearer ${token}` } });
+        const j = await r.json();
+        if (mounted && r.ok) setDocs(j.documents || []);
+      } catch { /* silent */ } finally {
+        if (mounted) setLoading(false);
+      }
+    }
+    void run();
+    return () => { mounted = false; };
+  }, [user]);
 
   const handleUpload = async (file: File) => {
     if (!user) return;

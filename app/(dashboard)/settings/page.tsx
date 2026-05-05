@@ -84,20 +84,27 @@ export default function SettingsPage() {
 
   useEffect(() => {
     if (!user) return;
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setLoadingPrefs(true);
-    user.getIdToken().then(token => {
-      return fetch("/api/user/notification-prefs", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-    }).then(r => r.json()).then(j => {
-      if (j.ok && j.prefs) {
-        setEmailMarketing(j.prefs.emailMarketing ?? true);
-        setEmailProduct(j.prefs.emailProduct ?? true);
-        setInappMentions(j.prefs.inappMentions ?? true);
-        setInappWeekly(j.prefs.inappWeekly ?? false);
+    let mounted = true;
+    async function loadPrefs() {
+      setLoadingPrefs(true);
+      try {
+        const token = await user!.getIdToken();
+        const r = await fetch("/api/user/notification-prefs", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const j = await r.json();
+        if (mounted && j.ok && j.prefs) {
+          setEmailMarketing(j.prefs.emailMarketing ?? true);
+          setEmailProduct(j.prefs.emailProduct ?? true);
+          setInappMentions(j.prefs.inappMentions ?? true);
+          setInappWeekly(j.prefs.inappWeekly ?? false);
+        }
+      } catch { /* silent */ } finally {
+        if (mounted) setLoadingPrefs(false);
       }
-    }).catch(() => {}).finally(() => setLoadingPrefs(false));
+    }
+    void loadPrefs();
+    return () => { mounted = false; };
   }, [user]);
 
   const saveProfile = async () => {

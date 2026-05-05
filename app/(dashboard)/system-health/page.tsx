@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { AppShell } from "@/components/layout/AppShell";
 import { motion } from "motion/react";
 import { RefreshCw, Activity, Server, Zap, Wifi, WifiOff, Clock } from "lucide-react";
@@ -47,7 +47,7 @@ export default function SystemHealthPage() {
   const [loading, setLoading] = useState(true);
   const [lastLoaded, setLastLoaded] = useState<Date | null>(null);
 
-  async function load() {
+  const load = useCallback(async () => {
     setLoading(true);
     setError("");
     try {
@@ -60,14 +60,14 @@ export default function SystemHealthPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, []);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    load();
-    const t = setInterval(load, 15_000);
+    async function run() { await load(); }
+    void run();
+    const t = setInterval(() => void run(), 15_000);
     return () => clearInterval(t);
-  }, []);
+  }, [load]);
 
   const isHealthy = data?.status === "healthy";
 

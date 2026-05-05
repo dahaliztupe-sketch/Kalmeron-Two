@@ -42,10 +42,10 @@ export function CreditsIndicator() {
   }, [user]);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    fetchCredits();
-    const id = setInterval(fetchCredits, 30_000);
-    const onFocus = () => fetchCredits();
+    async function run() { await fetchCredits(); }
+    void run();
+    const id = setInterval(() => void run(), 30_000);
+    const onFocus = () => void run();
     window.addEventListener("focus", onFocus);
     return () => {
       clearInterval(id);

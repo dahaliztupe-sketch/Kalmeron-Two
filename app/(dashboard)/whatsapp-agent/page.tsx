@@ -75,16 +75,11 @@ export default function WhatsAppAgentPage() {
   const [phoneSaved, setPhoneSaved] = useState(false);
   const [copiedField, setCopiedField] = useState("");
   const [selectedConv, setSelectedConv] = useState<Conversation | null>(null);
-  const [webhookUrl, setWebhookUrl] = useState("");
+  const [webhookUrl, setWebhookUrl] = useState<string>(() =>
+    typeof window !== "undefined" ? `${window.location.origin}/api/whatsapp/webhook` : ""
+  );
   const [activeSetupStep, setActiveSetupStep] = useState<number | null>(null);
   const [pendingOtp, setPendingOtp] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setWebhookUrl(`${window.location.origin}/api/whatsapp/webhook`);
-    }
-  }, []);
 
   const loadRegistration = useCallback(async () => {
     if (!user) return;
@@ -122,10 +117,12 @@ export default function WhatsAppAgentPage() {
   }, [user]);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    loadRegistration();
-    loadConversations();
-    const iv = setInterval(loadConversations, 15000);
+    async function run() {
+      await loadRegistration();
+      await loadConversations();
+    }
+    void run();
+    const iv = setInterval(() => void loadConversations(), 15000);
     return () => clearInterval(iv);
   }, [loadRegistration, loadConversations]);
 

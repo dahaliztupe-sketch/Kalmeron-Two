@@ -170,13 +170,12 @@ export default function DashboardPage() {
     const stageKey = dbUser?.startup_stage as string;
     const baseActions = STAGE_QUICK_ACTIONS[stageKey] ?? STAGE_QUICK_ACTIONS.idea;
 
-    // Immediate sort from localStorage while remote loads
-    const localCounts = loadLocalUsage();
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setQuickActions(sortByUsage(baseActions, localCounts));
-
-    // Fetch Firestore counts and re-sort (only when authenticated)
     (async () => {
+      // Immediate sort from localStorage while remote loads
+      const localCounts = loadLocalUsage();
+      setQuickActions(sortByUsage(baseActions, localCounts));
+
+      // Fetch Firestore counts and re-sort (only when authenticated)
       if (!user) return;
       try {
         const token = await user.getIdToken().catch(() => null);

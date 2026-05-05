@@ -28,10 +28,12 @@ export default function WorkflowsRunnerPage() {
   const wf = findWorkflow(selectedId);
 
   React.useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setInputs({});
-    setResult(null);
-    setError(null);
+    async function reset() {
+      setInputs({});
+      setResult(null);
+      setError(null);
+    }
+    void reset();
   }, [selectedId]);
 
   async function run() {

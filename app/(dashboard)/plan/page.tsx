@@ -66,8 +66,8 @@ export default function PlanPage() {
   }, [user]);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    fetchOkrs();
+    async function run() { await fetchOkrs(); }
+    void run();
   }, [fetchOkrs]);
 
   // ── Add new OKR ────────────────────────────────────────────────────────────

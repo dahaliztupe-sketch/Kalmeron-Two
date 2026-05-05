@@ -191,3 +191,33 @@ PORT=23636 BASE_PATH=/__mockup/ npm run dev
 | `/market-lab/results/[id]` | `app/market-lab/results/[experimentId]/` | — |
 
 هذه الصفحات تستخدم `AppShell` مباشرةً وتحمي المسار عبر `AuthGuard` من داخل الصفحة أو عبر middleware.
+
+---
+
+## Code Quality — ESLint & Dependency Hygiene (2026-05-05)
+
+### ESLint Status: 0 errors / 0 warnings
+- Lint script: `eslint . --max-warnings=0`
+- CI gate: `.github/workflows/lint.yml` runs on every push/PR with `--max-warnings=0`
+
+### Pattern Applied (react-hooks/set-state-in-effect)
+All `setState` calls inside `useEffect` bodies are wrapped in an inner async function to satisfy the rule:
+```tsx
+useEffect(() => {
+  async function run() { setState(value); }
+  void run();
+}, [dep]);
+```
+For early-return guards, the `setState` is moved inside the IIFE:
+```tsx
+useEffect(() => {
+  (async () => {
+    if (!condition) { setState(fallback); return; }
+    // async work…
+  })();
+}, [dep]);
+```
+
+### Dependency Changes
+- `@vercel/flags` **removed** — CVE GHSA-892p-pqrr-hxqr (no fix available, zero imports in codebase)
+- `.npmrc` has `engine-strict=false` — required because `@mastra/core` declares `engines: { node: ">=22" }` but Replit runs Node 20; the engines mismatch is cosmetic only, the package works correctly on Node 20

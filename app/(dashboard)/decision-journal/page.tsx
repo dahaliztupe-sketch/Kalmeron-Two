@@ -80,16 +80,23 @@ export default function DecisionJournalPage() {
   // ── Load decisions from Firestore ─────────────────────────────────────────
   useEffect(() => {
     const col = decisionsPath();
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    if (!col) { setLoadingDecisions(false); return; }
-    setLoadingDecisions(true);
-    getDocs(query(col, orderBy("createdAt", "desc"), limit(50)))
-      .then(snap => {
-        const docs = snap.docs.map(d => ({ id: d.id, ...d.data() } as Decision));
-        setDecisions(docs);
-      })
-      .catch(() => toast.error("تعذّر تحميل القرارات"))
-      .finally(() => setLoadingDecisions(false));
+    let mounted = true;
+    async function loadDecisions() {
+      if (!col) { setLoadingDecisions(false); return; }
+      setLoadingDecisions(true);
+      try {
+        const snap = await getDocs(query(col, orderBy("createdAt", "desc"), limit(50)));
+        if (mounted) {
+          setDecisions(snap.docs.map(d => ({ id: d.id, ...d.data() } as Decision)));
+        }
+      } catch {
+        toast.error("تعذّر تحميل القرارات");
+      } finally {
+        if (mounted) setLoadingDecisions(false);
+      }
+    }
+    void loadDecisions();
+    return () => { mounted = false; };
   }, [decisionsPath]);
 
   // ── Save new decision to Firestore ────────────────────────────────────────

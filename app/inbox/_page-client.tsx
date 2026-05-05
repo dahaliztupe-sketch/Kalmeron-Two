@@ -48,22 +48,24 @@ export default function InboxPage() {
   const [busyId, setBusyId] = useState<string | null>(null);
   const [filter, setFilter] = useState<string>("pending");
 
-  const refresh = async () => {
-    if (!user) return;
-    setLoading(true);
-    try {
-      const token = await user.getIdToken();
-      const url = filter === "all" ? "/api/actions/inbox" : `/api/actions/inbox?status=${filter}`;
-      const r = await fetch(url, { headers: { Authorization: `Bearer ${token}` }, cache: "no-store" });
-      const j = await r.json();
-      if (r.ok) setItems(j.items || []);
-    } finally {
-      setLoading(false);
+  useEffect(() => {
+    let mounted = true;
+    async function refresh() {
+      if (!user) return;
+      setLoading(true);
+      try {
+        const token = await user.getIdToken();
+        const url = filter === "all" ? "/api/actions/inbox" : `/api/actions/inbox?status=${filter}`;
+        const r = await fetch(url, { headers: { Authorization: `Bearer ${token}` }, cache: "no-store" });
+        const j = await r.json();
+        if (mounted && r.ok) setItems(j.items || []);
+      } finally {
+        if (mounted) setLoading(false);
+      }
     }
-  };
-
-  // eslint-disable-next-line react-hooks/set-state-in-effect, react-hooks/exhaustive-deps
-  useEffect(() => { refresh(); }, [user, filter]);
+    void refresh();
+    return () => { mounted = false; };
+  }, [user, filter]);
 
   const decide = async (it: Item, decision: "approve" | "reject") => {
     if (!user) return;

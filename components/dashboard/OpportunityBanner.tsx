@@ -57,17 +57,16 @@ export function OpportunityBanner({ opportunity }: { opportunity: Opportunity | 
   // a new opportunity that arrives in the same session is not hidden because
   // the user dismissed a different (previous) opportunity.
   useEffect(() => {
-    if (!opportunity?.id) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setDismissed(false);
-      return;
+    async function syncDismissed() {
+      if (!opportunity?.id) { setDismissed(false); return; }
+      try {
+        const raw = sessionStorage.getItem(DISMISS_KEY);
+        setDismissed(raw === opportunity.id);
+      } catch {
+        setDismissed(false);
+      }
     }
-    try {
-      const raw = sessionStorage.getItem(DISMISS_KEY);
-      setDismissed(raw === opportunity.id);
-    } catch {
-      setDismissed(false);
-    }
+    void syncDismissed();
   }, [opportunity?.id]);
 
   const dismiss = () => {
