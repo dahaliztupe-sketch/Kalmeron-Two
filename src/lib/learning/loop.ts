@@ -164,6 +164,50 @@ export async function appendAgentMemoryTurn(
 }
 
 /**
+ * Writes a distilled "lessons learned" summary for an agent to the parent
+ * document at `users/{uid}/agent_memory/{agentId}`.
+ * Called after every successful agent run — summarises the last 5 turns into
+ * 3-5 bullet points using Gemini, then persists the result so that
+ * `buildAgentContextAddon` can surface it as priming context.
+ */
+export async function updateAgentLearnedSummary(
+  workspaceId: string,
+  agentId: string,
+): Promise<void> {
+  if (!workspaceId || !agentId) return;
+  try {
+    const turns = await getAgentMemory(workspaceId, agentId, 5);
+    if (turns.length === 0) return;
+
+    const turnText = turns
+      .map(t => `[${t.role === 'user' ? 'المستخدم' : 'الوكيل'}]: ${t.content.slice(0, 600)}`)
+      .join('\n');
+
+    const { text } = await generateText({
+      model: MODELS.FLASH,
+      system: 'أنت مُقطّر دروس مستفادة. لخّص المحادثة التالية في ٣-٥ نقاط بالعربية تُبيّن: ما الذي يهتم به المستخدم، ما الأنماط المتكررة، ما الخلاصات الإجرائية. أجب بنقاط فقط بدون مقدمة.',
+      prompt: `محادثة الوكيل (${agentId}):\n${turnText}`,
+    });
+
+    await adminDb
+      .collection('users')
+      .doc(workspaceId)
+      .collection('agent_memory')
+      .doc(agentId)
+      .set(
+        {
+          learnedSummary: text,
+          updatedAt: new Date().toISOString(),
+          agentId,
+        },
+        { merge: true },
+      );
+  } catch (e) {
+    logErr('updateAgentLearnedSummary', e);
+  }
+}
+
+/**
  * Builds a short "recent context" string from the last N turns of an agent's
  * memory, ready to prepend to a system prompt.
  */
@@ -172,10 +216,33 @@ export async function buildAgentContextAddon(
   agentId: string,
   limit = 5
 ): Promise<string> {
-  const turns = await getAgentMemory(workspaceId, agentId, limit);
-  if (turns.length === 0) return '';
-  const lines = turns.map(t => `[${t.role === 'user' ? 'المستخدم' : 'الوكيل'}]: ${t.content.slice(0, 500)}`);
-  return `\n\n--- السياق من المحادثات السابقة (${agentId}) ---\n${lines.join('\n')}\n---`;
+  const [turns, parentSnap] = await Promise.all([
+    getAgentMemory(workspaceId, agentId, limit),
+    adminDb
+      .collection('users')
+      .doc(workspaceId)
+      .collection('agent_memory')
+      .doc(agentId)
+      .get()
+      .catch(() => null),
+  ]);
+
+  const parts: string[] = [];
+
+  // Include distilled "lessons learned" summary when available
+  const learnedSummary = parentSnap?.exists
+    ? (parentSnap.data() as { learnedSummary?: string })?.learnedSummary
+    : undefined;
+  if (learnedSummary) {
+    parts.push(`--- دروس مستفادة من تفاعلات سابقة (${agentId}) ---\n${learnedSummary}\n---`);
+  }
+
+  if (turns.length > 0) {
+    const lines = turns.map(t => `[${t.role === 'user' ? 'المستخدم' : 'الوكيل'}]: ${t.content.slice(0, 500)}`);
+    parts.push(`--- السياق من المحادثات السابقة (${agentId}) ---\n${lines.join('\n')}\n---`);
+  }
+
+  return parts.length > 0 ? `\n\n${parts.join('\n\n')}` : '';
 }
 
 export interface ExtractInput {

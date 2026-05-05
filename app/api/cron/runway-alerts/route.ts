@@ -147,6 +147,9 @@ export async function GET(req: NextRequest) {
       const monthsLabel = fmtMonths(runwayResult.months);
 
       // ── Step 1: Write in-app notification to Firestore — ALWAYS, regardless of email.
+      // Include 3 prioritised CFO recommendations in the notification payload.
+      const recs = buildRecommendations(inputs, runwayResult).slice(0, 3);
+      const recsText = recs.map((r, i) => `${i + 1}. ${r.title}: ${r.rationale}`).join(' | ');
       try {
         await adminDb
           .collection("users")
@@ -155,10 +158,11 @@ export async function GET(req: NextRequest) {
           .add({
             type: "runway_alert",
             title: `تنبيه: تبقّى ${monthsLabel} فقط من السيولة`,
-            body: `رصيدك النقدي تحت عتبة ${inputs.thresholdMonths} أشهر — اتخذ إجراء الآن.`,
+            body: `رصيدك النقدي تحت عتبة ${inputs.thresholdMonths} أشهر. ${recsText}`,
             href: "/cash-runway",
             read: false,
             severity: runwayResult.months <= 2 ? "critical" : "warning",
+            recommendations: recs.map(r => ({ title: r.title, rationale: r.rationale })),
             metadata: {
               months: runwayResult.months,
               threshold: inputs.thresholdMonths,

@@ -171,9 +171,8 @@ export interface AgentDefinition {
   softCostBudgetUsd: number;
   /** Schema المدخلات. */
   inputSchema: z.ZodTypeAny;
-  /** الدالة التنفيذية. */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  action: (...args: any[]) => Promise<unknown>;
+  /** الدالة التنفيذية — method form يسمح بتخصيص signature لكل وكيل. */
+  action(...args: unknown[]): Promise<unknown>;
   /** عنوان عربي قصير يظهر في ThoughtChain. */
   thinkingLabelAr?: string;
 }

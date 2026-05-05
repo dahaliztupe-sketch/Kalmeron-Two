@@ -21,6 +21,7 @@ import {
   formatSkillsForPrompt,
   buildAgentContextAddon,
   appendAgentMemoryTurn,
+  updateAgentLearnedSummary,
   type LearnedSkill,
 } from '@/src/lib/learning/loop';
 import {
@@ -221,12 +222,14 @@ export async function instrumentAgent<T>(
             const outputStr =
               typeof result === 'string' ? result : JSON.stringify(result || '').slice(0, 6000);
 
-            // ── Persist conversation turn to per-agent rolling memory (last 10 turns) ──
-            // This enables buildAgentContextAddon to provide conversation context next run.
+            // ── Persist conversation turns to per-agent rolling memory (last 10 turns) ──
+            // Then distil a "lessons learned" summary to the parent agent_memory document.
             await Promise.allSettled([
               appendAgentMemoryTurn(wid, agentName, { role: 'user', content: taskText }),
               appendAgentMemoryTurn(wid, agentName, { role: 'assistant', content: outputStr.slice(0, 3000) }),
             ]);
+            // Fire-and-forget distillation — updates learnedSummary on the parent doc.
+            void updateAgentLearnedSummary(wid, agentName);
 
             const skill = await extractSkillFromTask({
               workspaceId: wid,
