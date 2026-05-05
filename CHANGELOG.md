@@ -5,6 +5,30 @@ omitted unless they affect a user. The most recent release is at the top.
 
 ---
 
+## [0.1.1](https://github.com/dahaliztupe-sketch/Kalmeron-Two/compare/v0.1.0...v0.1.1) (2026-05-05)
+
+
+### Features
+
+* **ai:** Phase 3 — AI agent quality improvements ([d8360fb](https://github.com/dahaliztupe-sketch/Kalmeron-Two/commit/d8360fb76ed303b287c162abbf8851995f764b2a))
+* **ai:** Phase 3 — AI agent quality improvements (complete) ([f7ee4a3](https://github.com/dahaliztupe-sketch/Kalmeron-Two/commit/f7ee4a3cfca950baf8c48f052c6ae0ccc95c5d11))
+* **billing:** Phase 4 — complete billing & payments pipeline ([0ac5ddb](https://github.com/dahaliztupe-sketch/Kalmeron-Two/commit/0ac5ddb679053fe91e9cb7e4dad7fc2c8874239d))
+* complete Zod validation at call sites + structured persona JSON for customer discovery ([5f3fc15](https://github.com/dahaliztupe-sketch/Kalmeron-Two/commit/5f3fc15b3303753c3ee471a93255cac2de8f6ac5))
+* **onboarding:** Onboarding UX Overhaul — First Mission Activation ([bdd05a2](https://github.com/dahaliztupe-sketch/Kalmeron-Two/commit/bdd05a2d0482051efe8f6a51b720d528a992e793))
+* **orchestrator:** connect 8 new specialist agents to intelligent conversation ([a3a0f35](https://github.com/dahaliztupe-sketch/Kalmeron-Two/commit/a3a0f35f5d7eeb503cd7143f576bb566d7d91653))
+* **phase-3:** complete agent hardening and eval suite expansion ([156d1bc](https://github.com/dahaliztupe-sketch/Kalmeron-Two/commit/156d1bc3e5849e05fdfcceeee53db3a10c0e1150))
+
+
+### Bug Fixes
+
+* approved-with-comments — pricing strategies, business plan template, security fixes ([fc61b26](https://github.com/dahaliztupe-sketch/Kalmeron-Two/commit/fc61b26a87abc8908bcb01abffb7d6063ba036ea))
+* **arch:** full architectural cleanup — RAG + multi-provider + cache + Neo4j + embeddings ([b9e8dd6](https://github.com/dahaliztupe-sketch/Kalmeron-Two/commit/b9e8dd6a4921ad9a590a4bf6749a706dfd3994d2))
+* bring ESLint to 0 errors/warnings and clean up npm dependencies ([f4f6410](https://github.com/dahaliztupe-sketch/Kalmeron-Two/commit/f4f64108fdc11af0467c2d4c0e2864806f8ffb5e))
+* **dashboard+chat+brief+onboarding:** address all APPROVED_WITH_COMMENTS items ([6319cb7](https://github.com/dahaliztupe-sketch/Kalmeron-Two/commit/6319cb7b191402a8be792838eea77bee79b07ded))
+* resolve all 52 TypeScript errors, ESLint crash, mockup sandbox startup failure ([55c525c](https://github.com/dahaliztupe-sketch/Kalmeron-Two/commit/55c525c250cc57b142fcb5078ef7de11e5c2b694))
+* resolve all code-review blockers — TS clean, runway cron, agent memory write, Zod validation ([7a1a0e5](https://github.com/dahaliztupe-sketch/Kalmeron-Two/commit/7a1a0e5b1c2610559d7f28ecb1fd4f682c72a359))
+* resolve all ESLint lint-disable suppressions and TypeScript lib.dom.d.ts parse error ([e7fb6f5](https://github.com/dahaliztupe-sketch/Kalmeron-Two/commit/e7fb6f5823ba69fcc1a3a3e922cc868c9e1ec2be))
+
 ## v2026.04.28-a — Hero Redesign + Brand Fix (2026-04-28)
 
 A focused design pass on the most-trafficked surface — the marketing home —
