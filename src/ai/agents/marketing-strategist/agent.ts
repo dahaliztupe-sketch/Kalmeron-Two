@@ -3,8 +3,16 @@ import { MODELS } from '@/src/lib/gemini';
 import { instrumentAgent } from '@/src/lib/observability/agent-instrumentation';
 import { getCurrentLearnedSkillsAddon } from '@/src/lib/learning/context';
 import { MARKETING_STRATEGIST_PROMPT } from './prompt';
+import { z } from 'zod';
+
+export const MarketingInputSchema = z.object({
+  business: z.string().min(3).max(2000),
+  budget: z.string().max(200).optional(),
+  goals: z.string().max(1000).optional(),
+});
 
 export async function marketingStrategistAction(business: string, budget?: string, goals?: string): Promise<string> {
+  MarketingInputSchema.parse({ business, budget, goals });
   return instrumentAgent(
     'marketing_strategist',
     async () => {

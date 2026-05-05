@@ -1389,7 +1389,7 @@ export const AgentRegistry: Record<string, AgentDefinition> = {
       hypotheses: z.array(z.string()),
       interviewAnswers: z.array(z.object({ question: z.string(), answer: z.string() })).optional(),
     }),
-    action: customerDiscoveryAction as (input: unknown) => Promise<string>,
+    action: ((input: unknown) => customerDiscoveryAction(input as Parameters<typeof customerDiscoveryAction>[0]).then(r => r.analysisText)) as (input: unknown) => Promise<string>,
     thinkingLabelAr: 'يصمّم أسئلة اكتشاف العملاء بأسلوب Mom Test...',
   },
 

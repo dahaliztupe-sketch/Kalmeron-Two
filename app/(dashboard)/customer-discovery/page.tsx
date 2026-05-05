@@ -19,6 +19,7 @@ export default function CustomerDiscoveryPage() {
   const [targetSegment, setTargetSegment] = useState("");
   const [hypotheses, setHypotheses] = useState<string[]>(["", ""]);
   const [result, setResult] = useState("");
+  const [persona, setPersona] = useState<Record<string, unknown> | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [copied, setCopied] = useState(false);
@@ -46,6 +47,7 @@ export default function CustomerDiscoveryPage() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "خطأ في الخادم");
       setResult(data.result ?? "");
+      setPersona(data.persona ?? null);
     } catch (e) {
       setError(e instanceof Error ? e.message : "حدث خطأ غير متوقع");
     } finally {
@@ -89,7 +91,7 @@ export default function CustomerDiscoveryPage() {
       const res = await fetch("/api/customer-discovery/persona-pdf", {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ personaText: result, businessIdea, targetSegment }),
+        body: JSON.stringify({ personaText: result, businessIdea, targetSegment, persona }),
       });
       if (!res.ok) throw new Error("فشل التصدير");
       const blob = await res.blob();

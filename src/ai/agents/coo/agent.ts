@@ -16,6 +16,7 @@ export const COOInputSchema = z.object({
 export type COOInput = z.infer<typeof COOInputSchema>;
 
 export async function cooAgentAction(input: COOInput): Promise<string> {
+  COOInputSchema.parse(input);
   return instrumentAgent(
     'coo_agent',
     async () => {

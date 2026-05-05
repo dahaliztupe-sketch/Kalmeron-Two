@@ -3,8 +3,16 @@ import { MODELS } from '@/src/lib/gemini';
 import { instrumentAgent } from '@/src/lib/observability/agent-instrumentation';
 import { getCurrentLearnedSkillsAddon } from '@/src/lib/learning/context';
 import { SALES_COACH_PROMPT } from './prompt';
+import { z } from 'zod';
+
+export const SalesInputSchema = z.object({
+  product: z.string().min(2).max(500),
+  target: z.string().min(2).max(500),
+  challenge: z.string().max(2000).optional(),
+});
 
 export async function salesCoachAction(product: string, target: string, challenge?: string): Promise<string> {
+  SalesInputSchema.parse({ product, target, challenge });
   return instrumentAgent(
     'sales_coach',
     async () => {

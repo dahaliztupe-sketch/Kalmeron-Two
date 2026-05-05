@@ -16,6 +16,7 @@ export const CMOInputSchema = z.object({
 export type CMOInput = z.infer<typeof CMOInputSchema>;
 
 export async function cmoAgentAction(input: CMOInput): Promise<string> {
+  CMOInputSchema.parse(input);
   return instrumentAgent(
     'cmo_agent',
     async () => {

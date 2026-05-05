@@ -16,6 +16,7 @@ export const CTOInputSchema = z.object({
 export type CTOInput = z.infer<typeof CTOInputSchema>;
 
 export async function ctoAgentAction(input: CTOInput): Promise<string> {
+  CTOInputSchema.parse(input);
   return instrumentAgent(
     'cto_agent',
     async () => {

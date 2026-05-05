@@ -16,6 +16,7 @@ export const CHROInputSchema = z.object({
 export type CHROInput = z.infer<typeof CHROInputSchema>;
 
 export async function chroAgentAction(input: CHROInput): Promise<string> {
+  CHROInputSchema.parse(input);
   return instrumentAgent(
     'chro_agent',
     async () => {

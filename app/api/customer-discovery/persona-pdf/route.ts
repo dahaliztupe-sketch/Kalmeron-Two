@@ -20,10 +20,24 @@ import {
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
+const PersonaCardSchema = z.object({
+  name: z.string().optional(),
+  age: z.string().optional(),
+  occupation: z.string().optional(),
+  location: z.string().optional(),
+  mainPain: z.string().optional(),
+  goals: z.array(z.string()).optional(),
+  behaviors: z.array(z.string()).optional(),
+  payingWillingness: z.string().optional(),
+  quote: z.string().optional(),
+  interviewSignals: z.array(z.string()).optional(),
+});
+
 const BodySchema = z.object({
-  personaText: z.string().min(50).max(20000),
+  personaText: z.string().min(10).max(20000),
   businessIdea: z.string().max(500).optional().default(''),
   targetSegment: z.string().max(300).optional().default(''),
+  persona: PersonaCardSchema.nullable().optional(),
 });
 
 let fontRegistered = false;
@@ -114,11 +128,45 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'invalid_body' }, { status: 400 });
   }
 
-  const { personaText, businessIdea, targetSegment } = parsed.data;
+  const { personaText, businessIdea, targetSegment, persona } = parsed.data;
   const now = new Date().toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric' });
 
   await ensureFont();
   const f = fontRegistered ? 'Tajawal' : 'Helvetica';
+
+  const listStyle = { fontSize: 11, color: 'rgba(255,255,255,0.8)', lineHeight: 1.8, marginBottom: 2, fontFamily: f };
+  const sectionLabelStyle = { fontSize: 10, color: '#f59e0b', fontWeight: 'bold' as const, marginBottom: 6, marginTop: 12, fontFamily: f };
+
+  function renderStructuredPersona() {
+    if (!persona) return null;
+    const rows: ReturnType<typeof React.createElement>[] = [];
+    if (persona.quote) {
+      rows.push(React.createElement(View, { key: 'quote', style: { backgroundColor: 'rgba(245,158,11,0.08)', borderRadius: 8, padding: 12, marginBottom: 8, borderColor: 'rgba(245,158,11,0.25)', borderWidth: 1 } },
+        React.createElement(Text, { style: { fontSize: 13, fontStyle: 'italic' as const, color: '#f59e0b', fontFamily: f } }, `"${persona.quote}"`),
+      ));
+    }
+    if (persona.mainPain) {
+      rows.push(React.createElement(Text, { key: 'painLabel', style: sectionLabelStyle }, 'الألم الرئيسي'));
+      rows.push(React.createElement(Text, { key: 'pain', style: listStyle }, persona.mainPain as string));
+    }
+    if (persona.goals?.length) {
+      rows.push(React.createElement(Text, { key: 'goalsLabel', style: sectionLabelStyle }, 'الأهداف'));
+      (persona.goals as string[]).forEach((g, i) => rows.push(React.createElement(Text, { key: `g${i}`, style: listStyle }, `• ${g}`)));
+    }
+    if (persona.behaviors?.length) {
+      rows.push(React.createElement(Text, { key: 'behLabel', style: sectionLabelStyle }, 'السلوكيات'));
+      (persona.behaviors as string[]).forEach((b, i) => rows.push(React.createElement(Text, { key: `b${i}`, style: listStyle }, `• ${b}`)));
+    }
+    if (persona.payingWillingness) {
+      rows.push(React.createElement(Text, { key: 'payLabel', style: sectionLabelStyle }, 'الاستعداد للدفع'));
+      rows.push(React.createElement(Text, { key: 'pay', style: listStyle }, persona.payingWillingness as string));
+    }
+    if (persona.interviewSignals?.length) {
+      rows.push(React.createElement(Text, { key: 'sigLabel', style: sectionLabelStyle }, 'إشارات المقابلة'));
+      (persona.interviewSignals as string[]).forEach((s, i) => rows.push(React.createElement(Text, { key: `s${i}`, style: listStyle }, `◆ ${s}`)));
+    }
+    return rows.length ? React.createElement(View, { style: styles.contentBox }, ...rows) : null;
+  }
 
   const PersonaDoc = () =>
     React.createElement(Document, { title: 'Persona Card - Kalmeron', language: 'ar' },
@@ -130,25 +178,36 @@ export async function POST(req: NextRequest) {
                 React.createElement(Text, { style: [styles.logoText, { fontFamily: f }] }, '*'),
               ),
               React.createElement(View, { style: styles.titleBox },
-                React.createElement(Text, { style: [styles.title, { fontFamily: f }] }, 'بطاقة Persona — كلميرون'),
+                React.createElement(Text, { style: [styles.title, { fontFamily: f }] }, persona ? `Persona: ${String(persona.name || 'بطاقة العميل')} — كلميرون` : 'بطاقة Persona — كلميرون'),
                 React.createElement(Text, { style: [styles.subtitle, { fontFamily: f }] }, `Customer Discovery Agent · ${now}`),
               ),
             ),
 
-            (businessIdea || targetSegment) ? React.createElement(View, { style: styles.metaGrid },
-              React.createElement(View, { style: styles.metaItem },
+            React.createElement(View, { style: styles.metaGrid },
+              persona?.age ? React.createElement(View, { style: styles.metaItem },
+                React.createElement(Text, { style: [styles.metaLabel, { fontFamily: f }] }, 'العمر'),
+                React.createElement(Text, { style: [styles.metaValue, { fontFamily: f }] }, String(persona.age)),
+              ) : React.createElement(View, { style: styles.metaItem },
                 React.createElement(Text, { style: [styles.metaLabel, { fontFamily: f }] }, 'الفكرة التجارية'),
                 React.createElement(Text, { style: [styles.metaValue, { fontFamily: f }] }, businessIdea || '—'),
               ),
-              React.createElement(View, { style: styles.metaItem },
+              persona?.occupation ? React.createElement(View, { style: styles.metaItem },
+                React.createElement(Text, { style: [styles.metaLabel, { fontFamily: f }] }, 'المهنة'),
+                React.createElement(Text, { style: [styles.metaValue, { fontFamily: f }] }, String(persona.occupation)),
+              ) : React.createElement(View, { style: styles.metaItem },
                 React.createElement(Text, { style: [styles.metaLabel, { fontFamily: f }] }, 'الشريحة المستهدفة'),
                 React.createElement(Text, { style: [styles.metaValue, { fontFamily: f }] }, targetSegment || '—'),
               ),
-            ) : null,
-
-            React.createElement(View, { style: styles.contentBox },
-              React.createElement(Text, { style: [styles.content, { fontFamily: f }] }, personaText),
+              persona?.location ? React.createElement(View, { style: styles.metaItem },
+                React.createElement(Text, { style: [styles.metaLabel, { fontFamily: f }] }, 'الموقع'),
+                React.createElement(Text, { style: [styles.metaValue, { fontFamily: f }] }, String(persona.location)),
+              ) : null,
             ),
+
+            persona ? renderStructuredPersona() :
+              React.createElement(View, { style: styles.contentBox },
+                React.createElement(Text, { style: [styles.content, { fontFamily: f }] }, personaText),
+              ),
 
             React.createElement(Text, { style: [styles.footer, { fontFamily: f }] },
               'صُنع بواسطة كلميرون AI · جميع البيانات سرية · للاستخدام الداخلي فقط'

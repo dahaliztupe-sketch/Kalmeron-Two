@@ -40,8 +40,8 @@ export async function POST(request: NextRequest) {
     if (!businessIdea.trim()) return NextResponse.json({ error: 'businessIdea required' }, { status: 400 });
     if (hypotheses.length === 0) return NextResponse.json({ error: 'At least 1 hypothesis required' }, { status: 400 });
 
-    const result = await customerDiscoveryAction({ businessIdea, targetSegment, hypotheses, interviewAnswers });
-    return NextResponse.json({ result });
+    const { analysisText, persona } = await customerDiscoveryAction({ businessIdea, targetSegment, hypotheses, interviewAnswers });
+    return NextResponse.json({ result: analysisText, persona });
   } catch (e) {
     const msg = e instanceof Error ? e.message : 'unknown error';
     return NextResponse.json({ error: msg }, { status: 500 });

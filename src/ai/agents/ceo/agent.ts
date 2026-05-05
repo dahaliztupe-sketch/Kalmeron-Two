@@ -31,6 +31,7 @@ const EXECUTIVE_ROSTER = Object.values(ENTERPRISE_EXECUTIVES)
   .join('\n');
 
 export async function ceoAgentAction(input: CEOInput): Promise<CEOOutput> {
+  CEOInputSchema.parse(input);
   return instrumentAgent(
     'ceo_agent',
     async () => {

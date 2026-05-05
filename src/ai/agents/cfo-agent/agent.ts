@@ -27,7 +27,13 @@ export interface CfoInput {
   parameters: Record<string, unknown>;
 }
 
+const CfoActionSchema = z.object({
+  task: z.enum(['analyze-scenario', 'evaluate-investment', 'general']).default('general'),
+  parameters: z.record(z.string(), z.unknown()),
+});
+
 export async function cfoAgentAction(task: string, parameters: Record<string, unknown>): Promise<string> {
+  CfoActionSchema.parse({ task, parameters });
   const usedTools: string[] = [];
   return instrumentAgent(
     'cfo_agent',

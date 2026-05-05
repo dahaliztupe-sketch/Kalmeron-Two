@@ -15,6 +15,7 @@ export const LegalQuerySchema = z.object({
 export type LegalQueryInput = z.infer<typeof LegalQuerySchema>;
 
 export async function legalGuideAction(query: string, context?: string): Promise<string> {
+  LegalQuerySchema.parse({ query, context });
   return instrumentAgent(
     'legal_guide',
     async () => {
