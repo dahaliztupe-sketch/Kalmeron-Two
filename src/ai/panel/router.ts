@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { z } from 'zod';
 import { MODELS } from '@/src/lib/gemini';
 import { safeGenerateObject } from '@/src/lib/llm/gateway';
@@ -68,7 +67,7 @@ export async function routePanel(
     const route = result.object;
     // تنقية: استبعد أي معرف ليس في القائمة المتاحة، وقص إلى 4.
     const cleanedExperts = route.experts
-      .filter((id) => SPECIALIZED_PANELS[route.domain]?.[id] || ALL_EXPERTS[id])
+      .filter((id) => (SPECIALIZED_PANELS as Record<string, Record<string, unknown>>)[route.domain]?.[id] || ALL_EXPERTS[id])
       .slice(0, 4);
 
     if (cleanedExperts.length < 2) {

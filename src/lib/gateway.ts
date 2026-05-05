@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { createGateway } from '@vercel/ai-gateway';
 
 // Note: gemini-2.5-flash-lite is NOT available via Replit AI proxy.

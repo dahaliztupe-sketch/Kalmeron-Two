@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Graph Tools — Knowledge Graph has been removed.
  * All tools return { enabled: false } as the disabled-path fallback.

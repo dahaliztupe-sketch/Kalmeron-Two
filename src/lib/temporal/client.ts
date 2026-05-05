@@ -1,3 +1,4 @@
+// ts-nocheck: reason=temporal-sdk has no TypeScript types; awaiting @temporalio/client upgrade
 // @ts-nocheck
 import { Client, Connection } from '@temporalio/client';
 

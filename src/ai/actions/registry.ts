@@ -1,3 +1,4 @@
+// ts-nocheck: reason=complex agent/crew patterns; scheduled for typed refactor
 // @ts-nocheck
 /**
  * Typed registry of side-effecting agent actions ("tools that do things").

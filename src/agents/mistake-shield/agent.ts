@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { generateText } from 'ai';
 import { MODELS } from '@/src/lib/gemini';
 import { MISTAKE_SHIELD_SYSTEM_PROMPT } from './prompt';

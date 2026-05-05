@@ -1,3 +1,4 @@
+// ts-nocheck: reason=complex agent/crew patterns; scheduled for typed refactor
 // @ts-nocheck
 /**
  * Recipes — وصفات جاهزة تربط أقسام متعددة في تدفّق واحد بضغطة زر.

@@ -1,3 +1,4 @@
+// ts-nocheck: reason=complex agent/crew patterns; scheduled for typed refactor
 // @ts-nocheck
 import { globalGraphTools } from '@/src/lib/memory/graph-tools';
   import { Agent } from '@mastra/core';

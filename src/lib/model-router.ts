@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Hybrid Model Router — Kalmeron Two
  * --------------------------------------------------------------

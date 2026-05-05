@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { z } from 'zod';
 import { defineNotConfigured } from './_stub';
 const HINT = 'PLAYWRIGHT_BROWSER_WS أو CLOUDFLARE_BROWSER_RUN_ENDPOINT';

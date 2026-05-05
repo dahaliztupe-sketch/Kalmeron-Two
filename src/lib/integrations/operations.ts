@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { z } from 'zod';
 import { defineNotConfigured } from './_stub';
 const HINT = 'PROJECT44_API_KEY';

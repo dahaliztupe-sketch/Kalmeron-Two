@@ -1,3 +1,4 @@
+// ts-nocheck: reason=@mastra/core workday-mcp requires separate architectural migration
 // @ts-nocheck
 import { Mastra } from '@mastra/core';
 

@@ -1,3 +1,4 @@
+// ts-nocheck: reason=complex agent/crew patterns; scheduled for typed refactor
 // @ts-nocheck
 import { Crew } from 'crewai';
 import { Runnable } from '@langchain/core/runnables';

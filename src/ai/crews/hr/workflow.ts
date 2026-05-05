@@ -1,3 +1,4 @@
+// ts-nocheck: reason=complex agent/crew patterns; scheduled for typed refactor
 // @ts-nocheck
 import { Agent, Workflow } from '@mastra/core';
 import { z } from 'zod';

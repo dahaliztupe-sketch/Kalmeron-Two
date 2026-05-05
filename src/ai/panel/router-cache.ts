@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * router-cache — Hybrid panel-router with embedding-based memoization.
  *

@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { z } from 'zod';
 import { defineNotConfigured } from './_stub';
 const EMAIL_HINT = 'SENDGRID_API_KEY أو RESEND_API_KEY';

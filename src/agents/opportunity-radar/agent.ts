@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { generateObject, generateText } from 'ai';
 import { MODELS } from '@/src/lib/gemini';
 import { OPPORTUNITY_RADAR_SYSTEM_PROMPT } from './prompt';

@@ -1,3 +1,4 @@
+// ts-nocheck: reason=complex integration patterns; scheduled for typed refactor
 // @ts-nocheck
 // Mock of AgentOS structure based on provided request
 export class AgentOS {

@@ -1,3 +1,4 @@
+// ts-nocheck: reason=complex integration patterns; scheduled for typed refactor
 // @ts-nocheck
 import { db } from './firebase';
 

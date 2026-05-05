@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Helper: declare typed integration tools that gracefully report
  * "not configured" when their backing credentials are missing.
@@ -27,7 +26,7 @@ export function defineNotConfigured<T extends z.ZodTypeAny>(
         userId: ctx?.userId || 'unknown',
         agentId: ctx?.agentId || 'unknown',
         toolName: name,
-        args: _args,
+        args: _args as Record<string, unknown>,
         autonomyLevel: ctx?.autonomyLevel ?? 3,
       });
       return {

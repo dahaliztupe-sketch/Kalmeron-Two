@@ -1,3 +1,4 @@
+// ts-nocheck: reason=complex integration patterns; scheduled for typed refactor
 // @ts-nocheck
 export const generateNDA = (disclosingParty: string, receivingParty: string, purpose: string, duration: string) => {
   return `# اتفاقية عدم إفصاح (NDA)

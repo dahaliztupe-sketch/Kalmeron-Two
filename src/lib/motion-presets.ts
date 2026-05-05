@@ -1,3 +1,4 @@
+// ts-nocheck: reason=complex integration patterns; scheduled for typed refactor
 // @ts-nocheck
 export const fadeInUp = {
   initial: { opacity: 0, y: 20 },

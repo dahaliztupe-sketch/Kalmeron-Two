@@ -1,3 +1,4 @@
+// ts-nocheck: reason=complex agent/crew patterns; scheduled for typed refactor
 // @ts-nocheck
   /**
    * Receptionist Agent — الواجهة الوحيدة للمستخدم (/chat).

@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Web search with citations.
  * Primary: Gemini with built-in Google Search grounding (free with GEMINI_API_KEY).

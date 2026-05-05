@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Agent tools backed by the Virtual Office VM.
  * Each tool auto-provisions a VM for the calling agent if needed.

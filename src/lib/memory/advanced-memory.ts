@@ -1,8 +1,6 @@
-// @ts-nocheck
-
 // Mocks for 2026 advanced memory clients
-export class ZepClient { memory = { search: async () => [] }; }
-export class Mem0 { async search() { return []; } }
+export class ZepClient { memory = { search: async (_query: string, _opts?: Record<string, unknown>) => [] as unknown[] }; }
+export class Mem0 { async search(_query: string, _opts?: Record<string, unknown>) { return [] as unknown[]; } }
 
 export class UnifiedMemory {
   private zep = new ZepClient();
@@ -20,7 +18,8 @@ export class UnifiedMemory {
 
 // CraniMem: ذاكرة عرضية مقيدة تحمي الوكيل من التشتيت أثناء العمليات
 export class CraniMem {
-  constructor(config) { this.config = config; }
+  private config: Record<string, unknown>;
+  constructor(config: Record<string, unknown>) { this.config = config; }
 }
 
 export const robustMemory = new CraniMem({

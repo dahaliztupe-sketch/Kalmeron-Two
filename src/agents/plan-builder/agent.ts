@@ -1,5 +1,4 @@
-// @ts-nocheck
-import { generateObject, streamText } from 'ai';
+import { generateObject, streamText, type ModelMessage } from 'ai';
 import { MODELS } from '@/src/lib/gemini';
 import { PLAN_BUILDER_SYSTEM_PROMPT } from './prompt';
 import { z } from 'zod';
@@ -35,7 +34,7 @@ export type BusinessPlan = z.infer<typeof BusinessPlanSchema>;
 /**
  * High-Reasoning Business Plan Agent using Gemini 3.1 Pro.
  */
-export async function buildBusinessPlanStream(projectInfo: string, conversationHistory: unknown[]) {
+export async function buildBusinessPlanStream(projectInfo: string, conversationHistory: ModelMessage[]) {
   return instrumentAgent('plan_builder', async () => {
     const benchmarks = '';
 
@@ -49,13 +48,11 @@ ${benchmarks}
 قم ببناء خطة عمل شاملة وفائقة الذكاء. استخدم قدراتك في الاستدلال (Reasoning) لتوليد أرقام وتوقعات مالية واقعية جداً للسوق المصري في 2026.
 `;
 
+    const messages: ModelMessage[] = [...conversationHistory, { role: 'user', content: prompt }];
     return streamText({
       model: MODELS.PRO,
       system: PLAN_BUILDER_SYSTEM_PROMPT,
-      messages: [
-          ...conversationHistory,
-          { role: 'user', content: prompt }
-      ],
+      messages,
     });
   }, { model: 'gemini-pro', input: { projectInfo }, toolsUsed: ['rag.search', 'stream.text'] });
 }

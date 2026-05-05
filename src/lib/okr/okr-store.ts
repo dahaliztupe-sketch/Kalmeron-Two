@@ -1,3 +1,4 @@
+// ts-nocheck: reason=complex integration patterns; scheduled for typed refactor
 // @ts-nocheck
 /**
  * OKR Store — قراءة/كتابة OKRs في Firestore (collection: okrs).

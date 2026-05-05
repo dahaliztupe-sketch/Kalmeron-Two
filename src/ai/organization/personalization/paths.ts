@@ -1,3 +1,4 @@
+// ts-nocheck: reason=complex agent/crew patterns; scheduled for typed refactor
 // @ts-nocheck
   /**
    * Personalized Paths — مسارات مخصصة لكل فئة مستهدفة في السوق المصري.

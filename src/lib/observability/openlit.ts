@@ -1,4 +1,3 @@
-// @ts-nocheck
 // Placeholder for OpenLIT. 
 // Replace with actual @openlit/sdk when available.
 export const tracer = {

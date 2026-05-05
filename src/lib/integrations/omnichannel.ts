@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Omnichannel Communication Gateway
  * ---------------------------------
@@ -26,7 +25,7 @@ export interface OutboundResult {
 
 /* ---------- shared helpers ---------- */
 
-async function logMessage(direction: 'in' | 'out', msg: unknown) {
+async function logMessage(direction: 'in' | 'out', msg: Record<string, unknown>) {
   try {
     await adminDb.collection('omnichannel_messages').add({
       direction,
@@ -78,7 +77,7 @@ export async function sendMessage(
     else if (channel === 'email') result = await sendEmail(recipientId, message.subject || '(no subject)', message.text);
     else result = { ok: false, error: `Unsupported channel: ${channel}` };
   } catch (err: unknown) {
-    result = { ok: false, error: err?.message || String(err) };
+    result = { ok: false, error: (err as Error)?.message || String(err) };
   }
   await logMessage('out', { channel, recipientId, message, result });
   return result;

@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * TikTok Marketing API light client.
  * Required env: TIKTOK_ACCESS_TOKEN, TIKTOK_ADVERTISER_ID

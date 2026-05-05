@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Weekly Review Loop — لكل قسم: تقرير الإنجاز مقابل الخطة،
  * ثم تحليل استراتيجي للدروس المستفادة، وتخزين التقرير + إرسال ملخص للمستخدم.
@@ -12,14 +11,27 @@ import { publishEvent } from './event-mesh';
 
 const MODEL = google('gemini-2.5-flash');
 
+interface KeyResult {
+  description: string;
+  target: number;
+  unit: string;
+  current?: number;
+}
+
+interface ReportEntry {
+  okrId: string;
+  department: string;
+  summary: string;
+}
+
 export async function runWeeklyReview(userId: string) {
   return instrumentAgent('weekly_reviewer', async () => {
     const okrs = await listCurrentWeekOKRs(userId);
     if (!okrs.length) return { report: null, message: 'no_weekly_okrs' };
 
-    const reports: unknown[] = [];
+    const reports: ReportEntry[] = [];
     for (const okr of okrs) {
-      const progress = okr.keyResults.map((k: unknown) => {
+      const progress = (okr.keyResults as KeyResult[]).map((k) => {
         const pct = Math.round(((k.current || 0) / (k.target || 1)) * 100);
         return `- ${k.description}: ${k.current}/${k.target} ${k.unit} (${pct}%)`;
       }).join('\n');
@@ -30,7 +42,7 @@ export async function runWeeklyReview(userId: string) {
 ${progress}
 اكتب تقرير إنجاز مختصر (3-4 جمل) يشمل: ما تم، ما لم يُنجز، السبب، توصية للأسبوع القادم.`,
       });
-      reports.push({ okrId: okr.id, department: okr.department, summary: text });
+      reports.push({ okrId: okr.id as string, department: okr.department as string, summary: text });
     }
 
     const { text: lessons } = await generateText({

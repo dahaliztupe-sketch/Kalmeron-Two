@@ -1,3 +1,4 @@
+// ts-nocheck: reason=complex agent/crew patterns; scheduled for typed refactor
 // @ts-nocheck
   export * as governance from './governance/orchestrator';
   export * as compliance from './compliance/monitor';

@@ -1,3 +1,4 @@
+// ts-nocheck: reason=complex integration patterns; scheduled for typed refactor
 // @ts-nocheck
 
 // 1. GEPA: خوارزمية جينية لتحسين أوامر الوكيل تلقائياً

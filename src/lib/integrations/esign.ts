@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Electronic signature (DocuSign) light client.
  * Required env for live execution:

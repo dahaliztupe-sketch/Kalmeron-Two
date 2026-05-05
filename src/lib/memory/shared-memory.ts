@@ -1,4 +1,3 @@
-// @ts-nocheck
   /**
    * Shared Memory System — التوأم الرقمي (Digital Twin) للشركة
    * Observational Memory: ضغط المحادثات الطويلة واستخراج الحقائق الجوهرية فقط.

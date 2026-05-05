@@ -1,3 +1,4 @@
+// ts-nocheck: reason=complex agent/crew patterns; scheduled for typed refactor
 // @ts-nocheck
 export { legalOrchestratorAgent } from './legal_orchestrator.agent';
 export { foundersAgreementAdvisorAgent } from './founders_agreement_advisor.agent';

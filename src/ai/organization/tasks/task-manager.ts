@@ -1,3 +1,4 @@
+// ts-nocheck: reason=complex agent/crew patterns; scheduled for typed refactor
 // @ts-nocheck
   /**
    * Task Manager — تتبع حالة المهام في Firestore (مع fallback في الذاكرة عندما لا تتوفر Firestore).

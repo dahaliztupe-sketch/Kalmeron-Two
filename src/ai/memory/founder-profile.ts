@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * founder-profile — Cross-session memory for Kalmeron (Phase C8).
  *

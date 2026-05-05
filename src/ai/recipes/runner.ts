@@ -1,3 +1,4 @@
+// ts-nocheck: reason=complex agent/crew patterns; scheduled for typed refactor
 // @ts-nocheck
 /**
  * Recipe runner — يأخذ وصفة + قيم المستخدم لكل خطوة، ويرتّبها كسلسلة

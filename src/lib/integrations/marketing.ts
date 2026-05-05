@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { z } from 'zod';
 import { defineNotConfigured } from './_stub';
 const HINT = 'MADGICX_MCP_KEY (Madgicx MCP — Meta ads)';

@@ -1,3 +1,4 @@
+// ts-nocheck: reason=complex agent/crew patterns; scheduled for typed refactor
 // @ts-nocheck
 /**
  * Helper: convert any registry action into a Mastra tool that enqueues

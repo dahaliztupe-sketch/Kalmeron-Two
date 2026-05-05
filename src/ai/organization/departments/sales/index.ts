@@ -1,3 +1,4 @@
+// ts-nocheck: reason=complex agent/crew patterns; scheduled for typed refactor
 // @ts-nocheck
 export { salesOrchestratorAgent } from './sales_orchestrator.agent';
 export { salesStrategyDeveloperAgent } from './sales_strategy_developer.agent';

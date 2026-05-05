@@ -1,4 +1,3 @@
-// @ts-nocheck
 // Placeholder for AgentMon. 
 // Replace with actual @codenotary/agentmon when available.
 export const agentMon = {

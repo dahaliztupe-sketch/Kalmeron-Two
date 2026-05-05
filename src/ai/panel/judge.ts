@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * judge — Reflexion / LLM-as-judge layer (Phase B6).
  *

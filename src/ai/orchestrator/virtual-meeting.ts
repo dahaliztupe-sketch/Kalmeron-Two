@@ -1,11 +1,10 @@
-// @ts-nocheck
 /**
  * Swarm Intelligence — Virtual Meetings between cross-department agents.
  */
 import { generateText } from 'ai';
 import { MODELS } from '@/src/lib/gemini';
 import { adminDb } from '@/src/lib/firebase-admin';
-import { FieldValue } from 'firebase-admin/firestore';
+import { FieldValue, type Query, type CollectionReference } from 'firebase-admin/firestore';
 import { instrumentAgent } from '@/src/lib/observability/instrumentation';
 
 export interface MeetingOpinion {
@@ -153,12 +152,12 @@ export async function detectCollaborationOpportunity(
   limit = 20
 ): Promise<CollabOpportunity[]> {
   try {
-    let q: unknown = adminDb.collection('tasks').where('status', 'in', ['in_progress', 'queued']);
+    let q: Query | CollectionReference = adminDb.collection('tasks').where('status', 'in', ['in_progress', 'queued']);
     if (workspaceId) q = q.where('workspaceId', '==', workspaceId);
     const snap = await q.limit(limit).get();
     if (snap.empty) return [];
 
-    const tasks = snap.docs.map((d: unknown) => ({ id: d.id, ...d.data() }));
+    const tasks = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
     const { text } = await generateText({
       model: MODELS.FLASH,
       system: `أنت منسق استراتيجي. حلّل قائمة المهام الحالية وحدد فرص التعاون بين أقسام مختلفة.

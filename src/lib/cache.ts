@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { unstable_cache } from 'next/cache';
 import { orchestrator } from '@/src/ai/orchestrator/graph';
 import { HumanMessage } from '@langchain/core/messages';

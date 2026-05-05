@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Weekly Planning Loop — لكل قسم: استدعاء وكيله ليصوغ خطة أسبوعية لتحقيق هدفه،
  * ثم يبحث "المنسق العام" عن فرص تعاون ويسجل الخطة في Firestore.
@@ -12,23 +11,41 @@ import { publishEvent } from './event-mesh';
 
 const MODEL = google('gemini-2.5-flash');
 
+interface KeyResult {
+  description: string;
+  target: number | string;
+  unit: string;
+  current?: number;
+}
+
+interface PlanEntry {
+  okrId: string;
+  department: string;
+  objective: string;
+  plan: { steps?: unknown[] };
+}
+
+interface CoordinatorResult {
+  collaborations?: unknown[];
+}
+
 export async function runWeeklyPlanning(userId: string) {
   return instrumentAgent('weekly_planner', async () => {
     const okrs = await listCurrentWeekOKRs(userId);
     if (!okrs.length) return { plans: [], collaborations: [], message: 'no_weekly_okrs' };
 
-    const plans: unknown[] = [];
+    const plans: PlanEntry[] = [];
     for (const okr of okrs) {
-      const krList = okr.keyResults.map((k: unknown) => `- ${k.description} (target: ${k.target} ${k.unit})`).join('\n');
+      const krList = (okr.keyResults as KeyResult[]).map((k) => `- ${k.description} (target: ${k.target} ${k.unit})`).join('\n');
       const { text } = await generateText({
         model: MODEL,
         prompt: `أنت قائد قسم ${okr.department}. هدف الأسبوع: "${okr.objective}".\nالنتائج الرئيسية:\n${krList}\n
 ضع خطة عمل أسبوعية مختصرة (5 خطوات بحد أقصى)، يشمل كل خطوة: نشاط، اليوم المتوقع، أداة/قسم آخر يلزم.
 أعد JSON فقط: {"steps": [{"day":"الإثنين","activity":"...","needs":"..."}]}`,
       });
-      let parsed: unknown = { steps: [] };
-      try { parsed = JSON.parse(text.match(/\{[\s\S]*\}/)?.[0] || '{"steps":[]}'); } catch {}
-      plans.push({ okrId: okr.id, department: okr.department, objective: okr.objective, plan: parsed });
+      let parsed: { steps?: unknown[] } = { steps: [] };
+      try { parsed = JSON.parse(text.match(/\{[\s\S]*\}/)?.[0] || '{"steps":[]}') as { steps?: unknown[] }; } catch {}
+      plans.push({ okrId: okr.id as string, department: okr.department as string, objective: okr.objective as string, plan: parsed });
     }
 
     // Coordinator pass: look for collaboration opportunities across plans
@@ -39,8 +56,8 @@ export async function runWeeklyPlanning(userId: string) {
 حدد فرص التعاون بين الأقسام (مثال: التسويق يحتاج قائمة من المبيعات).
 أعد JSON: {"collaborations": [{"from":"...","to":"...","handoff":"..."}]}`,
     });
-    let coordinator: unknown = { collaborations: [] };
-    try { coordinator = JSON.parse(coordText.match(/\{[\s\S]*\}/)?.[0] || '{"collaborations":[]}'); } catch {}
+    let coordinator: CoordinatorResult = { collaborations: [] };
+    try { coordinator = JSON.parse(coordText.match(/\{[\s\S]*\}/)?.[0] || '{"collaborations":[]}') as CoordinatorResult; } catch {}
 
     const planDoc = {
       userId, plans, collaborations: coordinator.collaborations || [],

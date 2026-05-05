@@ -1,3 +1,4 @@
+// ts-nocheck: reason=complex agent/crew patterns; scheduled for typed refactor
 // @ts-nocheck
 import { Task, Crew, Process } from 'crewai';
 import { createCrewAgent } from '../../shared/base-agent';

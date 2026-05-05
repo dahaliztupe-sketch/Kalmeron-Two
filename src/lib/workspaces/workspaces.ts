@@ -1,3 +1,4 @@
+// ts-nocheck: reason=complex integration patterns; scheduled for typed refactor
 // @ts-nocheck
 /**
  * Workspaces (Phase 8). Firestore layout:
@@ -13,6 +14,7 @@
  * on first call to `ensureDefaultWorkspace(uid)`.
  */
 import { adminDb } from '@/src/lib/firebase-admin';
+import type { Query, CollectionReference, DocumentSnapshot } from 'firebase-admin/firestore';
 
 export type WorkspaceRole = 'owner' | 'finance' | 'ops' | 'viewer';
 
@@ -157,12 +159,12 @@ export async function listAudit(opts: {
   limit?: number;
 }): Promise<unknown[]> {
   if (!adminDb?.collection) return [];
-  let q: unknown = adminDb.collection('audit_log');
+  let q: Query | CollectionReference = adminDb.collection('audit_log');
   if (opts.workspaceId) q = q.where('workspaceId', '==', opts.workspaceId);
   const snap = await q.limit(opts.limit || 100).get().catch(() => null);
   if (!snap || snap.empty) return [];
-  const rows: unknown[] = [];
-  snap.forEach((d: unknown) => rows.push({ id: d.id, ...d.data() }));
+  const rows: Array<{ id: string; timestamp?: { _seconds?: number }; [key: string]: unknown }> = [];
+  snap.forEach((d: DocumentSnapshot) => rows.push({ id: d.id, ...d.data() as Record<string, unknown> }));
   rows.sort((a, b) => (b.timestamp?._seconds || 0) - (a.timestamp?._seconds || 0));
   return rows;
 }

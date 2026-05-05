@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Google Ads light client.
  * Real Google Ads API uses gRPC + OAuth refresh tokens; this module performs

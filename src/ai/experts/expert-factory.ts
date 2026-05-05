@@ -1,11 +1,10 @@
-// @ts-nocheck
 /**
  * Expert Factory — يولّد خبراء متخصصين من وصف باللغة الطبيعية.
  */
 import { generateText } from 'ai';
 import { MODELS } from '@/src/lib/gemini';
 import { adminDb } from '@/src/lib/firebase-admin';
-import { FieldValue, Timestamp } from 'firebase-admin/firestore';
+import { FieldValue, Timestamp, type Query, type CollectionReference } from 'firebase-admin/firestore';
 
 export interface Expert {
   id?: string;
@@ -36,7 +35,7 @@ const ALLOWED_TOOLS = [
 
 function sanitizeTools(tools: unknown[]): string[] {
   if (!Array.isArray(tools)) return [];
-  return tools.filter((t) => typeof t === 'string' && ALLOWED_TOOLS.includes(t));
+  return tools.filter((t): t is string => typeof t === 'string' && ALLOWED_TOOLS.includes(t));
 }
 
 export async function createExpertFromDescription(
@@ -59,11 +58,19 @@ export async function createExpertFromDescription(
     prompt: description,
   });
 
-  let parsed: unknown = {};
+  interface ParsedExpert {
+    name?: unknown;
+    domain?: unknown;
+    systemPrompt?: unknown;
+    tools?: unknown[];
+    temperature?: unknown;
+    examples?: unknown[];
+  }
+  let parsed: ParsedExpert = {};
   try {
     const first = text.indexOf('{');
     const last = text.lastIndexOf('}');
-    parsed = JSON.parse(text.slice(first, last + 1));
+    parsed = JSON.parse(text.slice(first, last + 1)) as ParsedExpert;
   } catch {
     parsed = { name: 'Expert', domain: 'general', systemPrompt: description, tools: [], temperature: 0.4, examples: [] };
   }
@@ -75,10 +82,10 @@ export async function createExpertFromDescription(
     domain: String(parsed.domain || 'general').slice(0, 80),
     description,
     systemPrompt: String(parsed.systemPrompt || description).slice(0, 8000),
-    tools: sanitizeTools(parsed.tools),
+    tools: sanitizeTools(parsed.tools ?? []),
     model: 'gemini-2.5-flash',
     temperature: typeof parsed.temperature === 'number' ? Math.max(0, Math.min(1, parsed.temperature)) : 0.4,
-    examples: Array.isArray(parsed.examples) ? parsed.examples.slice(0, 10) : [],
+    examples: Array.isArray(parsed.examples) ? (parsed.examples as Array<{ q: string; a: string }>).slice(0, 10) : [],
   };
   return expert;
 }
@@ -124,11 +131,11 @@ export async function loadExpert(expertId: string): Promise<Expert | null> {
 }
 
 export async function listExperts(filter: { workspaceId?: string; creatorId?: string } = {}): Promise<Expert[]> {
-  let q: unknown = adminDb.collection(COLLECTION);
+  let q: Query | CollectionReference = adminDb.collection(COLLECTION);
   if (filter.workspaceId) q = q.where('workspaceId', '==', filter.workspaceId);
   if (filter.creatorId) q = q.where('creatorId', '==', filter.creatorId);
   const snap = await q.limit(100).get();
-  return snap.docs.map((d: unknown) => ({ id: d.id, ...d.data() }));
+  return snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<Expert, 'id'>) }));
 }
 
 /** تُنفّذ استعلام المستخدم على خبير محفوظ (helper للاستخدام في الواجهة). */

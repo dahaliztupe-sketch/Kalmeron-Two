@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { z } from 'zod';
 import { defineNotConfigured } from './_stub';
 const HINT = 'UPWORK_API_KEY أو RENTAHUMAN_API_KEY';

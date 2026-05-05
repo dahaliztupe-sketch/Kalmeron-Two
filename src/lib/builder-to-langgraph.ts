@@ -1,3 +1,4 @@
+// ts-nocheck: reason=LangGraph builder uses complex generic types; migration tracked separately
 // @ts-nocheck
 import { StateGraph, Annotation } from '@langchain/langgraph';
 import { BaseMessage } from '@langchain/core/messages';

@@ -1,3 +1,4 @@
+// ts-nocheck: reason=@mastra/core Supervisor requires a separate architectural migration; complex external dependency
 // @ts-nocheck
 import { Supervisor } from '@mastra/core';
 import { ideaValidator } from '@/src/agents/idea-validator/agent';
@@ -55,48 +56,37 @@ import { supportIdentityExpertAgent } from '@/src/ai/organization/departments/su
 /**
  * Mastra Supervisor — منسّق الوكلاء الرئيسي
  * يجمع كل وكلاء الأقسام ويُوجّه المهام بذكاء بينهم.
- * ملاحظة: عمليات استيراد قسم المالية (budget-analyst وcash-runway) تعمل عبر
- * AgentRegistry مباشرةً لأنها action functions وليس Mastra Agent objects.
  */
-
-// دمج كل الوكلاء المتاحة (تصفية التي قد لا تُصدَّر)
 const allDepartmentAgents = [
-  // المبيعات
   leadQualifierAgent,
   salesPipelineAnalystAgent,
   salesPitchDeckCreatorAgent,
   salesStrategyDeveloperAgent,
   founderLedSalesCoachAgent,
-  // التسويق
   contentCreatorAgent,
   seoManagerAgent,
   adsCampaignManagerAgent,
   acquisitionStrategistAgent,
   customerProfilingAgent,
-  // التقنية
   productManagerAgent,
   systemArchitectAgent,
   devopsEngineerAgent,
   qaManagerAgent,
   uxOptimizationAgent,
   mvpDeveloperAgent,
-  // المالية (Mastra Agent objects)
   financialModelingAgent,
   equityManagerAgent,
   valuationExpertAgent,
   investorRelationsAgent,
-  // القانونية
   contractDrafterAgent,
   ipProtectionExpertAgent,
   dataPrivacyComplianceAuditorAgent,
   foundersAgreementAdvisorAgent,
   investmentAgreementSpecialistAgent,
-  // الموارد البشرية
   companyCultureExpertAgent,
   jobDescriptionWriterAgent,
   orgStructureDesignerAgent,
   processOptimizerAgent,
-  // الدعم
   csatAnalystAgent,
   knowledgeBaseBuilderAgent,
   ticketManagerAgent,

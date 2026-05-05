@@ -1,3 +1,4 @@
+// ts-nocheck: reason=complex agent/crew patterns; scheduled for typed refactor
 // @ts-nocheck
   /**
    * Compliance & Monitoring Layer — مراقبة الأداء والتكلفة والامتثال

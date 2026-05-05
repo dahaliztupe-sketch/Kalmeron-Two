@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Meta Marketing API client (Facebook/Instagram Ads).
  * Graph API v20. Falls back to a safe simulation when credentials are missing,
