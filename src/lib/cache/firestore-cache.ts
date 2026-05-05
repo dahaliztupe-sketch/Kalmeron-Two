@@ -1,26 +1,28 @@
 /**
- * FirestoreCache — TTL-based server-side cache backed by Firestore.
+ * In-memory TTL cache — server-side, process-local.
  *
- * Layout in Firestore:
- *   _ai_cache/{key}
- *     value   : string  (JSON-serialised payload)
- *     expiresAt: number  (Unix ms)
- *     createdAt: number  (Unix ms)
- *     hits     : number  (optional — incremented on read)
+ * Replaces the former Firestore `_ai_cache` collection. A `Map` with expiry
+ * timestamps is sufficient for AI response caching: resets on restart (fine),
+ * zero latency on read/write, and no extra Firestore reads/writes per request.
  *
  * Design decisions:
  * - Keys are caller-defined strings (use buildKey() for consistent namespacing).
- * - Expired documents are returned as misses; a background write prunes them.
- * - All I/O errors are swallowed and logged — cache must never break the caller.
- * - No distributed lock: two concurrent cold-starts may both generate and write;
- *   the last write wins, which is acceptable for AI-generated content.
+ * - Expired entries are returned as misses; stale entries are pruned lazily.
+ * - All errors are swallowed — cache must never break the caller.
+ * - No distributed lock: two concurrent cold-starts may both compute; last
+ *   write wins, which is acceptable for AI-generated content.
  */
 
 import { createHash } from 'crypto';
-import { adminDb } from '@/src/lib/firebase-admin';
-import { logger } from '@/src/lib/logger';
 
-const COLLECTION = '_ai_cache';
+interface CacheCell<T> {
+  value: T;
+  createdAt: number;
+  expiresAt: number;
+  hits: number;
+}
+
+const _store = new Map<string, CacheCell<unknown>>();
 
 export interface CacheEntry<T> {
   value: T;
@@ -46,23 +48,19 @@ export function hashInputs(...inputs: string[]): string {
 }
 
 /**
- * Read a cached value. Returns null on miss, expiry, or any error.
+ * Read a cached value. Returns null on miss or expiry.
  */
 export async function cacheGet<T>(key: string): Promise<T | null> {
   try {
-    const doc = await adminDb.collection(COLLECTION).doc(key).get();
-    if (!doc.exists) return null;
-
-    const data = doc.data() as { value: string; expiresAt: number; hits: number };
-    if (Date.now() > data.expiresAt) {
-      doc.ref.delete().catch(() => {});
+    const cell = _store.get(key) as CacheCell<T> | undefined;
+    if (!cell) return null;
+    if (Date.now() > cell.expiresAt) {
+      _store.delete(key);
       return null;
     }
-
-    doc.ref.update({ hits: (data.hits || 0) + 1 }).catch(() => {});
-    return JSON.parse(data.value) as T;
-  } catch (err) {
-    logger.warn({ event: 'cache_get_error', key, error: (err as Error).message });
+    cell.hits += 1;
+    return cell.value;
+  } catch {
     return null;
   }
 }
@@ -73,14 +71,9 @@ export async function cacheGet<T>(key: string): Promise<T | null> {
 export async function cacheSet<T>(key: string, value: T, ttlMs: number): Promise<void> {
   try {
     const now = Date.now();
-    await adminDb.collection(COLLECTION).doc(key).set({
-      value: JSON.stringify(value),
-      createdAt: now,
-      expiresAt: now + ttlMs,
-      hits: 0,
-    });
-  } catch (err) {
-    logger.warn({ event: 'cache_set_error', key, error: (err as Error).message });
+    _store.set(key, { value, createdAt: now, expiresAt: now + ttlMs, hits: 0 });
+  } catch {
+    // swallow
   }
 }
 

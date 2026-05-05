@@ -2,7 +2,6 @@
 import { generateText } from 'ai';
 import { MODELS } from '@/src/lib/gemini';
 import { MISTAKE_SHIELD_SYSTEM_PROMPT } from './prompt';
-import { searchKnowledge } from '@/src/lib/rag';
 import { instrumentAgent } from '@/src/lib/observability/agent-instrumentation';
 
 export const COMMON_MISTAKES = [
@@ -20,8 +19,7 @@ export const COMMON_MISTAKES = [
  */
 export async function getProactiveWarnings(userStage: string, recentActivity?: string) {
   return instrumentAgent('mistake_shield', async () => {
-    // RAG: Search for relevant market failures or specific sector risks
-    const marketKnowledge = await searchKnowledge(recentActivity || userStage, 'mistake');
+    const marketKnowledge = '';
 
     const prompt = `
 المستخدم حاليًا في مرحلة: "${userStage}".

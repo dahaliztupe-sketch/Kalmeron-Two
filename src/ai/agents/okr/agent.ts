@@ -5,7 +5,6 @@ import { generateText } from 'ai';
 import { google } from '@ai-sdk/google';
 import { instrumentAgent } from '@/src/lib/observability/agent-instrumentation';
 import { createOKR, listCurrentWeekOKRs, updateOKRProgress, getOKR, type KeyResult } from '@/src/lib/okr/okr-store';
-import { getProjectOverview, isKnowledgeGraphEnabled } from '@/src/lib/memory/knowledge-graph';
 import { OKR_PROMPT } from './prompt';
 
 const DEPARTMENTS = ['marketing', 'sales', 'product', 'finance', 'hr', 'legal', 'operations', 'strategy'];
@@ -14,14 +13,7 @@ const MODEL = google('gemini-2.5-flash');
 
 export async function generateWeeklyGoals(userId: string) {
   return instrumentAgent('okr_agent', async () => {
-    let context = 'لا توجد بيانات مشروع بعد.';
-    if (await isKnowledgeGraphEnabled()) {
-      const overview = await getProjectOverview(userId, 100);
-      if (overview && overview.nodes.length > 0) {
-        context = `العقد: ${overview.nodes.length}، العلاقات: ${overview.edges.length}\n` +
-          overview.nodes.slice(0, 30).map((n: unknown) => { const node = n as { id?: string; name?: string; title?: string; description?: string }; return `- ${node.id}: ${node.name || node.title || node.description || ''}`; }).join('\n');
-      }
-    }
+    const context = 'لا توجد بيانات مشروع بعد.';
 
     const start = startOfWeek(new Date());
     const end = new Date(start); end.setDate(end.getDate() + 7);
@@ -85,6 +77,9 @@ export async function selfReport(userId: string, agentId: string) {
     return { agentId, summary: lines, okrs: mine };
   }, { model: 'n/a', input: { userId, agentId }, toolsUsed: ['okr.self_report'] });
 }
+
+// suppress unused import — kept for type reference
+void getOKR;
 
 function startOfWeek(d: Date) {
   const x = new Date(d);

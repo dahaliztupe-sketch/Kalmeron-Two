@@ -3,7 +3,6 @@ import { generateObject, generateText } from 'ai';
 import { MODELS } from '@/src/lib/gemini';
 import { OPPORTUNITY_RADAR_SYSTEM_PROMPT } from './prompt';
 import { z } from 'zod';
-import { searchKnowledge } from '@/src/lib/rag';
 import { unstable_cache } from 'next/cache';
 import { instrumentAgent } from '@/src/lib/observability/agent-instrumentation';
 import { webSearchMany, type WebSearchResult } from '@/src/lib/integrations/web-search';
@@ -75,16 +74,15 @@ export const getPersonalizedOpportunities = unstable_cache(
     return instrumentAgent('opportunity_radar', async () => {
       const queries = buildOpportunityQueries(userIndustry, userStage, userGovernorate);
 
-      // Run web search + knowledge-base lookup in parallel.
-      const [search, latestUpdates] = await Promise.all([
+      const [search] = await Promise.all([
         webSearchMany(queries, {
           maxResults: 6,
           country: 'eg',
           language: 'ar',
           searchDepth: 'advanced',
         }),
-        searchKnowledge(`${userIndustry} ${userStage} مصر`, 'opportunity'),
       ]);
+      const latestUpdates = '';
 
       const evidence = formatSearchEvidence(search);
 

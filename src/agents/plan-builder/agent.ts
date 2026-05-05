@@ -3,7 +3,6 @@ import { generateObject, streamText } from 'ai';
 import { MODELS } from '@/src/lib/gemini';
 import { PLAN_BUILDER_SYSTEM_PROMPT } from './prompt';
 import { z } from 'zod';
-import { searchKnowledge } from '@/src/lib/rag';
 import { instrumentAgent } from '@/src/lib/observability/agent-instrumentation';
 
 // 1. هيكل مخرجات خطة العمل
@@ -38,8 +37,7 @@ export type BusinessPlan = z.infer<typeof BusinessPlanSchema>;
  */
 export async function buildBusinessPlanStream(projectInfo: string, conversationHistory: unknown[]) {
   return instrumentAgent('plan_builder', async () => {
-    // RAG: Search for industry benchmarks or similar business models
-    const benchmarks = await searchKnowledge(projectInfo);
+    const benchmarks = '';
 
     const prompt = `
 المعلومات المتوفرة عن المشروع:

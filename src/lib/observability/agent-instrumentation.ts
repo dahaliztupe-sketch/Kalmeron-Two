@@ -11,7 +11,6 @@
 import { recordDriftSample } from './drift-detector';
 import { logAgentGeneration } from './langfuse';
 import { recordInvocation } from '@/src/ai/organization/compliance/monitor';
-import { addEntity, isKnowledgeGraphEnabled } from '@/src/lib/memory/knowledge-graph';
 import { updateOKRProgress } from '@/src/lib/okr/okr-store';
 import {
   loadRelevantSkills,
@@ -38,9 +37,8 @@ export interface InstrumentOptions {
   input?: unknown;
   toolsUsed?: string[];
   trace?: unknown;
-  /** اختياري: تسجيل المخرجات تلقائياً في الدماغ المشترك */
+  /** اختياري: نوع الكيان الذي ينتج عن نجاح الاستدعاء (unused — KG removed) */
   userId?: string;
-  /** اختياري: نوع الكيان الذي ينتج عن نجاح الاستدعاء */
   findingType?: string;
   /** اختياري: ربط النتيجة بنتيجة رئيسية */
   okrUpdate?: { okrId: string; krIndex: number; delta?: number; current?: number };
@@ -84,9 +82,6 @@ export async function instrumentAgent<T>(
   let result: T | undefined;
 
   // ---- Learning loop: tenant-scoped via opts OR ambient AsyncLocalStorage ctx ----
-  // Falling back to the ambient context lets us light up learning across ALL
-  // agent files without modifying each one — the orchestrator entrypoint sets
-  // the context once via runWithLearningContext().
   const ambient = getCurrentLearningContext();
   const effectiveWorkspaceId = opts.workspaceId || ambient?.workspaceId || '';
   const effectiveTask = opts.task || ambient?.task || '';
@@ -107,10 +102,7 @@ export async function instrumentAgent<T>(
       agentMemoryAddon = await buildAgentContextAddon(effectiveWorkspaceId, agentName, 10);
     } catch { agentMemoryAddon = ''; }
   }
-  // نَدمج هنا ثلاثة مصادر:
-  //   1) المهارات البذريّة (Bootstrap) من ملفّات SKILL.md.
-  //   2) المهارات المُتعلَّمة (LearnedSkill) من Firestore.
-  //   3) سياق المحادثات السابقة (Agent Memory) — آخر 10 محادثات.
+
   const bootstrapAddon = getBootstrapSkillsAddon(agentName);
   const learnedAddon = preloadedSkills.length
     ? formatSkillsForPrompt(preloadedSkills)
@@ -118,9 +110,6 @@ export async function instrumentAgent<T>(
   const combinedAddon = [bootstrapAddon, learnedAddon, agentMemoryAddon].filter(Boolean).join('\n\n');
   const combinedIds = preloadedSkills.map((s) => s.id!).filter(Boolean);
 
-  // ملاحظة: إذا كان `learningEnabled=false` لا يوجد AsyncLocalStorage
-  // فعّال للكتابة عليه؛ في هذه الحالة نُنشئ سياقاً خفيفاً حول التنفيذ
-  // فقط ليصل البذريّ إلى `getCurrentLearnedSkillsAddon()` داخل الوكيل.
   if (learningEnabled) {
     if (combinedAddon) {
       setCurrentLearnedSkills(combinedAddon, combinedIds);
@@ -129,8 +118,6 @@ export async function instrumentAgent<T>(
     }
   }
 
-  // إذا لم تكن دورة التعلّم مُفعّلة، نَلفّ exec بسياق خفيف يحمل البذريّ
-  // فقط — حتى يصل `getCurrentLearnedSkillsAddon()` إلى المهارات داخل الوكيل.
   const runExec = () =>
     !learningEnabled && combinedAddon
       ? runWithBootstrapAddon(combinedAddon, combinedIds, exec)
@@ -159,21 +146,6 @@ export async function instrumentAgent<T>(
       recordInvocation(agentName, latencyMs, 0, success ? undefined : errorCode);
     } catch { /* never break call site */ }
 
-    // Phase 6: optional auto-tracking of OKR + knowledge graph (best-effort, never throws)
-    if (success && opts.userId && opts.findingType) {
-      void (async () => {
-        try {
-          if (await isKnowledgeGraphEnabled()) {
-            await addEntity(opts.userId!, opts.findingType!, {
-              source: agentName,
-              summary: typeof result === 'string' ? result.slice(0, 500) : undefined,
-              latencyMs,
-              createdAt: new Date().toISOString(),
-            });
-          }
-        } catch { /* swallow */ }
-      })();
-    }
     if (success && opts.okrUpdate) {
       void (async () => {
         try {
@@ -182,7 +154,6 @@ export async function instrumentAgent<T>(
           if (typeof next === 'number') {
             await updateOKRProgress(opts.okrUpdate!.okrId, opts.okrUpdate!.krIndex, next);
           } else if (typeof opts.okrUpdate!.delta === 'number') {
-            // delta-based: requires read-modify-write inside the store layer
             const { getOKR } = await import('@/src/lib/okr/okr-store');
             const okr = await getOKR(opts.okrUpdate!.okrId) as { keyResults?: Array<{ current?: number }> } | null;
             const cur = okr?.keyResults?.[opts.okrUpdate!.krIndex]?.current || 0;
@@ -210,8 +181,6 @@ export async function instrumentAgent<T>(
           success,
           failureReason: success ? undefined : errorCode,
         }).catch(() => {});
-        // أعلم العقد العلوية (مثل synthesizer) أننا سجّلنا التغذية الراجعة
-        // لهذه المعرّفات لتفادي العدّ المضاعف.
         markFeedbackRecorded(usedIds);
       }
       if (success) {
@@ -222,13 +191,10 @@ export async function instrumentAgent<T>(
             const outputStr =
               typeof result === 'string' ? result : JSON.stringify(result || '').slice(0, 6000);
 
-            // ── Persist conversation turns to per-agent rolling memory (last 10 turns) ──
-            // Then distil a "lessons learned" summary to the parent agent_memory document.
             await Promise.allSettled([
               appendAgentMemoryTurn(wid, agentName, { role: 'user', content: taskText }),
               appendAgentMemoryTurn(wid, agentName, { role: 'assistant', content: outputStr.slice(0, 3000) }),
             ]);
-            // Fire-and-forget distillation — updates learnedSummary on the parent doc.
             void updateAgentLearnedSummary(wid, agentName);
 
             const skill = await extractSkillFromTask({

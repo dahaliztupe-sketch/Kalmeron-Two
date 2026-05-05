@@ -3,7 +3,6 @@ import { generateObject, generateText } from 'ai';
 import { MODELS } from '@/src/lib/gemini';
 import { SUCCESS_MUSEUM_SYSTEM_PROMPT } from './prompt';
 import { z } from 'zod';
-import { searchKnowledge } from '@/src/lib/rag';
 import { unstable_cache } from 'next/cache';
 import { instrumentAgent } from '@/src/lib/observability/agent-instrumentation';
 
@@ -31,7 +30,7 @@ export type CompanyAnalysis = z.infer<typeof CompanyAnalysisSchema>;
 export const analyzeCompany = unstable_cache(
   async (companyName: string, userContext?: string): Promise<CompanyAnalysis> => {
     return instrumentAgent('success_museum', async () => {
-      const internalData = await searchKnowledge(companyName, 'success');
+      const internalData = '';
 
       const prompt = `
   قم بتحليل شركة "${companyName}" بشكل استراتيجي.

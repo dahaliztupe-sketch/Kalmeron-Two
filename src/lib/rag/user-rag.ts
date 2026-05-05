@@ -2,13 +2,14 @@
  * Per-user RAG store.
  * Documents are chunked, embedded with `gemini-embedding-001`, and stored
  * in Firestore collection `rag_chunks` tagged with `userId` for per-tenant
- * isolation. Search performs cosine-similarity in-memory over the user's
- * own chunks (sufficient up to ~5k chunks/user; swap for pgvector later).
+ * isolation. Search uses Firestore native vector search (findNearest) —
+ * no document fetching loop, no in-memory cosine similarity.
  *
  * Firestore batch limit is 500 operations per commit. Large documents are
  * split into multiple batch writes automatically.
  */
 import { adminDb } from '@/src/lib/firebase-admin';
+import { FieldValue } from 'firebase-admin/firestore';
 import type { DocumentSnapshot } from 'firebase-admin/firestore';
 import { embedOne, embedBatch } from '@/src/lib/embed-helper';
 
@@ -50,18 +51,6 @@ export function chunkText(text: string): string[] {
   return out;
 }
 
-function cosine(a: number[], b: number[]): number {
-  let dot = 0, na = 0, nb = 0;
-  const len = Math.min(a.length, b.length);
-  for (let i = 0; i < len; i++) {
-    dot += a[i] * b[i];
-    na += a[i] * a[i];
-    nb += b[i] * b[i];
-  }
-  if (na === 0 || nb === 0) return 0;
-  return dot / (Math.sqrt(na) * Math.sqrt(nb));
-}
-
 export async function ingestDocument(opts: {
   userId: string;
   documentId: string;
@@ -99,7 +88,7 @@ export async function ingestDocument(opts: {
         source: opts.source,
         chunkIndex: idx,
         text: pieces[idx],
-        embedding: allEmbeddings[idx],
+        embedding: FieldValue.vector(allEmbeddings[idx]),
         createdAt: new Date(),
       });
     }
@@ -122,32 +111,42 @@ export async function searchUserKnowledge(opts: {
 
   const q = await embedOne(opts.query);
 
-  // Limit to 500 chunks per search for performance — sufficient for most users.
-  // Users with larger knowledge bases should migrate to a vector DB.
-  const snap = await adminDb
+  // Use Firestore native vector search — no full-collection scan.
+  // distanceMeasure COSINE: distance = 1 - cosine_similarity.
+  // We fetch topK * 3 candidates to allow post-filtering by minSimilarity.
+  const vectorQuery = adminDb
     .collection(COLLECTION)
     .where('userId', '==', opts.userId)
-    .limit(500)
-    .get()
-    .catch(() => null);
+    .findNearest({
+      vectorField: 'embedding',
+      queryVector: FieldValue.vector(q),
+      limit: topK * 3,
+      distanceMeasure: 'COSINE',
+      distanceResultField: 'vector_distance',
+    });
+
+  const snap = await vectorQuery.get().catch(() => null);
   if (!snap || snap.empty) return [];
 
-  const scored: RagCitation[] = [];
+  const results: RagCitation[] = [];
   snap.forEach((d: DocumentSnapshot) => {
     const data = d.data();
-    if (!data || !Array.isArray(data['embedding'])) return;
-    const sim = cosine(q, data['embedding'] as number[]);
-    if (sim < minSim) return;
-    scored.push({
+    if (!data) return;
+    // COSINE distance = 1 - similarity; clamp to [0, 1]
+    const distance = typeof data['vector_distance'] === 'number' ? data['vector_distance'] : 1;
+    const similarity = Math.max(0, Math.min(1, 1 - distance));
+    if (similarity < minSim) return;
+    results.push({
       documentId: data['documentId'] as string,
       documentName: data['documentName'] as string,
       chunkIndex: data['chunkIndex'] as number,
       text: data['text'] as string,
-      similarity: sim,
+      similarity,
     });
   });
-  scored.sort((a, b) => b.similarity - a.similarity);
-  return scored.slice(0, topK);
+
+  results.sort((a, b) => b.similarity - a.similarity);
+  return results.slice(0, topK);
 }
 
 export async function listUserDocuments(

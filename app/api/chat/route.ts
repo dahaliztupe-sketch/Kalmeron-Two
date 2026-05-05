@@ -283,11 +283,6 @@ export async function POST(req: NextRequest) {
         // `next/after`. هذا يقلّل زمن الاستجابة المُدرَك (TTLB) لأن
         // المستخدم يحصل على آخر دلتا ثم نُحدّث الفوترة/الذاكرة في الخلفية.
         if (userId !== 'guest-system') {
-          const lastUserMsgRaw = messages?.[messages.length - 1]?.content || '';
-          const lastUserMsg = typeof lastUserMsgRaw === 'string' ? lastUserMsgRaw.slice(0, 500) : '';
-          const intentSnapshot = finalIntent || 'GENERAL_CHAT';
-          const answerSnapshot = finalText.slice(0, 500);
-
           after(async () => {
             // 1) فوترة الاستخدام
             try {
@@ -304,21 +299,6 @@ export async function POST(req: NextRequest) {
               log.warn({ msg: 'after_credit_check_failed', err: (e as Error)?.message });
             }
 
-            // 3) تغذية الـ knowledge-graph المشترك
-            try {
-              const { isKnowledgeGraphEnabled, addEntity } = await import('@/src/lib/memory/knowledge-graph');
-              if (await isKnowledgeGraphEnabled()) {
-                await addEntity(userId, 'Conversation', {
-                  intent: intentSnapshot,
-                  question: lastUserMsg,
-                  answerSummary: answerSnapshot,
-                  thread: threadId || null,
-                  source: 'chat',
-                });
-              }
-            } catch (e) {
-              log.warn({ msg: 'after_knowledge_graph_failed', err: (e as Error)?.message });
-            }
           });
         }
 

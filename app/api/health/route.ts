@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
 import { adminDb } from '@/src/lib/firebase-admin';
-import { isKnowledgeGraphEnabled } from '@/src/lib/memory/knowledge-graph';
 import { toErrorMessage } from '@/src/lib/errors/to-message';
 import { listAvailableProviders } from '@/src/lib/llm/providers';
 
@@ -86,11 +85,8 @@ export async function GET() {
   });
   checks[firestoreLabel] = firestoreStatus;
 
-  try {
-    checks.knowledgeGraph = (await isKnowledgeGraphEnabled()) ? 'connected' : 'disabled';
-  } catch {
-    checks.knowledgeGraph = 'unreachable';
-  }
+  // Knowledge Graph / Neo4j has been removed
+  checks.knowledgeGraph = 'disabled';
 
   // ── Feature subsystems ────────────────────────────────────────────────────
   checks.learningLoop = 'connected';
@@ -114,7 +110,6 @@ export async function GET() {
   checks.llmJudge         = judgeStatus;
   checks.embeddingsWorker = embStatus;
 
-  // Surface sidecar metadata (version, mode, model loaded, etc.)
   if (pdfData && typeof pdfData === 'object')   meta.pdfWorker        = pdfData;
   if (calcData && typeof calcData === 'object')  meta.egyptCalc        = calcData;
   if (judgeData && typeof judgeData === 'object') meta.llmJudge        = judgeData;
@@ -138,7 +133,6 @@ export async function GET() {
   // ── Omnichannel ───────────────────────────────────────────────────────────
   checks.whatsapp = process.env.WHATSAPP_ACCESS_TOKEN ? 'configured' : 'unconfigured';
   checks.telegram = process.env.TELEGRAM_BOT_TOKEN ? 'configured' : 'unconfigured';
-  // Primary email provider is Resend (RESEND_API_KEY); fallback channel uses SENDGRID_API_KEY
   checks.email = (process.env.RESEND_API_KEY || process.env.SENDGRID_API_KEY) ? 'configured' : 'unconfigured';
   meta.emailProvider = process.env.RESEND_API_KEY ? 'resend' : process.env.SENDGRID_API_KEY ? 'sendgrid' : 'none';
 
@@ -168,7 +162,6 @@ export async function GET() {
 
   const degraded =
     criticalDown ||
-    checks.knowledgeGraph === 'unreachable' ||
     checks.firebaseAdmin === 'unconfigured' ||
     checks.llmProviders === 'unconfigured';
 
