@@ -141,7 +141,40 @@ export async function GET(req: NextRequest) {
         continue;
       }
 
-      // Look up the user's email + name from `users/{uid}`.
+      // Compute runway values once — used by both in-app notification and email.
+      const nowIso = new Date().toISOString();
+      const runwayResult = computeRunway(inputs);
+      const monthsLabel = fmtMonths(runwayResult.months);
+
+      // ── Step 1: Write in-app notification to Firestore — ALWAYS, regardless of email.
+      try {
+        await adminDb
+          .collection("users")
+          .doc(uid)
+          .collection("notifications")
+          .add({
+            type: "runway_alert",
+            title: `تنبيه: تبقّى ${monthsLabel} فقط من السيولة`,
+            body: `رصيدك النقدي تحت عتبة ${inputs.thresholdMonths} أشهر — اتخذ إجراء الآن.`,
+            href: "/cash-runway",
+            read: false,
+            severity: runwayResult.months <= 2 ? "critical" : "warning",
+            metadata: {
+              months: runwayResult.months,
+              threshold: inputs.thresholdMonths,
+              cashEgp: inputs.cashEgp,
+              monthlyBurnEgp: inputs.monthlyBurnEgp,
+            },
+            createdAt: nowIso,
+          });
+      } catch (notifErr) {
+        cronLogger.error(
+          { uid, err: notifErr instanceof Error ? notifErr.message : String(notifErr) },
+          "runway-alert-notification-error",
+        );
+      }
+
+      // ── Step 2: Look up email — send email alert if available.
       try {
         const userDoc = await adminDb.collection("users").doc(uid).get();
         const user = userDoc.exists
@@ -150,64 +183,32 @@ export async function GET(req: NextRequest) {
         const email = user?.email;
         if (!email) {
           summary.alertsSkippedNoEmail++;
-          continue;
-        }
-
-        const { subject, text, html } = formatRunwayEmail({
-          email,
-          name: user?.name,
-          inputs,
-        });
-
-        const nowIso = new Date().toISOString();
-        const runwayResult = computeRunway(inputs);
-        const monthsLabel = fmtMonths(runwayResult.months);
-
-        // Write in-app notification to Firestore regardless of email
-        try {
-          await adminDb
-            .collection("users")
-            .doc(uid)
-            .collection("notifications")
-            .add({
-              type: "runway_alert",
-              title: `تنبيه: تبقّى ${monthsLabel} فقط من السيولة`,
-              body: `رصيدك النقدي تحت عتبة ${inputs.thresholdMonths} أشهر — اتخذ إجراء الآن.`,
-              href: "/cash-runway",
-              read: false,
-              severity: runwayResult.months <= 2 ? "critical" : "warning",
-              metadata: {
-                months: runwayResult.months,
-                threshold: inputs.thresholdMonths,
-                cashEgp: inputs.cashEgp,
-                monthlyBurnEgp: inputs.monthlyBurnEgp,
-              },
-              createdAt: nowIso,
-            });
-        } catch (notifErr) {
-          cronLogger.error(
-            { uid, err: notifErr instanceof Error ? notifErr.message : String(notifErr) },
-            "runway-alert-notification-error",
-          );
-        }
-
-        if (emailEnabled) {
-          const emailResult = await sendEmail({ to: email, subject, text, html });
-          if (emailResult.delivered) {
-            summary.alertsSent++;
-            await adminDb
-              .collection("runway_snapshots")
-              .doc(uid)
-              .update({ lastAlertAt: nowIso });
-          } else {
-            summary.alertsSkippedNoEmail++;
-          }
+          // In-app notification was already written above — no email to send.
         } else {
-          cronLogger.info(
-            { to: email, months: runwayResult.months, threshold: inputs.thresholdMonths },
-            "runway-alert-dry-run",
-          );
-          summary.alertsSent++;
+          const { subject, text, html } = formatRunwayEmail({
+            email,
+            name: user?.name,
+            inputs,
+          });
+
+          if (emailEnabled) {
+            const emailResult = await sendEmail({ to: email, subject, text, html });
+            if (emailResult.delivered) {
+              summary.alertsSent++;
+              await adminDb
+                .collection("runway_snapshots")
+                .doc(uid)
+                .update({ lastAlertAt: nowIso });
+            } else {
+              summary.alertsSkippedNoEmail++;
+            }
+          } else {
+            cronLogger.info(
+              { to: email, months: runwayResult.months, threshold: inputs.thresholdMonths },
+              "runway-alert-dry-run",
+            );
+            summary.alertsSent++;
+          }
         }
       } catch (userErr) {
         summary.errors++;

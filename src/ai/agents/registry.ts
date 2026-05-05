@@ -154,6 +154,8 @@ export interface AgentDefinition {
     | 'CULTURE_EXPERT' | 'PERFORMANCE_MANAGER' | 'ORG_DESIGNER'
     // Support Department Employee Intents
     | 'CSAT_ANALYST' | 'KNOWLEDGE_BUILDER' | 'TICKET_MANAGER'
+    // Additional agent intents
+    | 'WELLBEING_COACH' | 'CONTRACT_REVIEWER' | 'CUSTOMER_DISCOVERY' | 'COFOUNDER_COACH'
     | 'TOOL';
   /** مرحلة رائد الأعمال المستهدفة — تستخدمها الواجهة لتجميع الوكلاء. */
   stage: AgentStage;
@@ -170,7 +172,8 @@ export interface AgentDefinition {
   /** Schema المدخلات. */
   inputSchema: z.ZodTypeAny;
   /** الدالة التنفيذية. */
-  action: (...args: unknown[]) => Promise<unknown>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  action: (...args: any[]) => Promise<unknown>;
   /** عنوان عربي قصير يظهر في ThoughtChain. */
   thinkingLabelAr?: string;
 }
@@ -568,7 +571,7 @@ export const AgentRegistry: Record<string, AgentDefinition> = {
       fileUrl: z.string().optional(),
       userId: z.string(),
     }),
-    action: codeInterpreterAgent,
+    action: (input: unknown) => codeInterpreterAgent.run(String((input as { task?: string })?.task ?? '')),
   },
 
   // ═══════════════════════════════════════════════════════════════════
@@ -1343,7 +1346,7 @@ export const AgentRegistry: Record<string, AgentDefinition> = {
     allowedTools: ['wellbeing.assessment', 'wellbeing.recommendations'],
     softCostBudgetUsd: 0.02,
     inputSchema: z.object({
-      scores: z.record(z.number()),
+      scores: z.record(z.string(), z.number()),
       context: z.string().optional(),
       mode: z.enum(['full', 'checkin']).optional(),
     }),
@@ -1409,7 +1412,7 @@ export const AgentRegistry: Record<string, AgentDefinition> = {
         name: z.string(),
         role: z.string(),
         equity: z.number(),
-        answers: z.record(z.number()),
+        answers: z.record(z.string(), z.number()),
       })),
       companyStage: z.string(),
       specificChallenges: z.string().optional(),

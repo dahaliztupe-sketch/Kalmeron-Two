@@ -1,16 +1,18 @@
 import * as math from 'mathjs';
 
+type FinancialModel = Record<string, number | undefined>;
+
 // أداة تحليل السيناريوهات
-export async function runScenarioAnalysis(baseModel: unknown, scenario: { variable: string, changePercent: number }) {
+export async function runScenarioAnalysis(baseModel: FinancialModel, scenario: { variable: string, changePercent: number }) {
   // مثال بسيط للنمذجة
-  const adjustedModel = { ...baseModel };
-  adjustedModel[scenario.variable] = baseModel[scenario.variable] * (1 + scenario.changePercent / 100);
+  const adjustedModel: FinancialModel = { ...baseModel };
+  adjustedModel[scenario.variable] = (baseModel[scenario.variable] ?? 0) * (1 + scenario.changePercent / 100);
   
   // إعادة حساب الإيرادات / الأرباح (تبسيط)
-  adjustedModel.netProfit = adjustedModel.revenue - adjustedModel.expenses;
+  adjustedModel['netProfit'] = (adjustedModel['revenue'] ?? 0) - (adjustedModel['expenses'] ?? 0);
   
   return {
-    diff: adjustedModel.netProfit - baseModel.netProfit,
+    diff: (adjustedModel['netProfit'] ?? 0) - (baseModel['netProfit'] ?? 0),
     adjustedModel
   };
 }

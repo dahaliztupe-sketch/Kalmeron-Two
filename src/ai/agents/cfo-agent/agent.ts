@@ -48,7 +48,7 @@ export async function cfoAgentAction(task: string, parameters: Record<string, un
           } else {
             usedTools.push('finance.scenario');
             result = await tools.runScenarioAnalysis(
-              parsed.data.baseModel,
+              parsed.data.baseModel as Record<string, number | undefined>,
               parsed.data.scenario,
             );
           }
