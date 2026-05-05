@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { Check, Crown, Loader2, Rocket, Sparkles, Building2, ChevronLeft, ChevronRight, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -36,18 +36,20 @@ export function PricingMobile({
   billingAvailable = true,
 }: Props) {
   const scrollRef = useRef<HTMLDivElement>(null);
+  const hasScrolledRef = useRef(false);
   const [activeIdx, setActiveIdx] = useState<number>(() =>
     Math.max(0, plans.findIndex((p) => p.highlighted))
   );
 
-  // Center the highlighted plan on first mount
-  useEffect(() => {
+  // Center the highlighted plan on first mount (runs once via hasScrolledRef guard)
+  useLayoutEffect(() => {
+    if (hasScrolledRef.current) return;
     const el = scrollRef.current;
     if (!el) return;
     const card = el.children[activeIdx] as HTMLElement | undefined;
     card?.scrollIntoView({ inline: "center", block: "nearest", behavior: "instant" as ScrollBehavior });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    hasScrolledRef.current = true;
+  }, [activeIdx]);
 
   // Track active card on scroll
   useEffect(() => {

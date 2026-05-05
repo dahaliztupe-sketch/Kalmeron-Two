@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { AppShell } from "@/components/layout/AppShell";
 import { useAuth } from "@/contexts/AuthContext";
@@ -109,7 +109,7 @@ export default function OperationsRoomPage() {
   const [refreshing, setRefreshing] = useState(false);
   const [filter, setFilter] = useState<string>("all");
 
-  const refresh = async () => {
+  const refresh = useCallback(async () => {
     if (!user) return;
     setRefreshing(true);
     try {
@@ -123,7 +123,7 @@ export default function OperationsRoomPage() {
       setRefreshing(false);
       setLoading(false);
     }
-  };
+  }, [user]);
 
   useEffect(() => {
     if (!user) return;
@@ -132,17 +132,13 @@ export default function OperationsRoomPage() {
       if (cancelled) return;
       void refresh();
     };
-    // Defer the initial call so setState is not invoked synchronously
-    // inside the effect body (react-hooks/set-state-in-effect).
-    const initial = setTimeout(tick, 0);
+    tick();
     const interval = setInterval(tick, 15000);
     return () => {
       cancelled = true;
-      clearTimeout(initial);
       clearInterval(interval);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user]);
+  }, [user, refresh]);
 
   const filtered = useMemo(() => {
     if (!data) return [];

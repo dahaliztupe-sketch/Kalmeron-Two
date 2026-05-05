@@ -23,20 +23,14 @@ export interface ForegroundNotification {
 }
 
 export function usePushNotifications(userId?: string) {
-  const [permission, setPermission] = useState<PushPermissionState>("default");
+  const [permission, setPermission] = useState<PushPermissionState>(() => {
+    if (typeof Notification === "undefined") return "unsupported";
+    return Notification.permission as PushPermissionState;
+  });
   const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [notifications, setNotifications] = useState<ForegroundNotification[]>([]);
   const unsubRef = useRef<() => void>(() => {});
-
-  useEffect(() => {
-    if (typeof Notification === "undefined") {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setPermission("unsupported");
-      return;
-    }
-    setPermission(Notification.permission as PushPermissionState);
-  }, []);
 
   useEffect(() => {
     if (permission !== "granted" || !userId) return;

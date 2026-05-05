@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import {
   Calculator, Sparkles, ArrowLeft, Loader2, CheckCircle2,
@@ -144,8 +144,7 @@ export default function EgyptCalcPage() {
   const [fawryMDR, setFawryMDR] = useState("0.015");
   const [instapayAmount, setInstapayAmount] = useState("");
 
-  // eslint-disable-next-line react-hooks/preserve-manual-memoization
-  const callCalc = useCallback(async (endpoint: string, params: Record<string, unknown>) => {
+  const callCalc = async (endpoint: string, params: Record<string, unknown>) => {
     setLoading(true);
     setError("");
     setResult(null);
@@ -166,36 +165,36 @@ export default function EgyptCalcPage() {
     } finally {
       setLoading(false);
     }
-  }, [user]);
+  };
 
-  const handleCalc = useCallback(() => {
+  const handleCalc = () => {
     switch (tab) {
       case "income-tax":
         if (!annualGross) return setError("أدخل الراتب السنوي");
-        callCalc("income-tax", { annual_gross: Number(annualGross) });
+        void callCalc("income-tax", { annual_gross: Number(annualGross) });
         break;
       case "social":
         if (!monthlyWage) return setError("أدخل الراتب الشهري");
-        callCalc("social-insurance", { monthly_wage: Number(monthlyWage) });
+        void callCalc("social-insurance", { monthly_wage: Number(monthlyWage) });
         break;
       case "total-cost":
         if (!monthlyGross) return setError("أدخل الراتب الشهري");
-        callCalc("total-cost", { monthly_gross: Number(monthlyGross), months: Number(months) });
+        void callCalc("total-cost", { monthly_gross: Number(monthlyGross), months: Number(months) });
         break;
       case "vat":
         if (!vatAmount) return setError("أدخل المبلغ");
-        callCalc("vat", { amount: Number(vatAmount), rate: Number(vatRate), inclusive: vatInclusive });
+        void callCalc("vat", { amount: Number(vatAmount), rate: Number(vatRate), inclusive: vatInclusive });
         break;
       case "fawry":
         if (!fawryAmount) return setError("أدخل مبلغ المعاملة");
-        callCalc("fawry-fee", { transaction_amount: Number(fawryAmount), merchant_discount_rate: Number(fawryMDR) });
+        void callCalc("fawry-fee", { transaction_amount: Number(fawryAmount), merchant_discount_rate: Number(fawryMDR) });
         break;
       case "instapay":
         if (!instapayAmount) return setError("أدخل مبلغ المعاملة");
-        callCalc("instapay-fee", { transaction_amount: Number(instapayAmount) });
+        void callCalc("instapay-fee", { transaction_amount: Number(instapayAmount) });
         break;
     }
-  }, [tab, annualGross, monthlyWage, monthlyGross, months, vatAmount, vatRate, vatInclusive, fawryAmount, fawryMDR, instapayAmount, callCalc]);
+  };
 
   const currentTab = TABS.find(t => t.id === tab)!;
 
