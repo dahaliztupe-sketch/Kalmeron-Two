@@ -45,7 +45,7 @@ outputType = "webview"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "npm install && npm run dev"
+args = "npm install && cp -rn node_modules/@swc/helpers/cjs node_modules/next/node_modules/@swc/helpers/cjs 2>/dev/null; npm run dev"
 waitForPort = 5000
 
 [[workflows.workflow]]
@@ -99,10 +99,6 @@ waitForPort = 8080
 [[ports]]
 localPort = 5000
 externalPort = 80
-
-[[ports]]
-localPort = 5007
-externalPort = 4200
 
 [[ports]]
 localPort = 5008
