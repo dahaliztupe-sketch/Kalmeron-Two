@@ -1,18 +1,28 @@
 import { generateText } from 'ai';
 import { MODELS } from '@/src/lib/gemini';
-// Using Nixtla for Time-Series forecasting & anomaly detection
-import { NixtlaClient } from 'nixtla';
 import { instrumentAgent } from '@/src/lib/observability/agent-instrumentation';
 import { FORECASTER_PROMPT } from './prompt';
 
-// Initialize Nixtla (Requires NIXTLA_API_KEY in environment)
-// Fallback gracefully if the package or key isn't fully set in this environment
-let nixtla: NixtlaClient | null = null;
-try {
-  nixtla = process.env.NIXTLA_API_KEY ? new NixtlaClient({ apiKey: process.env.NIXTLA_API_KEY }) : null;
-} catch (e) {
-  // Nixtla not injected yet
-}
+// Nixtla client type — defined locally so no static import is needed.
+// The actual module is loaded dynamically at runtime only when present.
+type NixtlaClientType = {
+  forecast(opts: { df: unknown; h: number; freq: string; timeCol: string; targetCol: string }): Promise<unknown>;
+  detectAnomalies(opts: { df: unknown; freq: string; timeCol: string; targetCol: string; level: number }): Promise<unknown>;
+};
+
+// Initialize Nixtla lazily via dynamic import so a missing package does not
+// throw MODULE_NOT_FOUND at module load time.
+let nixtla: NixtlaClientType | null = null;
+(async () => {
+  try {
+    if (process.env.NIXTLA_API_KEY) {
+      const mod = await import('nixtla' as string) as { NixtlaClient: new (opts: { apiKey: string }) => NixtlaClientType };
+      nixtla = new mod.NixtlaClient({ apiKey: process.env.NIXTLA_API_KEY });
+    }
+  } catch {
+    // nixtla package not installed — all calls fall back to LLM heuristic
+  }
+})();
 
 export const ForecasterAgent = {
   role: 'المحلل المالي التنبؤي (Predicitve CFO)',
@@ -36,7 +46,6 @@ export const ForecasterAgent = {
       });
       return forecast;
     } catch (error) {
-      // error is re-thrown below
       throw error;
     }
     }, { model: 'nixtla.timegpt', toolsUsed: ['nixtla.forecast'] });
@@ -57,7 +66,7 @@ export const ForecasterAgent = {
 
   async fallbackLLMPrediction(data: unknown[], horizon: number) {
      const { text } = await generateText({
-        model: MODELS.PRO_PREVIEW,
+        model: MODELS.PRO,
         system: FORECASTER_PROMPT,
         prompt: `Predict the next ${horizon} months of revenue based on this historical data: ${JSON.stringify(data)}. 
         Return a JSON array of objects with { timestamp, value }. Explain briefly the trend in Arabic.`

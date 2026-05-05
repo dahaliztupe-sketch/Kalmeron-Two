@@ -1,8 +1,9 @@
-import { Agent } from '@mastra/core';
+import { Agent } from '@mastra/core/agent';
 import { google } from '@ai-sdk/google';
 import { DIGITAL_TWIN_PROMPT } from './prompt';
 
 export const documentExtractorAgent = new Agent({
+  id: 'document-extractor-agent',
   name: 'Document Extractor Agent',
   instructions: `${DIGITAL_TWIN_PROMPT}
 

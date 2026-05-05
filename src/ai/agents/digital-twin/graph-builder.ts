@@ -1,4 +1,4 @@
-import { Agent } from '@mastra/core';
+import { Agent } from '@mastra/core/agent';
 import { google } from '@ai-sdk/google';
 import { z } from 'zod';
 import { DIGITAL_TWIN_PROMPT } from './prompt';
@@ -7,6 +7,7 @@ import { DIGITAL_TWIN_PROMPT } from './prompt';
 // import neo4j from 'neo4j-driver';
 
 export const graphBuilderAgent = new Agent({
+  id: 'graph-builder-agent',
   name: 'Graph Builder Agent',
   instructions: `${DIGITAL_TWIN_PROMPT}
 
@@ -34,7 +35,7 @@ export const graphBuilderAgent = new Agent({
           type: z.string(),
         })),
       }),
-      execute: async ({ startupId, entities, relationships }) => {
+      execute: async ({ startupId, entities, relationships }: { startupId: string; entities: Array<{ type: string; properties: Record<string, unknown> }>; relationships: Array<{ from: string; to: string; type: string }> }) => {
         return { success: false, message: 'Neo4j driver not yet installed/configured' };
       },
     },

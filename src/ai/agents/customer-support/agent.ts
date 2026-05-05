@@ -25,7 +25,7 @@ export async function createSupportSession() {
     return chat;
   } catch (e: unknown) {
     success = false;
-    errorCode = e?.code || e?.name || 'support_session_error';
+    errorCode = (e as { code?: string; name?: string })?.code || (e as { code?: string; name?: string })?.name || 'support_session_error';
     throw e;
   } finally {
     void recordDriftSample({

@@ -211,9 +211,9 @@ export default function ArabicTemplatesPage() {
             <div>
               <h1 className="text-2xl font-bold flex items-center gap-2">
                 <BookOpen className="text-emerald-400" size={24} />
-                {t("title")}
+                {trans("title")}
               </h1>
-              <p className="text-slate-400 text-sm mt-1">{t("subtitle")}</p>
+              <p className="text-slate-400 text-sm mt-1">{trans("subtitle")}</p>
             </div>
           </motion.div>
 

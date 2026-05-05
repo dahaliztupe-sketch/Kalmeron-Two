@@ -1,9 +1,10 @@
-import { Agent } from '@mastra/core';
+import { Agent } from '@mastra/core/agent';
 import { google } from '@ai-sdk/google';
 import { z } from 'zod';
 import { DIGITAL_TWIN_PROMPT } from './prompt';
 
 export const conversationExtractorAgent = new Agent({
+  id: 'conversation-extractor-agent',
   name: 'Conversation Extractor Agent',
   instructions: `${DIGITAL_TWIN_PROMPT}
 
@@ -26,7 +27,7 @@ export const conversationExtractorAgent = new Agent({
         conversationText: z.string().describe('نص المحادثة الكامل'),
         existingTwin: z.any().optional().describe('التوأم الرقمي الحالي للمقارنة'),
       }),
-      execute: async ({ conversationText, existingTwin }) => {
+      execute: async ({ conversationText, existingTwin }: { conversationText: string; existingTwin?: unknown }) => {
         return { proposedUpdates: [] };
       },
     },

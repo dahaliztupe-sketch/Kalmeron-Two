@@ -86,6 +86,7 @@
     "@base-ui/react": "^1.4.1",
     "@fontsource/cairo": "^5.2.7",
     "@google/genai": "^1.51.0",
+    "@google/generative-ai": "^0.24.1",
     "@langchain/core": "^1.1.41",
     "@langchain/langgraph": "^1.2.9",
     "@mastra/core": "^1.28.0",

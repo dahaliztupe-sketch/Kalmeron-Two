@@ -1,12 +1,14 @@
-import { Agent } from '@mastra/core';
+import { Agent } from '@mastra/core/agent';
+import { google } from '@ai-sdk/google';
 import { z } from 'zod';
 import { instrumentAgent } from '@/src/lib/observability/agent-instrumentation';
 import { REAL_ESTATE_PROMPT } from './prompt';
 
 export const realEstateAnalyzerAgent = new Agent({
+  id: 'real-estate-analyzer-agent',
   name: 'Real Estate Deal Analyzer',
   instructions: REAL_ESTATE_PROMPT,
-  model: { provider: 'google', name: 'gemini-2.5-flash' },
+  model: google('gemini-2.5-flash'),
   tools: {
     search_properties: {
       description: 'البحث عن عقارات استثمارية بناءً على معايير محددة',
@@ -16,7 +18,7 @@ export const realEstateAnalyzerAgent = new Agent({
         minCashFlow: z.number().optional(),
         propertyType: z.enum(['single_family', 'multi_family', 'condo', 'commercial']).optional(),
       }),
-      execute: async ({ location, maxPrice }) => {
+      execute: async ({ location, maxPrice }: { location: string; maxPrice?: number }) => {
         return [{ id: 'props_123', address: `عقار في ${location}`, price: maxPrice || 250000, estRent: 2500 }];
       },
     },
@@ -29,7 +31,7 @@ export const realEstateAnalyzerAgent = new Agent({
         downPayment: z.number().optional().default(20),
         interestRate: z.number().optional().default(7),
       }),
-      execute: async ({ propertyId, purchasePrice, estimatedRent, downPayment, interestRate }) => {
+      execute: async ({ propertyId, purchasePrice, estimatedRent, downPayment, interestRate }: { propertyId: string; purchasePrice: number; estimatedRent: number; downPayment: number; interestRate: number }) => {
         const estimatedExpenses = estimatedRent * 0.4;
         const loanAmount = purchasePrice * (1 - (downPayment / 100));
         const monthlyRate = (interestRate / 100) / 12;
@@ -55,7 +57,7 @@ export const realEstateAnalyzerAgent = new Agent({
 
 export async function realEstateAnalyzerRun(prompt: string) {
   return instrumentAgent('real_estate_analyzer', async () => {
-    const res: unknown = await realEstateAnalyzerAgent.generate(prompt);
+    const res = await realEstateAnalyzerAgent.generate(prompt) as { text?: string };
     return res?.text ?? res;
   }, { model: 'gemini-2.5-flash', input: { prompt }, toolsUsed: ['analyze_deal', 'search_properties'] });
 }

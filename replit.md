@@ -21,6 +21,21 @@
 - **Egypt Calc** → FastAPI Egyptian tax calculator على port 8008
 - **Embeddings Worker** → FastAPI multilingual embeddings على port 8099
 - **LLM Judge** → FastAPI LLM evaluator على port 8080
+- **artifacts/mockup-sandbox: Component Preview Server** → Vite dev server على `/__mockup/` (dynamic port via `PORT` env var)
+
+### Mockup Sandbox — متطلبات التشغيل
+الـ sandbox يحتاج متغيرَين بيئيَّين إلزاميَّين يُضخّهما Replit تلقائياً عند تشغيل الـ workflow:
+- `PORT` — رقم المنفذ المخصَّص من Replit
+- `BASE_PATH` — مسار الـ base URL (عادةً `/__mockup/`)
+
+في حال تشغيله يدوياً (خارج workflow):
+```bash
+cd artifacts/mockup-sandbox
+npm install           # مطلوب فقط في أول مرة أو بعد تحديث package.json
+PORT=23636 BASE_PATH=/__mockup/ npm run dev
+```
+
+**ملاحظة:** لا تُشغّل `npm install` في المجلد الجذر لتثبيت sandbox dependencies — يجب التثبيت داخل `artifacts/mockup-sandbox/` فقط.
 
 ---
 

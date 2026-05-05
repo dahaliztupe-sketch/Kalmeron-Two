@@ -1,7 +1,8 @@
-import { Agent } from '@mastra/core';
+import { Agent } from '@mastra/core/agent';
 import { google } from '@ai-sdk/google';
 
 export const continuousUpdaterAgent = new Agent({
+  id: 'continuous-updater-agent',
   name: 'Continuous Update Agent',
   instructions: `أنت وكيل يعمل في الخلفية بشكل مستمر. مهمتك هي مراقبة نشاط المستخدم وتحديث التوأم الرقمي لشركته تلقائياً.
   

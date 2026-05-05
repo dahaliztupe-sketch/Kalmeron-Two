@@ -32,15 +32,12 @@ export default defineConfig([
         version: "19.2.5",
       },
     },
-    rules: {
-      // React 19 compiler hints: flag classic
-      // `useEffect(() => { fetchData(); }, [])` and similar patterns as
-      // warnings rather than errors. They are real anti-patterns (cascading
-      // renders) and should be migrated incrementally to TanStack Query /
-      // `use()`, but they are not regressions — keep them visible without
-      // blocking CI lint.
-      "react-hooks/set-state-in-effect": "warn",
-    },
+    // Note: eslint-config-next already bundles react-hooks plugin rules
+    // (including react-hooks/set-state-in-effect). We do not re-declare them
+    // here — doing so previously caused ESLint to crash because the plugin
+    // was not explicitly registered. Remaining lint warnings (setState in
+    // effects) are pre-existing and tracked in a follow-up task (#6).
+    rules: {},
   },
   {
     // Discourage new `as any` casts in TS source. Existing files that
