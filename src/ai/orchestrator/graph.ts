@@ -7,6 +7,7 @@ import { isFeedbackRecorded, markFeedbackRecorded } from '@/src/lib/learning/con
 import { launchStartup } from '@/src/ai/launchpad/pipeline';
 import { detectCollaborationOpportunity } from '@/src/ai/orchestrator/virtual-meeting';
 import { receiveMessage, type Channel } from '@/src/lib/integrations/omnichannel';
+import { updateTwinFromConversation } from '@/src/ai/agents/digital-twin/continuous-updater';
 
 /**
  * إدخال موحّد للمنسق العام يوجّه الطلب حسب نوعه:
@@ -17,6 +18,7 @@ import { receiveMessage, type Channel } from '@/src/lib/integrations/omnichannel
 export async function routeIncoming(args: {
   task: string;
   workspaceId: string;
+  startupId?: string;
   channel?: Channel;
   senderId?: string;
 }) {
@@ -25,10 +27,18 @@ export async function routeIncoming(args: {
   }
   const t = (args.task || '').toLowerCase();
   if (t.includes('إطلاق المشروع') || t.includes('launch startup')) {
-    return { kind: 'launch', result: await launchStartup({ idea: args.task, workspaceId: args.workspaceId }) };
+    const result = await launchStartup({ idea: args.task, workspaceId: args.workspaceId });
+    if (args.startupId) {
+      updateTwinFromConversation(args.startupId, args.task).catch(() => {});
+    }
+    return { kind: 'launch', result };
   }
   // Periodically surface collaboration opportunities (best-effort).
   detectCollaborationOpportunity(args.workspaceId).catch(() => {});
+  // Trigger digital twin update async after every conversation (best-effort).
+  if (args.startupId) {
+    updateTwinFromConversation(args.startupId, args.task).catch(() => {});
+  }
   return { kind: 'graph', pending: true };
 }
 

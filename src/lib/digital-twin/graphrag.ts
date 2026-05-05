@@ -1,32 +1,72 @@
-// @ts-nocheck
-const EMBEDDINGS_WORKER_URL = process.env.EMBEDDINGS_WORKER_URL || 'http://localhost:8099';
-const _usingReplitProxy = !!process.env.AI_INTEGRATIONS_GEMINI_BASE_URL;
+import { runCypher, isNeo4jConfigured } from '@/src/ai/agents/digital-twin/neo4j-client';
 
-async function embedText(text: string): Promise<number[]> {
-  if (_usingReplitProxy) {
-    const res = await fetch(`${EMBEDDINGS_WORKER_URL}/embed`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ text }),
-    });
-    if (!res.ok) throw new Error(`embeddings-worker error: ${res.status}`);
-    const data = await res.json() as { embedding: number[] };
-    return data.embedding;
+export async function getCompanyContext(startupId: string): Promise<string> {
+  if (!isNeo4jConfigured()) {
+    console.warn('[graphrag] Neo4j not configured — returning empty context.');
+    return '';
   }
-  const { embed } = await import('ai');
-  const { google } = await import('@ai-sdk/google');
-  const { embedding } = await embed({
-    model: google.textEmbeddingModel('gemini-embedding-001'),
-    value: text,
-  });
-  return embedding;
+
+  try {
+    const [startupResult, foundersResult, productsResult, competitorsResult, metricsResult, milestonesResult] =
+      await Promise.all([
+        runCypher(
+          `MATCH (n:Startup {startupId: $startupId}) RETURN properties(n) AS props LIMIT 1`,
+          { startupId }
+        ),
+        runCypher(
+          `MATCH (n:Founder {startupId: $startupId}) RETURN properties(n) AS props`,
+          { startupId }
+        ),
+        runCypher(
+          `MATCH (n:Product {startupId: $startupId}) RETURN properties(n) AS props`,
+          { startupId }
+        ),
+        runCypher(
+          `MATCH (n:Competitor {startupId: $startupId}) RETURN properties(n) AS props`,
+          { startupId }
+        ),
+        runCypher(
+          `MATCH (n:Metric {startupId: $startupId}) RETURN properties(n) AS props`,
+          { startupId }
+        ),
+        runCypher(
+          `MATCH (n:Milestone {startupId: $startupId}) RETURN properties(n) AS props`,
+          { startupId }
+        ),
+      ]);
+
+    const fmt = (label: string, result: { records: Array<Record<string, unknown>> } | null) => {
+      if (!result?.records.length) return '';
+      const items = result.records.map((r) => {
+        const props = r.props as Record<string, unknown>;
+        return Object.entries(props)
+          .filter(([k]) => !['startupId', 'createdAt', 'updatedAt'].includes(k))
+          .map(([k, v]) => `${k}: ${v}`)
+          .join(', ');
+      });
+      return `### ${label}\n${items.map((i) => `- ${i}`).join('\n')}`;
+    };
+
+    const sections = [
+      fmt('الشركة', startupResult),
+      fmt('المؤسسون', foundersResult),
+      fmt('المنتجات', productsResult),
+      fmt('المنافسون', competitorsResult),
+      fmt('المقاييس', metricsResult),
+      fmt('المعالم', milestonesResult),
+    ].filter(Boolean);
+
+    if (!sections.length) return '';
+
+    return `## سياق الشركة الناشئة (${startupId})\n\n${sections.join('\n\n')}`;
+  } catch (err) {
+    console.error('[graphrag] getCompanyContext failed:', err);
+    return '';
+  }
 }
 
 export class GraphRAG {
-  async retrieveContext(startupId: string, query: string): Promise<string> {
-    await embedText(query);
-    // Implementation would use the driver to query Neo4j with a Cypher query
-    // containing vector search and graph traversal.
-    return `Context for ${startupId}: ${query} (Database interaction pending)`;
+  async retrieveContext(startupId: string, _query: string): Promise<string> {
+    return getCompanyContext(startupId);
   }
 }

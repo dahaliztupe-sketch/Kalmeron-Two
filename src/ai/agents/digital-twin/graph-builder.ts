@@ -2,9 +2,7 @@ import { Agent } from '@mastra/core/agent';
 import { google } from '@ai-sdk/google';
 import { z } from 'zod';
 import { DIGITAL_TWIN_PROMPT } from './prompt';
-
-// Note: Requires neo4j-driver to be installed
-// import neo4j from 'neo4j-driver';
+import { runCypher, isNeo4jConfigured } from './neo4j-client';
 
 export const graphBuilderAgent = new Agent({
   id: 'graph-builder-agent',
@@ -35,8 +33,73 @@ export const graphBuilderAgent = new Agent({
           type: z.string(),
         })),
       }),
-      execute: async ({ startupId, entities, relationships }: { startupId: string; entities: Array<{ type: string; properties: Record<string, unknown> }>; relationships: Array<{ from: string; to: string; type: string }> }) => {
-        return { success: false, message: 'Neo4j driver not yet installed/configured' };
+      execute: async ({ startupId, entities, relationships }: {
+        startupId: string;
+        entities: Array<{ type: string; properties: Record<string, unknown> }>;
+        relationships: Array<{ from: string; to: string; type: string }>;
+      }) => {
+        if (!isNeo4jConfigured()) {
+          throw new Error(
+            '[graph-builder] Neo4j credentials are not configured. ' +
+            'Set NEO4J_URI, NEO4J_USERNAME, and NEO4J_PASSWORD to enable the Digital Twin.'
+          );
+        }
+
+        const createdNodes: string[] = [];
+        const createdRels: string[] = [];
+        const errors: string[] = [];
+
+        for (const entity of entities) {
+          const { type, properties } = entity;
+          const name = (properties.name as string) || 'unknown';
+          try {
+            await runCypher(
+              `MERGE (n:${type} {startupId: $startupId, name: $name})
+               ON CREATE SET n.createdAt = datetime(), n.updatedAt = datetime(), n.confidence = $confidence
+               ON MATCH  SET n.updatedAt = datetime(), n.confidence = $confidence
+               SET n += $props`,
+              {
+                startupId,
+                name,
+                confidence: (properties.confidence as number) ?? 0.8,
+                props: { ...properties, startupId },
+              }
+            );
+            createdNodes.push(`${type}:${name}`);
+          } catch (err) {
+            const msg = err instanceof Error ? err.message : String(err);
+            errors.push(`Failed to merge ${type}:${name} — ${msg}`);
+            console.error(`[graph-builder] MERGE node error:`, msg);
+          }
+        }
+
+        for (const rel of relationships) {
+          try {
+            const safeType = rel.type.replace(/[^A-Z_]/gi, '_').toUpperCase();
+            await runCypher(
+              `MATCH (a {startupId: $startupId, name: $from})
+               MATCH (b {startupId: $startupId, name: $to})
+               MERGE (a)-[:${safeType}]->(b)`,
+              { startupId, from: rel.from, to: rel.to }
+            );
+            createdRels.push(`${rel.from}-[${safeType}]->${rel.to}`);
+          } catch (err) {
+            const msg = err instanceof Error ? err.message : String(err);
+            errors.push(`Failed to merge rel ${rel.from}->${rel.to} — ${msg}`);
+            console.error(`[graph-builder] MERGE relationship error:`, msg);
+          }
+        }
+
+        if (errors.length > 0) {
+          console.warn(`[graph-builder] Completed with ${errors.length} error(s):`, errors);
+        }
+
+        return {
+          success: errors.length === 0,
+          nodesCreated: createdNodes,
+          relationshipsCreated: createdRels,
+          errors,
+        };
       },
     },
   },
