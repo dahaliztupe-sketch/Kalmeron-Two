@@ -73,30 +73,101 @@ async function pullWorkspaceSignals(userId: string): Promise<{ text: string; met
   let topPending: string | undefined;
   let recentActions: string[] = [];
 
-  try {
-    const reqsCol = adminDb.collection('action_requests').where('userId', '==', userId);
-    const recentSnap = await reqsCol.orderBy('createdAt', 'desc').limit(40).get().catch(() => null);
-    if (recentSnap) {
-      for (const d of recentSnap.docs) {
-        const data = d.data() || {};
-        const createdMs = data.createdAt?._seconds ? data.createdAt._seconds * 1000 : 0;
-        if (createdMs >= since) actionsLast24h++;
-        if (data.status === 'pending_approval') {
-          pendingApprovals++;
-          if (!topPending) topPending = data.actionId || data.title;
-        }
-        if (data.status === 'failed') failedActions++;
-        if (data.recipeRunId) activeRecipes++;
-        if (recentActions.length < 6 && data.actionId) {
-          recentActions.push(`${data.actionId} → ${data.status}`);
-        }
+  // Parallel: action_requests + user profile + usage + recent chat history
+  const yesterday = new Date(since).toISOString().slice(0, 10);
+  const [recentSnap, profileSnap, usageSnap, chatSnap] = await Promise.all([
+    adminDb
+      .collection('action_requests')
+      .where('userId', '==', userId)
+      .orderBy('createdAt', 'desc')
+      .limit(40)
+      .get()
+      .catch(() => null),
+    adminDb.collection('users').doc(userId).get().catch(() => null),
+    adminDb
+      .collection('usage_daily')
+      .where('userId', '==', userId)
+      .orderBy('date', 'desc')
+      .limit(2)
+      .get()
+      .catch(() => null),
+    // Yesterday's conversations — titles give the LLM topic context
+    adminDb
+      .collection('users')
+      .doc(userId)
+      .collection('chat_history')
+      .orderBy('updated_at', 'desc')
+      .limit(5)
+      .get()
+      .catch(() => null),
+  ]);
+
+  if (recentSnap) {
+    for (const d of recentSnap.docs) {
+      const data = d.data() || {};
+      const createdMs = data.createdAt?._seconds ? data.createdAt._seconds * 1000 : 0;
+      if (createdMs >= since) actionsLast24h++;
+      if (data.status === 'pending_approval') {
+        pendingApprovals++;
+        if (!topPending) topPending = data.actionId || data.title;
+      }
+      if (data.status === 'failed') failedActions++;
+      if (data.recipeRunId) activeRecipes++;
+      if (recentActions.length < 6 && data.actionId) {
+        recentActions.push(`${data.actionId} → ${data.status}`);
       }
     }
-  } catch {}
+  }
+
+  // Pull profile context to personalise the LLM prompt
+  const profile = profileSnap?.exists ? (profileSnap.data() as Record<string, unknown>) : {};
+  const companyName   = (profile['company_name'] as string | undefined) || null;
+  const stage         = (profile['startup_stage'] as string | undefined) || null;
+  const industry      = (profile['industry'] as string | undefined) || null;
+  const governorate   = (profile['governorate'] as string | undefined) || null;
+
+  // Pull recent usage metrics
+  let yesterdayRequests: number | null = null;
+  let prevDayRequests: number | null = null;
+  if (usageSnap && usageSnap.docs.length >= 1) {
+    yesterdayRequests = (usageSnap.docs[0].data()['requests'] as number | undefined) ?? null;
+  }
+  if (usageSnap && usageSnap.docs.length >= 2) {
+    prevDayRequests = (usageSnap.docs[1].data()['requests'] as number | undefined) ?? null;
+  }
+
+  // Recent chat history — gives the LLM topic/concern context for today's brief
+  const recentChatTitles: string[] = [];
+  if (chatSnap) {
+    for (const d of chatSnap.docs) {
+      const data = d.data() || {};
+      // Include conversations updated on/after yesterday
+      const updatedAt: unknown = data.updated_at;
+      let updatedStr: string | null = null;
+      if (updatedAt && typeof (updatedAt as { toDate?: () => Date }).toDate === 'function') {
+        updatedStr = (updatedAt as { toDate: () => Date }).toDate().toISOString().slice(0, 10);
+      }
+      if (!updatedStr || updatedStr >= yesterday) {
+        const title = (data.title as string | undefined) || null;
+        if (title) recentChatTitles.push(title);
+      }
+    }
+  }
 
   const today = new Date().toISOString().slice(0, 10);
   const lines = [
     `التاريخ: ${today}`,
+    companyName  ? `اسم الشركة: ${companyName}`                           : '',
+    stage        ? `مرحلة الشركة: ${stage}`                               : '',
+    industry     ? `القطاع: ${industry}`                                  : '',
+    governorate  ? `الموقع: ${governorate}`                               : '',
+    yesterdayRequests !== null ? `طلبات الذكاء الاصطناعي أمس: ${yesterdayRequests}` : '',
+    (yesterdayRequests !== null && prevDayRequests !== null && prevDayRequests > 0)
+      ? `نسبة التغيير: ${(((yesterdayRequests - prevDayRequests) / prevDayRequests) * 100).toFixed(0)}%`
+      : '',
+    recentChatTitles.length
+      ? `محادثات الأيام الأخيرة:\n- ${recentChatTitles.join('\n- ')}`
+      : '',
     `طلبات الموافقة المعلّقة: ${pendingApprovals}`,
     `إجراءات نُفّذت آخر 24 ساعة: ${actionsLast24h}`,
     `إجراءات فشلت: ${failedActions}`,

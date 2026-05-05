@@ -33,32 +33,47 @@ interface BriefDoc {
   stageAr?: string | null;
 }
 
-function buildBrief(doc: BriefDoc): { subject: string; text: string } {
-  const greeting = doc.nameAr ? `صباح الخير يا ${doc.nameAr}،` : "صباح الخير،";
-  const stageLine = doc.stageAr ? `مرحلتك الحاليّة: ${doc.stageAr}.` : "";
-  const industryLine = doc.industryAr
-    ? `قطاعك: ${doc.industryAr}.`
-    : "";
+/**
+ * Generates the email body for a user's Daily Brief using the shared
+ * LLM-backed generator (`generateDailyBrief`). Falls back to a profile-aware
+ * static template when the generator is unavailable (e.g., no API key).
+ */
+async function buildBrief(doc: BriefDoc): Promise<{ subject: string; text: string }> {
+  const subject = "موجز اليوم من كلميرون 📋";
 
-  // Placeholder content — until the radar / plan / shield collectors land
-  // we render a hand-tuned "demo" brief so the user always gets something
-  // valuable and the cadence is established. Each section will be replaced
-  // by a real feed in subsequent commits.
+  // Try the real LLM generator first (same one as the /api/daily-brief GET route)
+  try {
+    const { generateDailyBrief } = await import('@/src/lib/daily-brief/generator');
+    const brief = await generateDailyBrief(doc.uid);
+    const greeting = doc.nameAr ? `صباح الخير يا ${doc.nameAr}،` : brief.greeting;
+    const lines: string[] = [greeting, ""];
+    for (const block of brief.blocks) {
+      const emoji = block.type === 'anomaly' ? '⚠️' : block.type === 'decision' ? '✅' : '✉️';
+      lines.push(`${emoji} ${block.title}`, block.body, "");
+    }
+    lines.push("— كلميرون");
+    return { subject, text: lines.join("\n") };
+  } catch { /* fall through to static template */ }
+
+  // Static profile-aware fallback (never hardcodes fake numbers)
+  const greeting = doc.nameAr ? `صباح الخير يا ${doc.nameAr}،` : "صباح الخير،";
+  const contextLines = [
+    doc.stageAr    ? `مرحلتك الحاليّة: ${doc.stageAr}.`  : "",
+    doc.industryAr ? `قطاعك: ${doc.industryAr}.`          : "",
+  ].filter(Boolean);
+
   const text =
     `${greeting}\n\n` +
-    `${[stageLine, industryLine].filter(Boolean).join(" ")}\n\n` +
-    `🔭 فرصة اليوم\n` +
-    `حاضنة "فلات سيكس لابز" فتحت تقديم لدورة Q3 بميزانيّة 50 ألف دولار لكلّ شركة. الموعد النهائي خلال 19 يوم.\n\n` +
-    `📐 الخطوة التالية في خطّتك\n` +
-    `أنهيت قسم الـ Business Model بنسبة 64%. الباقي: تحديد قنوات الاكتساب الثلاث الأولى وتقدير CAC لكل منها.\n\n` +
-    `🛡️ تنبيه من درع الأخطاء\n` +
-    `78% من الشركات الناشئة المصريّة في مرحلتك تخسر سيولة بسبب عدم فصل حساب الشركة عن حساب المؤسّس. افتح حساب تجاري قبل الإنفاق التشغيلي القادم.\n\n` +
+    (contextLines.length ? contextLines.join(" ") + "\n\n" : "") +
+    `⚠️ انتبه للتغيّرات\n` +
+    `راجع مؤشرات أمس مقارنةً بمتوسط الأسبوع وحدّد أيّها يحتاج تدخّلاً سريعاً.\n\n` +
+    `✅ قرار اليوم\n` +
+    `اختر مهمة واحدة عالية الأثر وأنهِها قبل نهاية يوم العمل.\n\n` +
+    `✉️ رسالة جاهزة\n` +
+    `افتح كلميرون وأخبر المساعد بتفاصيل قرارك — سيكتب الرسالة المناسبة لك في ثوانٍ.\n\n` +
     `— كلميرون`;
 
-  return {
-    subject: "موجز اليوم من كلميرون 📋",
-    text,
-  };
+  return { subject, text };
 }
 
 async function listOptedInUsers(limit = 1_000): Promise<BriefDoc[]> {
@@ -109,7 +124,7 @@ export async function POST(req: NextRequest) {
     const results: Array<{ uid: string; delivered: boolean; reason?: string }> = [];
 
     for (const u of users) {
-      const brief = buildBrief(u);
+      const brief = await buildBrief(u);
       const r = await sendEmail({
         to: u.email,
         subject: brief.subject,
@@ -163,7 +178,7 @@ export async function POST(req: NextRequest) {
     userDoc = { uid, email, nameAr: null, industryAr: null, stageAr: null };
   }
 
-  const brief = buildBrief(userDoc);
+  const brief = await buildBrief(userDoc);
   const result = await sendEmail({
     to: email,
     subject: brief.subject,

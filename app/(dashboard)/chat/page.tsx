@@ -1566,6 +1566,17 @@ function ChatPageContent() {
     return () => clearTimeout(t);
   }, [user, searchParams]);
 
+  // Load a specific conversation from URL ?conv=<id> (deep-links from dashboard)
+  const convLoadedRef = useRef(false);
+  useEffect(() => {
+    if (!user || convLoadedRef.current) return;
+    const convId = searchParams.get("conv");
+    if (!convId) return;
+    convLoadedRef.current = true;
+    setActiveConvId(convId);
+    void loadChat(convId);
+  }, [user, searchParams, loadChat]);
+
   return (
     <AppShell>
       <div className="flex h-[calc(100vh-64px)] overflow-hidden" dir="rtl">

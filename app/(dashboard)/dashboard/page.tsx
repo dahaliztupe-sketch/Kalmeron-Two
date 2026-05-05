@@ -16,6 +16,7 @@ import { NotificationPermissionBanner } from "@/components/ui/NotificationPermis
 import { RunwayAlarmBanner } from "@/components/runway/RunwayAlarmBanner";
 import { WelcomeToast } from "@/components/onboarding/WelcomeToast";
 import { FirstTimeTour } from "@/components/dashboard/FirstTimeTour";
+import { OpportunityBanner } from "@/components/dashboard/OpportunityBanner";
 import { PageSkeleton } from "@/components/ui/PageSkeleton";
 import { SmartHubSection } from "@/src/components/dashboard/SmartHubSection";
 import { CompanyHealthScore } from "@/src/components/dashboard/CompanyHealthScore";
@@ -35,7 +36,7 @@ const STAGE_KEY_MAP: Record<string, string> = {
 
 interface DashboardData {
   welcome: { stage: string; companyName: string | null; industry: string | null };
-  teamActivity: Array<{ taskId: string; description: string; status: string; updatedAt?: unknown }>;
+  teamActivity: Array<{ convId: string; title: string; lastMessage: string; agentId: string | null; updatedAt: string | null; href: string }>;
   pendingTasks: Array<{ taskId: string; description: string; status: string }>;
   alerts: Array<{ severity: string; source: string; message: string; timestamp?: string }>;
   metrics: { dailyCostUsd: number; dailyLimit: number; agentCount: number };
@@ -62,14 +63,86 @@ const containerVReduced: Variants = {
   show: { opacity: 1, transition: { duration: 0 } },
 };
 
-const QUICK_ACTION_KEYS = [
-  { key: "ideaAnalyst", icon: Brain, href: "/chat?q=" + encodeURIComponent("حلل فكرتي الجديدة"), color: "from-cyan-500 to-indigo-500", bg: "bg-cyan-500/5 border-cyan-500/20 hover:border-cyan-400/40" },
-  { key: "cfo", icon: Briefcase, href: "/chat?q=" + encodeURIComponent("احسب لي نموذج مالي أولي"), color: "from-emerald-500 to-cyan-500", bg: "bg-emerald-500/5 border-emerald-500/20 hover:border-emerald-400/40" },
-  { key: "legal", icon: Scale, href: "/chat?q=" + encodeURIComponent("ما الوثائق القانونية اللازمة للتأسيس؟"), color: "from-amber-500 to-orange-500", bg: "bg-amber-500/5 border-amber-500/20 hover:border-amber-400/40" },
-  { key: "marketLab", icon: FlaskConical, href: "/ideas/analyze", color: "from-fuchsia-500 to-pink-500", bg: "bg-fuchsia-500/5 border-fuchsia-500/20 hover:border-fuchsia-400/40" },
-  { key: "mistakeShield", icon: Shield, href: "/chat?q=" + encodeURIComponent("ما الأخطاء القاتلة التي يجب تجنبها؟"), color: "from-rose-500 to-red-500", bg: "bg-rose-500/5 border-rose-500/20 hover:border-rose-400/40" },
-  { key: "opportunityRadar", icon: Radar, href: "/opportunities", color: "from-violet-500 to-purple-500", bg: "bg-violet-500/5 border-violet-500/20 hover:border-violet-400/40" },
-] as const;
+type QuickAction = { key: string; icon: React.ComponentType<{className?:string}>; href: string; color: string; bg: string };
+
+const STAGE_QUICK_ACTIONS: Record<string, QuickAction[]> = {
+  idea: [
+    { key: "ideaAnalyst",   icon: Brain,        href: "/chat?q=" + encodeURIComponent("حلل فكرتي الجديدة"),                              color: "from-cyan-500 to-indigo-500",     bg: "bg-cyan-500/5 border-cyan-500/20 hover:border-cyan-400/40" },
+    { key: "marketLab",     icon: FlaskConical,  href: "/ideas/analyze",                                                                   color: "from-fuchsia-500 to-pink-500",    bg: "bg-fuchsia-500/5 border-fuchsia-500/20 hover:border-fuchsia-400/40" },
+    { key: "mistakeShield", icon: Shield,        href: "/chat?q=" + encodeURIComponent("ما الأخطاء القاتلة في مرحلة الفكرة؟"),             color: "from-rose-500 to-red-500",        bg: "bg-rose-500/5 border-rose-500/20 hover:border-rose-400/40" },
+    { key: "legal",         icon: Scale,         href: "/chat?q=" + encodeURIComponent("ما الوثائق القانونية اللازمة للتأسيس؟"),           color: "from-amber-500 to-orange-500",    bg: "bg-amber-500/5 border-amber-500/20 hover:border-amber-400/40" },
+    { key: "opportunityRadar", icon: Radar,      href: "/opportunities",                                                                   color: "from-violet-500 to-purple-500",   bg: "bg-violet-500/5 border-violet-500/20 hover:border-violet-400/40" },
+    { key: "cfo",           icon: Briefcase,     href: "/chat?q=" + encodeURIComponent("احسب لي نموذج مالي أولي للفكرة"),                  color: "from-emerald-500 to-cyan-500",    bg: "bg-emerald-500/5 border-emerald-500/20 hover:border-emerald-400/40" },
+  ],
+  validation: [
+    { key: "marketLab",     icon: FlaskConical,  href: "/customer-discovery",                                                              color: "from-fuchsia-500 to-pink-500",    bg: "bg-fuchsia-500/5 border-fuchsia-500/20 hover:border-fuchsia-400/40" },
+    { key: "mistakeShield", icon: Shield,        href: "/chat?q=" + encodeURIComponent("ما أخطاء مرحلة اختبار السوق؟"),                   color: "from-rose-500 to-red-500",        bg: "bg-rose-500/5 border-rose-500/20 hover:border-rose-400/40" },
+    { key: "ideaAnalyst",   icon: Brain,         href: "/chat?q=" + encodeURIComponent("كيف أتحقق من جاهزية السوق لفكرتي؟"),              color: "from-cyan-500 to-indigo-500",     bg: "bg-cyan-500/5 border-cyan-500/20 hover:border-cyan-400/40" },
+    { key: "cfo",           icon: Briefcase,     href: "/chat?q=" + encodeURIComponent("احسب لي نموذج مالي للمرحلة الأولى"),              color: "from-emerald-500 to-cyan-500",    bg: "bg-emerald-500/5 border-emerald-500/20 hover:border-emerald-400/40" },
+    { key: "opportunityRadar", icon: Radar,      href: "/opportunities",                                                                   color: "from-violet-500 to-purple-500",   bg: "bg-violet-500/5 border-violet-500/20 hover:border-violet-400/40" },
+    { key: "legal",         icon: Scale,         href: "/legal-ai",                                                                        color: "from-amber-500 to-orange-500",    bg: "bg-amber-500/5 border-amber-500/20 hover:border-amber-400/40" },
+  ],
+  mvp: [
+    { key: "cfo",           icon: Briefcase,     href: "/financial-model",                                                                 color: "from-emerald-500 to-cyan-500",    bg: "bg-emerald-500/5 border-emerald-500/20 hover:border-emerald-400/40" },
+    { key: "legal",         icon: Scale,         href: "/legal-ai",                                                                        color: "from-amber-500 to-orange-500",    bg: "bg-amber-500/5 border-amber-500/20 hover:border-amber-400/40" },
+    { key: "mistakeShield", icon: Shield,        href: "/chat?q=" + encodeURIComponent("ما أخطاء بناء MVP الشائعة؟"),                     color: "from-rose-500 to-red-500",        bg: "bg-rose-500/5 border-rose-500/20 hover:border-rose-400/40" },
+    { key: "opportunityRadar", icon: Radar,      href: "/opportunities",                                                                   color: "from-violet-500 to-purple-500",   bg: "bg-violet-500/5 border-violet-500/20 hover:border-violet-400/40" },
+    { key: "ideaAnalyst",   icon: Brain,         href: "/launchpad",                                                                       color: "from-cyan-500 to-indigo-500",     bg: "bg-cyan-500/5 border-cyan-500/20 hover:border-cyan-400/40" },
+    { key: "marketLab",     icon: FlaskConical,  href: "/competitor-watch",                                                                color: "from-fuchsia-500 to-pink-500",    bg: "bg-fuchsia-500/5 border-fuchsia-500/20 hover:border-fuchsia-400/40" },
+  ],
+  foundation: [
+    { key: "cfo",           icon: Briefcase,     href: "/financial-model",                                                                 color: "from-emerald-500 to-cyan-500",    bg: "bg-emerald-500/5 border-emerald-500/20 hover:border-emerald-400/40" },
+    { key: "opportunityRadar", icon: Radar,      href: "/opportunities",                                                                   color: "from-violet-500 to-purple-500",   bg: "bg-violet-500/5 border-violet-500/20 hover:border-violet-400/40" },
+    { key: "legal",         icon: Scale,         href: "/legal-ai",                                                                        color: "from-amber-500 to-orange-500",    bg: "bg-amber-500/5 border-amber-500/20 hover:border-amber-400/40" },
+    { key: "marketLab",     icon: FlaskConical,  href: "/competitor-watch",                                                                color: "from-fuchsia-500 to-pink-500",    bg: "bg-fuchsia-500/5 border-fuchsia-500/20 hover:border-fuchsia-400/40" },
+    { key: "mistakeShield", icon: Shield,        href: "/chat?q=" + encodeURIComponent("ما مخاطر مرحلة التأسيس؟"),                       color: "from-rose-500 to-red-500",        bg: "bg-rose-500/5 border-rose-500/20 hover:border-rose-400/40" },
+    { key: "ideaAnalyst",   icon: Brain,         href: "/okr",                                                                            color: "from-cyan-500 to-indigo-500",     bg: "bg-cyan-500/5 border-cyan-500/20 hover:border-cyan-400/40" },
+  ],
+  growth: [
+    { key: "marketLab",     icon: FlaskConical,  href: "/growth-lab",                                                                      color: "from-fuchsia-500 to-pink-500",    bg: "bg-fuchsia-500/5 border-fuchsia-500/20 hover:border-fuchsia-400/40" },
+    { key: "opportunityRadar", icon: Radar,      href: "/opportunities",                                                                   color: "from-violet-500 to-purple-500",   bg: "bg-violet-500/5 border-violet-500/20 hover:border-violet-400/40" },
+    { key: "cfo",           icon: Briefcase,     href: "/financial-model",                                                                 color: "from-emerald-500 to-cyan-500",    bg: "bg-emerald-500/5 border-emerald-500/20 hover:border-emerald-400/40" },
+    { key: "ideaAnalyst",   icon: Brain,         href: "/investor-deck",                                                                   color: "from-cyan-500 to-indigo-500",     bg: "bg-cyan-500/5 border-cyan-500/20 hover:border-cyan-400/40" },
+    { key: "mistakeShield", icon: Shield,        href: "/chat?q=" + encodeURIComponent("ما أخطاء مرحلة النمو القاتلة؟"),                  color: "from-rose-500 to-red-500",        bg: "bg-rose-500/5 border-rose-500/20 hover:border-rose-400/40" },
+    { key: "legal",         icon: Scale,         href: "/legal-ai",                                                                        color: "from-amber-500 to-orange-500",    bg: "bg-amber-500/5 border-amber-500/20 hover:border-amber-400/40" },
+  ],
+  scaling: [
+    { key: "opportunityRadar", icon: Radar,      href: "/opportunities",                                                                   color: "from-violet-500 to-purple-500",   bg: "bg-violet-500/5 border-violet-500/20 hover:border-violet-400/40" },
+    { key: "cfo",           icon: Briefcase,     href: "/financial-model",                                                                 color: "from-emerald-500 to-cyan-500",    bg: "bg-emerald-500/5 border-emerald-500/20 hover:border-emerald-400/40" },
+    { key: "marketLab",     icon: FlaskConical,  href: "/growth-lab",                                                                      color: "from-fuchsia-500 to-pink-500",    bg: "bg-fuchsia-500/5 border-fuchsia-500/20 hover:border-fuchsia-400/40" },
+    { key: "mistakeShield", icon: Shield,        href: "/chat?q=" + encodeURIComponent("ما مخاطر مرحلة التوسع؟"),                        color: "from-rose-500 to-red-500",        bg: "bg-rose-500/5 border-rose-500/20 hover:border-rose-400/40" },
+    { key: "ideaAnalyst",   icon: Brain,         href: "/hr-ai",                                                                          color: "from-cyan-500 to-indigo-500",     bg: "bg-cyan-500/5 border-cyan-500/20 hover:border-cyan-400/40" },
+    { key: "legal",         icon: Scale,         href: "/legal-ai",                                                                        color: "from-amber-500 to-orange-500",    bg: "bg-amber-500/5 border-amber-500/20 hover:border-amber-400/40" },
+  ],
+};
+
+// ── Quick action usage tracking ────────────────────────────────────────────
+// Primary store: Firestore via /api/dashboard/quick-action-click (per-user,
+// cross-device).  localStorage provides optimistic local increments so the
+// order updates immediately on click without waiting for the API round-trip.
+const USAGE_LS_KEY = "kalmeron_qa_usage_v1";
+
+function loadLocalUsage(): Record<string, number> {
+  try {
+    const raw = localStorage.getItem(USAGE_LS_KEY);
+    return raw ? (JSON.parse(raw) as Record<string, number>) : {};
+  } catch { return {}; }
+}
+
+function mergedCounts(
+  local: Record<string, number>,
+  remote: Record<string, number>
+): Record<string, number> {
+  const merged: Record<string, number> = { ...remote };
+  for (const [k, v] of Object.entries(local)) {
+    merged[k] = (merged[k] || 0) + v;
+  }
+  return merged;
+}
+
+function sortByUsage(actions: QuickAction[], counts: Record<string, number>): QuickAction[] {
+  return [...actions].sort((a, b) => (counts[b.key] || 0) - (counts[a.key] || 0));
+}
 
 export default function DashboardPage() {
   const t = useTranslations("Dashboard");
@@ -84,7 +157,67 @@ export default function DashboardPage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [chartData, setChartData] = useState<Array<{ day: string; cost: number; tokens: number }>>([]);
+  // Initialize quick actions with the idea-stage defaults so there are always
+  // 6 actions visible even before auth/dbUser hydrates (guest fallback).
+  const [quickActions, setQuickActions] = useState<QuickAction[]>(
+    () => STAGE_QUICK_ACTIONS.idea
+  );
+  const [remoteUsage, setRemoteUsage] = useState<Record<string, number>>({});
   const reduce = useReducedMotion();
+
+  // Fetch Firestore usage counts, then merge with localStorage for ordering
+  useEffect(() => {
+    const stageKey = dbUser?.startup_stage as string;
+    const baseActions = STAGE_QUICK_ACTIONS[stageKey] ?? STAGE_QUICK_ACTIONS.idea;
+
+    // Immediate sort from localStorage while remote loads
+    const localCounts = loadLocalUsage();
+    setQuickActions(sortByUsage(baseActions, localCounts));
+
+    // Fetch Firestore counts and re-sort (only when authenticated)
+    (async () => {
+      if (!user) return;
+      try {
+        const token = await user.getIdToken().catch(() => null);
+        if (!token) return;
+        const res = await fetch("/api/dashboard/quick-action-click", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!res.ok) return;
+        const { counts } = await res.json() as { counts: Record<string, number> };
+        setRemoteUsage(counts);
+        const merged = mergedCounts(localCounts, counts);
+        setQuickActions(sortByUsage(baseActions, merged));
+      } catch { /* best-effort */ }
+    })();
+  }, [user, dbUser?.startup_stage]);
+
+  const handleQuickActionClick = (actionKey: string) => {
+    // Optimistic local increment
+    const localCounts = loadLocalUsage();
+    try {
+      localCounts[actionKey] = (localCounts[actionKey] || 0) + 1;
+      localStorage.setItem(USAGE_LS_KEY, JSON.stringify(localCounts));
+    } catch {}
+    const stageKey = dbUser?.startup_stage as string;
+    const baseActions = STAGE_QUICK_ACTIONS[stageKey] ?? STAGE_QUICK_ACTIONS.idea;
+    setQuickActions(sortByUsage(baseActions, mergedCounts(localCounts, remoteUsage)));
+
+    // Persist to Firestore asynchronously
+    if (user) {
+      user.getIdToken().then((token) =>
+        fetch("/api/dashboard/quick-action-click", {
+          method: "POST",
+          headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+          body: JSON.stringify({ actionKey }),
+        })
+      ).then((res) => {
+        if (res?.ok) {
+          setRemoteUsage((prev) => ({ ...prev, [actionKey]: (prev[actionKey] || 0) + 1 }));
+        }
+      }).catch(() => {});
+    }
+  };
 
   useEffect(() => {
     let cancel = false;
@@ -167,6 +300,8 @@ export default function DashboardPage() {
 
         <RunwayAlarmBanner />
 
+        {data && <OpportunityBanner opportunity={data.opportunity} />}
+
         <SmartHubSection />
 
         {loading ? (
@@ -229,12 +364,13 @@ export default function DashboardPage() {
                 <Zap className="w-4 h-4 text-amber-400" /> {t("quickActions")}
               </h2>
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2 md:gap-3">
-                {QUICK_ACTION_KEYS.map((action) => {
+                {quickActions.map((action) => {
                   const Icon = action.icon;
                   const label = tQuick(`${action.key}.label`);
                   const desc = tQuick(`${action.key}.desc`);
                   return (
                     <Link key={action.key} href={action.href}
+                      onClick={() => handleQuickActionClick(action.key)}
                       className={cn(
                         "group rounded-2xl border p-3 md:p-4 text-center transition-all card-lift",
                         action.bg
@@ -292,23 +428,20 @@ export default function DashboardPage() {
                   </div>
                 ) : (
                   <ul className="space-y-3">
-                    {data.teamActivity.slice(0, 4).map((task) => (
-                      <li key={task.taskId} className="flex items-start gap-3 text-sm group">
-                        <div className={cn(
-                          "w-2 h-2 rounded-full mt-2 shrink-0 transition-transform group-hover:scale-125",
-                          task.status === "completed" ? "bg-emerald-400" :
-                          task.status === "in_progress" ? "bg-brand-blue animate-pulse" :
-                          task.status === "failed" ? "bg-rose-400" : "bg-text-secondary/40"
-                        )} />
-                        <span className="text-text-secondary leading-relaxed flex-1">{task.description}</span>
-                        <span className={cn(
-                          "text-[10px] px-2 py-0.5 rounded-full shrink-0",
-                          task.status === "completed" ? "bg-emerald-400/10 text-emerald-400" :
-                          task.status === "in_progress" ? "bg-blue-400/10 text-blue-400" :
-                          "bg-white/5 text-neutral-500"
-                        )}>
-                          {task.status === "completed" ? tStatus("completed") : task.status === "in_progress" ? tStatus("inProgress") : tStatus("pending")}
-                        </span>
+                    {data.teamActivity.slice(0, 10).map((conv) => (
+                      <li key={conv.convId} className="flex items-start gap-3 text-sm group">
+                        <div className="w-2 h-2 rounded-full mt-2 shrink-0 bg-brand-blue/60 group-hover:bg-brand-blue transition-colors" />
+                        <Link href={conv.href} className="flex-1 min-w-0 hover:text-white transition-colors">
+                          <span className="text-white/90 font-medium truncate block leading-tight">{conv.title}</span>
+                          {conv.lastMessage && (
+                            <span className="text-text-secondary text-xs leading-relaxed line-clamp-1 mt-0.5">{conv.lastMessage}</span>
+                          )}
+                        </Link>
+                        {conv.updatedAt && (
+                          <span className="text-[10px] text-neutral-500 shrink-0 mt-0.5">
+                            {new Date(conv.updatedAt).toLocaleDateString("ar-EG", { month: "short", day: "numeric" })}
+                          </span>
+                        )}
                       </li>
                     ))}
                   </ul>

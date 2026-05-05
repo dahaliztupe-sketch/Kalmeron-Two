@@ -3,6 +3,9 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { X, Sparkles, MessageSquare, Zap, Activity, DollarSign } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { doc, updateDoc } from "firebase/firestore";
+import { db } from "@/src/lib/firebase";
 
 const STEPS = [
   {
@@ -45,6 +48,7 @@ const STEPS = [
 const TOUR_KEY = "kalmeron_tour_done_v1";
 
 export function FirstTimeTour() {
+  const { user } = useAuth();
   const [step, setStep] = useState(0);
   const [visible, setVisible] = useState(false);
 
@@ -56,9 +60,19 @@ export function FirstTimeTour() {
     } catch {}
   }, []);
 
+  const markDone = () => {
+    try { localStorage.setItem(TOUR_KEY, "1"); } catch {}
+    if (user) {
+      updateDoc(doc(db, "users", user.uid), {
+        tour_completed: true,
+        tour_completed_at: new Date().toISOString(),
+      }).catch(() => {});
+    }
+  };
+
   const dismiss = () => {
     setVisible(false);
-    try { localStorage.setItem(TOUR_KEY, "1"); } catch {}
+    markDone();
   };
 
   const next = () => {

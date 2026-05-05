@@ -9,7 +9,7 @@ import {
   TrendingUp, Target, AlertTriangle, Zap, CheckCircle2,
   Clock, Loader2, RefreshCw, ArrowLeft, Flame, Bot,
   DollarSign, BarChart3, Lightbulb, ChevronRight,
-  CalendarDays, Activity, Award, XCircle,
+  CalendarDays, Activity, Award, XCircle, Printer,
 } from "lucide-react";
 import { cn } from "@/src/lib/utils";
 
@@ -129,6 +129,7 @@ export default function WeeklyReportClient() {
   const [data, setData] = useState<WeeklyData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [pdfLoading, setPdfLoading] = useState(false);
 
   const load = useCallback(async () => {
     if (!user) return;
@@ -157,6 +158,28 @@ export default function WeeklyReportClient() {
   const weekLabel = data
     ? new Date(data.weekStart).toLocaleDateString("ar-EG", { day: "numeric", month: "long", year: "numeric" })
     : "";
+
+  const exportPdf = async () => {
+    if (!user || !data) return;
+    setPdfLoading(true);
+    try {
+      const token = await user.getIdToken();
+      const res = await fetch("/api/weekly-report/export-pdf", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) throw new Error("فشل إنشاء PDF");
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `kalmeron-weekly-${new Date().toISOString().slice(0, 10)}.pdf`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch {
+    } finally {
+      setPdfLoading(false);
+    }
+  };
 
   return (
     <AppShell>
@@ -189,14 +212,26 @@ export default function WeeklyReportClient() {
                 </p>
               )}
             </div>
-            <button
-              onClick={() => void load()}
-              disabled={loading}
-              className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs border border-white/[0.08] bg-white/[0.03] hover:bg-white/[0.06] text-white/60 hover:text-white transition-all disabled:opacity-50"
-            >
-              <RefreshCw className={cn("w-3.5 h-3.5", loading && "animate-spin")} />
-              تحديث
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => void exportPdf()}
+                disabled={loading || !data || pdfLoading}
+                className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs border border-white/[0.08] bg-white/[0.03] hover:bg-white/[0.06] text-white/60 hover:text-white transition-all disabled:opacity-50 print:hidden"
+              >
+                {pdfLoading
+                  ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  : <Printer className="w-3.5 h-3.5" />}
+                {pdfLoading ? "جارٍ..." : "PDF"}
+              </button>
+              <button
+                onClick={() => void load()}
+                disabled={loading}
+                className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs border border-white/[0.08] bg-white/[0.03] hover:bg-white/[0.06] text-white/60 hover:text-white transition-all disabled:opacity-50 print:hidden"
+              >
+                <RefreshCw className={cn("w-3.5 h-3.5", loading && "animate-spin")} />
+                تحديث
+              </button>
+            </div>
           </div>
         </motion.div>
 

@@ -37,13 +37,15 @@ const INDUSTRIES = [
   { id: "other",          label: "مجال آخر",            icon: Building2,      color: "neutral" },
 ];
 
-const GOVERNORATES = [
-  "السعودية", "الإمارات", "مصر", "الكويت", "قطر",
-  "البحرين", "عُمان", "الأردن", "المغرب", "تونس",
-  "الجزائر", "ليبيا", "العراق", "لبنان", "فلسطين",
-  "اليمن", "السودان", "سوريا", "أمريكا الشمالية", "أوروبا",
-  "المملكة المتحدة", "كندا", "أستراليا", "جنوب شرق آسيا", "أفريقيا جنوب الصحراء",
-  "دولة أخرى",
+/** الـ 27 محافظة المصرية الرسمية — مرتّبة أبجدياً */
+const EGYPTIAN_GOVERNORATES = [
+  "أسوان", "أسيوط", "الإسكندرية", "الإسماعيلية", "الأقصر",
+  "البحر الأحمر", "البحيرة", "بني سويف", "بورسعيد",
+  "الجيزة", "الدقهلية", "دمياط", "الشرقية",
+  "الغربية", "الفيوم", "القاهرة", "القليوبية",
+  "قنا", "كفر الشيخ", "مطروح", "المنوفية", "المنيا",
+  "الوادي الجديد", "السويس", "سوهاج",
+  "شمال سيناء", "جنوب سيناء",
 ];
 
 const GOALS = [
@@ -174,7 +176,8 @@ const GOAL_MISSIONS: Record<string, GoalMissionBase> = {
   },
 };
 
-function buildMissionCards(goals: string[], stage: string): MissionCard[] {
+function buildMissionCards(goals: string[], stage: string, industry: string): MissionCard[] {
+  const industryLabel = INDUSTRIES.find((i) => i.id === industry)?.label ?? industry;
   return goals
     .filter((g) => GOAL_MISSIONS[g])
     .slice(0, 3)
@@ -182,7 +185,10 @@ function buildMissionCards(goals: string[], stage: string): MissionCard[] {
       const base = GOAL_MISSIONS[goalId];
       let href = base.baseHref;
       if (base.chatPromptByStage) {
-        const prompt = base.chatPromptByStage[stage] ?? base.chatPromptByStage["idea"] ?? "";
+        const basePrompt = base.chatPromptByStage[stage] ?? base.chatPromptByStage["idea"] ?? "";
+        const prompt = industryLabel
+          ? `${basePrompt} — مجالي هو: ${industryLabel}`
+          : basePrompt;
         if (base.baseHref === "/chat?q=" || base.baseHref.startsWith("/chat?q=")) {
           href = "/chat?q=" + encodeURIComponent(prompt);
         } else {
@@ -262,6 +268,8 @@ export function OnboardingForm() {
   const [goals,            setGoals          ] = useState<string[]>(() => loadProgress()?.goals ?? []);
   const [direction,        setDirection      ] = useState(1);
   const [showFirstMission, setShowFirstMission] = useState(() => loadProgress()?.showFirstMission ?? false);
+  const [govSearch,        setGovSearch      ] = useState("");
+  const [industrySearch,   setIndustrySearch ] = useState("");
 
   // Persist state on every meaningful change
   useEffect(() => {
@@ -282,11 +290,28 @@ export function OnboardingForm() {
     return false;
   })();
 
+  // Persist current step data to Firestore incrementally (best-effort, non-blocking)
+  const saveStepToFirestore = (stepIndex: number) => {
+    if (!user) return;
+    const partial: Record<string, unknown> = {};
+    if (stepIndex >= 1 && name.trim()) partial.name = name.trim();
+    if (stepIndex >= 2 && companyName.trim()) partial.company_name = companyName.trim();
+    if (stepIndex >= 3 && stage) partial.startup_stage = stage;
+    if (stepIndex >= 4 && industry) partial.industry = industry;
+    if (stepIndex >= 5 && location) partial.governorate = location;
+    if (stepIndex >= 6 && goals.length) partial.goals = goals;
+    if (Object.keys(partial).length === 0) return;
+    const userRef = doc(db, "users", user.uid);
+    updateDoc(userRef, partial).catch(() => {});
+  };
+
   const goNext = () => {
     if (!canNext) return;
     if (step < totalSteps - 1) {
       setDirection(1);
-      setStep((s) => s + 1);
+      const nextStep = step + 1;
+      setStep(nextStep);
+      saveStepToFirestore(nextStep);
     } else {
       handleSubmit();
     }
@@ -371,7 +396,7 @@ export function OnboardingForm() {
     router.replace(destination);
   };
 
-  const missionCards = buildMissionCards(goals, stage);
+  const missionCards = buildMissionCards(goals, stage, industry);
 
   const variants = {
     enter:  (dir: number) => ({ x: dir > 0 ? 40 : -40, opacity: 0, scale: 0.97 }),
@@ -670,41 +695,81 @@ export function OnboardingForm() {
                 </div>
               )}
 
-              {/* Step 4: Industry */}
+              {/* Step 4: Industry — searchable */}
               {step === 4 && (
-                <div className="grid grid-cols-3 gap-2.5">
-                  {INDUSTRIES.map((ind) => {
-                    const Icon = ind.icon;
-                    const isSelected = industry === ind.id;
-                    return (
-                      <button
-                        key={ind.id}
-                        onClick={() => setIndustry(ind.id)}
-                        className={cn(
-                          "flex flex-col items-center gap-2 p-3 rounded-2xl border transition-all",
-                          isSelected
-                            ? COLOR_MAPS[ind.color]
-                            : "border-white/[0.06] bg-white/[0.025] hover:bg-white/[0.05] hover:border-white/12"
-                        )}
-                      >
-                        <Icon className={cn("w-6 h-6", isSelected ? "" : "text-neutral-400")} />
-                        <span className={cn("text-xs font-medium text-center leading-tight", isSelected ? "font-bold" : "text-neutral-300")}>
-                          {ind.label}
-                        </span>
-                      </button>
-                    );
-                  })}
+                <div className="space-y-3">
+                  <div className="relative">
+                    <input
+                      dir="rtl"
+                      type="text"
+                      value={industrySearch}
+                      onChange={(e) => setIndustrySearch(e.target.value)}
+                      placeholder="ابحث عن مجالك…"
+                      className="w-full bg-white/[0.04] border border-white/[0.10] rounded-xl px-4 py-2.5 text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-indigo-400/60 focus:ring-1 focus:ring-indigo-400/30 transition-all"
+                    />
+                  </div>
+                  <div className="grid grid-cols-3 gap-2.5">
+                    {INDUSTRIES.filter((ind) =>
+                      industrySearch.trim() === "" ||
+                      ind.label.includes(industrySearch.trim())
+                    ).map((ind) => {
+                      const Icon = ind.icon;
+                      const isSelected = industry === ind.id;
+                      return (
+                        <button
+                          key={ind.id}
+                          onClick={() => { setIndustry(ind.id); setIndustrySearch(""); }}
+                          className={cn(
+                            "flex flex-col items-center gap-2 p-3 rounded-2xl border transition-all",
+                            isSelected
+                              ? COLOR_MAPS[ind.color]
+                              : "border-white/[0.06] bg-white/[0.025] hover:bg-white/[0.05] hover:border-white/12"
+                          )}
+                        >
+                          <Icon className={cn("w-6 h-6", isSelected ? "" : "text-neutral-400")} />
+                          <span className={cn("text-xs font-medium text-center leading-tight", isSelected ? "font-bold" : "text-neutral-300")}>
+                            {ind.label}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                  {industry && (
+                    <p className="text-xs text-emerald-400 text-center">
+                      اخترت: <span className="font-semibold">
+                        {INDUSTRIES.find((i) => i.id === industry)?.label ?? industry}
+                      </span>
+                    </p>
+                  )}
                 </div>
               )}
 
-              {/* Step 5: Location */}
+              {/* Step 5: Location — Egyptian governorates with autocomplete */}
               {step === 5 && (
-                <div>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-72 overflow-y-auto scrollbar-thin pl-1">
-                    {GOVERNORATES.map((gov) => (
+                <div className="space-y-3">
+                  <div className="relative">
+                    <input
+                      dir="rtl"
+                      type="text"
+                      value={govSearch}
+                      onChange={(e) => setGovSearch(e.target.value)}
+                      placeholder="ابحث عن محافظتك… (مثال: القاهرة)"
+                      className="w-full bg-white/[0.04] border border-white/[0.10] rounded-xl px-4 py-2.5 text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-indigo-400/60 focus:ring-1 focus:ring-indigo-400/30 transition-all"
+                    />
+                    {govSearch && (
+                      <button
+                        onClick={() => setGovSearch("")}
+                        className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-500 hover:text-white"
+                      >✕</button>
+                    )}
+                  </div>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-64 overflow-y-auto scrollbar-thin pl-1">
+                    {EGYPTIAN_GOVERNORATES.filter((gov) =>
+                      govSearch.trim() === "" || gov.includes(govSearch.trim())
+                    ).map((gov) => (
                       <button
                         key={gov}
-                        onClick={() => setLocation(gov)}
+                        onClick={() => { setLocation(gov); setGovSearch(""); }}
                         className={cn(
                           "px-3 py-2.5 rounded-xl border text-sm font-medium transition-all",
                           location === gov
@@ -720,7 +785,7 @@ export function OnboardingForm() {
                     <motion.div
                       initial={{ opacity: 0, y: 6 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className="mt-3 flex items-center gap-2 text-sm text-emerald-400"
+                      className="mt-1 flex items-center gap-2 text-sm text-emerald-400"
                     >
                       <MapPin className="w-4 h-4" /> اخترت: <span className="font-semibold">{location}</span>
                     </motion.div>
