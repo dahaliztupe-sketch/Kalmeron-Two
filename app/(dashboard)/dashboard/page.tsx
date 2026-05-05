@@ -15,6 +15,7 @@ import {
 import { NotificationPermissionBanner } from "@/components/ui/NotificationPermissionBanner";
 import { RunwayAlarmBanner } from "@/components/runway/RunwayAlarmBanner";
 import { WelcomeToast } from "@/components/onboarding/WelcomeToast";
+import { UpgradeConfetti } from "@/components/ui/UpgradeConfetti";
 import { FirstTimeTour } from "@/components/dashboard/FirstTimeTour";
 import { OpportunityBanner } from "@/components/dashboard/OpportunityBanner";
 import { PageSkeleton } from "@/components/ui/PageSkeleton";
@@ -275,6 +276,7 @@ export default function DashboardPage() {
     <AppShell>
       <WelcomeToast />
       <FirstTimeTour />
+      <UpgradeConfetti />
       <div dir="rtl" className="max-w-7xl mx-auto">
         <div className="flex items-center justify-between mb-6">
           <div>

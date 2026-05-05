@@ -2,7 +2,11 @@ import { adminDb } from '@/src/lib/firebase-admin';
 import { Timestamp } from 'firebase-admin/firestore';
 import type { QueryDocumentSnapshot } from 'firebase-admin/firestore';
 
-export async function resetDailyCredits(): Promise<void> {
+export interface ResetResult {
+  usersReset: number;
+}
+
+export async function resetDailyCredits(): Promise<ResetResult> {
   const now = Timestamp.now();
   const wallets = await adminDb
     .collection('user_credits')
@@ -19,9 +23,10 @@ export async function resetDailyCredits(): Promise<void> {
     });
   });
   await batch.commit();
+  return { usersReset: wallets.size };
 }
 
-export async function resetMonthlyCredits(): Promise<void> {
+export async function resetMonthlyCredits(): Promise<ResetResult> {
   const now = Timestamp.now();
   const wallets = await adminDb
     .collection('user_credits')
@@ -46,4 +51,5 @@ export async function resetMonthlyCredits(): Promise<void> {
     });
   });
   await batch.commit();
+  return { usersReset: wallets.size };
 }

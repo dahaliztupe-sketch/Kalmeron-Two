@@ -12,12 +12,16 @@
 import { NextRequest } from 'next/server';
 import Stripe from 'stripe';
 import { adminDb } from '@/src/lib/firebase-admin';
-import { Timestamp } from 'firebase-admin/firestore';
 import { getPlan, planFromStripePriceId, type PlanId } from '@/src/lib/billing/plans';
+import { applyPlanToUser } from '@/src/lib/billing/apply-plan';
 import { rewardReferrerOnUpgrade } from '@/src/lib/referrals/manager';
 import { toErrorMessage } from '@/src/lib/errors/to-message';
 import { rateLimit, rateLimitResponse } from '@/src/lib/security/rate-limit';
 import { logger } from '@/src/lib/logger';
+import {
+  sendSubscriptionConfirmation,
+  sendAnnualRenewalConfirmation,
+} from '@/src/lib/notifications/email';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -26,56 +30,21 @@ const stripeSecret = process.env.STRIPE_SECRET_KEY;
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 const stripe = stripeSecret ? new Stripe(stripeSecret, { apiVersion: '2026-04-22.dahlia' }) : null;
 
-async function applyPlanToUser(userId: string, planId: PlanId) {
-  const plan = getPlan(planId);
-  const now = Timestamp.now();
-  const userRef = adminDb.collection('users').doc(userId);
-  const walletRef = adminDb.collection('user_credits').doc(userId);
-
-  await userRef.set({ plan: plan.id, planUpdatedAt: now }, { merge: true });
-
-  const walletDoc = await walletRef.get();
-  if (!walletDoc.exists) {
-    await walletRef.set({
-      userId,
-      plan: plan.id,
-      dailyBalance: plan.dailyCredits,
-      monthlyBalance: plan.monthlyCredits,
-      lifetimeEarned: plan.dailyCredits + plan.monthlyCredits,
-      lifetimeConsumed: 0,
-      dailyLimit: plan.dailyCredits,
-      monthlyLimit: plan.monthlyCredits,
-      rolledOverCredits: 0,
-      unlimited: plan.unlimited,
-      dailyResetAt: new Timestamp(now.seconds + 86400, 0),
-      monthlyResetAt: new Timestamp(now.seconds + 2592000, 0),
-      lastUpdated: now,
-    });
-  } else {
-    const wallet = walletDoc.data() as
-      | { credits?: number; tier?: string; dailyBalance?: number; monthlyBalance?: number }
-      | undefined;
-    await walletRef.update({
-      plan: plan.id,
-      dailyLimit: plan.dailyCredits,
-      monthlyLimit: plan.monthlyCredits,
-      unlimited: plan.unlimited,
-      dailyBalance: Math.max(wallet?.dailyBalance ?? 0, plan.dailyCredits),
-      monthlyBalance: Math.max(wallet?.monthlyBalance ?? 0, plan.monthlyCredits),
-      lastUpdated: now,
-    });
+/** Resolve user email for notification sending */
+async function getUserEmail(userId: string): Promise<string | null> {
+  try {
+    const { adminAuth } = await import('@/src/lib/firebase-admin');
+    const userRecord = await adminAuth.getUser(userId);
+    return userRecord.email ?? null;
+  } catch {
+    return null;
   }
 }
 
 export async function POST(req: NextRequest) {
-  // Stripe verifies the signature inside; this cap is purely a DoS shield
-  // (legitimate webhook traffic is bursty but well under this rate).
   const rl = rateLimit(req, { limit: 600, windowMs: 60_000 });
   if (!rl.success) return rateLimitResponse();
 
-  // Always reject unsigned payloads first, regardless of server config.
-  // This guarantees the endpoint never accepts an unauthenticated body
-  // (and matches the contract asserted by `e2e/billing.spec.ts`).
   const sig = req.headers.get('stripe-signature');
   if (!sig) return new Response('Missing signature', { status: 400 });
 
@@ -108,10 +77,20 @@ export async function POST(req: NextRequest) {
         const s = event.data.object as Stripe.Checkout.Session;
         const uid = s.metadata?.firebaseUid as string | undefined;
         const planId = (s.metadata?.planId as PlanId) || 'pro';
+        const cycle = (s.metadata?.cycle as 'monthly' | 'annual') || 'monthly';
         if (uid) {
           await applyPlanToUser(uid, planId);
           if (planId !== 'free') {
             await rewardReferrerOnUpgrade(uid).catch(() => {});
+          }
+          // Send subscription confirmation email (best-effort)
+          const email = await getUserEmail(uid).catch(() => null);
+          if (email) {
+            const plan = getPlan(planId);
+            const amountTotal = s.amount_total ?? 0;
+            const currency = s.currency?.toUpperCase() ?? 'USD';
+            const amountFormatted = `${(amountTotal / 100).toFixed(2)} ${currency}`;
+            await sendSubscriptionConfirmation(email, plan.nameAr, cycle, amountFormatted).catch(() => {});
           }
         }
         break;
@@ -127,10 +106,34 @@ export async function POST(req: NextRequest) {
         const lookup = priceId ? planFromStripePriceId(priceId) : null;
         const planId: PlanId = lookup?.planId
           ?? ((sub.metadata?.planId as PlanId) || 'pro');
+        const cycle = lookup?.cycle ?? (sub.metadata?.cycle as 'monthly' | 'annual') ?? 'monthly';
         const isActive = sub.status === 'active' || sub.status === 'trialing';
         await applyPlanToUser(uid, isActive ? planId : 'free');
         if (isActive && planId !== 'free') {
           await rewardReferrerOnUpgrade(uid).catch(() => {});
+
+          // Send annual renewal confirmation only on true renewal events —
+          // i.e. when current_period_end has advanced relative to the previous value.
+          // This avoids sending the email on metadata/quantity-only updates.
+          if (event.type === 'customer.subscription.updated' && cycle === 'annual') {
+            const prevAttr = (event.data.previous_attributes as Record<string, unknown> | undefined);
+            const prevPeriodEnd = prevAttr?.['current_period_end'] as number | undefined;
+            const sub2 = sub as unknown as { current_period_end?: number };
+            const newPeriodEnd = sub2.current_period_end;
+            const isRenewal = typeof prevPeriodEnd === 'number'
+              && typeof newPeriodEnd === 'number'
+              && newPeriodEnd > prevPeriodEnd;
+            if (isRenewal) {
+              const email = await getUserEmail(uid).catch(() => null);
+              if (email) {
+                const plan = getPlan(planId);
+                const renewalDate = new Date(newPeriodEnd * 1000).toLocaleDateString('ar-EG', {
+                  year: 'numeric', month: 'long', day: 'numeric',
+                });
+                await sendAnnualRenewalConfirmation(email, plan.nameAr, renewalDate).catch(() => {});
+              }
+            }
+          }
         }
         break;
       }
@@ -153,12 +156,10 @@ export async function POST(req: NextRequest) {
         break;
       }
       default:
-        // ack but ignore
         break;
     }
   } catch (err: unknown) {
     logger.error({ event: 'stripe_webhook_handler_failed', type: event.type, error: toErrorMessage(err) });
-    // Returning 500 lets Stripe retry; safe because we dedupe by event.id.
     return new Response('Handler failed', { status: 500 });
   }
 

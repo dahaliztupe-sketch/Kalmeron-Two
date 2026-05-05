@@ -254,6 +254,21 @@ export class CreditManager {
   }
 
   private async sendNotification(type: string, percent: number): Promise<void> {
-    // notification stub — implement real push/email delivery here
+    if (type !== 'monthly_warning' && type !== 'daily_cap_reached') return;
+    try {
+      const userDoc = await adminDb.collection('users').doc(this.userId).get();
+      const email = userDoc.data()?.['email'] as string | undefined;
+      if (!email) return;
+      // Throttle: only send once per day per warning type
+      const throttleKey = `notif_${type}_${new Date().toISOString().slice(0, 10)}`;
+      const throttleRef = adminDb.collection('user_notification_throttle').doc(`${this.userId}_${throttleKey}`);
+      const throttleSnap = await throttleRef.get();
+      if (throttleSnap.exists) return;
+      await throttleRef.set({ sentAt: new Date().toISOString() });
+      const { sendCreditWarning } = await import('@/src/lib/notifications/email');
+      await sendCreditWarning(email, percent);
+    } catch {
+      // Non-critical — swallow silently
+    }
   }
 }

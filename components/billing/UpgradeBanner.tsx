@@ -49,7 +49,7 @@ export function UpgradeBanner() {
     ? Math.round(((data.dailyLimit - data.dailyBalance) / data.dailyLimit) * 100)
     : 0;
 
-  const show = !dismissed && data && data.plan === "free" && data.dailyLimit > 0 && usedPct >= 75;
+  const show = !dismissed && data && data.plan === "free" && data.dailyLimit > 0 && usedPct > 80;
   const safeUsedPct = Number.isFinite(usedPct) ? Math.max(0, Math.min(100, usedPct)) : 0;
 
   return (
@@ -71,7 +71,7 @@ export function UpgradeBanner() {
             <Link href="/pricing" className="text-violet-300 font-semibold hover:underline">
               رقّي خطتك الآن
             </Link>{" "}
-            للحصول على رصيد غير محدود
+            للحصول على رصيد أكبر
           </p>
           <Link
             href="/pricing"

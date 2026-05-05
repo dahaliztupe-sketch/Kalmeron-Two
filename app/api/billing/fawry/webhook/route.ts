@@ -12,8 +12,11 @@
 import { NextRequest } from 'next/server';
 import { adminDb } from '@/src/lib/firebase-admin';
 import { buildCallbackSignature, getFawryConfig } from '@/src/lib/billing/fawry/client';
+import { applyPlanToUser } from '@/src/lib/billing/apply-plan';
+import { getPlan, type PlanId } from '@/src/lib/billing/plans';
 import { rewardReferrerOnUpgrade } from '@/src/lib/referrals/manager';
 import { rateLimit, rateLimitResponse } from '@/src/lib/security/rate-limit';
+import { sendSubscriptionConfirmation } from '@/src/lib/notifications/email';
 
 export const runtime = 'nodejs';
 
@@ -37,7 +40,6 @@ interface FawryCallback {
 }
 
 export async function POST(req: NextRequest) {
-  // Fawry callback signature is verified below; this cap is a DoS shield.
   const rl = rateLimit(req, { limit: 600, windowMs: 60_000 });
   if (!rl.success) return rateLimitResponse();
 
@@ -57,7 +59,6 @@ export async function POST(req: NextRequest) {
     return Response.json({ error: 'Missing fields' }, { status: 400 });
   }
 
-  // Re-compute signature server-side and constant-time compare.
   const expected = buildCallbackSignature({
     fawryRefNumber: payload.fawryRefNumber,
     merchantRefNum: payload.merchantRefNumber,
@@ -72,7 +73,6 @@ export async function POST(req: NextRequest) {
     return Response.json({ error: 'Invalid signature' }, { status: 401 });
   }
 
-  // Idempotency: lookup the original order
   const orderRef = adminDb.collection('fawry_orders').doc(payload.merchantRefNumber);
   const orderSnap = await orderRef.get();
   if (!orderSnap.exists) {
@@ -92,28 +92,30 @@ export async function POST(req: NextRequest) {
     return Response.json({ ok: true, status: payload.orderStatus });
   }
 
-  // Verify amount matches what we recorded (anti-tamper)
   if (Math.abs((order.amountEgp as number) - payload.orderAmount) > 0.01) {
     await orderRef.update({ status: 'amount_mismatch', mismatchPayload: payload as unknown as Record<string, unknown> });
     return Response.json({ error: 'Amount mismatch' }, { status: 400 });
   }
 
-  // Grant entitlement: set the user's plan + create payment record (atomic)
   const userId = order.userId as string;
-  const planId = order.planId as string;
+  const planId = order.planId as PlanId;
   const cycle = order.cycle as 'monthly' | 'annual';
   const periodMs = cycle === 'annual' ? 365 * 24 * 60 * 60 * 1000 : 30 * 24 * 60 * 60 * 1000;
   const renewsAt = new Date(Date.now() + periodMs).toISOString();
 
-  const batch = adminDb.batch();
-  batch.update(adminDb.collection('users').doc(userId), {
+  // Apply plan to both users and user_credits via shared helper
+  await applyPlanToUser(userId, planId);
+
+  // Record payment + update order status + store extra plan metadata
+  const paymentBatch = adminDb.batch();
+  paymentBatch.set(adminDb.collection('users').doc(userId), {
     planId,
     planCycle: cycle,
     planRenewsAt: renewsAt,
     planUpdatedAt: new Date().toISOString(),
     lastPaymentMethod: 'fawry',
-  });
-  batch.set(adminDb.collection('payments').doc(`fawry_${payload.merchantRefNumber}`), {
+  }, { merge: true });
+  paymentBatch.set(adminDb.collection('payments').doc(`fawry_${payload.merchantRefNumber}`), {
     userId,
     provider: 'fawry',
     providerRef: payload.fawryRefNumber,
@@ -124,16 +126,24 @@ export async function POST(req: NextRequest) {
     paidAt: new Date().toISOString(),
     paymentMethod: payload.paymentMethod,
   });
-  batch.update(orderRef, {
+  paymentBatch.update(orderRef, {
     status: 'paid',
     paidAt: new Date().toISOString(),
     callbackPayload: payload as unknown as Record<string, unknown>,
   });
-  await batch.commit();
+  await paymentBatch.commit();
 
-  // Reward the referrer if this user was attributed to one (idempotent)
+  // Reward referrer (idempotent)
   if (planId !== 'free') {
     await rewardReferrerOnUpgrade(userId).catch(() => {});
+  }
+
+  // Send subscription confirmation email (best-effort)
+  const userEmail = order.userEmail as string | null;
+  if (userEmail) {
+    const plan = getPlan(planId);
+    const amountFormatted = `${payload.orderAmount.toFixed(2)} ج.م`;
+    await sendSubscriptionConfirmation(userEmail, plan.nameAr, cycle, amountFormatted).catch(() => {});
   }
 
   return Response.json({ ok: true, granted: true, planId });

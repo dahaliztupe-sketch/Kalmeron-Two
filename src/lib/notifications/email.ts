@@ -43,11 +43,6 @@ export async function sendEmail(p: EmailPayload): Promise<SendResult> {
 
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) {
-    // Scaffold mode — the rest of the system can develop against this without
-    // a real provider. Cron jobs that depend on email will log a warning.
-    // Email address is redacted to avoid PII in logs.
-    const domain = p.to.split("@")[1] ?? "unknown";
-    // RESEND_API_KEY not set — email skipped (scaffold mode)
     return { delivered: false, reason: "no-provider" };
   }
 
@@ -66,7 +61,6 @@ export async function sendEmail(p: EmailPayload): Promise<SendResult> {
         html: p.html,
         reply_to: p.replyTo,
       }),
-      // Don't let a slow provider hold the request thread forever.
       signal: AbortSignal.timeout(8_000),
     });
     if (!res.ok) {
@@ -82,4 +76,76 @@ export async function sendEmail(p: EmailPayload): Promise<SendResult> {
       errorMessage: (e as Error)?.message ?? "unknown",
     };
   }
+}
+
+/** تأكيد الاشتراك — يُرسَل مباشرة بعد webhook نجاح الدفع */
+export async function sendSubscriptionConfirmation(
+  email: string,
+  plan: string,
+  cycle: "monthly" | "annual",
+  amountFormatted: string,
+): Promise<SendResult> {
+  const cycleAr = cycle === "annual" ? "سنوي" : "شهري";
+  return sendEmail({
+    to: email,
+    subject: `🎉 تم تفعيل اشتراكك في كلميرون — ${plan}`,
+    text: `مرحباً،\n\nتم تفعيل اشتراكك في باقة "${plan}" (${cycleAr}) بنجاح.\nالمبلغ المدفوع: ${amountFormatted}\n\nيمكنك الآن الاستفادة الكاملة من جميع مميزات الباقة.\n\nلإدارة اشتراكك أو تنزيل الفواتير، زُر: https://kalmeron.app/account/billing\n\nشكراً لثقتك في كلميرون!\nفريق كلميرون`,
+    html: `<div dir="rtl" style="font-family:sans-serif;max-width:520px;margin:auto;color:#1a1a2e">
+      <h2 style="color:#7c3aed">🎉 تم تفعيل اشتراكك بنجاح!</h2>
+      <p>مرحباً،</p>
+      <p>تم تفعيل اشتراكك في باقة <strong>${plan}</strong> (${cycleAr}) بنجاح.</p>
+      <table style="border-collapse:collapse;width:100%;margin:16px 0;background:#f8f8f8;border-radius:8px">
+        <tr><td style="padding:8px 16px;font-weight:bold">الباقة</td><td style="padding:8px 16px">${plan} — ${cycleAr}</td></tr>
+        <tr><td style="padding:8px 16px;font-weight:bold">المبلغ المدفوع</td><td style="padding:8px 16px">${amountFormatted}</td></tr>
+      </table>
+      <p>يمكنك الآن الاستفادة الكاملة من جميع مميزات الباقة.</p>
+      <a href="https://kalmeron.app/account/billing" style="display:inline-block;margin:12px 0;padding:10px 24px;background:#7c3aed;color:#fff;border-radius:8px;text-decoration:none;font-weight:bold">إدارة الاشتراك</a>
+      <p style="color:#888;font-size:12px">فريق كلميرون</p>
+    </div>`,
+  });
+}
+
+/** تحذير 80% كريدت — يُرسَل عند تجاوز نسبة الاستهلاك */
+export async function sendCreditWarning(
+  email: string,
+  usedPct: number,
+): Promise<SendResult> {
+  const pctStr = Math.round(usedPct).toString();
+  return sendEmail({
+    to: email,
+    subject: `⚠️ تنبيه: استخدمت ${pctStr}% من رصيدك في كلميرون`,
+    text: `مرحباً،\n\nلقد استخدمت ${pctStr}% من رصيدك الشهري في كلميرون.\n\nلتجنب انقطاع الخدمة، يُنصح بترقية باقتك أو الانتظار حتى تاريخ التجديد.\n\nرقّي باقتك الآن: https://kalmeron.app/pricing\n\nفريق كلميرون`,
+    html: `<div dir="rtl" style="font-family:sans-serif;max-width:520px;margin:auto;color:#1a1a2e">
+      <h2 style="color:#d97706">⚠️ تنبيه رصيد كلميرون</h2>
+      <p>مرحباً،</p>
+      <p>لقد استخدمت <strong style="color:#d97706">${pctStr}%</strong> من رصيدك الشهري.</p>
+      <p>لتجنب انقطاع الخدمة، يُنصح بترقية باقتك أو الانتظار حتى تاريخ التجديد.</p>
+      <a href="https://kalmeron.app/pricing" style="display:inline-block;margin:12px 0;padding:10px 24px;background:#d97706;color:#fff;border-radius:8px;text-decoration:none;font-weight:bold">رقّي باقتك الآن</a>
+      <p style="color:#888;font-size:12px">فريق كلميرون</p>
+    </div>`,
+  });
+}
+
+/** تأكيد التجديد السنوي — يُرسَل من customer.subscription.updated */
+export async function sendAnnualRenewalConfirmation(
+  email: string,
+  plan: string,
+  renewalDate: string,
+): Promise<SendResult> {
+  return sendEmail({
+    to: email,
+    subject: `✅ تم تجديد اشتراكك السنوي في كلميرون — ${plan}`,
+    text: `مرحباً،\n\nتم تجديد اشتراكك السنوي في باقة "${plan}" بنجاح.\nتاريخ التجديد القادم: ${renewalDate}\n\nلإدارة اشتراكك أو تنزيل الفواتير: https://kalmeron.app/account/billing\n\nشكراً لاستمرار ثقتك في كلميرون!\nفريق كلميرون`,
+    html: `<div dir="rtl" style="font-family:sans-serif;max-width:520px;margin:auto;color:#1a1a2e">
+      <h2 style="color:#059669">✅ تم تجديد اشتراكك السنوي</h2>
+      <p>مرحباً،</p>
+      <p>تم تجديد اشتراكك السنوي في باقة <strong>${plan}</strong> بنجاح.</p>
+      <table style="border-collapse:collapse;width:100%;margin:16px 0;background:#f8f8f8;border-radius:8px">
+        <tr><td style="padding:8px 16px;font-weight:bold">الباقة</td><td style="padding:8px 16px">${plan}</td></tr>
+        <tr><td style="padding:8px 16px;font-weight:bold">تاريخ التجديد القادم</td><td style="padding:8px 16px">${renewalDate}</td></tr>
+      </table>
+      <a href="https://kalmeron.app/account/billing" style="display:inline-block;margin:12px 0;padding:10px 24px;background:#059669;color:#fff;border-radius:8px;text-decoration:none;font-weight:bold">إدارة الاشتراك</a>
+      <p style="color:#888;font-size:12px">فريق كلميرون</p>
+    </div>`,
+  });
 }

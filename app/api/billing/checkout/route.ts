@@ -27,8 +27,6 @@ export async function POST(req: NextRequest) {
   const rl = rateLimit(req, { limit: 10, windowMs: 60_000 });
   if (!rl.success) return rateLimitResponse();
 
-  // Authenticate first — an unauthenticated caller must always see 401,
-  // never 503 for missing Stripe config (asserted by e2e/billing.spec.ts).
   const authHeader = req.headers.get('Authorization');
   if (!authHeader?.startsWith('Bearer ')) {
     return Response.json({ error: 'Unauthorized' }, { status: 401 });
@@ -88,10 +86,6 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  // Find or create Stripe Customer keyed by uid.
-  // Wrapped in try/catch so any Stripe API or Firestore error is logged
-  // server-side and the client receives only an opaque error code
-  // (CodeQL js/stack-trace-exposure).
   try {
     const userRef = adminDb.collection('users').doc(userId);
     const userSnap = await userRef.get();
@@ -115,7 +109,7 @@ export async function POST(req: NextRequest) {
         metadata: { firebaseUid: userId, planId, cycle },
       },
       metadata: { firebaseUid: userId, planId, cycle },
-      success_url: `${baseUrl}/billing/success?session_id={CHECKOUT_SESSION_ID}`,
+      success_url: `${baseUrl}/dashboard?upgraded=true`,
       cancel_url: `${baseUrl}/pricing?cancelled=1`,
       allow_promotion_codes: true,
       locale: 'auto',

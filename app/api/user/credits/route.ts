@@ -3,11 +3,16 @@ import { adminAuth, adminDb } from '@/src/lib/firebase-admin';
 import { getPlan, type PlanId } from '@/src/lib/billing/plans';
 import { toErrorMessage } from '@/src/lib/errors/to-message';
 import { rateLimit, rateLimitResponse } from '@/src/lib/security/rate-limit';
+import type { Timestamp } from 'firebase-admin/firestore';
 
 export const runtime = 'nodejs';
 
+function toIso(ts: Timestamp | undefined | null): string | null {
+  if (!ts || typeof ts.toDate !== 'function') return null;
+  return ts.toDate().toISOString();
+}
+
 export async function GET(req: NextRequest) {
-  // Per-IP/user wallet poll — generous (clients refresh on tab focus + websocket fallback).
   const rl = rateLimit(req, { limit: 60, windowMs: 60_000 });
   if (!rl.success) return rateLimitResponse();
 
@@ -40,6 +45,7 @@ export async function GET(req: NextRequest) {
     const userPlan = getPlan(userPlanId);
 
     if (!walletDoc.exists) {
+      const now = Date.now();
       return new Response(
         JSON.stringify({
           plan: userPlan.id,
@@ -51,6 +57,8 @@ export async function GET(req: NextRequest) {
           monthlyLimit: userPlan.monthlyCredits,
           unlimited: userPlan.unlimited,
           total: userPlan.unlimited ? -1 : userPlan.dailyCredits + userPlan.monthlyCredits,
+          dailyResetAt: new Date(now + 86400_000).toISOString(),
+          monthlyResetAt: new Date(now + 2592000_000).toISOString(),
           initialized: false,
         }),
         { headers: { 'Content-Type': 'application/json' } }
@@ -65,6 +73,8 @@ export async function GET(req: NextRequest) {
           dailyLimit?: number;
           monthlyLimit?: number;
           unlimited?: boolean;
+          dailyResetAt?: Timestamp;
+          monthlyResetAt?: Timestamp;
         }
       | undefined;
     const planFromWallet = getPlan(w?.plan || userPlanId);
@@ -82,13 +92,13 @@ export async function GET(req: NextRequest) {
         monthlyLimit: w?.monthlyLimit || planFromWallet.monthlyCredits,
         unlimited: !!w?.unlimited || planFromWallet.unlimited,
         total,
+        dailyResetAt: toIso(w?.dailyResetAt),
+        monthlyResetAt: toIso(w?.monthlyResetAt),
         initialized: true,
       }),
       { headers: { 'Content-Type': 'application/json' } }
     );
   } catch (e: unknown) {
-    // Log the real error server-side, never echo internal details to the client
-    // (CodeQL js/stack-trace-exposure). The API contract is a stable opaque code.
     const { logger } = await import('@/src/lib/logger');
     logger.error({ event: 'credits_fetch_failed', error: toErrorMessage(e, 'unknown') });
     return new Response(JSON.stringify({ error: 'internal_error' }), {
