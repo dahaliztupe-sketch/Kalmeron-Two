@@ -11,6 +11,7 @@
  * in Sentry / Langfuse / pino sinks instead of stdout.
  */
 import { logger } from '@/src/lib/logger';
+import { globalAgentSRE as _governanceAgentSRE } from '@/src/lib/governance/agent-sre';
 
 const sreLogger = logger.child({ component: 'agent-sre' });
 
@@ -78,7 +79,9 @@ export class AgentSRE {
   }
 }
 
-export const globalAgentSRE = new AgentSRE();
+// Unified singleton — delegates to the governance SRE so circuit-breaker state
+// is shared across agentOSIntercept and the orchestrator graph.
+export const globalAgentSRE = _governanceAgentSRE;
 
 // Agent OS kernel interceptor (Firewall)
 export async function agentOSIntercept(toolName: string, requestedRing: ExecutionRing): Promise<boolean> {
