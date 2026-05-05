@@ -24,3 +24,9 @@ id = "hFIxqT9MnQbQeJAPXhEJq"
 uri = "file://docs/plans/LEARNINGS_FROM_EMERGENT_2026-04-30.md"
 type = "text"
 title = "دروس من Emergent.sh — خطة تطوير لكلميرون"
+
+[[outputs]]
+id = "ulfLc1ojlpolOK4VQWwgR"
+uri = "file://.local/tasks/kalmeron-comprehensive-analysis.md"
+type = "text"
+title = "التقرير الشامل لمشروع Kalmeron"
