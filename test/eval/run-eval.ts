@@ -18,7 +18,6 @@
  * (Requires GEMINI_API_KEY for full intent checks; PII + injection
  *  assertions run regardless.)
  */
-// @ts-nocheck
 import { writeFileSync, mkdirSync } from 'node:fs';
 import { dirname } from 'node:path';
 import dataset from './golden-dataset.json' assert { type: 'json' };
@@ -35,10 +34,24 @@ interface CaseResult {
   expectedAgent?: string;
   expectedIntent?: string;
   latencyMs: number;
-  details: Record<string, any>;
+  details: Record<string, unknown>;
 }
 
-function classifyCase(c: any): CaseResult['category'] {
+interface DatasetCase {
+  id: string;
+  input: string;
+  agent?: string;
+  expectedIntent?: string;
+  shouldBlock?: boolean;
+  shouldRedact?: string[];
+  rubric?: string;
+  expectedKeywords?: string[];
+  category?: string;
+}
+
+type DatasetCaseCategory = CaseResult['category'];
+
+function classifyCase(c: DatasetCase): DatasetCaseCategory {
   if (c.shouldBlock) return 'safety';
   if (c.shouldRedact) return 'pii';
   if (c.rubric) return 'quality';
@@ -63,15 +76,15 @@ function gatewayWouldBlock(input: string): boolean {
   return !validatePromptIntegrity('SYSTEM', sanitized);
 }
 
-async function runOne(c: any): Promise<CaseResult> {
-  const details: Record<string, any> = {};
+async function runOne(c: DatasetCase): Promise<CaseResult> {
+  const details: Record<string, unknown> = {};
   let passed = true;
   const startedAt = Date.now();
 
   // 1. PII redaction check (لا يتطلب LLM)
   if (c.shouldRedact) {
     const { hits } = redactPII(c.input);
-    const types = new Set(hits.map((h: any) => h.type));
+    const types = new Set(hits.map((h) => h.type));
     const missing = c.shouldRedact.filter((t: string) => !types.has(t));
     details.pii_missing = missing;
     if (missing.length > 0) passed = false;
@@ -88,6 +101,7 @@ async function runOne(c: any): Promise<CaseResult> {
   if (
     c.expectedIntent &&
     c.expectedIntent !== 'ANY' &&
+    c.expectedIntent !== 'BLOCKED' &&
     !c.shouldBlock &&
     process.env.GEMINI_API_KEY
   ) {
@@ -111,11 +125,11 @@ async function runOne(c: any): Promise<CaseResult> {
         details.intent_expected = c.expectedIntent;
         passed = false;
       }
-    } catch (e: any) {
-      details.error = e?.message;
+    } catch (e: unknown) {
+      details.error = e instanceof Error ? e.message : String(e);
       passed = false;
     }
-  } else if (c.expectedIntent && c.expectedIntent !== 'ANY' && !c.shouldBlock) {
+  } else if (c.expectedIntent && c.expectedIntent !== 'ANY' && c.expectedIntent !== 'BLOCKED' && !c.shouldBlock) {
     details.skipped = 'no GEMINI_API_KEY';
   }
 
@@ -133,9 +147,10 @@ async function runOne(c: any): Promise<CaseResult> {
 
 async function main() {
   const { jsonPath } = parseArgs(process.argv.slice(2));
-  console.log(`Running ${dataset.cases.length} eval cases...`);
+  const cases = dataset.cases as DatasetCase[];
+  console.log(`Running ${cases.length} eval cases...`);
   const results: CaseResult[] = [];
-  for (const c of dataset.cases) {
+  for (const c of cases) {
     const r = await runOne(c);
     results.push(r);
     console.log(`${r.passed ? '✓' : '✗'} ${r.id} (${r.latencyMs}ms)`, r.details);
@@ -146,13 +161,14 @@ async function main() {
   console.log(`\n=== Pass rate: ${pass}/${total} (${(ratio * 100).toFixed(1)}%) ===`);
 
   if (jsonPath) {
+    const rubric = dataset.qualityRubric as { passThreshold: number } | undefined;
     const out = {
       meta: {
         version: dataset.version,
         ranAt: new Date().toISOString(),
         nodeVersion: process.version,
         hasGeminiKey: Boolean(process.env.GEMINI_API_KEY),
-        passThreshold: dataset.qualityRubric?.passThreshold ?? null,
+        passThreshold: rubric?.passThreshold ?? null,
       },
       summary: { pass, total, ratio },
       results,
@@ -161,13 +177,14 @@ async function main() {
       mkdirSync(dirname(jsonPath), { recursive: true });
       writeFileSync(jsonPath, JSON.stringify(out, null, 2), 'utf8');
       console.log(`\nWrote machine-readable results → ${jsonPath}`);
-    } catch (e: any) {
-      console.error(`Failed to write JSON output to ${jsonPath}:`, e?.message);
+    } catch (e: unknown) {
+      console.error(`Failed to write JSON output to ${jsonPath}:`, e instanceof Error ? e.message : String(e));
     }
   }
 
-  if (ratio < (dataset.qualityRubric?.passThreshold ?? 0)) {
-    console.error(`Below threshold ${dataset.qualityRubric.passThreshold}`);
+  const threshold = (dataset.qualityRubric as { passThreshold: number } | undefined)?.passThreshold ?? 0;
+  if (ratio < threshold) {
+    console.error(`Below threshold ${threshold}`);
     process.exit(1);
   }
 }

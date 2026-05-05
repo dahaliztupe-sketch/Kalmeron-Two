@@ -993,6 +993,356 @@
       "shouldBlock": true,
       "expectedIntent": "BLOCKED",
       "category": "safety"
+    },
+    {
+      "id": "cr-001",
+      "input": "راجع هذا العقد: 'يحق للطرف الأول إنهاء العقد في أي وقت دون إشعار مسبق ودون أي تعويض للطرف الثاني'",
+      "expectedIntent": "CONTRACT_REVIEWER",
+      "agent": "contract-reviewer",
+      "rubric": "must_flag_unilateral_termination_clause"
+    },
+    {
+      "id": "cr-002",
+      "input": "عندي عقد توريد مع مصنع وفيه بند: 'التأخير في التسليم لأي سبب كان لا يُعدّ إخلالاً بالعقد' — هل ده خطر؟",
+      "expectedIntent": "CONTRACT_REVIEWER",
+      "agent": "contract-reviewer",
+      "rubric": "must_flag_force_majeure_abuse"
+    },
+    {
+      "id": "cr-003",
+      "input": "في عقد الشراكة: 'يحق للشريك الأكبر تعديل نسب الأرباح بقرار منفرد'. إيه رأيك؟",
+      "expectedIntent": "CONTRACT_REVIEWER",
+      "agent": "contract-reviewer",
+      "rubric": "must_flag_unilateral_profit_change"
+    },
+    {
+      "id": "cr-004",
+      "input": "عقد إيجار مكتب وفيه بند: 'للمؤجر رفع الإيجار بنسبة 30% سنوياً'. هل ده معتاد في مصر؟",
+      "expectedIntent": "CONTRACT_REVIEWER",
+      "agent": "contract-reviewer",
+      "rubric": "must_compare_with_egyptian_market_norms"
+    },
+    {
+      "id": "cr-005",
+      "input": "عقد خدمات برمجية وفيه: 'جميع حقوق الملكية الفكرية للكود المكتوب تؤول للعميل فور السداد'. إيه مواطن الخطر لو أنا الـ developer؟",
+      "expectedIntent": "CONTRACT_REVIEWER",
+      "agent": "contract-reviewer",
+      "rubric": "must_identify_ip_transfer_risks"
+    },
+    {
+      "id": "cr-006",
+      "input": "بنود التحكيم في العقد بتقول: 'أي نزاع يُحل حصرياً أمام محاكم نيويورك بالقانون الأمريكي'. هل ده مقبول لشركة مصرية؟",
+      "expectedIntent": "CONTRACT_REVIEWER",
+      "agent": "contract-reviewer",
+      "rubric": "must_flag_foreign_jurisdiction_risk"
+    },
+    {
+      "id": "cr-007",
+      "input": "عقد وكالة تسويق وفيه: 'تلتزم الشركة بدفع عمولة 20% على أي مبيعات تتم خلال 5 سنوات من انتهاء العقد'. إيه خطورة هذا البند؟",
+      "expectedIntent": "CONTRACT_REVIEWER",
+      "agent": "contract-reviewer",
+      "rubric": "must_flag_excessive_post_contract_obligations"
+    },
+    {
+      "id": "cr-008",
+      "input": "عقد موظف وفيه non-compete بيقول 'يمتنع الموظف عن العمل في أي شركة منافسة لمدة 3 سنوات في نفس المجال'. هل ده قابل للتنفيذ في مصر؟",
+      "expectedIntent": "CONTRACT_REVIEWER",
+      "agent": "contract-reviewer",
+      "rubric": "must_analyze_non_compete_enforceability_in_egypt"
+    },
+    {
+      "id": "cr-009",
+      "input": "عقد استثمار من مستثمر ملاك وفيه: 'للمستثمر حق النقض على أي قرار بتوظيف أو فصل موظفين'. إيه تأثير ده على التشغيل؟",
+      "expectedIntent": "CONTRACT_REVIEWER",
+      "agent": "contract-reviewer",
+      "rubric": "must_flag_operational_veto_risk"
+    },
+    {
+      "id": "cr-010",
+      "input": "في عقد SaaS بيني وبين عميل كبير: 'SLA 99.99% uptime وإلا غرامة 50% من قيمة العقد السنوي'. هل ده معقول؟",
+      "expectedIntent": "CONTRACT_REVIEWER",
+      "agent": "contract-reviewer",
+      "rubric": "must_assess_sla_penalty_proportionality"
+    },
+    {
+      "id": "cr-011",
+      "input": "عقد توزيع حصري في مصر وفيه: 'أي خلاف في التفسير يُرجَّح فيه التفسير الأكثر ضرراً للموزّع'. إيه خطورة ده؟",
+      "expectedIntent": "CONTRACT_REVIEWER",
+      "agent": "contract-reviewer",
+      "rubric": "must_flag_contra_proferentem_exploitation"
+    },
+    {
+      "id": "cr-012",
+      "input": "عقد شراكة استراتيجية وناقصه بنود: الخروج من الشراكة، وتوزيع الأصول عند الانفصال. هل ده مشكلة؟",
+      "expectedIntent": "CONTRACT_REVIEWER",
+      "agent": "contract-reviewer",
+      "rubric": "must_identify_missing_exit_provisions"
+    },
+    {
+      "id": "cr-013",
+      "input": "عقد قرض من بنك وفيه: 'للبنك تسريع سداد القرض كاملاً في حالة أي تغيير في هيكل الملكية'. هل ده عادي؟",
+      "expectedIntent": "CONTRACT_REVIEWER",
+      "agent": "contract-reviewer",
+      "rubric": "must_explain_change_of_control_clause"
+    },
+    {
+      "id": "cr-014",
+      "input": "عقد Outsourcing وفيه: 'المورّد يحق له تحويل المهام لأطراف ثالثة دون إخطار العميل'. إيه المخاطر؟",
+      "expectedIntent": "CONTRACT_REVIEWER",
+      "agent": "contract-reviewer",
+      "rubric": "must_flag_unlimited_subcontracting_risk"
+    },
+    {
+      "id": "cr-015",
+      "input": "عقد مع مستشار خارجي وناقصه بند السرية. هل الغياب ده بيبطل أي حماية قانونية للمعلومات السرية؟",
+      "expectedIntent": "CONTRACT_REVIEWER",
+      "agent": "contract-reviewer",
+      "rubric": "must_flag_missing_confidentiality_and_remedies"
+    },
+    {
+      "id": "sc-001",
+      "input": "بأبيع نظام ERP لشركات مقاولات كبيرة وعندي اجتماع مع المدير المالي بكرة. إيه أهم ٣ أسئلة أسألهالو؟",
+      "expectedIntent": "SALES_COACH",
+      "agent": "sales-coach",
+      "rubric": "must_provide_spin_questions_tailored_to_cfo"
+    },
+    {
+      "id": "sc-002",
+      "input": "عميلي قالي 'السعر غالي وعندنا نفس الحل من مورد تاني بنصف السعر'. إيه الرد الصح؟",
+      "expectedIntent": "SALES_COACH",
+      "agent": "sales-coach",
+      "rubric": "must_address_price_objection_with_value_reframe"
+    },
+    {
+      "id": "sc-003",
+      "input": "بأبيع خدمات تدريب للشركات وعندي pipeline فيه 40 صفقة بس في ٣ شهور ما اتغلقتش واحدة. إيه المشكلة؟",
+      "expectedIntent": "SALES_COACH",
+      "agent": "sales-coach",
+      "rubric": "must_diagnose_pipeline_velocity_issue"
+    },
+    {
+      "id": "sc-004",
+      "input": "عملائي بيقولوا 'هنفكر ونرجعلك' ومش بيرجعوش. إيه تقنيات متابعة المبيعات المناسبة للسوق المصري؟",
+      "expectedIntent": "SALES_COACH",
+      "agent": "sales-coach",
+      "rubric": "must_provide_culturally_appropriate_followup_scripts"
+    },
+    {
+      "id": "sc-005",
+      "input": "بنيت عرض سعر تفصيلي لعميل كبير وبعت 3 emails ومافيش رد. إيه الخطوة الجاية؟",
+      "expectedIntent": "SALES_COACH",
+      "agent": "sales-coach",
+      "rubric": "must_suggest_multi_channel_followup_strategy"
+    },
+    {
+      "id": "sc-006",
+      "input": "ازاي أحدد صانع القرار الفعلي في شركة مصرية كبيرة قبل ما أضيع وقتي مع مديرين مش عندهم صلاحية؟",
+      "expectedIntent": "SALES_COACH",
+      "agent": "sales-coach",
+      "rubric": "must_explain_decision_maker_mapping_in_egyptian_orgs"
+    },
+    {
+      "id": "sc-007",
+      "input": "عندي خدمة HR Tech بـ 2000 جنيه شهرياً والعميل قالي 'ده كتير على ميزانيتنا'. عارف إن تكلفة الموظف عنده 800 ألف سنوياً. إزاي أعمل ROI calculation على الشاشة معاه؟",
+      "expectedIntent": "SALES_COACH",
+      "agent": "sales-coach",
+      "rubric": "must_provide_live_roi_calculation_framework"
+    },
+    {
+      "id": "sc-008",
+      "input": "تمام الصفقة توقفت عند Legal Review منذ شهر. إيه اللي أقدر أعمله كـ Sales rep من غير ما أكون مزعج؟",
+      "expectedIntent": "SALES_COACH",
+      "agent": "sales-coach",
+      "rubric": "must_guide_legal_stage_deal_acceleration"
+    },
+    {
+      "id": "sc-009",
+      "input": "بأبيع B2C لأصحاب المحلات الصغيرة في مصر. بيرفضوا أي حاجة تقنية لأنهم 'مش متعودين'. ازاي أكسر هذا الحاجز؟",
+      "expectedIntent": "SALES_COACH",
+      "agent": "sales-coach",
+      "rubric": "must_address_tech_adoption_resistance_for_smbs"
+    },
+    {
+      "id": "sc-010",
+      "input": "عندي منتج بـ 3 plans وعملاء بيختاروا الأرخص دايماً. إزاي أـ anchor بالـ plan الأعلى وأزيد متوسط صفقتي؟",
+      "expectedIntent": "SALES_COACH",
+      "agent": "sales-coach",
+      "rubric": "must_explain_anchoring_and_upsell_technique"
+    },
+    {
+      "id": "sc-011",
+      "input": "ازاي أبني Cold Email sequence فعّال لـ decision makers في الشركات المتوسطة المصرية اللي مش بيردوا على الإيميل؟",
+      "expectedIntent": "SALES_COACH",
+      "agent": "sales-coach",
+      "rubric": "must_provide_egypt_b2b_outreach_templates"
+    },
+    {
+      "id": "sc-012",
+      "input": "عميل كان موافق ولحظة التوقيع طلب خصم 30% مش متوقعه. إيه الاستراتيجية الصح؟",
+      "expectedIntent": "SALES_COACH",
+      "agent": "sales-coach",
+      "rubric": "must_handle_last_minute_discount_demand"
+    },
+    {
+      "id": "sc-013",
+      "input": "فريق المبيعات بتاعي عدد 5 أشخاص وكل واحد بيشتغل بأسلوب مختلف. إزاي أعمل Sales Playbook موحّد؟",
+      "expectedIntent": "SALES_COACH",
+      "agent": "sales-coach",
+      "rubric": "must_outline_sales_playbook_structure"
+    },
+    {
+      "id": "sc-014",
+      "input": "عندي Conversion Rate من Demo لـ Proposal 15% بس. المعدل الطبيعي في قطاع الـ SaaS إيه وكيف أحسّنه؟",
+      "expectedIntent": "SALES_COACH",
+      "agent": "sales-coach",
+      "rubric": "must_benchmark_and_improve_demo_to_proposal_rate"
+    },
+    {
+      "id": "sc-015",
+      "input": "أنا مؤسس وبعمل Sales بنفسي. قريباً هوظف أول Sales rep. إيه اللي لازم أعلمهولو قبل ما يبدأ يشتغل في السوق المصري؟",
+      "expectedIntent": "SALES_COACH",
+      "agent": "sales-coach",
+      "rubric": "must_provide_egypt_sales_onboarding_curriculum"
+    },
+    {
+      "id": "wb-001",
+      "input": "بنام ٤ ساعات بس كل يوم من ٣ أشهر وحاسس بتعب شديد وصعوبة في التركيز. إيه الأسباب وإيه الحل العملي لرائد أعمال؟",
+      "expectedIntent": "WELLBEING_COACH",
+      "agent": "wellbeing-coach",
+      "rubric": "must_address_sleep_deprivation_with_actionable_steps"
+    },
+    {
+      "id": "wb-002",
+      "input": "حاسس بـ burnout شديد بعد سنتين من بناء الشركة. مش قادر أفرق بين التعب الطبيعي والـ burnout الحقيقي. إيه المؤشرات؟",
+      "expectedIntent": "WELLBEING_COACH",
+      "agent": "wellbeing-coach",
+      "rubric": "must_differentiate_burnout_from_fatigue_with_signs"
+    },
+    {
+      "id": "wb-003",
+      "input": "قلقان جداً من المستقبل المجهول للشركة وده بيأثر على تركيزي وعلاقتي بفريقي. إزاي أتعامل مع الـ anxiety كمؤسس؟",
+      "expectedIntent": "WELLBEING_COACH",
+      "agent": "wellbeing-coach",
+      "rubric": "must_provide_founder_anxiety_management_techniques"
+    },
+    {
+      "id": "wb-004",
+      "input": "الضغط بقى على علاقتي الأسرية. مراتي بتشكي من غيابي وعدم تواجدي. كيف أوازن بين ريادة الأعمال وحياتي الشخصية؟",
+      "expectedIntent": "WELLBEING_COACH",
+      "agent": "wellbeing-coach",
+      "rubric": "must_address_work_life_balance_with_cultural_sensitivity"
+    },
+    {
+      "id": "wb-005",
+      "input": "فقدت الحماس اللي كان عندي في البداية. كل يوم بحس إن الشغل أعباء مش هدف. إزاي أرجع الـ purpose؟",
+      "expectedIntent": "WELLBEING_COACH",
+      "agent": "wellbeing-coach",
+      "rubric": "must_address_loss_of_motivation_and_purpose"
+    },
+    {
+      "id": "wb-006",
+      "input": "بحس بوحدة شديدة. مافيش حد يفهم تحديات المؤسسين. إزاي أبني شبكة دعم نفسي كرائد أعمال في مصر؟",
+      "expectedIntent": "WELLBEING_COACH",
+      "agent": "wellbeing-coach",
+      "rubric": "must_suggest_founder_community_and_support_networks"
+    },
+    {
+      "id": "wb-007",
+      "input": "بشرب كتير قهوة وبآكل بشكل عشوائي. صحتي اتأثرت. إيه أبسط عادات صحية تناسب جدول رائد الأعمال المجنون؟",
+      "expectedIntent": "WELLBEING_COACH",
+      "agent": "wellbeing-coach",
+      "rubric": "must_provide_minimal_viable_health_habits_for_founders"
+    },
+    {
+      "id": "wb-008",
+      "input": "فريقي لاحظ إن زعلان كتير ومزاجي متقلب. خايف ده يأثر على القيادة. ازاي أتحكم في انفعالاتي؟",
+      "expectedIntent": "WELLBEING_COACH",
+      "agent": "wellbeing-coach",
+      "rubric": "must_address_emotional_regulation_for_leaders"
+    },
+    {
+      "id": "wb-009",
+      "input": "صحيت الصبح وكل حاجة حاسس إنها بلا معنى. مش قادر أقوم من السرير. هل ده مجرد إرهاق أم حاجة أعمق؟",
+      "expectedIntent": "WELLBEING_COACH",
+      "agent": "wellbeing-coach",
+      "rubric": "must_screen_for_depression_and_refer_to_professional_if_needed"
+    },
+    {
+      "id": "wb-010",
+      "input": "بعد ما الشركة فشلت خسرت ثقتي بنفسي. بخاف أبدأ من جديد. إزاي المؤسسون الناجحون تعاملوا مع الفشل؟",
+      "expectedIntent": "WELLBEING_COACH",
+      "agent": "wellbeing-coach",
+      "rubric": "must_normalize_failure_and_provide_resilience_framework"
+    },
+    {
+      "id": "bb-003",
+      "input": "عندي شركة محاسبة للشركات الصغيرة اسمها 'الحساب الذكي'. ساعدني أبني شخصية علامة تجارية موثوقة وحديثة في نفس الوقت.",
+      "expectedIntent": "BRAND_BUILDER",
+      "agent": "brand-builder",
+      "rubric": "must_balance_trust_and_modernity_in_brand_voice"
+    },
+    {
+      "id": "bb-004",
+      "input": "عندي منصة تعليم عبر الإنترنت باللهجة المصرية للمهارات التقنية. إزاي أبني brand positioning يميزني عن Coursera وYouTube العربي؟",
+      "expectedIntent": "BRAND_BUILDER",
+      "agent": "brand-builder",
+      "rubric": "must_differentiate_from_global_competitors_in_arabic_edtech"
+    },
+    {
+      "id": "bb-005",
+      "input": "اسم شركتي Fayrouz Organics لمنتجات العناية الطبيعية. إيه الألوان والرسائل التسويقية المناسبة للمرأة المصرية الواعية صحياً؟",
+      "expectedIntent": "BRAND_BUILDER",
+      "agent": "brand-builder",
+      "rubric": "must_align_brand_to_egyptian_female_health_conscious_segment"
+    },
+    {
+      "id": "bb-006",
+      "input": "بعد ما غيّرنا اسم شركتنا، عملاؤنا الحاليون متضايقين. كيف أدير Brand Transition بأقل خسارة في الولاء؟",
+      "expectedIntent": "BRAND_BUILDER",
+      "agent": "brand-builder",
+      "rubric": "must_outline_brand_transition_retention_strategy"
+    },
+    {
+      "id": "bb-007",
+      "input": "شركة Logistics مصرية وعايزين نتوسع للسوق السعودي. Brand الحالي مصري جداً. إيه اللي لازم يتغير وإيه اللي يتحافظ عليه؟",
+      "expectedIntent": "BRAND_BUILDER",
+      "agent": "brand-builder",
+      "rubric": "must_adapt_brand_for_gcc_market_while_preserving_equity"
+    },
+    {
+      "id": "cd-004",
+      "input": "عندي فرضية إن المحامين الشباب في مصر بيعانوا من صعوبة إدارة ملفاتهم رقمياً. إيه الأسئلة الصح عشان أتحقق من الفرضية؟",
+      "expectedIntent": "CUSTOMER_DISCOVERY",
+      "agent": "customer-discovery",
+      "rubric": "must_provide_mom_test_questions_for_legal_tech_hypothesis"
+    },
+    {
+      "id": "cd-005",
+      "input": "عملت 8 مقابلات مع أصحاب مطاعم وكلهم قالوا 'فكرتك حلوة'. إزاي أعرف لو الكلام ده حقيقي أم مجاملة؟",
+      "expectedIntent": "CUSTOMER_DISCOVERY",
+      "agent": "customer-discovery",
+      "rubric": "must_explain_false_positive_interview_signals"
+    },
+    {
+      "id": "cd-006",
+      "input": "مين الشريحة الأولى اللي أبدأ بيها لتطبيق إدارة أسطول سيارات للشركات المتوسطة في مصر؟ وإزاي أوصلها للمقابلات؟",
+      "expectedIntent": "CUSTOMER_DISCOVERY",
+      "agent": "customer-discovery",
+      "rubric": "must_identify_beachhead_segment_and_access_strategy"
+    },
+    {
+      "id": "cd-007",
+      "input": "عايز أعمل مقابلات customer discovery بس العملاء المستهدفين مديرون تنفيذيون مشغولون جداً. إزاي أوصلهم؟",
+      "expectedIntent": "CUSTOMER_DISCOVERY",
+      "agent": "customer-discovery",
+      "rubric": "must_suggest_access_strategies_for_executive_interviews"
+    },
+    {
+      "id": "cd-008",
+      "input": "بعد 20 مقابلة لقيت إن المشكلة موجودة بس العملاء مش مستعدين يدفعوا. إيه الخطوة الجاية؟",
+      "expectedIntent": "CUSTOMER_DISCOVERY",
+      "agent": "customer-discovery",
+      "rubric": "must_address_willingness_to_pay_gap_and_pivot_options"
     }
   ],
   "qualityRubric": {
