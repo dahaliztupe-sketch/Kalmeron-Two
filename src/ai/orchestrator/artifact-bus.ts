@@ -1,9 +1,9 @@
-// @ts-nocheck
 /**
  * Artifact Bus — نظام ملفات/قطع مشترك في الوقت الفعلي.
  * Firestore collection: artifacts.
  */
 import { adminDb } from '@/src/lib/firebase-admin';
+import type { Query } from 'firebase-admin/firestore';
 
 export interface Artifact {
   id?: string;
@@ -24,11 +24,11 @@ export async function publishArtifact(a: Omit<Artifact, 'id' | 'createdAt'>) {
 }
 
 export async function listArtifacts(userId: string, type?: string, limit = 50) {
-  let q: unknown = col().where('userId', '==', userId);
+  let q: Query = col().where('userId', '==', userId);
   if (type) q = q.where('type', '==', type);
   q = q.orderBy('createdAt', 'desc').limit(limit);
   const snap = await q.get();
-  return snap.docs.map((d: unknown) => ({ id: d.id, ...d.data() }));
+  return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
 }
 
 export async function getArtifact(artifactId: string) {

@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Marketplace — سوق مهام داخلي للوكلاء (مستوحى من EpochX).
  * Firestore collection: marketplace_jobs.
@@ -38,10 +37,10 @@ export async function claimJob(jobId: string, agentId: string) {
   return adminDb.runTransaction(async (tx) => {
     const snap = await tx.get(ref);
     if (!snap.exists) throw new Error('job_not_found');
-    const data: unknown = snap.data();
+    const data = snap.data() as Partial<MarketplaceJob>;
     if (data.status !== 'open') throw new Error('job_not_open');
     tx.update(ref, { status: 'claimed', claimedBy: agentId, claimedAt: new Date() });
-    return { id: jobId, ...data, status: 'claimed', claimedBy: agentId };
+    return { id: jobId, ...data, status: 'claimed' as const, claimedBy: agentId };
   });
 }
 

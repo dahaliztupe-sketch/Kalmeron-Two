@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Event Mesh — طبقة أحداث (in-process EventEmitter + Firestore log).
  * يستخدمها أي وكيل لنشر/الاشتراك في أحداث المشروع.
@@ -6,8 +5,9 @@
 import { EventEmitter } from 'events';
 import { adminDb } from '@/src/lib/firebase-admin';
 
-const bus: EventEmitter = (globalThis as unknown).__kalmeronEventMesh
-  || ((globalThis as unknown).__kalmeronEventMesh = new EventEmitter());
+const g = globalThis as Record<string, unknown>;
+const bus: EventEmitter = (g.__kalmeronEventMesh as EventEmitter | undefined)
+  ?? ((g.__kalmeronEventMesh = new EventEmitter()) as EventEmitter);
 bus.setMaxListeners(0);
 
 export interface MeshEvent {

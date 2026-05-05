@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { generateText } from 'ai';
 import { google } from '@ai-sdk/google';
 import { quarantineCorpus } from '@/src/lib/security/context-quarantine';
@@ -42,21 +41,19 @@ export async function reflectOnRetrieval(query: string, documents: string[]): Pr
   const result = await generateText({
     model: google('gemini-2.5-flash'),
     prompt,
-    maxTokens: 300,
+    maxOutputTokens: 300,
     temperature: 0,
   });
   
   try {
-    // استخراج JSON من النص
     const jsonMatch = result.text.match(/\{[\s\S]*\}/);
     if (jsonMatch) {
-      return JSON.parse(jsonMatch[0]);
+      return JSON.parse(jsonMatch[0]) as ReflectionResult;
     }
-  } catch (e) {
+  } catch {
     // reflection result parse failed — using default
   }
   
-  // افتراضي: غير كافٍ
   return { needsMoreEvidence: true, missingInfo: 'غير محدد', confidence: 0.3, canAnswer: false };
 }
 
@@ -75,7 +72,7 @@ export async function generateHonestDontKnow(query: string): Promise<string> {
   const result = await generateText({
     model: google('gemini-2.5-flash'),
     prompt,
-    maxTokens: 200,
+    maxOutputTokens: 200,
     temperature: 0.3,
   });
   
@@ -104,7 +101,6 @@ export async function selfRAGRetrieve(
     }
     
     if (reflection.needsMoreEvidence) {
-      // إعادة صياغة الاستعلام بناءً على المعلومات الناقصة
       const refinePrompt = `
       أعد صياغة الاستعلام التالي ليشمل المعلومات الناقصة: "${reflection.missingInfo}".
       الاستعلام الأصلي: ${currentQuery}
@@ -113,7 +109,7 @@ export async function selfRAGRetrieve(
       const refineResult = await generateText({
         model: google('gemini-2.5-flash'),
         prompt: refinePrompt,
-        maxTokens: 200,
+        maxOutputTokens: 200,
         temperature: 0.4,
       });
       

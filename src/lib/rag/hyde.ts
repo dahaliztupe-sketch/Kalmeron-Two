@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { generateText } from 'ai';
 import { google } from '@ai-sdk/google';
 
@@ -18,7 +17,7 @@ export async function generateHypotheticalAnswer(query: string): Promise<string>
   const result = await generateText({
     model: google('gemini-2.5-flash'), // نموذج سريع ومناسب
     prompt,
-    maxTokens: 150,
+    maxOutputTokens: 150,
     temperature: 0.3, // إبداع منخفض للحصول على إجابات متسقة
   });
   

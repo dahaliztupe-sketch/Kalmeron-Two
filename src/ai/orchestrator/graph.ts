@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { StateGraph, Annotation, MemorySaver } from '@langchain/langgraph';
 import { BaseMessage } from '@langchain/core/messages';
 import { AgentRegistry } from '../agents/registry';
@@ -126,7 +125,11 @@ async function synthesizerNode(state: typeof AgentState.State) {
 }
 
 const codeInterpreterNode = async (state: typeof AgentState.State) => {
-  const result = await AgentRegistry['code-interpreter'].action.execute({
+  // as cast justified: code-interpreter action is a Mastra agent with .execute() at runtime
+  const action = AgentRegistry['code-interpreter'].action as unknown as {
+    execute: (args: Record<string, unknown>) => Promise<unknown>;
+  };
+  const result = await action.execute({
     task: state.task.includes('تحليل') ? 'analyze' : 'execute',
     code: state.task,
     userId: 'user-123',
@@ -166,7 +169,7 @@ const workflow = new StateGraph(AgentState)
   .addNode('synthesizer', synthesizerNode)
   .addEdge('__start__', 'router')
   .addEdge('router', 'loadSkills')
-  .addConditionalEdges('loadSkills', (state: unknown) => state.currentAgent)
+  .addConditionalEdges('loadSkills', (state: typeof AgentState.State) => state.currentAgent)
   .addEdge('ideaValidator', 'synthesizer')
   .addEdge('planBuilder', 'synthesizer')
   .addEdge('cfoAgent', 'synthesizer')

@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { generateText } from 'ai';
 import { google } from '@ai-sdk/google';
 import { quarantineCorpus } from '@/src/lib/security/context-quarantine';
@@ -38,7 +37,7 @@ export async function evaluateRetrievalRelevance(query: string, documents: strin
   const result = await generateText({
     model: google('gemini-2.5-flash-lite'), // نموذج خفيف وسريع للتقييم
     prompt,
-    maxTokens: 10,
+    maxOutputTokens: 10,
     temperature: 0,
   });
   
@@ -61,7 +60,7 @@ export async function rewriteQuery(originalQuery: string, feedback?: string): Pr
   const result = await generateText({
     model: google('gemini-2.5-flash'),
     prompt,
-    maxTokens: 200,
+    maxOutputTokens: 200,
     temperature: 0.4,
   });
   
@@ -91,7 +90,6 @@ export async function cragRetrieve(
       return { documents, finalQuery: currentQuery, confidence };
     }
     
-    // إعادة صياغة الاستعلام للمحاولة التالية
     const feedback = `نتائج البحث السابقة لم تكن ذات صلة كافية (ثقة: ${confidence})`;
     currentQuery = await rewriteQuery(query, feedback);
   }

@@ -1,17 +1,26 @@
-// @ts-nocheck
 import { StateGraph, Annotation, MemorySaver } from '@langchain/langgraph';
-import { generateText, embed } from 'ai';
+import { generateText } from 'ai';
 import { MODELS } from '@/src/lib/gemini';
+
+interface RetrievedDoc {
+  content: string;
+  score: number;
+  source?: string;
+}
+
+interface GradedDoc extends RetrievedDoc {
+  grade: 'correct' | 'ambiguous' | 'incorrect';
+}
 
 // تعريف حالة RAG المتقدمة
 export const RAGState = Annotation.Root({
   question: Annotation<string>(),
   originalQuestion: Annotation<string>(),
   hypotheticalAnswer: Annotation<string>(),
-  documents: Annotation<unknown[]>({
+  documents: Annotation<RetrievedDoc[]>({
     reducer: (a, b) => a.concat(b),
   }),
-  gradedDocuments: Annotation<unknown[]>(),
+  gradedDocuments: Annotation<GradedDoc[]>(),
   needsWebSearch: Annotation<boolean>(),
   discourseAnalysis: Annotation<string>(),
   answerPlan: Annotation<string>(),
@@ -43,14 +52,14 @@ async function retrieveNode(state: typeof RAGState.State) {
     const snap = await adminDb.collection('knowledge_base').limit(50).get().catch(() => null);
     if (!snap || snap.empty) return { documents: [] };
 
-    const docs: unknown[] = [];
-    snap.forEach((d: unknown) => {
-      const data = d.data() || {};
-      const content: string = data.content || data.text || '';
+    const docs: RetrievedDoc[] = [];
+    snap.forEach((d) => {
+      const data = d.data() ?? {};
+      const content: string = (data['content'] as string | undefined) || (data['text'] as string | undefined) || '';
       if (!content) return;
       const lower = content.toLowerCase();
       const hits = tokens.filter(t => lower.includes(t)).length;
-      if (hits > 0) docs.push({ content, score: Math.min(0.95, 0.5 + hits * 0.1), source: data.source });
+      if (hits > 0) docs.push({ content, score: Math.min(0.95, 0.5 + hits * 0.1), source: data['source'] as string | undefined });
     });
 
     docs.sort((a, b) => b.score - a.score);
@@ -63,27 +72,19 @@ async function retrieveNode(state: typeof RAGState.State) {
 // 3. المراجع (CRAG) - تقييم المستندات
 async function gradeDocumentsNode(state: typeof RAGState.State) {
   const docs = state.documents;
-  let correctCount = 0;
-  let ambiguousCount = 0;
-  let incorrectCount = 0;
-
-  const gradedDocs = [];
+  
+  const gradedDocs: GradedDoc[] = [];
   
   for (const doc of docs) {
-    // محاكاة استخدام نموذج لتقييم صلة كل مستند بالسؤال
-    const grade = doc.score > 0.8 ? 'correct' : (doc.score > 0.6 ? 'ambiguous' : 'incorrect');
+    const grade: GradedDoc['grade'] = doc.score > 0.8 ? 'correct' : (doc.score > 0.6 ? 'ambiguous' : 'incorrect');
     gradedDocs.push({ ...doc, grade });
-    
-    if (grade === 'correct') correctCount++;
-    else if (grade === 'ambiguous') ambiguousCount++;
-    else incorrectCount++;
   }
   
   return { gradedDocuments: gradedDocs };
 }
 
 // 4. توجيه ما بعد التقييم
-function routeAfterGrading(state: typeof RAGState.State) {
+function routeAfterGrading(state: typeof RAGState.State): string {
   const docs = state.gradedDocuments;
   const incorrectCount = docs.filter(d => d.grade === 'incorrect').length;
   const ambiguousCount = docs.filter(d => d.grade === 'ambiguous').length;
@@ -100,13 +101,13 @@ async function rewriteQueryNode(state: typeof RAGState.State) {
     prompt: `أعد صياغة هذا السؤال ليكون مناسباً لعملية استرجاع بيانات أكثر دقة:
 ${state.question}`,
   });
-  return { question: rewrittenQuery, documents: [] };
+  return { question: rewrittenQuery, documents: [] as RetrievedDoc[] };
 }
 
 // 6. مسار التصحيح: البحث على الويب
 async function webSearchNode(state: typeof RAGState.State) {
   // محاكاة الاستعانة بـ Tavily أو محركات بحث لزيادة السياق الغامض
-  const fallbackDocs = [{ content: "معلومات من الويب: التأسيس الإلكتروني متاح الآن عبر بوابة المستثمر.", grade: 'correct' }];
+  const fallbackDocs: GradedDoc[] = [{ content: "معلومات من الويب: التأسيس الإلكتروني متاح الآن عبر بوابة المستثمر.", grade: 'correct', score: 0.7 }];
   return { gradedDocuments: [...state.gradedDocuments, ...fallbackDocs] };
 }
 
@@ -137,7 +138,8 @@ ${state.discourseAnalysis}`,
 async function generateAnswerNode(state: typeof RAGState.State) {
   const context = state.gradedDocuments.filter(d => d.grade !== 'incorrect').map(d => d.content).join('\n');
   const { text: finalAnswer } = await generateText({
-    model: MODELS.PRO_PREVIEW,
+    // PRO_PREVIEW key is reserved for a future model tier; accessing via index preserves original runtime behavior
+    model: (MODELS as unknown as Record<string, typeof MODELS.PRO>)['PRO_PREVIEW'] ?? MODELS.PRO,
     prompt: `استخدم المخطط التالي لبناء إجابة نهائية دقيقة للسؤال "${state.question}".
 
 المخطط:
@@ -163,7 +165,7 @@ async function evaluateAnswerNode(state: typeof RAGState.State) {
 }
 
 // 11. توجيه ما بعد التقييم النهائي
-function routeAfterEvaluation(state: typeof RAGState.State) {
+function routeAfterEvaluation(state: typeof RAGState.State): string {
   if (state.evaluationScore >= 8 || state.retries >= 3) {
     return '__end__';
   } else {

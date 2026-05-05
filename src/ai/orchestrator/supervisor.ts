@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { StateGraph, Annotation, MemorySaver, END } from '@langchain/langgraph';
 import { BaseMessage, HumanMessage, AIMessage } from '@langchain/core/messages';
 import { MODELS } from '@/src/lib/gemini';
@@ -87,7 +86,7 @@ async function withCouncil(opts: {
     agentDisplayNameAr: opts.agentDisplayNameAr,
     agentRoleAr: enrichedRole,
     userMessage: opts.userMessage,
-    uiContext: opts.uiContext,
+    uiContext: opts.uiContext as Record<string, unknown> | undefined,
     userId: opts.userId,
     draft: opts.draft,
   });
@@ -112,7 +111,7 @@ async function withCouncil(opts: {
           agentDisplayNameAr: opts.agentDisplayNameAr,
           agentRoleAr: enrichedRole,
           userMessage: opts.userMessage,
-          uiContext: opts.uiContext,
+          uiContext: opts.uiContext as Record<string, unknown> | undefined,
           userId: opts.userId,
           draft: markdown, // hand the prior draft + critique back as the new draft
           mode: 'fast', // refinement is fine on a smaller roster
@@ -354,10 +353,10 @@ async function planBuilderNode(state: typeof SupervisorState.State) {
 
 async function mistakeShieldNode(state: typeof SupervisorState.State) {
   const lastMessage = state.messages[state.messages.length - 1]?.content as string;
-  const uiContext = state.uiContext || {};
+  const uiContext = (state.uiContext ?? {}) as Record<string, unknown>;
   let draft = '';
   try {
-    draft = await getProactiveWarnings(uiContext.stage || 'general', lastMessage);
+    draft = await getProactiveWarnings((uiContext['stage'] as string | undefined) ?? 'general', lastMessage);
   } catch (e) {
     draft = '';
   }
@@ -415,21 +414,24 @@ ${analysis.keyTakeaways}`;
 
 async function opportunityRadarNode(state: typeof SupervisorState.State) {
   const lastMessage = state.messages[state.messages.length - 1]?.content as string;
-  const uiContext = state.uiContext || {};
+  const uiContext = (state.uiContext ?? {}) as Record<string, unknown>;
   try {
     const opportunities = await getPersonalizedOpportunities(
-      uiContext.industry || 'تقنية',
-      uiContext.stage || 'idea',
-      uiContext.location || 'القاهرة'
+      (uiContext['industry'] as string | undefined) ?? 'تقنية',
+      (uiContext['stage'] as string | undefined) ?? 'idea',
+      (uiContext['location'] as string | undefined) ?? 'القاهرة'
     );
     const formatted = `## الفرص المتاحة لك الآن 🎯
 
-${opportunities.map((opp: unknown, i: number) => `### ${i + 1}. ${opp.title}
-**النوع:** ${opp.type} | **الجهة:** ${opp.organizer}
-**الموعد النهائي:** ${opp.deadline} | **المكان:** ${opp.location}
-${opp.description}
-🔗 [التقديم الآن](${opp.link})
----`).join('\n')}`;
+${opportunities.map((opp, i: number) => {
+      const o = opp as Record<string, unknown>;
+      return `### ${i + 1}. ${o['title']}
+**النوع:** ${o['type']} | **الجهة:** ${o['organizer']}
+**الموعد النهائي:** ${o['deadline']} | **المكان:** ${o['location']}
+${o['description']}
+🔗 [التقديم الآن](${o['link']})
+---`;
+    }).join('\n')}`;
     const text = await withCouncil({
       agentName: 'opportunity-radar',
       agentDisplayNameAr: 'رادار الفرص',
@@ -479,10 +481,9 @@ async function cfoAgentNode(state: typeof SupervisorState.State) {
 
   if (!draft) {
     try {
-      draft = await cfoAgentAction({
-        task: 'analyze-scenario',
-        parameters: { description: lastMessage },
-      });
+      // as cast justified: original call used object form matching runtime JS behavior; positional sig added later
+      const cfoCall = cfoAgentAction as unknown as (opts: { task: string; parameters: Record<string, unknown> }) => Promise<string>;
+      draft = await cfoCall({ task: 'analyze-scenario', parameters: { description: lastMessage } });
     } catch (e) {
       draft = '';
     }
@@ -682,7 +683,6 @@ async function cloAgentNode(state: typeof SupervisorState.State) {
   try {
     const draft = await cloAgentAction({
       message: lastMessage,
-      context: JSON.stringify(state.uiContext || {}),
       jurisdiction: 'egypt',
     });
     const text = await withCouncil({

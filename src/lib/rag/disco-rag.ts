@@ -1,16 +1,34 @@
-// @ts-nocheck
 import { generateText } from 'ai';
 import { google } from '@ai-sdk/google';
 import { quarantineCorpus } from '@/src/lib/security/context-quarantine';
 
-/**
- * يحلل الخطاب في المستندات ويستخرج العلاقات بينها.
- */
-export async function analyzeDiscourse(documents: string[]): Promise<{
+interface DiscourseNode {
+  id: string;
+  type: 'claim' | 'evidence';
+  content: string;
+}
+
+interface DiscourseEdge {
+  from: string;
+  to: string;
+  relation: 'supports' | 'contradicts' | 'elaborates';
+}
+
+export interface RhetoricalGraph {
+  nodes: DiscourseNode[];
+  edges: DiscourseEdge[];
+}
+
+export interface DiscourseAnalysis {
   mainClaims: string[];
   supportingEvidence: Map<string, string[]>;
   contradictions: Array<{ claim1: string; claim2: string }>;
-}> {
+}
+
+/**
+ * يحلل الخطاب في المستندات ويستخرج العلاقات بينها.
+ */
+export async function analyzeDiscourse(documents: string[]): Promise<DiscourseAnalysis> {
   const { safeContext } = await quarantineCorpus(
     documents.map((d, i) => ({ text: d.substring(0, 1000), label: `مستند_${i + 1}` })),
   );
@@ -36,21 +54,25 @@ export async function analyzeDiscourse(documents: string[]): Promise<{
   const result = await generateText({
     model: google('gemini-2.5-pro'), // نموذج أقوى للتحليل العميق
     prompt,
-    maxTokens: 1000,
+    maxOutputTokens: 1000,
     temperature: 0.1,
   });
   
   try {
     const jsonMatch = result.text.match(/\{[\s\S]*\}/);
     if (jsonMatch) {
-      const parsed = JSON.parse(jsonMatch[0]);
+      const parsed = JSON.parse(jsonMatch[0]) as {
+        mainClaims?: string[];
+        supportingEvidence?: Record<string, string[]>;
+        contradictions?: Array<{ claim1: string; claim2: string }>;
+      };
       return {
-        mainClaims: parsed.mainClaims || [],
-        supportingEvidence: new Map(Object.entries(parsed.supportingEvidence || {})),
-        contradictions: parsed.contradictions || [],
+        mainClaims: parsed.mainClaims ?? [],
+        supportingEvidence: new Map(Object.entries(parsed.supportingEvidence ?? {})),
+        contradictions: parsed.contradictions ?? [],
       };
     }
-  } catch (e) {
+  } catch {
     // discourse analysis parse failed — returning empty result
   }
   
@@ -60,14 +82,11 @@ export async function analyzeDiscourse(documents: string[]): Promise<{
 /**
  * يبني رسمًا بيانيًا للعلاقات البلاغية بين المستندات.
  */
-export async function buildRhetoricalGraph(documents: string[]): Promise<{
-  nodes: Array<{ id: string; type: 'claim' | 'evidence'; content: string }>;
-  edges: Array<{ from: string; to: string; relation: 'supports' | 'contradicts' | 'elaborates' }>;
-}> {
+export async function buildRhetoricalGraph(documents: string[]): Promise<RhetoricalGraph> {
   const discourse = await analyzeDiscourse(documents);
   
-  const nodes: unknown[] = [];
-  const edges: unknown[] = [];
+  const nodes: DiscourseNode[] = [];
+  const edges: DiscourseEdge[] = [];
   
   // إضافة الادعاءات كعقد
   discourse.mainClaims.forEach((claim, i) => {
@@ -88,7 +107,7 @@ export async function buildRhetoricalGraph(documents: string[]): Promise<{
   });
   
   // إضافة التعارضات كحواف
-  discourse.contradictions.forEach((contradiction, i) => {
+  discourse.contradictions.forEach((contradiction) => {
     const claim1Node = nodes.find(n => n.content === contradiction.claim1);
     const claim2Node = nodes.find(n => n.content === contradiction.claim2);
     if (claim1Node && claim2Node) {
@@ -105,9 +124,9 @@ export async function buildRhetoricalGraph(documents: string[]): Promise<{
 export async function discoGenerateAnswer(
   query: string,
   documents: string[],
-  rhetoricalGraph: unknown
+  rhetoricalGraph: RhetoricalGraph
 ): Promise<string> {
-  const contradictions = rhetoricalGraph.edges.filter((e: unknown) => e.relation === 'contradicts');
+  const contradictions = rhetoricalGraph.edges.filter((e) => e.relation === 'contradicts');
   
   const prompt = `
   أنت مساعد ذكي. أجب عن الاستعلام بناءً على المستندات المقدمة.
@@ -123,7 +142,7 @@ export async function discoGenerateAnswer(
   const result = await generateText({
     model: google('gemini-2.5-pro'),
     prompt,
-    maxTokens: 1000,
+    maxOutputTokens: 1000,
     temperature: 0.3,
   });
   
@@ -136,15 +155,12 @@ export async function discoGenerateAnswer(
 export async function discoRAG(
   query: string,
   retrieveFn: (q: string) => Promise<string[]>
-): Promise<{ answer: string; rhetoricalGraph: unknown; discourse: unknown }> {
-  // 1. استرجاع المستندات
+): Promise<{ answer: string; rhetoricalGraph: RhetoricalGraph; discourse: DiscourseAnalysis }> {
   const documents = await retrieveFn(query);
   
-  // 2. تحليل الخطاب وبناء الرسم البياني
   const discourse = await analyzeDiscourse(documents);
   const rhetoricalGraph = await buildRhetoricalGraph(documents);
   
-  // 3. توليد الإجابة مع مراعاة التحليل
   const answer = await discoGenerateAnswer(query, documents, rhetoricalGraph);
   
   return { answer, rhetoricalGraph, discourse };
