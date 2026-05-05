@@ -1,11 +1,21 @@
 /**
  * POST /api/brand-book
- * Generates or exports a brand book PDF from structured brand data.
+ * Generates a brand book PDF from structured brand data using @react-pdf/renderer.
  */
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { adminAuth } from '@/src/lib/firebase-admin';
 import { rateLimit, rateLimitResponse } from '@/src/lib/security/rate-limit';
+import React from 'react';
+import {
+  renderToBuffer,
+  Document,
+  Page,
+  View,
+  Text,
+  StyleSheet,
+  Font,
+} from '@react-pdf/renderer';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -27,6 +37,56 @@ const BrandBookInputSchema = z.object({
 });
 
 export type BrandBookInput = z.infer<typeof BrandBookInputSchema>;
+
+let fontRegistered = false;
+async function ensureFont() {
+  if (fontRegistered) return;
+  try {
+    const res = await fetch('https://fonts.gstatic.com/s/tajawal/v9/Iura6YBj_oCad4k1nzSBC45I.ttf', { signal: AbortSignal.timeout(8000) });
+    if (res.ok) {
+      const buf = await res.arrayBuffer();
+      Font.register({ family: 'Tajawal', src: buf as unknown as string });
+      fontRegistered = true;
+    }
+  } catch {
+    fontRegistered = false;
+  }
+}
+
+const styles = StyleSheet.create({
+  page: { padding: 40, backgroundColor: '#f8f7f4', fontFamily: 'Helvetica' },
+  coverPage: { padding: 0, backgroundColor: '#0f172a' },
+  coverInner: { padding: 60, flex: 1 },
+  badge: { fontSize: 10, color: '#f59e0b', marginBottom: 20, textTransform: 'uppercase', letterSpacing: 2 },
+  brandName: { fontSize: 40, fontWeight: 'bold', color: '#ffffff', marginBottom: 8 },
+  tagline: { fontSize: 16, color: '#f59e0b', marginBottom: 40 },
+  coverMeta: { fontSize: 11, color: 'rgba(255,255,255,0.4)' },
+  section: { marginBottom: 32 },
+  sectionTitle: { fontSize: 16, fontWeight: 'bold', color: '#1a1a2e', borderBottomColor: '#f59e0b', borderBottomWidth: 2, paddingBottom: 6, marginBottom: 14 },
+  storyBox: { backgroundColor: '#ffffff', borderLeftColor: '#f59e0b', borderLeftWidth: 3, padding: 16, borderRadius: 8 },
+  bodyText: { fontSize: 12, color: '#374151', lineHeight: 1.8 },
+  audienceBox: { backgroundColor: '#fef3c7', padding: 14, borderRadius: 8 },
+  audienceText: { fontSize: 12, color: '#78350f', lineHeight: 1.8 },
+  voiceRow: { flexDirection: 'row', gap: 12, marginTop: 4 },
+  voiceCard: { flex: 1, backgroundColor: '#ffffff', padding: 14, borderRadius: 8, borderColor: '#e5e7eb', borderWidth: 1 },
+  voiceLabel: { fontSize: 9, color: '#9ca3af', marginBottom: 6, textTransform: 'uppercase', letterSpacing: 1 },
+  voiceValue: { fontSize: 12, color: '#374151' },
+  swatchRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
+  swatchCard: { flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: '#ffffff', padding: 10, borderRadius: 8, borderColor: '#e5e7eb', borderWidth: 1, minWidth: 160 },
+  swatchDot: { width: 36, height: 36, borderRadius: 8 },
+  swatchHex: { fontSize: 10, color: '#9ca3af', marginTop: 2 },
+  swatchName: { fontSize: 12, fontWeight: 'bold', color: '#111111' },
+  swatchUsage: { fontSize: 10, color: '#6b7280', marginTop: 2 },
+  pillarsGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
+  pillarCard: { backgroundColor: '#ffffff', borderColor: '#e5e7eb', borderWidth: 1, borderRadius: 8, padding: 14, width: '30%' },
+  pillarNum: { fontSize: 14, fontWeight: 'bold', color: '#f59e0b', marginBottom: 6 },
+  pillarText: { fontSize: 11, color: '#374151', lineHeight: 1.6 },
+  ruleItem: { fontSize: 12, color: '#374151', lineHeight: 1.8, paddingVertical: 4, borderBottomColor: '#f3f4f6', borderBottomWidth: 1 },
+  ruleBox: { backgroundColor: '#ffffff', borderColor: '#e5e7eb', borderWidth: 1, borderRadius: 8, padding: 16 },
+  rawBox: { backgroundColor: '#ffffff', borderColor: '#e5e7eb', borderWidth: 1, borderRadius: 8, padding: 16, maxHeight: 400 },
+  rawText: { fontSize: 11, color: '#4b5563', lineHeight: 1.8 },
+  footer: { textAlign: 'center', fontSize: 10, color: '#9ca3af', marginTop: 40 },
+});
 
 export async function POST(req: NextRequest) {
   const rl = rateLimit(req, { limit: 10, windowMs: 60_000 });
@@ -51,146 +111,114 @@ export async function POST(req: NextRequest) {
   const data = parsed.data;
   const now = new Date().toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric' });
 
-  const colorSwatches = data.colorSuggestions.length > 0
-    ? data.colorSuggestions.map(c => `
-      <div class="swatch">
-        <div class="swatch-color" style="background:${c.hex};"></div>
-        <div class="swatch-info">
-          <strong>${c.name}</strong>
-          <span>${c.hex}</span>
-          <p>${c.usage}</p>
-        </div>
-      </div>`).join('')
-    : '<p class="empty">لم تُحدَّد ألوان العلامة بعد</p>';
+  await ensureFont();
+  const fontFamily = fontRegistered ? 'Tajawal' : 'Helvetica';
 
-  const pillarsHtml = data.messagingPillars.length > 0
-    ? data.messagingPillars.map((p, i) => `<div class="pillar"><span class="pillar-num">${i + 1}</span><p>${p}</p></div>`).join('')
-    : '<p class="empty">—</p>';
+  const BrandBookDoc = () =>
+    React.createElement(Document, { title: `Brand Book - ${data.brandName}`, language: 'ar' },
+      React.createElement(Page, { size: 'A4', style: [styles.coverPage] },
+        React.createElement(View, { style: styles.coverInner },
+          React.createElement(Text, { style: [styles.badge, { fontFamily }] }, 'دليل الهوية · Brand Book'),
+          React.createElement(Text, { style: [styles.brandName, { fontFamily }] }, data.brandName),
+          React.createElement(Text, { style: [styles.tagline, { fontFamily }] }, data.tagline || 'علامتك، صوتك، أثرك'),
+          React.createElement(Text, { style: [styles.coverMeta, { fontFamily }] }, `صُدِّر من كلميرون AI · ${now}`),
+        )
+      ),
 
-  const rulesHtml = data.communicationRules.length > 0
-    ? data.communicationRules.map(r => `<li>${r}</li>`).join('')
-    : '<li>لم تُحدَّد قواعد بعد</li>';
+      React.createElement(Page, { size: 'A4', style: styles.page },
+        data.brandStory ? React.createElement(View, { style: styles.section },
+          React.createElement(Text, { style: [styles.sectionTitle, { fontFamily }] }, 'قصة العلامة'),
+          React.createElement(View, { style: styles.storyBox },
+            React.createElement(Text, { style: [styles.bodyText, { fontFamily }] }, data.brandStory),
+          )
+        ) : null,
 
-  const html = `<!DOCTYPE html>
-<html dir="rtl" lang="ar">
-<head>
-<meta charset="utf-8"/>
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;700;900&display=swap');
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Tajawal', Arial, sans-serif; background: #f8f8f6; color: #1a1a1a; }
-  .page { max-width: 900px; margin: 0 auto; padding: 60px 40px; }
-  .cover { background: linear-gradient(135deg, #1a1a2e 0%, #0f172a 100%); color: white; padding: 80px 60px; border-radius: 24px; margin-bottom: 48px; position: relative; overflow: hidden; }
-  .cover::before { content: ''; position: absolute; top: -50px; right: -50px; width: 300px; height: 300px; background: radial-gradient(circle, rgba(245,158,11,0.15), transparent 70%); }
-  .cover-brand { font-size: 48px; font-weight: 900; margin-bottom: 8px; }
-  .cover-tag { font-size: 18px; color: #f59e0b; margin-bottom: 40px; }
-  .cover-meta { font-size: 13px; color: rgba(255,255,255,0.4); }
-  .cover-badge { display: inline-block; background: rgba(245,158,11,0.15); border: 1px solid rgba(245,158,11,0.3); color: #f59e0b; padding: 6px 16px; border-radius: 999px; font-size: 12px; font-weight: 700; margin-bottom: 24px; }
-  section { margin-bottom: 48px; }
-  h2 { font-size: 22px; font-weight: 900; color: #1a1a2e; border-bottom: 3px solid #f59e0b; padding-bottom: 8px; margin-bottom: 20px; }
-  .story-box { background: white; border-right: 4px solid #f59e0b; padding: 24px; border-radius: 12px; line-height: 1.9; color: #374151; font-size: 15px; }
-  .audience-box { background: #fef3c7; border: 1px solid #fde68a; padding: 20px 24px; border-radius: 12px; color: #78350f; font-size: 14px; line-height: 1.8; }
-  .voice-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
-  .voice-card { background: white; padding: 20px; border-radius: 12px; border: 1px solid #e5e7eb; }
-  .voice-card label { font-size: 11px; font-weight: 700; color: #9ca3af; display: block; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.08em; }
-  .voice-card p { font-size: 14px; color: #374151; line-height: 1.6; }
-  .tone-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
-  .tone-tag { background: #f0fdf4; border: 1px solid #bbf7d0; color: #166534; padding: 4px 12px; border-radius: 999px; font-size: 12px; font-weight: 700; }
-  .swatches { display: flex; flex-wrap: wrap; gap: 16px; }
-  .swatch { display: flex; align-items: center; gap: 12px; background: white; padding: 12px 16px; border-radius: 12px; border: 1px solid #e5e7eb; min-width: 200px; }
-  .swatch-color { width: 48px; height: 48px; border-radius: 10px; flex-shrink: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
-  .swatch-info strong { display: block; font-size: 13px; color: #111; }
-  .swatch-info span { display: block; font-size: 11px; color: #9ca3af; margin-bottom: 4px; }
-  .swatch-info p { font-size: 12px; color: #6b7280; }
-  .pillars { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
-  .pillar { background: white; border: 1px solid #e5e7eb; border-radius: 12px; padding: 20px; display: flex; gap: 12px; align-items: flex-start; }
-  .pillar-num { background: #f59e0b; color: white; width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 13px; flex-shrink: 0; }
-  .pillar p { font-size: 13px; color: #374151; line-height: 1.6; }
-  .rules-list { background: white; border: 1px solid #e5e7eb; border-radius: 12px; padding: 24px; }
-  .rules-list li { font-size: 14px; color: #374151; line-height: 2; padding-right: 8px; border-bottom: 1px solid #f3f4f6; }
-  .rules-list li:last-child { border-bottom: none; }
-  .raw-content { background: white; border: 1px solid #e5e7eb; border-radius: 12px; padding: 24px; font-size: 13px; color: #4b5563; line-height: 1.9; white-space: pre-wrap; word-break: break-word; }
-  .footer { text-align: center; margin-top: 60px; padding-top: 24px; border-top: 1px solid #e5e7eb; font-size: 12px; color: #9ca3af; }
-  .empty { color: #9ca3af; font-size: 14px; }
-</style>
-</head>
-<body>
-<div class="page">
-  <div class="cover">
-    <div class="cover-badge">دليل الهوية</div>
-    <div class="cover-brand">${data.brandName}</div>
-    <div class="cover-tag">${data.tagline || 'علامتك، صوتك، أثرك'}</div>
-    <div class="cover-meta">صُدِّر من كلميرون AI · ${now}</div>
-  </div>
+        data.targetAudience ? React.createElement(View, { style: styles.section },
+          React.createElement(Text, { style: [styles.sectionTitle, { fontFamily }] }, 'الجمهور المستهدف'),
+          React.createElement(View, { style: styles.audienceBox },
+            React.createElement(Text, { style: [styles.audienceText, { fontFamily }] }, data.targetAudience),
+          )
+        ) : null,
 
-  ${data.brandStory ? `
-  <section>
-    <h2>قصة العلامة</h2>
-    <div class="story-box">${data.brandStory}</div>
-  </section>` : ''}
+        (data.brandVoice.personality || data.brandVoice.communicationStyle || (data.brandVoice.tone?.length ?? 0) > 0)
+          ? React.createElement(View, { style: styles.section },
+              React.createElement(Text, { style: [styles.sectionTitle, { fontFamily }] }, 'صوت العلامة'),
+              React.createElement(View, { style: styles.voiceRow },
+                React.createElement(View, { style: styles.voiceCard },
+                  React.createElement(Text, { style: [styles.voiceLabel, { fontFamily }] }, 'النبرة'),
+                  React.createElement(Text, { style: [styles.voiceValue, { fontFamily }] }, (data.brandVoice.tone || []).join('، ') || '—'),
+                ),
+                React.createElement(View, { style: styles.voiceCard },
+                  React.createElement(Text, { style: [styles.voiceLabel, { fontFamily }] }, 'الشخصية'),
+                  React.createElement(Text, { style: [styles.voiceValue, { fontFamily }] }, data.brandVoice.personality || '—'),
+                ),
+                React.createElement(View, { style: styles.voiceCard },
+                  React.createElement(Text, { style: [styles.voiceLabel, { fontFamily }] }, 'أسلوب التواصل'),
+                  React.createElement(Text, { style: [styles.voiceValue, { fontFamily }] }, data.brandVoice.communicationStyle || '—'),
+                ),
+              )
+            )
+          : null,
 
-  ${data.targetAudience ? `
-  <section>
-    <h2>الجمهور المستهدف</h2>
-    <div class="audience-box">${data.targetAudience}</div>
-  </section>` : ''}
+        data.colorSuggestions.length > 0 ? React.createElement(View, { style: styles.section },
+          React.createElement(Text, { style: [styles.sectionTitle, { fontFamily }] }, 'ألوان العلامة'),
+          React.createElement(View, { style: styles.swatchRow },
+            ...data.colorSuggestions.map((c, i) =>
+              React.createElement(View, { key: i, style: styles.swatchCard },
+                React.createElement(View, { style: [styles.swatchDot, { backgroundColor: c.hex }] }),
+                React.createElement(View, null,
+                  React.createElement(Text, { style: [styles.swatchName, { fontFamily }] }, c.name),
+                  React.createElement(Text, { style: [styles.swatchHex, { fontFamily }] }, c.hex),
+                  React.createElement(Text, { style: [styles.swatchUsage, { fontFamily }] }, c.usage),
+                )
+              )
+            )
+          )
+        ) : null,
 
-  ${(data.brandVoice.personality || data.brandVoice.communicationStyle || (data.brandVoice.tone?.length ?? 0) > 0) ? `
-  <section>
-    <h2>صوت العلامة</h2>
-    <div class="voice-grid">
-      <div class="voice-card">
-        <label>النبرة</label>
-        <div class="tone-tags">
-          ${(data.brandVoice.tone || []).map(t => `<span class="tone-tag">${t}</span>`).join('')}
-        </div>
-      </div>
-      <div class="voice-card">
-        <label>الشخصية</label>
-        <p>${data.brandVoice.personality || '—'}</p>
-      </div>
-      <div class="voice-card">
-        <label>أسلوب التواصل</label>
-        <p>${data.brandVoice.communicationStyle || '—'}</p>
-      </div>
-    </div>
-  </section>` : ''}
+        data.messagingPillars.length > 0 ? React.createElement(View, { style: styles.section },
+          React.createElement(Text, { style: [styles.sectionTitle, { fontFamily }] }, 'ركائز الرسالة'),
+          React.createElement(View, { style: styles.pillarsGrid },
+            ...data.messagingPillars.map((p, i) =>
+              React.createElement(View, { key: i, style: styles.pillarCard },
+                React.createElement(Text, { style: [styles.pillarNum, { fontFamily }] }, String(i + 1)),
+                React.createElement(Text, { style: [styles.pillarText, { fontFamily }] }, p),
+              )
+            )
+          )
+        ) : null,
 
-  <section>
-    <h2>الألوان</h2>
-    <div class="swatches">${colorSwatches}</div>
-  </section>
+        data.communicationRules.length > 0 ? React.createElement(View, { style: styles.section },
+          React.createElement(Text, { style: [styles.sectionTitle, { fontFamily }] }, 'قواعد التواصل'),
+          React.createElement(View, { style: styles.ruleBox },
+            ...data.communicationRules.map((r, i) =>
+              React.createElement(Text, { key: i, style: [styles.ruleItem, { fontFamily }] }, `• ${r}`)
+            )
+          )
+        ) : null,
 
-  ${data.messagingPillars.length > 0 ? `
-  <section>
-    <h2>ركائز الرسالة</h2>
-    <div class="pillars">${pillarsHtml}</div>
-  </section>` : ''}
+        data.rawText ? React.createElement(View, { style: styles.section },
+          React.createElement(Text, { style: [styles.sectionTitle, { fontFamily }] }, 'التحليل الكامل'),
+          React.createElement(View, { style: styles.rawBox },
+            React.createElement(Text, { style: [styles.rawText, { fontFamily }] }, data.rawText.slice(0, 3000)),
+          )
+        ) : null,
 
-  ${data.communicationRules.length > 0 ? `
-  <section>
-    <h2>قواعد التواصل</h2>
-    <ul class="rules-list">${rulesHtml}</ul>
-  </section>` : ''}
+        React.createElement(Text, { style: [styles.footer, { fontFamily }] }, 'صُنع بواسطة كلميرون AI · جميع البيانات سرية · للاستخدام الداخلي فقط'),
+      )
+    );
 
-  ${data.rawText ? `
-  <section>
-    <h2>التحليل الكامل</h2>
-    <div class="raw-content">${data.rawText.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</div>
-  </section>` : ''}
-
-  <div class="footer">صُنع بواسطة كلميرون AI · جميع البيانات سرية · للاستخدام الداخلي فقط</div>
-</div>
-</body>
-</html>`;
-
-  // Puppeteer PDF generation reserved for future use when binary is available
-
-  // Fallback: return HTML as downloadable file
-  return new NextResponse(html, {
-    headers: {
-      'Content-Type': 'text/html; charset=utf-8',
-      'Content-Disposition': `attachment; filename="brand-book-${data.brandName}-${Date.now()}.html"`,
-    },
-  });
+  try {
+    const pdfBuffer = await renderToBuffer(React.createElement(BrandBookDoc));
+    const safeName = data.brandName.replace(/[^\w\u0600-\u06FF\s-]/g, '').trim().replace(/\s+/g, '-').slice(0, 50);
+    return new NextResponse(new Uint8Array(pdfBuffer), {
+      headers: {
+        'Content-Type': 'application/pdf',
+        'Content-Disposition': `attachment; filename="brand-book-${safeName}-${Date.now()}.pdf"`,
+      },
+    });
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : 'pdf_generation_failed';
+    return NextResponse.json({ error: msg }, { status: 500 });
+  }
 }

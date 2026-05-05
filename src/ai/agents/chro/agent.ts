@@ -3,14 +3,17 @@ import { MODELS } from '@/src/lib/gemini';
 import { CHRO_SYSTEM_PROMPT } from './prompt';
 import { instrumentAgent } from '@/src/lib/observability/agent-instrumentation';
 import { getCurrentLearnedSkillsAddon } from '@/src/lib/learning/context';
+import { z } from 'zod';
 
-export interface CHROInput {
-  message: string;
-  companySize?: number;
-  industry?: string;
-  stage?: 'startup' | 'growth' | 'scale';
-  hrChallenge?: 'hiring' | 'retention' | 'culture' | 'performance' | 'structure' | 'general';
-}
+export const CHROInputSchema = z.object({
+  message: z.string().min(1).max(5000),
+  companySize: z.number().int().positive().max(100000).optional(),
+  industry: z.string().max(200).optional(),
+  stage: z.enum(['startup', 'growth', 'scale']).optional(),
+  hrChallenge: z.enum(['hiring', 'retention', 'culture', 'performance', 'structure', 'general']).optional(),
+});
+
+export type CHROInput = z.infer<typeof CHROInputSchema>;
 
 export async function chroAgentAction(input: CHROInput): Promise<string> {
   return instrumentAgent(

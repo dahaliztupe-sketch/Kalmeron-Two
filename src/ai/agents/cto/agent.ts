@@ -3,14 +3,17 @@ import { MODELS } from '@/src/lib/gemini';
 import { CTO_SYSTEM_PROMPT } from './prompt';
 import { instrumentAgent } from '@/src/lib/observability/agent-instrumentation';
 import { getCurrentLearnedSkillsAddon } from '@/src/lib/learning/context';
+import { z } from 'zod';
 
-export interface CTOInput {
-  message: string;
-  currentTechStack?: string;
-  teamSize?: number;
-  stage?: 'mvp' | 'launch' | 'growth' | 'scale';
-  budget?: string;
-}
+export const CTOInputSchema = z.object({
+  message: z.string().min(1).max(5000),
+  currentTechStack: z.string().max(500).optional(),
+  teamSize: z.number().int().positive().max(10000).optional(),
+  stage: z.enum(['mvp', 'launch', 'growth', 'scale']).optional(),
+  budget: z.string().max(100).optional(),
+});
+
+export type CTOInput = z.infer<typeof CTOInputSchema>;
 
 export async function ctoAgentAction(input: CTOInput): Promise<string> {
   return instrumentAgent(

@@ -5,12 +5,16 @@ import { instrumentAgent } from '@/src/lib/observability/agent-instrumentation';
 import { getCurrentLearnedSkillsAddon } from '@/src/lib/learning/context';
 import { ENTERPRISE_EXECUTIVES } from '@/src/ai/organization/enterprise/hierarchy';
 
-export interface CEOInput {
-  message: string;
-  context?: string;
-  urgency?: 'low' | 'medium' | 'high' | 'critical';
-  domain?: 'finance' | 'marketing' | 'operations' | 'technology' | 'legal' | 'hr' | 'strategy' | 'general';
-}
+import { z } from 'zod';
+
+export const CEOInputSchema = z.object({
+  message: z.string().min(1).max(8000),
+  context: z.string().max(2000).optional(),
+  urgency: z.enum(['low', 'medium', 'high', 'critical']).optional(),
+  domain: z.enum(['finance', 'marketing', 'operations', 'technology', 'legal', 'hr', 'strategy', 'general']).optional(),
+});
+
+export type CEOInput = z.infer<typeof CEOInputSchema>;
 
 export interface CEOOutput {
   assessment: string;

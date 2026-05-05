@@ -1,12 +1,89 @@
 "use client";
 
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useMemo } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import {
   FileText, Sparkles, ArrowLeft, Loader2, AlertTriangle,
   CheckCircle2, Upload, Shield, Scale, ChevronDown, ChevronUp,
-  Copy, Check, FileUp, X, AlertCircle,
+  Copy, Check, FileUp, X, AlertCircle, XCircle, Info,
 } from "lucide-react";
+
+interface DangerClause { clause: string; risk: string; recommendation: string }
+interface ParsedReview {
+  summary: string;
+  riskLevel: string;
+  riskLabel: string;
+  dangerClauses: DangerClause[];
+  missingClauses: string[];
+  positivePoints: string[];
+  recommendation: string;
+  disclaimer: string;
+  rawText: string;
+}
+
+function parseContractResult(raw: string): ParsedReview {
+  const extract = (heading: RegExp, nextHeadings: RegExp[]): string => {
+    const start = raw.search(heading);
+    if (start === -1) return '';
+    const afterHead = raw.indexOf('\n', start);
+    if (afterHead === -1) return '';
+    let end = raw.length;
+    for (const nh of nextHeadings) {
+      const ni = raw.search(nh);
+      if (ni > afterHead && ni < end) end = ni;
+    }
+    return raw.slice(afterHead, end).trim();
+  };
+
+  const summaryRaw = extract(/##\s*ملخص/, [/##\s*مستوى/, /##\s*البنود الخطرة/, /##\s*البنود الناقصة/, /##\s*النقاط/, /##\s*الخلاصة/, /##\s*تحذير/]);
+  const riskRaw = extract(/##\s*مستوى المخاطر/, [/##\s*البنود الخطرة/, /##\s*البنود الناقصة/, /##\s*النقاط/, /##\s*الخلاصة/, /##\s*تحذير/]);
+  const dangerRaw = extract(/##.*البنود الخطرة/, [/##\s*البنود الناقصة/, /##\s*النقاط/, /##\s*الخلاصة/, /##\s*تحذير/]);
+  const missingRaw = extract(/##.*البنود الناقصة/, [/##\s*النقاط/, /##\s*الخلاصة/, /##\s*تحذير/]);
+  const positiveRaw = extract(/##.*النقاط الإيجابية/, [/##\s*الخلاصة/, /##\s*تحذير/]);
+  const recRaw = extract(/##.*الخلاصة.*التوصية/, [/##\s*تحذير/]);
+  const disclaimerRaw = extract(/##.*تحذير/, [/$^/]);
+
+  const riskLower = riskRaw.toLowerCase();
+  const riskLevel = riskLower.includes('حرج') ? 'critical'
+    : riskLower.includes('عالٍ') || riskLower.includes('عال') ? 'high'
+    : riskLower.includes('متوسط') ? 'medium'
+    : riskLower.includes('منخفض') ? 'low'
+    : 'unknown';
+  const riskLabel = riskLower.includes('حرج') ? 'حرج' : riskLower.includes('عالٍ') || riskLower.includes('عال') ? 'عالٍ' : riskLower.includes('متوسط') ? 'متوسط' : riskLower.includes('منخفض') ? 'منخفض' : 'غير محدد';
+
+  const parseDangerClauses = (text: string): DangerClause[] => {
+    const clauses: DangerClause[] = [];
+    const blocks = text.split(/\n(?=\s*[-•*]|\s*\d+\.)/).filter(Boolean);
+    for (const block of blocks) {
+      const clauseMatch = block.match(/\*\*البند[:\s*]*\*\*(.+?)(?=\*\*الخطر|\*\*التوصية|$)/si);
+      const riskMatch = block.match(/\*\*الخطر[:\s*]*\*\*(.+?)(?=\*\*التوصية|\*\*البند|$)/si);
+      const recMatch = block.match(/\*\*التوصية[:\s*]*\*\*(.+?)(?=\*\*البند|\*\*الخطر|$)/si);
+      if (clauseMatch || riskMatch) {
+        clauses.push({
+          clause: (clauseMatch?.[1] || '').trim().replace(/\*/g, ''),
+          risk: (riskMatch?.[1] || '').trim().replace(/\*/g, ''),
+          recommendation: (recMatch?.[1] || '').trim().replace(/\*/g, ''),
+        });
+      }
+    }
+    return clauses;
+  };
+
+  const parseList = (text: string): string[] =>
+    text.split('\n').map(l => l.replace(/^[-•*\d.)\s]+/, '').trim()).filter(l => l.length > 5);
+
+  return {
+    summary: summaryRaw,
+    riskLevel,
+    riskLabel,
+    dangerClauses: parseDangerClauses(dangerRaw),
+    missingClauses: parseList(missingRaw),
+    positivePoints: parseList(positiveRaw),
+    recommendation: recRaw,
+    disclaimer: disclaimerRaw,
+    rawText: raw,
+  };
+}
 import Link from "next/link";
 import { AppShell } from "@/components/layout/AppShell";
 import { useAuth } from "@/contexts/AuthContext";
@@ -28,6 +105,14 @@ const PARTY_ROLES = [
   { value: "founder", label: "مؤسس" },
   { value: "other", label: "طرف في العقد" },
 ];
+
+const RISK_COLORS: Record<string, { border: string; bg: string; text: string; badge: string }> = {
+  critical: { border: 'border-rose-500/40', bg: 'bg-rose-500/5', text: 'text-rose-300', badge: 'bg-rose-500/20 text-rose-300' },
+  high:     { border: 'border-orange-500/40', bg: 'bg-orange-500/5', text: 'text-orange-300', badge: 'bg-orange-500/20 text-orange-300' },
+  medium:   { border: 'border-amber-500/30', bg: 'bg-amber-500/5', text: 'text-amber-300', badge: 'bg-amber-500/15 text-amber-300' },
+  low:      { border: 'border-emerald-500/30', bg: 'bg-emerald-500/5', text: 'text-emerald-300', badge: 'bg-emerald-500/15 text-emerald-300' },
+  unknown:  { border: 'border-white/10', bg: 'bg-white/[0.03]', text: 'text-white/60', badge: 'bg-white/10 text-white/50' },
+};
 
 export default function ContractReviewPage() {
   const { user } = useAuth();
@@ -124,6 +209,8 @@ export default function ContractReviewPage() {
   }, [result]);
 
   const reset = () => { setContractText(""); setResult(""); setError(""); setContractType(""); setPartyRole(""); setSpecificConcerns(""); setPdfFileName(""); };
+
+  const parsed = useMemo(() => result ? parseContractResult(result) : null, [result]);
 
   return (
     <AppShell>
@@ -276,13 +363,15 @@ export default function ContractReviewPage() {
               </div>
             )}
           </div>
-        ) : (
+        ) : parsed ? (
           <AnimatePresence>
             <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
-              <div className="flex items-center justify-between">
+              {/* Header bar */}
+              <div className="flex items-center justify-between flex-wrap gap-2">
                 <div className="flex items-center gap-2">
                   <CheckCircle2 className="w-4 h-4 text-emerald-400" />
                   <span className="text-sm font-semibold text-white">{t("analysisComplete")}</span>
+                  {contractType && <span className="text-xs text-white/40 border border-white/10 rounded-full px-2.5 py-0.5">{contractType}</span>}
                 </div>
                 <div className="flex items-center gap-2">
                   <button onClick={copyResult}
@@ -296,21 +385,128 @@ export default function ContractReviewPage() {
                   </button>
                 </div>
               </div>
-              <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6">
-                <div className="flex items-center gap-2 mb-4">
-                  <Scale className="w-4 h-4 text-amber-400" />
-                  <span className="text-sm font-semibold text-white">{t("reportTitle")}</span>
-                  {contractType && <span className="text-xs text-white/40 border border-white/10 rounded-full px-2.5 py-0.5">{contractType}</span>}
+
+              {/* Risk Level Badge */}
+              {parsed.riskLevel !== 'unknown' && (
+                <div className={`flex items-center gap-3 rounded-xl border p-4 ${RISK_COLORS[parsed.riskLevel].border} ${RISK_COLORS[parsed.riskLevel].bg}`}>
+                  <AlertTriangle className={`w-4 h-4 shrink-0 ${RISK_COLORS[parsed.riskLevel].text}`} />
+                  <div>
+                    <span className="text-xs text-white/40 block mb-0.5">مستوى المخاطر الكلي</span>
+                    <span className={`text-sm font-bold ${RISK_COLORS[parsed.riskLevel].text}`}>{parsed.riskLabel}</span>
+                  </div>
                 </div>
-                <div className="prose prose-invert prose-sm max-w-none text-white/80 leading-relaxed whitespace-pre-wrap">{result}</div>
-              </div>
+              )}
+
+              {/* Summary */}
+              {parsed.summary && (
+                <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Info className="w-4 h-4 text-sky-400" />
+                    <span className="text-sm font-semibold text-white">ملخص العقد</span>
+                  </div>
+                  <p className="text-white/70 text-sm leading-relaxed">{parsed.summary}</p>
+                </div>
+              )}
+
+              {/* Danger Clauses */}
+              {parsed.dangerClauses.length > 0 && (
+                <div className="rounded-2xl border border-rose-500/20 bg-rose-500/[0.04] p-5">
+                  <div className="flex items-center gap-2 mb-4">
+                    <XCircle className="w-4 h-4 text-rose-400" />
+                    <span className="text-sm font-semibold text-white">البنود الخطرة</span>
+                    <span className="text-xs text-rose-400 border border-rose-500/20 rounded-full px-2 py-0.5">{parsed.dangerClauses.length}</span>
+                  </div>
+                  <div className="space-y-3">
+                    {parsed.dangerClauses.map((c, i) => (
+                      <div key={i} className="rounded-xl border border-rose-500/15 bg-rose-500/[0.06] p-4 space-y-2">
+                        {c.clause && (
+                          <div>
+                            <span className="text-xs text-rose-300/60 font-medium block mb-0.5">البند</span>
+                            <p className="text-white/80 text-sm leading-relaxed font-mono text-xs bg-black/20 p-2 rounded-lg">{c.clause}</p>
+                          </div>
+                        )}
+                        {c.risk && (
+                          <div>
+                            <span className="text-xs text-rose-300/60 font-medium block mb-0.5">الخطر</span>
+                            <p className="text-rose-200/80 text-sm leading-relaxed">{c.risk}</p>
+                          </div>
+                        )}
+                        {c.recommendation && (
+                          <div>
+                            <span className="text-xs text-emerald-300/60 font-medium block mb-0.5">التوصية</span>
+                            <p className="text-emerald-200/80 text-sm leading-relaxed">{c.recommendation}</p>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Missing Clauses */}
+              {parsed.missingClauses.length > 0 && (
+                <div className="rounded-2xl border border-orange-500/20 bg-orange-500/[0.04] p-5">
+                  <div className="flex items-center gap-2 mb-4">
+                    <AlertCircle className="w-4 h-4 text-orange-400" />
+                    <span className="text-sm font-semibold text-white">البنود الناقصة</span>
+                    <span className="text-xs text-orange-400 border border-orange-500/20 rounded-full px-2 py-0.5">{parsed.missingClauses.length}</span>
+                  </div>
+                  <ul className="space-y-2">
+                    {parsed.missingClauses.map((m, i) => (
+                      <li key={i} className="flex items-start gap-2 text-sm text-orange-100/80">
+                        <span className="text-orange-400 mt-0.5 shrink-0">•</span>
+                        {m}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {/* Positive Points */}
+              {parsed.positivePoints.length > 0 && (
+                <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/[0.04] p-5">
+                  <div className="flex items-center gap-2 mb-4">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                    <span className="text-sm font-semibold text-white">النقاط الإيجابية</span>
+                    <span className="text-xs text-emerald-400 border border-emerald-500/20 rounded-full px-2 py-0.5">{parsed.positivePoints.length}</span>
+                  </div>
+                  <ul className="space-y-2">
+                    {parsed.positivePoints.map((p, i) => (
+                      <li key={i} className="flex items-start gap-2 text-sm text-emerald-100/80">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 mt-0.5 shrink-0" />
+                        {p}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {/* Overall Recommendation */}
+              {parsed.recommendation && (
+                <div className="rounded-2xl border border-amber-500/20 bg-amber-500/[0.04] p-5">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Scale className="w-4 h-4 text-amber-400" />
+                    <span className="text-sm font-semibold text-white">الخلاصة والتوصية</span>
+                  </div>
+                  <p className="text-amber-100/80 text-sm leading-relaxed">{parsed.recommendation}</p>
+                </div>
+              )}
+
+              {/* Fallback raw if parser found nothing structured */}
+              {!parsed.summary && !parsed.dangerClauses.length && !parsed.recommendation && (
+                <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6">
+                  <div className="prose prose-invert prose-sm max-w-none text-white/80 leading-relaxed whitespace-pre-wrap">{result}</div>
+                </div>
+              )}
+
+              {/* Legal disclaimer footer */}
               <div className="flex items-center gap-3 rounded-xl border border-amber-500/20 bg-amber-500/5 p-4">
                 <Shield className="w-4 h-4 text-amber-400 shrink-0" />
                 <p className="text-amber-200/80 text-xs">{t("footerDisclaimer")}</p>
               </div>
             </motion.div>
           </AnimatePresence>
-        )}
+        ) : null}
       </div>
     </AppShell>
   );

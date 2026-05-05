@@ -3,14 +3,17 @@ import { MODELS } from '@/src/lib/gemini';
 import { CMO_SYSTEM_PROMPT } from './prompt';
 import { instrumentAgent } from '@/src/lib/observability/agent-instrumentation';
 import { getCurrentLearnedSkillsAddon } from '@/src/lib/learning/context';
+import { z } from 'zod';
 
-export interface CMOInput {
-  message: string;
-  industry?: string;
-  targetAudience?: string;
-  budget?: string;
-  currentStage?: 'idea' | 'launch' | 'growth' | 'scale';
-}
+export const CMOInputSchema = z.object({
+  message: z.string().min(1).max(5000),
+  industry: z.string().max(200).optional(),
+  targetAudience: z.string().max(300).optional(),
+  budget: z.string().max(100).optional(),
+  currentStage: z.enum(['idea', 'launch', 'growth', 'scale']).optional(),
+});
+
+export type CMOInput = z.infer<typeof CMOInputSchema>;
 
 export async function cmoAgentAction(input: CMOInput): Promise<string> {
   return instrumentAgent(

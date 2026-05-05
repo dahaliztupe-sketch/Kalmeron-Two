@@ -1,13 +1,21 @@
 /**
  * POST /api/customer-discovery/persona-pdf
- * Converts a persona analysis text into a downloadable PDF.
- * Uses an HTML template rendered to PDF via puppeteer (if available) or
- * returns a plain-text PDF fallback using the `pdfkit` library.
+ * Converts a persona analysis text into a downloadable PDF using @react-pdf/renderer.
  */
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { adminAuth } from '@/src/lib/firebase-admin';
 import { rateLimit, rateLimitResponse } from '@/src/lib/security/rate-limit';
+import React from 'react';
+import {
+  renderToBuffer,
+  Document,
+  Page,
+  View,
+  Text,
+  StyleSheet,
+  Font,
+} from '@react-pdf/renderer';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -16,6 +24,74 @@ const BodySchema = z.object({
   personaText: z.string().min(50).max(20000),
   businessIdea: z.string().max(500).optional().default(''),
   targetSegment: z.string().max(300).optional().default(''),
+});
+
+let fontRegistered = false;
+async function ensureFont() {
+  if (fontRegistered) return;
+  try {
+    const res = await fetch('https://fonts.gstatic.com/s/tajawal/v9/Iura6YBj_oCad4k1nzSBC45I.ttf', { signal: AbortSignal.timeout(8000) });
+    if (res.ok) {
+      const buf = await res.arrayBuffer();
+      Font.register({ family: 'Tajawal', src: buf as unknown as string });
+      fontRegistered = true;
+    }
+  } catch {
+    fontRegistered = false;
+  }
+}
+
+const styles = StyleSheet.create({
+  page: { padding: 0, backgroundColor: '#0a0a0a' },
+  inner: { padding: 40, flex: 1 },
+  card: {
+    backgroundColor: '#1a1a2e',
+    borderRadius: 16,
+    padding: 36,
+    borderColor: 'rgba(245,158,11,0.3)',
+    borderWidth: 1,
+  },
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 28,
+    borderBottomColor: 'rgba(245,158,11,0.2)',
+    borderBottomWidth: 1,
+    paddingBottom: 20,
+    gap: 14,
+  },
+  logoBox: {
+    width: 44,
+    height: 44,
+    backgroundColor: '#f59e0b',
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  logoText: { fontSize: 20, color: '#ffffff' },
+  titleBox: { flex: 1 },
+  title: { fontSize: 18, fontWeight: 'bold', color: '#f59e0b' },
+  subtitle: { fontSize: 11, color: 'rgba(255,255,255,0.5)', marginTop: 4 },
+  metaGrid: { flexDirection: 'row', gap: 14, marginBottom: 24 },
+  metaItem: {
+    flex: 1,
+    backgroundColor: 'rgba(255,255,255,0.03)',
+    borderColor: 'rgba(255,255,255,0.08)',
+    borderWidth: 1,
+    borderRadius: 10,
+    padding: 12,
+  },
+  metaLabel: { fontSize: 10, color: 'rgba(255,255,255,0.4)', marginBottom: 4 },
+  metaValue: { fontSize: 13, fontWeight: 'bold', color: '#f0f0f0' },
+  contentBox: {
+    backgroundColor: 'rgba(255,255,255,0.02)',
+    borderColor: 'rgba(255,255,255,0.07)',
+    borderWidth: 1,
+    borderRadius: 12,
+    padding: 20,
+  },
+  content: { fontSize: 12, color: 'rgba(255,255,255,0.85)', lineHeight: 1.9 },
+  footer: { textAlign: 'center', fontSize: 10, color: 'rgba(255,255,255,0.3)', marginTop: 24 },
 });
 
 export async function POST(req: NextRequest) {
@@ -41,56 +117,57 @@ export async function POST(req: NextRequest) {
   const { personaText, businessIdea, targetSegment } = parsed.data;
   const now = new Date().toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric' });
 
-  // Build an HTML persona card
-  const html = `<!DOCTYPE html>
-<html dir="rtl" lang="ar">
-<head>
-<meta charset="utf-8"/>
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap');
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Tajawal', Arial, sans-serif; background: #0a0a0a; color: #f0f0f0; padding: 40px; min-height: 100vh; }
-  .card { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); border: 1px solid rgba(245,158,11,0.3); border-radius: 24px; padding: 40px; max-width: 800px; margin: 0 auto; }
-  .header { display: flex; align-items: center; gap: 16px; margin-bottom: 32px; border-bottom: 1px solid rgba(245,158,11,0.2); padding-bottom: 24px; }
-  .logo { width: 48px; height: 48px; background: linear-gradient(135deg, #f59e0b, #d97706); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; }
-  .title { flex: 1; }
-  .title h1 { font-size: 22px; font-weight: 900; color: #f59e0b; }
-  .title p { font-size: 13px; color: rgba(255,255,255,0.5); margin-top: 4px; }
-  .meta { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 28px; }
-  .meta-item { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 12px 16px; }
-  .meta-item label { font-size: 11px; color: rgba(255,255,255,0.4); display: block; margin-bottom: 4px; }
-  .meta-item span { font-size: 14px; font-weight: 700; color: #f0f0f0; }
-  .content { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.07); border-radius: 16px; padding: 24px; line-height: 1.9; font-size: 14px; color: rgba(255,255,255,0.85); white-space: pre-wrap; word-break: break-word; }
-  .footer { text-align: center; margin-top: 28px; font-size: 11px; color: rgba(255,255,255,0.3); }
-</style>
-</head>
-<body>
-<div class="card">
-  <div class="header">
-    <div class="logo">🎯</div>
-    <div class="title">
-      <h1>بطاقة Persona — كلميرون</h1>
-      <p>Customer Discovery Agent · ${now}</p>
-    </div>
-  </div>
-  ${businessIdea ? `
-  <div class="meta">
-    <div class="meta-item"><label>الفكرة التجارية</label><span>${businessIdea}</span></div>
-    <div class="meta-item"><label>الشريحة المستهدفة</label><span>${targetSegment || '—'}</span></div>
-  </div>` : ''}
-  <div class="content">${personaText.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</div>
-  <div class="footer">صُنع بواسطة كلميرون AI · جميع البيانات سرية · للاستخدام الداخلي فقط</div>
-</div>
-</body>
-</html>`;
+  await ensureFont();
+  const f = fontRegistered ? 'Tajawal' : 'Helvetica';
 
-  // PDF via puppeteer is reserved for when the binary is available (returns HTML for now)
+  const PersonaDoc = () =>
+    React.createElement(Document, { title: 'Persona Card - Kalmeron', language: 'ar' },
+      React.createElement(Page, { size: 'A4', style: styles.page },
+        React.createElement(View, { style: styles.inner },
+          React.createElement(View, { style: styles.card },
+            React.createElement(View, { style: styles.headerRow },
+              React.createElement(View, { style: styles.logoBox },
+                React.createElement(Text, { style: [styles.logoText, { fontFamily: f }] }, '*'),
+              ),
+              React.createElement(View, { style: styles.titleBox },
+                React.createElement(Text, { style: [styles.title, { fontFamily: f }] }, 'بطاقة Persona — كلميرون'),
+                React.createElement(Text, { style: [styles.subtitle, { fontFamily: f }] }, `Customer Discovery Agent · ${now}`),
+              ),
+            ),
 
-  // Fallback: return HTML as downloadable file with .html extension
-  return new NextResponse(html, {
-    headers: {
-      'Content-Type': 'text/html; charset=utf-8',
-      'Content-Disposition': `attachment; filename="persona-card-${Date.now()}.html"`,
-    },
-  });
+            (businessIdea || targetSegment) ? React.createElement(View, { style: styles.metaGrid },
+              React.createElement(View, { style: styles.metaItem },
+                React.createElement(Text, { style: [styles.metaLabel, { fontFamily: f }] }, 'الفكرة التجارية'),
+                React.createElement(Text, { style: [styles.metaValue, { fontFamily: f }] }, businessIdea || '—'),
+              ),
+              React.createElement(View, { style: styles.metaItem },
+                React.createElement(Text, { style: [styles.metaLabel, { fontFamily: f }] }, 'الشريحة المستهدفة'),
+                React.createElement(Text, { style: [styles.metaValue, { fontFamily: f }] }, targetSegment || '—'),
+              ),
+            ) : null,
+
+            React.createElement(View, { style: styles.contentBox },
+              React.createElement(Text, { style: [styles.content, { fontFamily: f }] }, personaText),
+            ),
+
+            React.createElement(Text, { style: [styles.footer, { fontFamily: f }] },
+              'صُنع بواسطة كلميرون AI · جميع البيانات سرية · للاستخدام الداخلي فقط'
+            ),
+          )
+        )
+      )
+    );
+
+  try {
+    const pdfBuffer = await renderToBuffer(React.createElement(PersonaDoc));
+    return new NextResponse(new Uint8Array(pdfBuffer), {
+      headers: {
+        'Content-Type': 'application/pdf',
+        'Content-Disposition': `attachment; filename="persona-card-${Date.now()}.pdf"`,
+      },
+    });
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : 'pdf_generation_failed';
+    return NextResponse.json({ error: msg }, { status: 500 });
+  }
 }

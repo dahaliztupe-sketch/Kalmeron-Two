@@ -4,12 +4,16 @@ import { COO_SYSTEM_PROMPT } from './prompt';
 import { instrumentAgent } from '@/src/lib/observability/agent-instrumentation';
 import { getCurrentLearnedSkillsAddon } from '@/src/lib/learning/context';
 
-export interface COOInput {
-  message: string;
-  context?: string;
-  focusArea?: 'process' | 'risk' | 'okr' | 'quality' | 'general';
-  currentMetrics?: Record<string, number | string>;
-}
+import { z } from 'zod';
+
+export const COOInputSchema = z.object({
+  message: z.string().min(1).max(5000),
+  context: z.string().max(2000).optional(),
+  focusArea: z.enum(['process', 'risk', 'okr', 'quality', 'general']).optional(),
+  currentMetrics: z.record(z.string(), z.union([z.number(), z.string()])).optional(),
+});
+
+export type COOInput = z.infer<typeof COOInputSchema>;
 
 export async function cooAgentAction(input: COOInput): Promise<string> {
   return instrumentAgent(

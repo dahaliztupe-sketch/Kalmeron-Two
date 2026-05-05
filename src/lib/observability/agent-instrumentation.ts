@@ -19,6 +19,7 @@ import {
   saveSkill,
   updateSkillFeedback,
   formatSkillsForPrompt,
+  buildAgentContextAddon,
   type LearnedSkill,
 } from '@/src/lib/learning/loop';
 import {
@@ -91,31 +92,28 @@ export async function instrumentAgent<T>(
     !opts.disableLearning && !!effectiveWorkspaceId && !!effectiveTask;
 
   let preloadedSkills: LearnedSkill[] = opts.loadedSkills || [];
+  let agentMemoryAddon = '';
   if (learningEnabled && !preloadedSkills.length) {
     try {
-      preloadedSkills = await loadRelevantSkills(
-        effectiveWorkspaceId,
-        agentName,
-        effectiveTask,
-        5
-      );
-    } catch { preloadedSkills = []; }
+      [preloadedSkills, agentMemoryAddon] = await Promise.all([
+        loadRelevantSkills(effectiveWorkspaceId, agentName, effectiveTask, 5),
+        buildAgentContextAddon(effectiveWorkspaceId, agentName, 10),
+      ]);
+    } catch { preloadedSkills = []; agentMemoryAddon = ''; }
+  } else if (learningEnabled) {
+    try {
+      agentMemoryAddon = await buildAgentContextAddon(effectiveWorkspaceId, agentName, 10);
+    } catch { agentMemoryAddon = ''; }
   }
-  // اجعل المهارات مرئية للكود الداخلي (مثل بنّاء system prompt) عبر السياق،
-  // وامسح أي قيمة قديمة من وكيل سابق إذا لم نجد مهارات لهذا الاستدعاء حتى
-  // لا تتسرّب نصوص قديمة إلى prompt الوكيل التالي.
-  //
-  // نَدمج هنا مصدرين:
-  //   1) المهارات البذريّة (Bootstrap) من ملفّات SKILL.md المُسجّلة لهذا
-  //      الوكيل في `agent-skills/registry.ts` — تعمل دون الحاجة إلى
-  //      workspaceId وتُحقن دائماً.
-  //   2) المهارات المُتعلَّمة (LearnedSkill) من Firestore — تتطلّب
-  //      workspaceId ومهمّة فعليّة.
+  // نَدمج هنا ثلاثة مصادر:
+  //   1) المهارات البذريّة (Bootstrap) من ملفّات SKILL.md.
+  //   2) المهارات المُتعلَّمة (LearnedSkill) من Firestore.
+  //   3) سياق المحادثات السابقة (Agent Memory) — آخر 10 محادثات.
   const bootstrapAddon = getBootstrapSkillsAddon(agentName);
   const learnedAddon = preloadedSkills.length
     ? formatSkillsForPrompt(preloadedSkills)
     : '';
-  const combinedAddon = [bootstrapAddon, learnedAddon].filter(Boolean).join('\n\n');
+  const combinedAddon = [bootstrapAddon, learnedAddon, agentMemoryAddon].filter(Boolean).join('\n\n');
   const combinedIds = preloadedSkills.map((s) => s.id!).filter(Boolean);
 
   // ملاحظة: إذا كان `learningEnabled=false` لا يوجد AsyncLocalStorage
