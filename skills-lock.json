@@ -300,7 +300,8 @@
     "kalmeron-seeds": {
       "source": "local",
       "sourceType": "local",
-      "skillPath": ".agents/skills/kalmeron-seeds/SKILL.md"
+      "skillPath": ".agents/skills/kalmeron-seeds/SKILL.md",
+      "computedHash": "3d636345dd652c2119b9da33bd97db0526a94eaae4d7137d51ff5adf061f3563"
     },
     "kalmeron-ui-polish": {
       "source": "local",
