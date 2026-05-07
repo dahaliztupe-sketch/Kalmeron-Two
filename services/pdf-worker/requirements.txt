@@ -6,8 +6,27 @@ regex>=2024.0
 pdf2image>=1.17,<2
 Pillow>=10,<12
 
-# ── Optional extras ─────────────────────────────────────────────────────
+# ── Layout-aware extraction ──────────────────────────────────────────────────
+# pdfminer.six: understands column layout, reading order, and text blocks.
+# Enables correct multi-column Arabic PDF extraction.
+pdfminer.six>=20221105
+
+# pdfplumber: detects tables per-page and returns cell data.
+# Used to convert table regions to Markdown syntax for RAG.
+pdfplumber>=0.10
+
+# ── Bidirectional text reordering ───────────────────────────────────────────
+# python-bidi: applies Unicode BiDi algorithm to RTL paragraphs so that
+# Arabic text extracted in visual order is reordered to logical order.
+python-bidi>=0.4.2
+
+# ── Optional extras ─────────────────────────────────────────────────────────
 # EasyOCR fallback for scanned (image-based) Arabic PDFs. Pulls torch +
 # torchvision (~700 MB on disk). Activate at runtime with
 # PDF_WORKER_OCR_FALLBACK=easyocr; install on the host first:
 #   easyocr>=1.7,<2
+
+# ── Test dependencies ────────────────────────────────────────────────────────
+# reportlab: generates synthetic fixture PDFs for the test suite.
+reportlab>=4.0
+pytest>=8.0

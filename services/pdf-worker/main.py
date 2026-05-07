@@ -1,23 +1,4 @@
-"""
-Arabic PDF worker — FastAPI microservice.
-
-Single responsibility: take a PDF, return clean text + chunks suitable for
-RAG indexing. Runs as a separate process from the Next.js app so dependencies
-stay isolated and a crash here can never bring down the website.
-
-When ``pypdf`` returns empty / near-empty text (typical for scanned PDFs)
-we transparently fall through to the OCR backend in ``ocr.py`` if it is
-enabled via ``PDF_WORKER_OCR_FALLBACK=easyocr``. The OCR backend is
-imported lazily so the default install stays slim.
-
-Endpoints:
-  GET  /health                         → liveness probe + backend state
-  POST /extract  (multipart: file)     → {text, pageCount, language, chunks[]}
-
-Run locally:
-  cd services/pdf-worker
-  uvicorn main:app --host 0.0.0.0 --port 8000
-"""
+"""Arabic PDF worker — FastAPI microservice."""
 
 from __future__ import annotations
 
@@ -31,22 +12,20 @@ from fastapi.middleware.cors import CORSMiddleware
 from pypdf import PdfReader
 from pydantic import BaseModel, Field
 
-from arabic import is_arabic, normalize
+from arabic import is_arabic, normalize, BIDI_AVAILABLE
 from chunker import chunk
+from extractor import extract_with_layout, PDFMINER_AVAILABLE, PDFPLUMBER_AVAILABLE
 import ocr
 
 logging.basicConfig(level=logging.INFO,
                     format="%(asctime)s [%(levelname)s] %(message)s")
 log = logging.getLogger("pdf-worker")
 
-MAX_BYTES = int(os.getenv("PDF_WORKER_MAX_BYTES", str(20 * 1024 * 1024)))  # 20 MB
-# Below this many extracted characters we treat the PDF as "scanned" and
-# attempt the OCR fallback (only if it's enabled).
+MAX_BYTES = int(os.getenv("PDF_WORKER_MAX_BYTES", str(20 * 1024 * 1024)))
 OCR_FALLBACK_THRESHOLD = int(os.getenv("PDF_WORKER_OCR_THRESHOLD", "200"))
 
-app = FastAPI(title="Kalmeron PDF Worker", version="1.1.0")
+app = FastAPI(title="Kalmeron PDF Worker", version="1.2.0")
 
-# Lock CORS down to known callers; override via env in production.
 allowed_origins = os.getenv("PDF_WORKER_CORS", "*").split(",")
 app.add_middleware(
     CORSMiddleware,
@@ -60,7 +39,6 @@ class ChunkOut(BaseModel):
     text: str
     char_count: int = Field(..., alias="charCount")
     page_hint: int | None = Field(None, alias="pageHint")
-
     model_config = {"populate_by_name": True}
 
 
@@ -72,24 +50,30 @@ class ExtractOut(BaseModel):
     chunk_count: int = Field(..., alias="chunkCount")
     chunks: list[ChunkOut]
     extraction_path: str = Field(..., alias="extractionPath")
-
     model_config = {"populate_by_name": True}
 
 
 @app.get("/health")
 def health() -> dict[str, Any]:
+    ocr_backend_str = ocr.BACKEND if ocr.is_enabled() else "disabled"
     return {
         "ok": True,
         "service": "pdf-worker",
         "version": app.version,
         "ocr_fallback_enabled": ocr.is_enabled(),
         "ocr_backend": ocr.BACKEND or None,
+        # multiColumnSupport requires pdfminer (column-band detection uses LTTextBox).
+        # pdfplumber alone does not provide column-aware ordering.
+        "multiColumnSupport": PDFMINER_AVAILABLE,
+        "tableExtraction": PDFPLUMBER_AVAILABLE,
+        "arabicBidiSupport": BIDI_AVAILABLE,
+        "ocrBackend": ocr_backend_str,
     }
 
 
 @app.post("/extract", response_model=ExtractOut, response_model_by_alias=True)
 async def extract(
-    file: UploadFile = File(..., description="PDF document to extract"),
+    file: UploadFile = File(...),
     target_chars: int = 1200,
     max_chars: int = 1800,
     overlap: int = 150,
@@ -100,47 +84,40 @@ async def extract(
 
     raw = await file.read()
     if len(raw) > MAX_BYTES:
-        raise HTTPException(
-            413, f"PDF too large ({len(raw)} bytes > {MAX_BYTES})"
-        )
+        raise HTTPException(413, f"PDF too large ({len(raw)} bytes > {MAX_BYTES})")
     if not raw:
         raise HTTPException(400, "Empty file.")
 
     try:
         reader = PdfReader(io.BytesIO(raw))
     except Exception as e:  # noqa: BLE001
-        log.warning("PDF parse failed for %s: %s", file.filename, e)
         raise HTTPException(422, f"Could not parse PDF: {e}") from e
 
     if reader.is_encrypted:
-        # Try empty password (the most common case) before giving up.
         try:
             reader.decrypt("")
         except Exception:  # noqa: BLE001
             raise HTTPException(422, "Encrypted PDF — password required.")
+        # Raw bytes are still encrypted; pdfminer cannot parse them.
+        # Extract directly from the already-decrypted pypdf reader.
+        raw_text = "\n\n".join(p.extract_text() or "" for p in reader.pages)
+        extraction_path = "pypdf:decrypted"
+    else:
+        # Primary extraction — returns actual backend path taken.
+        raw_text, extraction_path = extract_with_layout(raw)
 
-    page_texts: list[str] = []
-    for i, page in enumerate(reader.pages):
-        try:
-            page_texts.append(page.extract_text() or "")
-        except Exception as e:  # noqa: BLE001
-            log.warning("Page %d extract failed: %s", i, e)
-            page_texts.append("")
+    page_count = len(reader.pages)
 
-    raw_text = "\n\n".join(page_texts)
-    extraction_path = "pypdf"
-
-    # OCR fallback path: when the native extractor returns essentially
-    # nothing, try the configured OCR backend (if any).
+    # OCR fallback for scanned PDFs (near-empty layout extraction).
+    bidi_for_normalize = False
     if len(raw_text.strip()) < OCR_FALLBACK_THRESHOLD and ocr.is_enabled():
-        log.info(
-            "Native extraction returned %d chars (< %d threshold) — trying OCR fallback (%s)",
-            len(raw_text.strip()), OCR_FALLBACK_THRESHOLD, ocr.BACKEND,
-        )
+        log.info("OCR fallback (%s): layout returned %d chars", ocr.BACKEND, len(raw_text.strip()))
         ocr_pages = ocr.ocr_pdf_pages(raw)
         if ocr_pages and any(p.strip() for p in ocr_pages):
             raw_text = "\n\n".join(ocr_pages)
             extraction_path = f"ocr:{ocr.BACKEND}"
+            # OCR engines may emit visual-order Arabic; apply bidi reordering.
+            bidi_for_normalize = True
 
     cleaned = normalize(
         raw_text,
@@ -150,25 +127,18 @@ async def extract(
         tatweel=True,
         zero_width=True,
         whitespace=True,
+        bidi=bidi_for_normalize,
     )
     language = "ar" if is_arabic(cleaned) else "other"
 
-    pieces = chunk(
-        cleaned,
-        target_chars=target_chars,
-        max_chars=max_chars,
-        overlap=overlap,
-    )
+    pieces = chunk(cleaned, target_chars=target_chars, max_chars=max_chars, overlap=overlap)
 
-    log.info(
-        "extracted name=%s pages=%d chars=%d chunks=%d lang=%s path=%s",
-        file.filename, len(reader.pages), len(cleaned), len(pieces),
-        language, extraction_path,
-    )
+    log.info("extracted name=%s pages=%d chars=%d chunks=%d lang=%s path=%s",
+             file.filename, page_count, len(cleaned), len(pieces), language, extraction_path)
 
     return ExtractOut(
         text=cleaned,
-        pageCount=len(reader.pages),
+        pageCount=page_count,
         language=language,
         charCount=len(cleaned),
         chunkCount=len(pieces),

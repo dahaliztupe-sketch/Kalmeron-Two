@@ -1,18 +1,24 @@
-"""
-Arabic-aware text normalization for the PDF worker.
-
-The default `pdf-parse` (Node) output for Arabic PDFs has three problems:
-  1. Multiple alef variants (إ أ آ ا) make exact-match recall fail.
-  2. Tatweel (ـ) and ZWNJ are sprinkled inside words, breaking tokenization.
-  3. Diacritics (تشكيل) inflate token counts without adding semantic value.
-
-This module fixes the above without removing meaning: numbers and punctuation
-stay intact, paragraph boundaries are preserved.
-"""
+"""Arabic-aware text normalization for the PDF worker."""
 
 from __future__ import annotations
 
+import logging
+
 import regex as re
+
+log = logging.getLogger("pdf-worker.arabic")
+
+# ── bidi support (optional) ─────────────────────────────────────────────────
+
+try:
+    from bidi.algorithm import get_display  # type: ignore
+    BIDI_AVAILABLE = True
+except ImportError:
+    BIDI_AVAILABLE = False
+    log.warning("python-bidi not installed — bidirectional reordering disabled")
+
+
+# ── compiled patterns ───────────────────────────────────────────────────────
 
 # Arabic diacritics (harakat) — fatha, damma, kasra, tanween, sukun, shadda, dagger alif.
 DIACRITICS = re.compile(r"[\u064B-\u0652\u0670]")
@@ -32,6 +38,11 @@ SPACES = re.compile(r"[ \t\u00A0]+")
 # Three or more newlines collapse to two (single blank line between paragraphs).
 NEWLINES = re.compile(r"\n{3,}")
 
+# Split text into paragraphs (two or more newlines).
+PARAGRAPH_SPLIT = re.compile(r"(\n{2,})")
+
+
+# ── public helpers ──────────────────────────────────────────────────────────
 
 def is_arabic(text: str, threshold: float = 0.3) -> bool:
     """True if ≥ threshold of letter chars are Arabic."""
@@ -82,20 +93,57 @@ def collapse_whitespace(text: str) -> str:
     return text.strip()
 
 
+def _paragraph_has_rtl(paragraph: str) -> bool:
+    """Return True if the paragraph contains any Arabic/RTL characters."""
+    return bool(ARABIC_LETTERS.search(paragraph))
+
+
+def apply_bidi(text: str) -> str:
+    """Apply python-bidi get_display() (logical→visual) per paragraph.
+
+    Use only for visual-order source text (e.g. some OCR outputs).
+    Applying to already-logical Arabic text will corrupt it.
+    No-op when python-bidi is not installed.
+    """
+    if not BIDI_AVAILABLE:
+        return text
+
+    # Split preserving the separator tokens (newlines) so we can rejoin exactly.
+    parts = PARAGRAPH_SPLIT.split(text)
+    result: list[str] = []
+    for part in parts:
+        # Separator tokens (pure newlines) are kept as-is.
+        if re.fullmatch(r"\n+", part):
+            result.append(part)
+        elif _paragraph_has_rtl(part):
+            try:
+                result.append(get_display(part, base_dir="R"))
+            except Exception as e:  # noqa: BLE001
+                log.debug("bidi reorder failed for paragraph: %s", e)
+                result.append(part)
+        else:
+            result.append(part)
+    return "".join(result)
+
+
 def normalize(text: str, *,
               alef: bool = True,
               ya: bool = True,
               diacritics: bool = True,
               tatweel: bool = True,
               zero_width: bool = True,
-              whitespace: bool = True) -> str:
-    """
-    Full normalization pipeline. Each step is independently togglable so
-    callers can tune for their use-case (RAG retrieval = aggressive,
-    user-display = conservative).
+              whitespace: bool = True,
+              bidi: bool = False) -> str:
+    """Full normalization pipeline; all steps independently togglable.
+
+    bidi=False by default. apply_bidi() is a logical→visual transform;
+    applying it to already-logical text (typical pdfminer output) corrupts
+    Arabic sequences. Set bidi=True only for visual-order sources (OCR).
     """
     if not text:
         return ""
+    if bidi:
+        text = apply_bidi(text)
     if zero_width:
         text = strip_zero_width(text)
     if tatweel:
