@@ -78,11 +78,12 @@ export async function POST(req: NextRequest) {
   if (!priceId) {
     return Response.json(
       {
-        error: 'Price not configured',
-        message: 'سعر هذه الخطة غير مفعّل بعد. سنرسل لك التفاصيل.',
+        url: null,
+        fallback: 'sales_contact',
+        message: 'سعر هذه الخطة غير مفعّل بعد — تواصل مع فريق المبيعات.',
         details: { plan: planId, cycle, currency },
       },
-      { status: 501 },
+      { status: 200 },
     );
   }
 

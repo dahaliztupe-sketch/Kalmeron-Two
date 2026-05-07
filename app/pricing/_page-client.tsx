@@ -15,6 +15,7 @@ import { PricingFAQ } from "@/components/pricing/PricingFAQ";
 import { PricingTrust } from "@/components/pricing/PricingTrust";
 import { PricingEnterpriseBanner } from "@/components/pricing/PricingEnterpriseBanner";
 import { FawryDialog } from "@/components/billing/FawryDialog";
+import { SalesContactDialog } from "@/components/billing/SalesContactDialog";
 import { toast } from "sonner";
 
 export type BillingCycle = "monthly" | "annual";
@@ -27,6 +28,8 @@ export default function PricingPage() {
   const [billingAvailable, setBillingAvailable] = useState<boolean>(true);
   const [fawryOpen, setFawryOpen] = useState(false);
   const [fawryPlan, setFawryPlan] = useState<PlanId>("starter");
+  const [salesOpen, setSalesOpen] = useState(false);
+  const [salesPlan, setSalesPlan] = useState<PlanId>("starter");
   const [authToken, setAuthToken] = useState<string | null>(null);
 
   useEffect(() => {
@@ -107,8 +110,14 @@ export default function PricingPage() {
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data?.error || "فشل إنشاء الجلسة");
-        if (data.url) window.location.href = data.url;
-        else toast.success(data.message || "تم التحديث.");
+        if (data.url) {
+          window.location.href = data.url;
+        } else if (data.fallback === "sales_contact") {
+          setSalesPlan(planId);
+          setSalesOpen(true);
+        } else {
+          toast.success(data.message || "تم التحديث.");
+        }
       } catch (e: unknown) {
         toast.error(e instanceof Error ? e.message : "حدث خطأ أثناء الدفع.");
       } finally {
@@ -189,6 +198,12 @@ export default function PricingPage() {
         planId={fawryPlan}
         cycle={billing}
         authToken={authToken}
+      />
+
+      <SalesContactDialog
+        open={salesOpen}
+        onClose={() => setSalesOpen(false)}
+        planId={salesPlan}
       />
     </div>
   );

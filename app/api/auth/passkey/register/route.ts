@@ -3,20 +3,16 @@ import { NextResponse } from 'next/server';
 // @simplewebauthn/server محجوز للتنفيذ المستقبلي - يتطلب إعداد قاعدة بيانات كاملة
 // حالياً يُستخدم Google Sign-In عبر Firebase Auth
 
-const rpName = 'Kalmeron Two';
-const rpID = 'kalmeron.com';
-const origin = `https://${rpID}`;
+const COMING_SOON_BODY = {
+  status: 'coming_soon',
+  alternativeMethod: 'google_sign_in',
+  message: 'Passkey registration is not yet available. Please use Google Sign-In.',
+} as const;
 
 export async function GET() {
-  return NextResponse.json(
-    { error: 'Passkey registration not yet available. Please use Google Sign-In.', rpName, rpID, origin },
-    { status: 501 }
-  );
+  return NextResponse.json(COMING_SOON_BODY, { status: 410 });
 }
 
 export async function POST() {
-  return NextResponse.json(
-    { error: 'Passkey registration not yet available. Please use Google Sign-In.' },
-    { status: 501 }
-  );
+  return NextResponse.json(COMING_SOON_BODY, { status: 410 });
 }
