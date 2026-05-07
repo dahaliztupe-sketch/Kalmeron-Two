@@ -295,7 +295,26 @@
     "kalmeron-agent-builder": {
       "source": "local",
       "sourceType": "local",
-      "skillPath": ".agents/skills/kalmeron-agent-builder/SKILL.md"
+      "skillPath": ".agents/skills/kalmeron-agent-builder/SKILL.md",
+      "computedHash": "e42d2ff1577d1a60b6518f3be54c93518a32c42e4a064499f7e8937e412b6c72"
+    },
+    "kalmeron-firestore-patterns": {
+      "source": "local",
+      "sourceType": "local",
+      "skillPath": ".agents/skills/kalmeron-firestore-patterns/SKILL.md",
+      "computedHash": "5b8e0d54e75bfa4577b2a92cefdff239912f2b904f4c1877fa42136a225c697c"
+    },
+    "kalmeron-i18n-workflow": {
+      "source": "local",
+      "sourceType": "local",
+      "skillPath": ".agents/skills/kalmeron-i18n-workflow/SKILL.md",
+      "computedHash": "3ca21e63123d1ec54213832a6dd0f5102b48e5dc26a9301160ae176bd28a8318"
+    },
+    "kalmeron-route-guide": {
+      "source": "local",
+      "sourceType": "local",
+      "skillPath": ".agents/skills/kalmeron-route-guide/SKILL.md",
+      "computedHash": "a290e5074f9b3422146901f96745286ecb8732a24907b5e89d5fdda8cf244051"
     },
     "kalmeron-seeds": {
       "source": "local",
