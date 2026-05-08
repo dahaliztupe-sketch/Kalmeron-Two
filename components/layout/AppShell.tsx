@@ -20,6 +20,7 @@ import Loading from "@/app/loading";
 import { NAV_SECTIONS } from "@/src/lib/navigation";
 import { CommandPalette, useCommandPaletteShortcut } from "@/components/ui/CommandPalette";
 import { UpgradeBanner } from "@/components/billing/UpgradeBanner";
+import { WorkerHealthGuard } from "@/components/workers/WorkerHealthGuard";
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const { user, dbUser, loading, signOut: logout } = useAuth();
@@ -239,6 +240,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             the mobile bottom nav (env(safe-area-inset-bottom) included). */}
         <div className="flex-1 w-full pb-[calc(7rem+env(safe-area-inset-bottom))] md:pb-0">
           <UpgradeBanner />
+          <WorkerHealthGuard pathname={pathname} />
           <AnimatePresence mode="wait">
             <motion.div
               key={pathname}

@@ -81,7 +81,7 @@ outputType = "console"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "cd services/egypt-calc && [ ! -d .venv ] && uv venv .venv >/dev/null 2>&1 && source .venv/bin/activate && uv pip install -q -r requirements.txt >/dev/null 2>&1; source .venv/bin/activate && uvicorn main:app --host 0.0.0.0 --port 8008 --log-level info"
+args = "cd services/egypt-calc && ([ ! -d .venv ] && uv venv .venv >/dev/null 2>&1 && source .venv/bin/activate && uv pip install -q -r requirements.txt >/dev/null 2>&1; source .venv/bin/activate && uvicorn main:app --host 0.0.0.0 --port 8008 --log-level info)"
 waitForPort = 8008
 
 [[workflows.workflow]]
@@ -121,10 +121,6 @@ localPort = 8008
 externalPort = 8008
 
 [[ports]]
-localPort = 8080
-externalPort = 8080
-
-[[ports]]
 localPort = 8099
 externalPort = 8099
 
@@ -143,6 +139,10 @@ externalPort = 3003
 [[ports]]
 localPort = 23636
 externalPort = 6800
+
+[[ports]]
+localPort = 8080
+externalPort = 8080
 
 [userenv]
 

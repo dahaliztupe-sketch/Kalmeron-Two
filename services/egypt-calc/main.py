@@ -43,10 +43,22 @@ app = FastAPI(title="Kalmeron Egypt Calc", version="1.0.0")
 # CORS: قابل للتكوين عبر env var. الافتراضي محصور بالـ main app
 # في dev (localhost:5000) — في الإنتاج عيّن EGYPT_CALC_CORS بقيم محدّدة.
 import os as _os
-_origins = [o.strip() for o in _os.getenv("EGYPT_CALC_CORS", "http://localhost:5000").split(",") if o.strip()]
+_time = __import__("time")
+_START_TIME = _time.time()
+
+_DEFAULT_CORS = (
+    "http://localhost:5000,"
+    "https://*.replit.dev,"
+    "https://*.replit.app,"
+    "https://*.repl.co"
+)
+# Supports shared ALLOWED_ORIGINS, then service-specific EGYPT_CALC_CORS, then default.
+_raw_cors = _os.getenv("ALLOWED_ORIGINS") or _os.getenv("EGYPT_CALC_CORS", _DEFAULT_CORS)
+_origins = [o.strip() for o in _raw_cors.split(",") if o.strip()]
 app.add_middleware(
     CORSMiddleware,
     allow_origins=_origins,
+    allow_origin_regex=r"https://.*\.(replit\.dev|replit\.app|repl\.co)$",
     allow_methods=["GET", "POST"],
     allow_headers=["*"],
 )
@@ -83,10 +95,13 @@ class InstapayFeeIn(BaseModel):
 
 @app.get("/health")
 def health() -> dict:
+    import time as _t
     return {
         "ok": True,
+        "status": "ok",
         "service": "egypt-calc",
         "version": app.version,
+        "uptime_seconds": round(_t.time() - _START_TIME, 1),
         "asOf": AS_OF,
         "endpoints": [
             "/income-tax", "/social-insurance", "/total-cost",

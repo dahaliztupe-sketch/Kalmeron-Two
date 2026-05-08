@@ -1,24 +1,24 @@
-fastapi>=0.110,<1
-uvicorn[standard]>=0.27,<1
-pypdf>=4.0,<7
-python-multipart>=0.0.9,<1
-regex>=2024.0
-pdf2image>=1.17,<2
-Pillow>=10,<12
+fastapi==0.115.5
+uvicorn[standard]==0.32.1
+pypdf==4.3.1
+python-multipart==0.0.12
+regex==2024.11.6
+pdf2image==1.17.0
+Pillow==11.0.0
 
 # ── Layout-aware extraction ──────────────────────────────────────────────────
 # pdfminer.six: understands column layout, reading order, and text blocks.
 # Enables correct multi-column Arabic PDF extraction.
-pdfminer.six>=20221105
+pdfminer.six==20231228
 
 # pdfplumber: detects tables per-page and returns cell data.
 # Used to convert table regions to Markdown syntax for RAG.
-pdfplumber>=0.10
+pdfplumber==0.11.4
 
 # ── Bidirectional text reordering ───────────────────────────────────────────
 # python-bidi: applies Unicode BiDi algorithm to RTL paragraphs so that
 # Arabic text extracted in visual order is reordered to logical order.
-python-bidi>=0.4.2
+python-bidi==0.6.3
 
 # ── Optional extras ─────────────────────────────────────────────────────────
 # EasyOCR fallback for scanned (image-based) Arabic PDFs. Pulls torch +
@@ -28,5 +28,5 @@ python-bidi>=0.4.2
 
 # ── Test dependencies ────────────────────────────────────────────────────────
 # reportlab: generates synthetic fixture PDFs for the test suite.
-reportlab>=4.0
-pytest>=8.0
+reportlab==4.2.5
+pytest==8.3.4

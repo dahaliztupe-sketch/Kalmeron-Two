@@ -1,12 +1,10 @@
-fastapi>=0.110,<1
-uvicorn[standard]>=0.27,<1
-pydantic>=2.5,<3
-fastembed>=0.4,<1
-numpy>=1.26,<3
+fastapi==0.115.5
+uvicorn[standard]==0.32.1
+pydantic==2.9.2
+fastembed==0.4.2
+numpy==1.26.4
 
 # ── Optional extras ─────────────────────────────────────────────────────
-# Uncomment the relevant block after editing your environment to opt in.
-#
 # Sentence-Transformers backend (Arabic-specialised models such as
 # Omartificial-Intelligence-Space/AraGemma-Embedding-300m). Pulls torch.
 #   sentence-transformers>=3,<6

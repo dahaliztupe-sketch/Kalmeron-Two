@@ -26,10 +26,22 @@ OCR_FALLBACK_THRESHOLD = int(os.getenv("PDF_WORKER_OCR_THRESHOLD", "200"))
 
 app = FastAPI(title="Kalmeron PDF Worker", version="1.2.0")
 
-allowed_origins = os.getenv("PDF_WORKER_CORS", "*").split(",")
+import time as _time
+_START_TIME = _time.time()
+
+_DEFAULT_PDF_CORS = (
+    "http://localhost:5000,"
+    "https://*.replit.dev,"
+    "https://*.replit.app,"
+    "https://*.repl.co"
+)
+# Supports shared ALLOWED_ORIGINS, then service-specific PDF_WORKER_CORS, then default.
+_raw_cors = os.getenv("ALLOWED_ORIGINS") or os.getenv("PDF_WORKER_CORS", _DEFAULT_PDF_CORS)
+allowed_origins = [o.strip() for o in _raw_cors.split(",") if o.strip()]
 app.add_middleware(
     CORSMiddleware,
     allow_origins=allowed_origins,
+    allow_origin_regex=r"https://.*\.(replit\.dev|replit\.app|repl\.co)$",
     allow_methods=["GET", "POST"],
     allow_headers=["*"],
 )
@@ -58,8 +70,10 @@ def health() -> dict[str, Any]:
     ocr_backend_str = ocr.BACKEND if ocr.is_enabled() else "disabled"
     return {
         "ok": True,
+        "status": "ok",
         "service": "pdf-worker",
         "version": app.version,
+        "uptime_seconds": round(_time.time() - _START_TIME, 1),
         "ocr_fallback_enabled": ocr.is_enabled(),
         "ocr_backend": ocr.BACKEND or None,
         # multiColumnSupport requires pdfminer (column-band detection uses LTTextBox).

@@ -116,11 +116,23 @@ _HTTP = httpx.Client(timeout=_TIMEOUT)
 
 app = FastAPI(title="Kalmeron LLM Judge", version="1.1.0")
 
-# CORS: قابل للتكوين. الافتراضي محصور بـ main app في dev.
-_origins = [o.strip() for o in os.getenv("LLM_JUDGE_CORS", "http://localhost:5000").split(",") if o.strip()]
+import time as _time
+_START_TIME = _time.time()
+
+# CORS: قابل للتكوين. الافتراضي يشمل dev وproduction Replit domains.
+_DEFAULT_CORS = (
+    "http://localhost:5000,"
+    "https://*.replit.dev,"
+    "https://*.replit.app,"
+    "https://*.repl.co"
+)
+# Supports shared ALLOWED_ORIGINS, then service-specific LLM_JUDGE_CORS, then default.
+_raw_cors = os.getenv("ALLOWED_ORIGINS") or os.getenv("LLM_JUDGE_CORS", _DEFAULT_CORS)
+_origins = [o.strip() for o in _raw_cors.split(",") if o.strip()]
 app.add_middleware(
     CORSMiddleware,
     allow_origins=_origins,
+    allow_origin_regex=r"https://.*\.(replit\.dev|replit\.app|repl\.co)$",
     allow_methods=["GET", "POST"],
     allow_headers=["*"],
 )
@@ -262,8 +274,10 @@ def _real_judge(question: str, answer: str, rubric_name: str) -> dict[str, Any]:
 def health() -> dict:
     return {
         "ok": True,
+        "status": "ok",
         "service": "llm-judge",
         "version": app.version,
+        "uptime_seconds": round(_time.time() - _START_TIME, 1),
         "mode": MODE,
         "provider": PROVIDER,
         "model": JUDGE_MODEL,

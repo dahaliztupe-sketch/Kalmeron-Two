@@ -29,6 +29,14 @@ export async function register() {
   }
 
   if (process.env.NEXT_RUNTIME === 'nodejs') {
+    // Run worker reachability probes early so warnings appear in the boot log.
+    try {
+      const { validateStartup } = await import('./src/lib/startup');
+      validateStartup();
+    } catch {
+      // Never let startup validation crash the server.
+    }
+
     await import('./sentry.server.config');
     // OpenLLMetry — auto-instruments OpenAI / Anthropic / Gemini / LangChain
     // SDK calls and emits OpenTelemetry spans. Opt-in so the dev path stays

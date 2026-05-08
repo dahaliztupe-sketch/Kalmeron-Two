@@ -1,8 +1,11 @@
 "use client";
 import React, { useCallback, useEffect, useState } from "react";
 import { AppShell } from "@/components/layout/AppShell";
-import { motion } from "motion/react";
-import { RefreshCw, Activity, Server, Zap, Wifi, WifiOff, Clock } from "lucide-react";
+import { motion, AnimatePresence } from "motion/react";
+import {
+  RefreshCw, Activity, Server, Zap, Wifi, WifiOff, Clock,
+  Cpu, Database, BarChart2, FileText, RotateCcw, Info,
+} from "lucide-react";
 
 interface Health {
   status: "healthy" | "degraded";
@@ -10,6 +13,24 @@ interface Health {
   version: string;
   checks: Record<string, string>;
   meta: Record<string, unknown>;
+}
+
+interface WorkerHealth {
+  name: string;
+  key: string;
+  url: string;
+  status: "ok" | "warming_up" | "unreachable" | "degraded";
+  version?: string;
+  uptime_seconds?: number;
+  latency_ms?: number;
+  detail?: Record<string, unknown>;
+  checkedAt: number;
+}
+
+interface WorkersResult {
+  workers: WorkerHealth[];
+  allOk: boolean;
+  checkedAt: number;
 }
 
 const STATUS_COLOR: Record<string, string> = {
@@ -30,8 +51,38 @@ const STATUS_LABEL: Record<string, string> = {
   unprotected: "غير محمي",
 };
 
+const WORKER_STATUS_CONFIG: Record<WorkerHealth["status"], { label: string; dot: string; badge: string }> = {
+  ok: {
+    label: "يعمل",
+    dot: "bg-emerald-500",
+    badge: "text-emerald-300 bg-emerald-500/10 border-emerald-500/20",
+  },
+  warming_up: {
+    label: "يُحمَّل",
+    dot: "bg-amber-400",
+    badge: "text-amber-300 bg-amber-500/10 border-amber-500/20",
+  },
+  unreachable: {
+    label: "غير متاح",
+    dot: "bg-rose-500",
+    badge: "text-rose-300 bg-rose-500/10 border-rose-500/20",
+  },
+  degraded: {
+    label: "متدهور",
+    dot: "bg-orange-500",
+    badge: "text-orange-300 bg-orange-500/10 border-orange-500/20",
+  },
+};
+
+const WORKER_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
+  pdfWorker: FileText,
+  egyptCalc: BarChart2,
+  llmJudge: Cpu,
+  embeddingsWorker: Database,
+};
+
 function StatusDot({ status }: { status: string }) {
-  const color = STATUS_COLOR[status] ?? "bg-red-500";
+  const color = STATUS_COLOR[status] ?? "bg-rose-500";
   return <span className={`inline-block w-2 h-2 rounded-full ${color} shrink-0`} aria-hidden />;
 }
 
@@ -41,15 +92,32 @@ const GROUPS: Record<string, { label: string; keys: string[]; icon: React.Compon
   omnichannel: { label: "القنوات", icon: Wifi, keys: ["whatsapp", "telegram", "email"] },
 };
 
+function fmt(sec: number | undefined): string {
+  if (sec == null) return "—";
+  if (sec < 60) return `${Math.round(sec)}s`;
+  if (sec < 3600) return `${Math.round(sec / 60)}m`;
+  return `${(sec / 3600).toFixed(1)}h`;
+}
+
+/** Port map for admin restart hints */
+const WORKER_PORT_MAP: Record<string, { port: number; dir: string }> = {
+  pdfWorker:         { port: 8000, dir: "services/pdf-worker" },
+  egyptCalc:         { port: 8008, dir: "services/egypt-calc" },
+  llmJudge:          { port: 8080, dir: "services/llm-judge" },
+  embeddingsWorker:  { port: 8099, dir: "services/embeddings-worker" },
+};
+
 export default function SystemHealthPage() {
   const [data, setData] = useState<Health | null>(null);
+  const [workers, setWorkers] = useState<WorkersResult | null>(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
+  const [workersLoading, setWorkersLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [lastLoaded, setLastLoaded] = useState<Date | null>(null);
+  const [restartPanelKey, setRestartPanelKey] = useState<string | null>(null);
 
-  const load = useCallback(async () => {
-    setLoading(true);
-    setError("");
+  const loadMain = useCallback(async () => {
     try {
       const r = await fetch("/api/health", { cache: "no-store" });
       const j = await r.json();
@@ -62,12 +130,42 @@ export default function SystemHealthPage() {
     }
   }, []);
 
+  const loadWorkers = useCallback(async (force = false) => {
+    setWorkersLoading(true);
+    try {
+      const url = force ? "/api/health/workers?force=1" : "/api/health/workers";
+      const r = await fetch(url, { cache: "no-store" });
+      const j = await r.json();
+      setWorkers(j);
+    } catch {
+    } finally {
+      setWorkersLoading(false);
+    }
+  }, []);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    setError("");
+    await Promise.all([loadMain(), loadWorkers()]);
+  }, [loadMain, loadWorkers]);
+
+  const handleRefreshWorkers = useCallback(async () => {
+    setRefreshing(true);
+    try {
+      await fetch("/api/health/workers", { method: "POST" });
+      await loadWorkers(true);
+    } finally {
+      setRefreshing(false);
+    }
+  }, [loadWorkers]);
+
   useEffect(() => {
     async function run() { await load(); }
     void run();
-    const t = setInterval(() => void run(), 15_000);
-    return () => clearInterval(t);
-  }, [load]);
+    const t = setInterval(() => void loadMain(), 15_000);
+    const tw = setInterval(() => void loadWorkers(), 30_000);
+    return () => { clearInterval(t); clearInterval(tw); };
+  }, [load, loadMain, loadWorkers]);
 
   const isHealthy = data?.status === "healthy";
 
@@ -148,6 +246,133 @@ export default function SystemHealthPage() {
             ))}
           </div>
         )}
+
+        {/* ── Python Workers Section ─────────────────────────────────────── */}
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="rounded-2xl border border-white/[0.08] bg-white/[0.02] p-5 mb-4"
+        >
+          <div className="flex items-center gap-2 mb-4">
+            <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+              workers?.allOk ? "bg-emerald-500/10" : "bg-amber-500/10"
+            }`}>
+              <Server className={`w-4 h-4 ${workers?.allOk ? "text-emerald-400" : "text-amber-400"}`} />
+            </div>
+            <span className="font-bold text-sm text-white">الخدمات الجانبية (Python Sidecars)</span>
+            <span className={`mr-auto text-[10px] px-2 py-0.5 rounded-full border ${
+              workers?.allOk
+                ? "text-emerald-300 bg-emerald-500/10 border-emerald-500/25"
+                : "text-amber-300 bg-amber-500/10 border-amber-500/25"
+            }`}>
+              {workers?.allOk ? "✓ سليم" : "⚠ يستحق الانتباه"}
+            </span>
+            <button
+              onClick={() => void handleRefreshWorkers()}
+              disabled={workersLoading || refreshing}
+              className="mr-2 inline-flex items-center gap-1.5 text-[10px] px-2.5 py-1 rounded-lg border border-white/[0.06] text-neutral-400 hover:bg-white/[0.04] transition disabled:opacity-40"
+            >
+              <RefreshCw className={`w-3 h-3 ${refreshing ? "animate-spin" : ""}`} />
+              فحص الآن
+            </button>
+          </div>
+
+          {workersLoading && !workers ? (
+            <div className="space-y-2">
+              {[0, 1, 2, 3].map((i) => (
+                <div key={i} className="h-10 rounded-xl bg-white/[0.03] animate-pulse" />
+              ))}
+            </div>
+          ) : workers ? (
+            <ul className="space-y-2" role="list">
+              {workers.workers.map((w) => {
+                const cfg = WORKER_STATUS_CONFIG[w.status];
+                const Icon = WORKER_ICONS[w.key] ?? Server;
+                const portInfo = WORKER_PORT_MAP[w.key];
+                const isDown = w.status === "unreachable" || w.status === "degraded";
+                const panelOpen = restartPanelKey === w.key;
+                return (
+                  <li key={w.key} className="rounded-xl border border-white/[0.04] bg-white/[0.02] overflow-hidden">
+                    <div className="flex items-center gap-3 px-3 py-2.5 text-sm">
+                      <span className={`inline-block w-2 h-2 rounded-full shrink-0 ${cfg.dot}`} aria-hidden />
+                      <Icon className="w-3.5 h-3.5 text-neutral-500 shrink-0" />
+                      <span className="text-neutral-200 text-xs font-medium flex-1">{w.name}</span>
+
+                      {w.uptime_seconds != null && (
+                        <span className="text-[10px] text-neutral-600 tabular-nums">
+                          ↑ {fmt(w.uptime_seconds)}
+                        </span>
+                      )}
+                      {w.latency_ms != null && (
+                        <span className="text-[10px] text-neutral-600 tabular-nums">
+                          {w.latency_ms}ms
+                        </span>
+                      )}
+                      {w.version && (
+                        <span className="text-[10px] text-neutral-600 font-mono">{w.version}</span>
+                      )}
+                      <span className={`text-[10px] px-2 py-0.5 rounded border ${cfg.badge}`}>
+                        {cfg.label}
+                      </span>
+                      {isDown && (
+                        <button
+                          onClick={() => setRestartPanelKey(panelOpen ? null : w.key)}
+                          className="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded border border-indigo-500/30 text-indigo-300 bg-indigo-500/10 hover:bg-indigo-500/20 transition"
+                          aria-expanded={panelOpen}
+                          aria-label={`إرشادات إعادة تشغيل ${w.name}`}
+                        >
+                          <RotateCcw className="w-2.5 h-2.5" />
+                          إعادة التشغيل
+                        </button>
+                      )}
+                    </div>
+
+                    <AnimatePresence>
+                      {panelOpen && portInfo && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: "auto", opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{ duration: 0.2 }}
+                          className="overflow-hidden"
+                        >
+                          <div className="px-4 pb-3 pt-1 border-t border-indigo-500/10 bg-indigo-500/[0.03]">
+                            <div className="flex items-start gap-2 mb-2">
+                              <Info className="w-3 h-3 text-indigo-400 mt-0.5 shrink-0" />
+                              <p className="text-[10px] text-indigo-200/80 leading-relaxed">
+                                لإعادة تشغيل هذه الخدمة، انتقل إلى لوحة Workflows في Replit وأعد تشغيل{" "}
+                                <span className="font-semibold text-indigo-200">{w.name}</span>.
+                              </p>
+                            </div>
+                            <code className="block text-[10px] bg-black/30 rounded px-2 py-1.5 text-neutral-400 font-mono" dir="ltr">
+                              {`cd ${portInfo.dir} && uvicorn main:app --port ${portInfo.port}`}
+                            </code>
+                            <button
+                              onClick={() => {
+                                setRestartPanelKey(null);
+                                void handleRefreshWorkers();
+                              }}
+                              className="mt-2 inline-flex items-center gap-1 text-[10px] text-cyan-300 hover:text-cyan-100 transition"
+                            >
+                              <RefreshCw className="w-2.5 h-2.5" />
+                              تحقق من الحالة مجدداً
+                            </button>
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </li>
+                );
+              })}
+            </ul>
+          ) : null}
+
+          {workers && (
+            <p className="text-[10px] text-neutral-700 mt-3 text-left" dir="ltr">
+              Last checked: {new Date(workers.checkedAt).toLocaleTimeString()} · cache 30s
+            </p>
+          )}
+        </motion.div>
 
         {/* Groups */}
         {data && (

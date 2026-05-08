@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { adminDb } from '@/src/lib/firebase-admin';
 import { toErrorMessage } from '@/src/lib/errors/to-message';
 import { listAvailableProviders } from '@/src/lib/llm/providers';
+import { validateStartup } from '@/src/lib/startup';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -43,6 +44,7 @@ async function pingService(url: string): Promise<{ ok: boolean; [k: string]: unk
 }
 
 export async function GET() {
+  validateStartup();
   const timestamp = new Date().toISOString();
 
   const isMockMode =
