@@ -43,8 +43,10 @@ app = FastAPI(title="Kalmeron Egypt Calc", version="1.0.0")
 # CORS: قابل للتكوين عبر env var. الافتراضي محصور بالـ main app
 # في dev (localhost:5000) — في الإنتاج عيّن EGYPT_CALC_CORS بقيم محدّدة.
 import os as _os
-_time = __import__("time")
+import time as _time
+import psutil as _psutil
 _START_TIME = _time.time()
+_PROCESS = _psutil.Process()
 
 _DEFAULT_CORS = (
     "http://localhost:5000,"
@@ -62,6 +64,7 @@ app.add_middleware(
     allow_methods=["GET", "POST"],
     allow_headers=["*"],
 )
+log.info("CORS origins: %s (+ replit regex wildcard)", _origins)
 
 
 class IncomeTaxIn(BaseModel):
@@ -95,13 +98,14 @@ class InstapayFeeIn(BaseModel):
 
 @app.get("/health")
 def health() -> dict:
-    import time as _t
+    mem = _PROCESS.memory_info()
     return {
         "ok": True,
         "status": "ok",
         "service": "egypt-calc",
         "version": app.version,
-        "uptime_seconds": round(_t.time() - _START_TIME, 1),
+        "uptime_seconds": round(_time.time() - _START_TIME, 1),
+        "memory_rss_mb": round(mem.rss / 1024 / 1024, 1),
         "asOf": AS_OF,
         "endpoints": [
             "/income-tax", "/social-insurance", "/total-cost",

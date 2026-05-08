@@ -46,6 +46,7 @@ from threading import Lock
 from typing import Any
 
 import numpy as np
+import psutil as _psutil
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
@@ -237,6 +238,7 @@ def _embed_texts(texts: list[str]) -> list[list[float]]:
 app = FastAPI(title="Kalmeron Embeddings Worker", version="1.1.0")
 
 _START_TIME = time.time()
+_PROCESS = _psutil.Process()
 
 # CORS: قابل للتكوين. الافتراضي يشمل dev وproduction Replit domains.
 _DEFAULT_CORS = (
@@ -255,6 +257,7 @@ app.add_middleware(
     allow_methods=["GET", "POST"],
     allow_headers=["*"],
 )
+log.info("CORS origins: %s (+ replit regex wildcard)", _origins)
 
 
 class EmbedIn(BaseModel):
@@ -287,12 +290,14 @@ def health() -> dict:
     with _cache_lock:
         cache_size = len(_cache)
     loaded = _model is not None
+    mem = _PROCESS.memory_info()
     return {
         "ok": True,
         "status": "ok" if loaded else "warming_up",
         "service": "embeddings-worker",
         "version": app.version,
         "uptime_seconds": round(time.time() - _START_TIME, 1),
+        "memory_rss_mb": round(mem.rss / 1024 / 1024, 1),
         "backend": BACKEND,
         "model": MODEL_NAME,
         "model_loaded": loaded,

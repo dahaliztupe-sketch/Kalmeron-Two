@@ -28,6 +28,7 @@ import re
 from typing import Any
 
 import httpx
+import psutil as _psutil
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
@@ -118,6 +119,7 @@ app = FastAPI(title="Kalmeron LLM Judge", version="1.1.0")
 
 import time as _time
 _START_TIME = _time.time()
+_PROCESS = _psutil.Process()
 
 # CORS: قابل للتكوين. الافتراضي يشمل dev وproduction Replit domains.
 _DEFAULT_CORS = (
@@ -136,6 +138,7 @@ app.add_middleware(
     allow_methods=["GET", "POST"],
     allow_headers=["*"],
 )
+log.info("CORS origins: %s (+ replit regex wildcard)", _origins)
 
 
 class JudgeIn(BaseModel):
@@ -272,12 +275,14 @@ def _real_judge(question: str, answer: str, rubric_name: str) -> dict[str, Any]:
 
 @app.get("/health")
 def health() -> dict:
+    mem = _PROCESS.memory_info()
     return {
         "ok": True,
         "status": "ok",
         "service": "llm-judge",
         "version": app.version,
         "uptime_seconds": round(_time.time() - _START_TIME, 1),
+        "memory_rss_mb": round(mem.rss / 1024 / 1024, 1),
         "mode": MODE,
         "provider": PROVIDER,
         "model": JUDGE_MODEL,

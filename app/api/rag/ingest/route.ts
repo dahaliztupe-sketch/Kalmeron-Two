@@ -50,8 +50,37 @@ async function extractText(file: File): Promise<{ text: string; source: 'pdf' | 
   if (name.endsWith('.csv')) {
     return { text: buf.toString('utf8'), source: 'csv' };
   }
-  // Fallback: treat as text
   return { text: buf.toString('utf8'), source: 'text' };
+}
+
+/**
+ * Classify an error to return an appropriate HTTP status and user-facing message.
+ * Network/embedding-service errors become 503 (not 500) so the client can distinguish
+ * transient unavailability from a true server bug.
+ */
+function classifyIngestError(e: unknown): { status: number; error: string; fallback?: boolean } {
+  if (e instanceof Error) {
+    const msg = e.message.toLowerCase();
+    if (
+      e.name === 'AbortError' ||
+      msg.includes('econnrefused') ||
+      msg.includes('enotfound') ||
+      msg.includes('etimedout') ||
+      msg.includes('fetch failed') ||
+      msg.includes('failed to fetch') ||
+      msg.includes('network') ||
+      msg.includes('socket hang up')
+    ) {
+      return { status: 503, error: 'embedding_service_unavailable', fallback: true };
+    }
+    if (msg.includes('429') || msg.includes('quota') || msg.includes('rate limit')) {
+      return { status: 429, error: 'embedding_quota_exceeded' };
+    }
+    if (msg.includes('403') || msg.includes('unauthorized') || msg.includes('api key')) {
+      return { status: 503, error: 'embedding_auth_error', fallback: true };
+    }
+  }
+  return { status: 500, error: 'ingest_failed' };
 }
 
 export async function POST(req: NextRequest) {
@@ -85,8 +114,10 @@ export async function POST(req: NextRequest) {
   } catch (e: unknown) {
     const { logger } = await import('@/src/lib/logger');
     logger.error({ err: e }, 'rag_ingest_failed');
-    // Never echo the underlying error message to the client (CodeQL
-    // js/stack-trace-exposure); the full error is captured server-side.
-    return NextResponse.json({ error: 'ingest_failed' }, { status: 500 });
+    const { status, error, fallback } = classifyIngestError(e);
+    return NextResponse.json(
+      { error, fallback: fallback ?? false },
+      { status },
+    );
   }
 }

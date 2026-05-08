@@ -3,6 +3,7 @@ uvicorn[standard]==0.32.1
 pydantic==2.9.2
 fastembed==0.4.2
 numpy==1.26.4
+psutil==6.1.1
 
 # ── Optional extras ─────────────────────────────────────────────────────
 # Sentence-Transformers backend (Arabic-specialised models such as

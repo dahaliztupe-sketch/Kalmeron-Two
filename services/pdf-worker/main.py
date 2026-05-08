@@ -7,6 +7,7 @@ import logging
 import os
 from typing import Any
 
+import psutil as _psutil
 from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from pypdf import PdfReader
@@ -28,6 +29,7 @@ app = FastAPI(title="Kalmeron PDF Worker", version="1.2.0")
 
 import time as _time
 _START_TIME = _time.time()
+_PROCESS = _psutil.Process()
 
 _DEFAULT_PDF_CORS = (
     "http://localhost:5000,"
@@ -45,6 +47,7 @@ app.add_middleware(
     allow_methods=["GET", "POST"],
     allow_headers=["*"],
 )
+log.info("CORS origins: %s (+ replit regex wildcard)", allowed_origins)
 
 
 class ChunkOut(BaseModel):
@@ -68,12 +71,14 @@ class ExtractOut(BaseModel):
 @app.get("/health")
 def health() -> dict[str, Any]:
     ocr_backend_str = ocr.BACKEND if ocr.is_enabled() else "disabled"
+    mem = _PROCESS.memory_info()
     return {
         "ok": True,
         "status": "ok",
         "service": "pdf-worker",
         "version": app.version,
         "uptime_seconds": round(_time.time() - _START_TIME, 1),
+        "memory_rss_mb": round(mem.rss / 1024 / 1024, 1),
         "ocr_fallback_enabled": ocr.is_enabled(),
         "ocr_backend": ocr.BACKEND or None,
         # multiColumnSupport requires pdfminer (column-band detection uses LTTextBox).
