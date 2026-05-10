@@ -3,6 +3,7 @@
 import { AppShell } from "@/components/layout/AppShell";
 import Link from "next/link";
 import { motion } from "motion/react";
+import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 import {
   Megaphone, TrendingUp, Settings, Wallet, Users, Heart, Scale,
   Building2, ArrowLeft, MessageSquareText, Network,
@@ -99,6 +100,7 @@ const DEPARTMENTS = [
 export default function DepartmentsPage() {
   return (
     <AppShell>
+      <ErrorBoundary>
       <div dir="rtl" className="max-w-6xl mx-auto space-y-8">
 
         {/* Header */}
@@ -216,6 +218,7 @@ export default function DepartmentsPage() {
         </motion.div>
 
       </div>
+      </ErrorBoundary>
     </AppShell>
   );
 }

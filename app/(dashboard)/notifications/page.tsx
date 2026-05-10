@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { AppShell } from "@/components/layout/AppShell";
+import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 import { useAuth } from "@/contexts/AuthContext";
 import { apiJson } from "@/src/lib/api-client";
 import { motion, AnimatePresence } from "motion/react";
@@ -91,6 +92,7 @@ export default function NotificationsPage() {
 
   return (
     <AppShell>
+      <ErrorBoundary>
       <div className="max-w-2xl mx-auto py-6 px-2 sm:px-0" dir="rtl">
         <div className="flex items-center justify-between mb-6">
           <div>
@@ -201,6 +203,7 @@ export default function NotificationsPage() {
           </div>
         )}
       </div>
+      </ErrorBoundary>
     </AppShell>
   );
 }

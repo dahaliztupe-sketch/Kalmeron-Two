@@ -32,6 +32,7 @@ import { toast } from "sonner";
 import { motion, AnimatePresence } from "motion/react";
 import { ThoughtChain, type Phase } from "@/components/chat/ThoughtChain";
 import { VoiceInputButton } from "@/components/chat/VoiceInputButton";
+import { ChatSkeleton } from "@/components/ui/PageSkeleton";
 
 // ── Slash command definitions ──────────────────────────────────────────────
 /**
@@ -1035,6 +1036,8 @@ function ChatPageContent() {
   const [savedPrompts, setSavedPrompts] = useState<SavedPrompt[]>([]);
   const [showSavedPrompts, setShowSavedPrompts] = useState(false);
   const [userStage, setUserStage] = useState<string>("default");
+  const [chatWaiting, setChatWaiting] = useState<string | null>(null);
+  const chatTimersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
 
   // Slash command state
   const [slashQuery, setSlashQuery] = useState<string | null>(null);
@@ -1183,6 +1186,15 @@ function ChatPageContent() {
     const controller = new AbortController();
     abortRef.current = controller;
 
+    // Clear old timers then set 5s / 30s feedback timers
+    for (const t of chatTimersRef.current) clearTimeout(t);
+    chatTimersRef.current = [];
+    chatTimersRef.current.push(
+      setTimeout(() => setChatWaiting("المساعد يعمل على ردّك، يرجى الانتظار…"), 5000),
+      setTimeout(() => setChatWaiting("يستغرق الأمر وقتاً أطول من المعتاد، يرجى الصبر…"), 15000),
+      setTimeout(() => { controller.abort(); }, 30000),
+    );
+
     try {
       const token = user ? await user.getIdToken().catch(() => null) : null;
       const res = await fetch("/api/chat", {
@@ -1282,6 +1294,9 @@ function ChatPageContent() {
         );
       }
     } finally {
+      for (const t of chatTimersRef.current) clearTimeout(t);
+      chatTimersRef.current = [];
+      setChatWaiting(null);
       setIsLoading(false);
       setActivePhases([]);
       abortRef.current = null;
@@ -1702,6 +1717,19 @@ function ChatPageContent() {
                 );
               })
             )}
+            <AnimatePresence>
+              {chatWaiting && isLoading && (
+                <motion.div
+                  initial={{ opacity: 0, y: 4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0 }}
+                  className="flex items-center justify-end gap-2 text-[11px] text-indigo-300/70 pr-1"
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse" />
+                  {chatWaiting}
+                </motion.div>
+              )}
+            </AnimatePresence>
             <div ref={scrollRef} className="h-4" />
           </div>
 
@@ -1942,9 +1970,9 @@ export default function ChatPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-[#080c14] flex items-center justify-center">
-          <Loader2 className="w-8 h-8 animate-spin text-indigo-400" />
-        </div>
+        <AppShell>
+          <ChatSkeleton />
+        </AppShell>
       }
     >
       <ChatPageContent />

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { AppShell } from "@/components/layout/AppShell";
 import { useAuth } from "@/contexts/AuthContext";
 import { motion, AnimatePresence } from "motion/react";
@@ -12,6 +12,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { cn } from "@/src/lib/utils";
 import { toast } from "sonner";
+import { CardSkeleton } from "@/components/ui/PageSkeleton";
+import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 
 interface KR { description: string; target: number; current: number; unit: string }
 interface OKR {
@@ -123,6 +125,14 @@ export default function OKRPage() {
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [genWaiting, setGenWaiting] = useState<string | null>(null);
+  const genAbortRef = useRef<AbortController | null>(null);
+  const genTimersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
+
+  const clearGenTimers = () => {
+    for (const t of genTimersRef.current) clearTimeout(t);
+    genTimersRef.current = [];
+  };
 
   const load = useCallback(async () => {
     try {
@@ -148,19 +158,39 @@ export default function OKRPage() {
 
   async function generate() {
     setGenerating(true);
+    setGenWaiting(null);
+    const controller = new AbortController();
+    genAbortRef.current = controller;
+
+    genTimersRef.current.push(
+      setTimeout(() => setGenWaiting("الفريق الذكي يُنشئ أهدافك، يرجى الانتظار…"), 5000),
+      setTimeout(() => setGenWaiting("يستغرق الأمر وقتاً أطول من المعتاد…"), 15000),
+      setTimeout(() => {
+        controller.abort();
+        setGenWaiting(null);
+        setGenerating(false);
+        toast.error("انتهت مهلة توليد الأهداف (30 ثانية). يرجى المحاولة مجدداً.");
+      }, 30000),
+    );
+
     try {
       const token = await user?.getIdToken();
       const res = await fetch("/api/okr", {
         method: "POST",
+        signal: controller.signal,
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
       if (!res.ok) throw new Error("فشل التوليد");
       toast.success("تم توليد الأهداف بنجاح");
       await load();
     } catch (e: unknown) {
+      if (e instanceof Error && e.name === "AbortError") return;
       toast.error(e instanceof Error ? e.message : "خطأ غير متوقع");
     } finally {
+      clearGenTimers();
       setGenerating(false);
+      setGenWaiting(null);
+      genAbortRef.current = null;
     }
   }
 
@@ -175,6 +205,7 @@ export default function OKRPage() {
 
   return (
     <AppShell>
+      <ErrorBoundary>
       <div className="max-w-5xl mx-auto px-4 py-8 md:py-12" dir="rtl">
 
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
@@ -224,11 +255,19 @@ export default function OKRPage() {
           </div>
         )}
 
-        {loading && (
-          <div className="flex items-center justify-center py-20">
-            <Loader2 className="w-6 h-6 text-neutral-500 animate-spin" />
-          </div>
-        )}
+        {loading && <CardSkeleton />}
+
+        <AnimatePresence>
+          {genWaiting && generating && (
+            <motion.div
+              initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+              className="flex items-center gap-2 text-xs text-emerald-300/80 bg-emerald-500/[0.06] border border-emerald-500/20 rounded-xl px-4 py-2.5"
+            >
+              <Clock className="w-3.5 h-3.5 shrink-0 animate-pulse" />
+              {genWaiting}
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {error && !loading && (
           <div className="rounded-2xl border border-rose-500/25 bg-rose-500/[0.06] p-6 text-center text-sm text-rose-300">
@@ -289,6 +328,7 @@ export default function OKRPage() {
           </div>
         )}
       </div>
+      </ErrorBoundary>
     </AppShell>
   );
 }

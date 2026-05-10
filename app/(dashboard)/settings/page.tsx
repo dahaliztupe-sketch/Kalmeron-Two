@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { AppShell } from "@/components/layout/AppShell";
+import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 import { useAuth } from "@/contexts/AuthContext";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -224,6 +225,7 @@ export default function SettingsPage() {
 
   return (
     <AppShell>
+      <ErrorBoundary>
       <div className="max-w-5xl mx-auto px-2 md:px-4 font-arabic" dir="rtl">
         <motion.header initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
           <h1 className="text-3xl md:text-4xl font-extrabold text-white tracking-tight">الإعدادات</h1>
@@ -398,6 +400,7 @@ export default function SettingsPage() {
           </TabsContent>
         </Tabs>
       </div>
+      </ErrorBoundary>
     </AppShell>
   );
 }

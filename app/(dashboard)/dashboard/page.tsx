@@ -19,6 +19,7 @@ import { UpgradeConfetti } from "@/components/ui/UpgradeConfetti";
 import { FirstTimeTour } from "@/components/dashboard/FirstTimeTour";
 import { OpportunityBanner } from "@/components/dashboard/OpportunityBanner";
 import { PageSkeleton } from "@/components/ui/PageSkeleton";
+import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 import { SmartHubSection } from "@/src/components/dashboard/SmartHubSection";
 import { CompanyHealthScore } from "@/src/components/dashboard/CompanyHealthScore";
 import { GoalsProgress } from "@/src/components/dashboard/GoalsProgress";
@@ -304,7 +305,9 @@ export default function DashboardPage() {
 
         {data && <OpportunityBanner opportunity={data.opportunity} />}
 
-        <SmartHubSection />
+        <ErrorBoundary>
+          <SmartHubSection />
+        </ErrorBoundary>
 
         {loading ? (
           <PageSkeleton />
@@ -516,7 +519,9 @@ export default function DashboardPage() {
             {/* Company Health Score + Consumption Chart + Opportunity */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-5">
               <motion.div variants={reduce ? itemVReduced : itemV}>
-                <CompanyHealthScore />
+                <ErrorBoundary>
+                  <CompanyHealthScore />
+                </ErrorBoundary>
               </motion.div>
 
               <motion.div variants={reduce ? itemVReduced : itemV} className="glass-panel rounded-3xl p-6">
@@ -579,7 +584,9 @@ export default function DashboardPage() {
 
             {/* Goals Progress */}
             <motion.div variants={reduce ? itemVReduced : itemV}>
-              <GoalsProgress />
+              <ErrorBoundary>
+                <GoalsProgress />
+              </ErrorBoundary>
             </motion.div>
 
             {/* AI Adoption Score + New Tools */}
