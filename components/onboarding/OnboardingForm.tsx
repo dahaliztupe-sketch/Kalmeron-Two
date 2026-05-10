@@ -128,8 +128,8 @@ const GOAL_MISSIONS: Record<string, GoalMissionBase> = {
     icon: FlaskConical,
     title: "استكشف سوقك",
     description: "تحليل عميق للسوق والمنافسين وحجم الفرصة المتاحة لمشروعك.",
-    primaryLabel: "ابدأ البحث السوقي",
-    baseHref: "/chat?q=",
+    primaryLabel: "افتح مختبر السوق",
+    baseHref: "/market-lab",
     chatPromptByStage: {
       idea:       "أحتاج بحثاً سوقياً شاملاً لفكرة مشروعي: حجم السوق، الجمهور المستهدف، والمنافسون في مصر",
       validation: "حلّل منافسيّ وأعطني خريطة وضعي التنافسي مقارنةً بالبدائل المتاحة في السوق",
@@ -146,8 +146,8 @@ const GOAL_MISSIONS: Record<string, GoalMissionBase> = {
     icon: Gavel,
     title: "أسّس مشروعك بشكل صحيح",
     description: "المستشار القانوني يرشدك لاختيار الهيكل القانوني المناسب وخطوات التأسيس.",
-    primaryLabel: "اسأل المستشار القانوني",
-    baseHref: "/chat?q=",
+    primaryLabel: "افتح المستشار القانوني",
+    baseHref: "/legal-ai",
     chatPromptByStage: {
       idea:       "ما أفضل شكل قانوني لتأسيس مشروعي في مصر؟ أحتاج مقارنة بين الخيارات والإجراءات اللازمة",
       validation: "أنا في مرحلة اختبار السوق — ما المتطلبات القانونية التي يجب ترتيبها قبل التوسع الرسمي؟",
@@ -182,8 +182,8 @@ const GOAL_MISSIONS: Record<string, GoalMissionBase> = {
     icon: Shield,
     title: "العمليات وإدارة المخاطر",
     description: "درع العمليات يُرتّب عملياتك ويحدد أكبر المخاطر ويضع خطة وقاية فعّالة.",
-    primaryLabel: "ابدأ مع مستشار العمليات",
-    baseHref: "/chat?q=",
+    primaryLabel: "افتح مركز العمليات",
+    baseHref: "/operations",
     chatPromptByStage: {
       idea:       "كيف أبني بنية تشغيلية سليمة لمشروعي من البداية وأتجنب الأخطاء القاتلة؟",
       validation: "كيف أنظّم عمليات مشروعي في مرحلة الاختبار وأتجنب الفوضى التشغيلية؟",

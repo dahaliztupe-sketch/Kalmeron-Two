@@ -1420,6 +1420,13 @@ function ChatPageContent() {
         }),
       });
 
+      if (res.status === 402) {
+        setCouncilResponses((prev) =>
+          prev.map((r) => ({ ...r, content: "نفدت رصيدك — يرجى ترقية الباقة لمواصلة استخدام المجلس", streaming: false }))
+        );
+        setCouncilLoading(false);
+        return;
+      }
       if (!res.ok || !res.body) throw new Error(`HTTP ${res.status}`);
 
       const reader = res.body.getReader();

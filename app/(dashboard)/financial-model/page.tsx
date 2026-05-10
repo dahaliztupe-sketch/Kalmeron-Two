@@ -246,6 +246,13 @@ export default function FinancialModelPage() {
                 )}
               </AnimatePresence>
 
+              {!result && !loading && !error && !timedOut && !creditExhausted && (
+                <div className="flex items-start gap-3 rounded-xl border border-blue-500/20 bg-blue-500/[0.05] px-4 py-3 text-xs text-blue-300/80 leading-relaxed">
+                  <Sparkles size={13} className="mt-0.5 shrink-0 text-blue-400" />
+                  <span>أكمل البيانات أعلاه ثم اضغط «توليد» — سيعدّ لك المساعد المالي توقعات الإيرادات والتكاليف ونقطة التعادل.</span>
+                </div>
+              )}
+
               <AnimatePresence>
                 {creditExhausted && (
                   <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
