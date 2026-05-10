@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "motion/react";
 import {
   Scale, Sparkles, ArrowLeft, Loader2, CheckCircle2,
@@ -33,6 +34,7 @@ const CONTRACT_TYPES = [
 export default function LegalAIPage() {
   const { user } = useAuth();
   const t = useTranslations("LegalAI");
+  const searchParams = useSearchParams();
   const [mode, setMode] = useState<LegalMode>("contract");
   const [contractType, setContractType] = useState("عقد عمل");
   const [description, setDescription] = useState("");
@@ -50,6 +52,14 @@ export default function LegalAIPage() {
 
   const abortRef = useRef<AbortController | null>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout>[]>([]);
+
+  useEffect(() => {
+    async function run() {
+      const q = searchParams.get("q");
+      if (q) setDescription(q);
+    }
+    void run();
+  }, [searchParams]);
 
   const clearTimers = () => {
     for (const timer of timerRef.current) clearTimeout(timer);

@@ -213,7 +213,7 @@ function buildMissionCards(goals: string[], stage: string, industry: string): Mi
         if (base.baseHref === "/chat?q=" || base.baseHref.startsWith("/chat?q=")) {
           href = "/chat?q=" + encodeURIComponent(prompt);
         } else {
-          href = base.baseHref;
+          href = base.baseHref + "?q=" + encodeURIComponent(prompt);
         }
       }
       return { ...base, href };

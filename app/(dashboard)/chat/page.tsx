@@ -22,7 +22,7 @@ import {
   Download, ThumbsUp, ThumbsDown, Bookmark, BookmarkCheck, Star,
   Search, Users, ChevronDown, ChevronUp, ChevronRight,
   Zap, TrendingUp, Building2, Megaphone, Code, UserCheck,
-  AlertCircle, ExternalLink, RefreshCw,
+  AlertCircle, ExternalLink, RefreshCw, Clock,
   type LucideIcon,
 } from "lucide-react";
 import { cn } from "@/src/lib/utils";
@@ -794,11 +794,17 @@ function CouncilPanel({
   onClose,
   responses,
   isLoading,
+  creditExhausted,
+  timedOut,
+  onRetry,
 }: {
   question: string;
   onClose: () => void;
   responses: CouncilResponse[];
   isLoading: boolean;
+  creditExhausted?: boolean;
+  timedOut?: boolean;
+  onRetry?: () => void;
 }) {
   return (
     <motion.div
@@ -836,6 +842,25 @@ function CouncilPanel({
       </div>
 
       <div className="flex-1 overflow-y-auto p-3 space-y-3 scrollbar-thin">
+        {creditExhausted && (
+          <CreditExhaustedBanner />
+        )}
+        {!creditExhausted && timedOut && (
+          <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-3 flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2 text-xs text-amber-300">
+              <Clock className="w-3.5 h-3.5 shrink-0" />
+              <span>انتهت مهلة الاستجابة (30 ثانية)</span>
+            </div>
+            {onRetry && (
+              <button
+                onClick={onRetry}
+                className="flex items-center gap-1.5 text-xs text-white bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/30 px-3 py-1.5 rounded-lg transition-all shrink-0"
+              >
+                <RefreshCw className="w-3 h-3" /> أعد الإرسال
+              </button>
+            )}
+          </div>
+        )}
         {COUNCIL_AGENTS.map((agent) => {
           const resp = responses.find((r) => r.agentId === agent.agentName);
           const Icon = agent.icon;
@@ -1079,6 +1104,8 @@ function ChatPageContent() {
   const [councilQuestion, setCouncilQuestion] = useState("");
   const [councilResponses, setCouncilResponses] = useState<CouncilResponse[]>([]);
   const [councilLoading, setCouncilLoading] = useState(false);
+  const [councilCreditExhausted, setCouncilCreditExhausted] = useState(false);
+  const [councilTimedOut, setCouncilTimedOut] = useState(false);
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -1374,8 +1401,8 @@ function ChatPageContent() {
   };
 
   // ── Council mode (SSE per-agent streaming) ───────────────────────────────
-  const openCouncil = async () => {
-    const question = input.trim() || (messages.length > 0 ? messages[messages.length - 1].content : "");
+  const openCouncil = async (overrideQuestion?: string) => {
+    const question = overrideQuestion ?? input.trim() ?? (messages.length > 0 ? messages[messages.length - 1].content : "");
     if (!question) { toast.error("اكتب سؤالك أولاً ثم اسأل المجلس"); return; }
     setCouncilQuestion(question);
     setCouncilOpen(true);
@@ -1400,6 +1427,7 @@ function ChatPageContent() {
     }, 5000);
     const councilTimeout = setTimeout(() => {
       councilController.abort();
+      setCouncilTimedOut(true);
       setCouncilResponses((prev) =>
         prev.map((r) => r.streaming ? { ...r, content: "انتهت مهلة الاستجابة (30 ثانية)", streaming: false } : r)
       );
@@ -1421,8 +1449,9 @@ function ChatPageContent() {
       });
 
       if (res.status === 402) {
+        setCouncilCreditExhausted(true);
         setCouncilResponses((prev) =>
-          prev.map((r) => ({ ...r, content: "نفدت رصيدك — يرجى ترقية الباقة لمواصلة استخدام المجلس", streaming: false }))
+          prev.map((r) => ({ ...r, streaming: false }))
         );
         setCouncilLoading(false);
         return;
@@ -1726,9 +1755,21 @@ function ChatPageContent() {
           {councilOpen && (
             <CouncilPanel
               question={councilQuestion}
-              onClose={() => { setCouncilOpen(false); setCouncilResponses([]); }}
+              onClose={() => {
+                setCouncilOpen(false);
+                setCouncilResponses([]);
+                setCouncilCreditExhausted(false);
+                setCouncilTimedOut(false);
+              }}
               responses={councilResponses}
               isLoading={councilLoading}
+              creditExhausted={councilCreditExhausted}
+              timedOut={councilTimedOut}
+              onRetry={() => {
+                setCouncilTimedOut(false);
+                setCouncilCreditExhausted(false);
+                void openCouncil(councilQuestion);
+              }}
             />
           )}
         </AnimatePresence>
@@ -1889,7 +1930,7 @@ function ChatPageContent() {
                 {/* Council button */}
                 <button
                   type="button"
-                  onClick={openCouncil}
+                  onClick={() => void openCouncil()}
                   className="flex items-center gap-1.5 text-[11px] px-3 py-1.5 rounded-full border bg-indigo-500/10 border-indigo-400/30 text-indigo-300 hover:bg-indigo-500/20 transition-all"
                 >
                   <Users className="w-3 h-3" />
@@ -1903,7 +1944,7 @@ function ChatPageContent() {
               <div className="flex justify-end mb-2">
                 <button
                   type="button"
-                  onClick={openCouncil}
+                  onClick={() => void openCouncil()}
                   className="flex items-center gap-1.5 text-[11px] px-3 py-1.5 rounded-full border bg-indigo-500/10 border-indigo-400/30 text-indigo-300 hover:bg-indigo-500/20 transition-all"
                 >
                   <Users className="w-3 h-3" />
