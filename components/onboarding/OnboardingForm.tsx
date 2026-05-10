@@ -51,10 +51,10 @@ const EGYPTIAN_GOVERNORATES = [
 const GOALS = [
   { id: "idea_analysis",  label: "تحليل فكرتي",           icon: Brain,     color: "cyan"    },
   { id: "business_plan",  label: "خطة عمل للمستثمر",      icon: Briefcase, color: "indigo"  },
-  { id: "market_research", label: "بحث سوقي",             icon: FlaskConical, color: "fuchsia" },
+  { id: "market",          label: "بحث سوقي",             icon: FlaskConical, color: "fuchsia" },
   { id: "legal",           label: "تأسيس قانوني",         icon: Scale,     color: "amber"   },
   { id: "funding",         label: "إيجاد تمويل",          icon: Radar,     color: "emerald" },
-  { id: "risk",            label: "تجنب الأخطاء",         icon: Shield,    color: "rose"    },
+  { id: "operations",      label: "العمليات والمخاطر",    icon: Shield,    color: "rose"    },
 ];
 
 const STEPS = [
@@ -123,8 +123,8 @@ const GOAL_MISSIONS: Record<string, GoalMissionBase> = {
     border: "border-indigo-500/30",
     iconBg: "bg-indigo-500/15 text-indigo-400",
   },
-  market_research: {
-    id: "market_research",
+  market: {
+    id: "market",
     icon: FlaskConical,
     title: "استكشف سوقك",
     description: "تحليل عميق للسوق والمنافسين وحجم الفرصة المتاحة لمشروعك.",
@@ -177,19 +177,19 @@ const GOAL_MISSIONS: Record<string, GoalMissionBase> = {
     border: "border-emerald-500/30",
     iconBg: "bg-emerald-500/15 text-emerald-400",
   },
-  risk: {
-    id: "risk",
+  operations: {
+    id: "operations",
     icon: Shield,
-    title: "تجنّب الأخطاء القاتلة",
-    description: "درع الأخطاء يحدد أكبر المخاطر في مشروعك ويضع خطة وقاية فعّالة.",
-    primaryLabel: "فعّل درع الأخطاء",
+    title: "العمليات وإدارة المخاطر",
+    description: "درع العمليات يُرتّب عملياتك ويحدد أكبر المخاطر ويضع خطة وقاية فعّالة.",
+    primaryLabel: "ابدأ مع مستشار العمليات",
     baseHref: "/chat?q=",
     chatPromptByStage: {
-      idea:       "ما الأخطاء القاتلة في مرحلة الفكرة الأولية وكيف أتجنبها قبل البدء؟",
-      validation: "ما أكبر أخطاء مرحلة اختبار السوق وكيف أتحقق من الفكرة بشكل صحيح؟",
-      mvp:        "ما الأخطاء الشائعة في مرحلة بناء MVP وكيف أبني المنتج الصحيح؟",
-      foundation: "ما المخاطر الشائعة لشركة ناشئة في مرحلة التأسيس وكيف أديرها؟",
-      growth:     "ما الأخطاء التي تقتل الشركات في مرحلة النمو وكيف أتجنبها؟",
+      idea:       "كيف أبني بنية تشغيلية سليمة لمشروعي من البداية وأتجنب الأخطاء القاتلة؟",
+      validation: "كيف أنظّم عمليات مشروعي في مرحلة الاختبار وأتجنب الفوضى التشغيلية؟",
+      mvp:        "ما أولويات بناء العمليات والأنظمة لشركة في مرحلة MVP لتحقيق النمو المستدام؟",
+      foundation: "ساعدني في بناء دليل عمليات وOKRs لشركتي الناشئة في مرحلة التأسيس",
+      growth:     "كيف أوسّع عمليات شركتي وأدير المخاطر في مرحلة التوسع مع المحافظة على الجودة؟",
     },
     gradient: "from-rose-500/15 to-red-500/10",
     border: "border-rose-500/30",

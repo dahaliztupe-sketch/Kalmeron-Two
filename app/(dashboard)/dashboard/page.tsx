@@ -317,6 +317,7 @@ export default function DashboardPage() {
           <motion.div variants={reduce ? containerVReduced : containerV} initial="hidden" animate="show" className="space-y-4 md:space-y-5">
 
             <motion.div variants={reduce ? itemVReduced : itemV} className="glass-panel rounded-3xl p-6 relative overflow-hidden">
+              <ErrorBoundary>
               <div className="absolute -top-24 -left-24 w-72 h-72 rounded-full bg-indigo-600/10 blur-3xl pointer-events-none" />
               <div className="absolute -bottom-20 -right-20 w-64 h-64 rounded-full bg-cyan-600/8 blur-3xl pointer-events-none" />
               <div className="relative grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -362,9 +363,11 @@ export default function DashboardPage() {
                   </div>
                 </div>
               </div>
+              </ErrorBoundary>
             </motion.div>
 
             <motion.div variants={reduce ? itemVReduced : itemV}>
+              <ErrorBoundary>
               <h2 className="text-sm font-semibold text-neutral-400 mb-3 flex items-center gap-2">
                 <Zap className="w-4 h-4 text-amber-400" /> {t("quickActions")}
               </h2>
@@ -390,10 +393,12 @@ export default function DashboardPage() {
                   );
                 })}
               </div>
+              </ErrorBoundary>
             </motion.div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-5">
               <motion.div variants={reduce ? itemVReduced : itemV} className="glass-panel rounded-3xl p-6 md:col-span-2">
+                <ErrorBoundary>
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-2">
                     <Activity className="w-4 h-4 text-brand-blue" />
@@ -451,9 +456,11 @@ export default function DashboardPage() {
                     ))}
                   </ul>
                 )}
+                </ErrorBoundary>
               </motion.div>
 
               <motion.div variants={reduce ? itemVReduced : itemV} className="space-y-4">
+                <ErrorBoundary>
                 <Link href="/daily-brief" className="block glass-panel rounded-3xl p-5 group hover:border-amber-500/30 transition-all">
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
@@ -513,6 +520,7 @@ export default function DashboardPage() {
                     </ul>
                   )}
                 </div>
+                </ErrorBoundary>
               </motion.div>
             </div>
 
@@ -525,6 +533,7 @@ export default function DashboardPage() {
               </motion.div>
 
               <motion.div variants={reduce ? itemVReduced : itemV} className="glass-panel rounded-3xl p-6">
+                <ErrorBoundary>
                 <div className="flex items-center gap-2 mb-4">
                   <LineChart className="w-4 h-4 text-emerald-400" />
                   <h3 className="text-base font-bold text-white">{t("consumption")}</h3>
@@ -544,9 +553,11 @@ export default function DashboardPage() {
                   }
                 />
                 <p className="text-[10px] text-text-secondary/60 mt-2">{t("consumptionFootnote")}</p>
+                </ErrorBoundary>
               </motion.div>
 
               <motion.div variants={reduce ? itemVReduced : itemV} className="glass-panel rounded-3xl p-6 relative overflow-hidden">
+                <ErrorBoundary>
                 <div className="absolute -bottom-10 -right-10 w-48 h-48 rounded-full bg-brand-blue/10 blur-3xl pointer-events-none" />
                 <div className="relative">
                   <div className="flex items-center gap-2 mb-3">
@@ -579,6 +590,7 @@ export default function DashboardPage() {
                     </>
                   )}
                 </div>
+                </ErrorBoundary>
               </motion.div>
             </div>
 
@@ -591,6 +603,7 @@ export default function DashboardPage() {
 
             {/* AI Adoption Score + New Tools */}
             <motion.div variants={reduce ? itemVReduced : itemV}>
+              <ErrorBoundary>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <AIAdoptionScore metrics={data?.metrics} />
                 <div className="grid grid-cols-2 gap-3">
@@ -619,9 +632,11 @@ export default function DashboardPage() {
                   ))}
                 </div>
               </div>
+              </ErrorBoundary>
             </motion.div>
 
             <motion.div variants={reduce ? itemVReduced : itemV}>
+              <ErrorBoundary>
               <h2 className="text-sm font-semibold text-neutral-400 mb-3 flex items-center gap-2">
                 <Sparkles className="w-4 h-4 text-fuchsia-400" /> {t("discoverMore")}
               </h2>
@@ -657,6 +672,7 @@ export default function DashboardPage() {
                   <ArrowLeft className="w-4 h-4 text-neutral-600 group-hover:text-white transition-colors flex-shrink-0" />
                 </Link>
               </div>
+              </ErrorBoundary>
             </motion.div>
 
           </motion.div>

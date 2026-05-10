@@ -13,6 +13,7 @@ import {
   Bell, CheckCheck, Zap, ShieldAlert, Info, TrendingUp,
   RefreshCw, CheckCircle2,
 } from "lucide-react";
+import { CardSkeleton } from "@/components/ui/PageSkeleton";
 import { cn } from "@/src/lib/utils";
 import { toast } from "sonner";
 
@@ -116,19 +117,7 @@ export default function NotificationsPage() {
         </div>
 
         {loading ? (
-          <div className="space-y-3">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="glass-panel rounded-2xl p-4 animate-pulse">
-                <div className="flex gap-3">
-                  <div className="w-9 h-9 rounded-xl bg-white/[0.05]" />
-                  <div className="flex-1 space-y-2 pt-1">
-                    <div className="h-3.5 bg-white/[0.05] rounded-full w-2/3" />
-                    <div className="h-2.5 bg-white/[0.03] rounded-full w-full" />
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
+          <CardSkeleton rows={5} />
         ) : items.length === 0 ? (
           <div className="glass-panel rounded-3xl p-16 text-center">
             <div className="w-16 h-16 rounded-2xl bg-white/[0.03] border border-white/[0.06] flex items-center justify-center mx-auto mb-4">

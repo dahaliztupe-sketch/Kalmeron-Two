@@ -18,6 +18,7 @@ import { AppShell } from "@/components/layout/AppShell";
 import { useRunwaySnapshot } from "@/hooks/useRunwaySnapshot";
 import { fmtMonths } from "@/src/lib/runway/calc";
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
+import { CardSkeleton } from "@/components/ui/PageSkeleton";
 
 const fmt = (n: number) => new Intl.NumberFormat("ar-EG").format(Math.round(n));
 
@@ -47,6 +48,16 @@ export default function CashRunwayPage() {
       : result.kind === "healthy" || result.kind === "infinite"
       ? "emerald"
       : "neutral";
+
+  if (loading) {
+    return (
+      <AppShell>
+        <div dir="rtl" className="max-w-3xl mx-auto">
+          <CardSkeleton rows={6} />
+        </div>
+      </AppShell>
+    );
+  }
 
   return (
     <AppShell>
