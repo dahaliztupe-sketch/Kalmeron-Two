@@ -26,7 +26,7 @@ export function CreditExhaustedBanner({ remainingBalance, onRetry }: CreditExhau
           <p className="text-xs text-neutral-400 leading-relaxed">
             استنفذت حد استخدامك اليومي من نقاط الذكاء الاصطناعي. قم بترقية خطتك للحصول على رصيد أكبر والاستمرار في الاستفادة من المساعدين الذكيين.
           </p>
-          {typeof remainingBalance === "number" && remainingBalance > 0 && (
+          {typeof remainingBalance === "number" && (
             <p className="text-xs text-rose-300/70 mt-1">
               الرصيد المتبقي:{" "}
               <span className="font-bold text-rose-300">{remainingBalance}</span> نقطة

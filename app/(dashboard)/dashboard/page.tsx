@@ -312,14 +312,22 @@ export default function DashboardPage() {
         {loading ? (
           <PageSkeleton />
         ) : error || !data ? (
-          <div className="glass-panel p-6 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center gap-4">
-            <div className="text-rose-300 text-sm flex-1">{error || t("noData")}</div>
-            <button
-              onClick={() => window.location.reload()}
-              className="flex items-center gap-2 text-xs text-white bg-rose-500/20 hover:bg-rose-500/30 border border-rose-500/30 px-4 py-2 rounded-xl transition-all shrink-0"
-            >
-              <RefreshCw className="w-3.5 h-3.5" /> إعادة المحاولة
-            </button>
+          <div className="glass-panel p-6 rounded-2xl space-y-4" dir="rtl">
+            <div className="text-rose-300 text-sm">{error || t("noData")}</div>
+            <div className="flex flex-wrap gap-3">
+              <button
+                onClick={() => window.location.reload()}
+                className="flex items-center gap-2 text-xs text-white bg-rose-500/20 hover:bg-rose-500/30 border border-rose-500/30 px-4 py-2 rounded-xl transition-all"
+              >
+                <RefreshCw className="w-3.5 h-3.5" /> إعادة المحاولة
+              </button>
+              <Link
+                href="/chat"
+                className="flex items-center gap-2 text-xs text-white bg-cyan-500/15 hover:bg-cyan-500/25 border border-cyan-500/25 px-4 py-2 rounded-xl transition-all"
+              >
+                <MessageSquare className="w-3.5 h-3.5" /> ابدأ محادثة مع كلميرون
+              </Link>
+            </div>
           </div>
         ) : (
           <motion.div variants={reduce ? containerVReduced : containerV} initial="hidden" animate="show" className="space-y-4 md:space-y-5">

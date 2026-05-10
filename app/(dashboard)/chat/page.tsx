@@ -1402,7 +1402,7 @@ function ChatPageContent() {
 
   // ── Council mode (SSE per-agent streaming) ───────────────────────────────
   const openCouncil = async (overrideQuestion?: string) => {
-    const question = overrideQuestion ?? input.trim() ?? (messages.length > 0 ? messages[messages.length - 1].content : "");
+    const question = overrideQuestion || input.trim() || (messages.length > 0 ? messages[messages.length - 1].content : "");
     if (!question) { toast.error("اكتب سؤالك أولاً ثم اسأل المجلس"); return; }
     setCouncilQuestion(question);
     setCouncilOpen(true);
