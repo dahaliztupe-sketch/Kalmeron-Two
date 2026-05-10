@@ -123,6 +123,7 @@ export default function DepartmentsPage() {
         </motion.div>
 
         {/* Stats bar */}
+        <ErrorBoundary>
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
@@ -145,7 +146,10 @@ export default function DepartmentsPage() {
           })}
         </motion.div>
 
+        </ErrorBoundary>
+
         {/* Departments grid */}
+        <ErrorBoundary>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {DEPARTMENTS.map((dept, i) => {
             const Icon = dept.icon;
@@ -198,7 +202,10 @@ export default function DepartmentsPage() {
           })}
         </div>
 
+        </ErrorBoundary>
+
         {/* Org chart link */}
+        <ErrorBoundary>
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -216,6 +223,8 @@ export default function DepartmentsPage() {
             عرض المخطط <ArrowLeft className="w-3.5 h-3.5" />
           </Link>
         </motion.div>
+
+        </ErrorBoundary>
 
       </div>
       </ErrorBoundary>

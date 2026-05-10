@@ -143,8 +143,8 @@ const GOAL_MISSIONS: Record<string, GoalMissionBase> = {
     icon: Target,
     title: "اكتشف فرص التمويل",
     description: "رادار الفرص يرصد المنح والمسابقات والمستثمرين المناسبين لمرحلتك.",
-    primaryLabel: "افتح رادار الفرص",
-    baseHref: "/opportunities",
+    primaryLabel: "ابدأ مع رادار الفرص",
+    baseHref: "/chat?q=",
     chatPromptByStage: {
       idea:       "ما مصادر التمويل الأنسب لفكرة في مرحلتها الأولى قبل بناء المنتج؟",
       validation: "ما خيارات التمويل المتاحة لمشروع في مرحلة اختبار السوق؟",

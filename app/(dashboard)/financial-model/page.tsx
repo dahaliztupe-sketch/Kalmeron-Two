@@ -96,7 +96,7 @@ export default function FinancialModelPage() {
         }),
       });
       const data = await res.json();
-      if (res.status === 402) { setCreditExhausted(true); return; }
+      if (res.status === 402 || data.credit_exhausted === true) { setCreditExhausted(true); return; }
       if (!res.ok) throw new Error(data.error || "حدث خطأ");
       setResult(data.result);
     } catch (e: unknown) {

@@ -14,6 +14,7 @@ import { cn } from "@/src/lib/utils";
 import { toast } from "sonner";
 import { CardSkeleton } from "@/components/ui/PageSkeleton";
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
+import { CreditExhaustedBanner } from "@/components/billing/CreditExhaustedBanner";
 
 interface KR { description: string; target: number; current: number; unit: string }
 interface OKR {
@@ -126,6 +127,7 @@ export default function OKRPage() {
   const [generating, setGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [genWaiting, setGenWaiting] = useState<string | null>(null);
+  const [genCreditExhausted, setGenCreditExhausted] = useState(false);
   const genAbortRef = useRef<AbortController | null>(null);
   const genTimersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
 
@@ -173,6 +175,7 @@ export default function OKRPage() {
       }, 30000),
     );
 
+    setGenCreditExhausted(false);
     try {
       const token = await user?.getIdToken();
       const res = await fetch("/api/okr", {
@@ -180,6 +183,11 @@ export default function OKRPage() {
         signal: controller.signal,
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
+      const json = await res.json().catch(() => ({}));
+      if (res.status === 402 || json.credit_exhausted === true) {
+        setGenCreditExhausted(true);
+        return;
+      }
       if (!res.ok) throw new Error("فشل التوليد");
       toast.success("تم توليد الأهداف بنجاح");
       await load();
@@ -268,6 +276,12 @@ export default function OKRPage() {
             </motion.div>
           )}
         </AnimatePresence>
+
+        {genCreditExhausted && (
+          <CreditExhaustedBanner
+            onRetry={() => { setGenCreditExhausted(false); void generate(); }}
+          />
+        )}
 
         {error && !loading && (
           <div className="rounded-2xl border border-rose-500/25 bg-rose-500/[0.06] p-6 text-center text-sm text-rose-300">

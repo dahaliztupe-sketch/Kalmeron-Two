@@ -12,6 +12,7 @@ import { AppShell } from "@/components/layout/AppShell";
 import { useAuth } from "@/contexts/AuthContext";
 import { cn } from "@/src/lib/utils";
 import { useTranslations } from "next-intl";
+import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 
 const fmt = (n: number) =>
   new Intl.NumberFormat("ar-EG", { maximumFractionDigits: 2 }).format(n);
@@ -200,6 +201,7 @@ export default function EgyptCalcPage() {
 
   return (
     <AppShell>
+      <ErrorBoundary>
       <div dir="rtl" className="max-w-4xl mx-auto">
         <div className="mb-6">
           <div className="inline-flex items-center gap-2 text-xs text-cyan-300 font-semibold uppercase tracking-wider mb-2">
@@ -718,6 +720,7 @@ export default function EgyptCalcPage() {
           </p>
         </div>
       </div>
+      </ErrorBoundary>
     </AppShell>
   );
 }

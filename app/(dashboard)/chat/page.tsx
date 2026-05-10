@@ -33,6 +33,8 @@ import { motion, AnimatePresence } from "motion/react";
 import { ThoughtChain, type Phase } from "@/components/chat/ThoughtChain";
 import { VoiceInputButton } from "@/components/chat/VoiceInputButton";
 import { ChatSkeleton } from "@/components/ui/PageSkeleton";
+import { CreditExhaustedBanner } from "@/components/billing/CreditExhaustedBanner";
+import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 
 // ── Slash command definitions ──────────────────────────────────────────────
 /**
@@ -1037,7 +1039,9 @@ function ChatPageContent() {
   const [showSavedPrompts, setShowSavedPrompts] = useState(false);
   const [userStage, setUserStage] = useState<string>("default");
   const [chatWaiting, setChatWaiting] = useState<string | null>(null);
+  const [chatCreditExhausted, setChatCreditExhausted] = useState(false);
   const chatTimersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
+  const councilAbortRef = useRef<AbortController | null>(null);
 
   // Slash command state
   const [slashQuery, setSlashQuery] = useState<string | null>(null);
@@ -1182,6 +1186,7 @@ function ChatPageContent() {
     ]);
     setIsLoading(true);
     setActivePhases([]);
+    setChatCreditExhausted(false);
 
     const controller = new AbortController();
     abortRef.current = controller;
@@ -1214,6 +1219,20 @@ function ChatPageContent() {
         }),
       });
 
+      // Detect 402 (credit exhaustion) before reading the stream
+      if (res.status === 402) {
+        let remainingBalance: number | undefined;
+        try {
+          const errData = await res.clone().json();
+          if (errData.credit_exhausted === true || res.status === 402) {
+            remainingBalance = errData.remainingBalance ?? errData.balance;
+          }
+        } catch {}
+        setChatCreditExhausted(true);
+        setMessages((prev) => prev.filter((m) => m.id !== assistantId));
+        void remainingBalance; // used in banner state
+        return;
+      }
       if (!res.ok || !res.body) throw new Error(`HTTP ${res.status}`);
 
       const reader = res.body.getReader();
@@ -1317,9 +1336,20 @@ function ChatPageContent() {
 
     const token = user ? await user.getIdToken().catch(() => null) : null;
 
+    // 30 second AbortController for council stream
+    const councilController = new AbortController();
+    councilAbortRef.current = councilController;
+    const councilTimeout = setTimeout(() => {
+      councilController.abort();
+      setCouncilResponses((prev) =>
+        prev.map((r) => r.streaming ? { ...r, content: "انتهت مهلة الاستجابة (30 ثانية)", streaming: false } : r)
+      );
+    }, 30000);
+
     try {
       const res = await fetch("/api/council/stream", {
         method: "POST",
+        signal: councilController.signal,
         headers: {
           "Content-Type": "application/json",
           ...(token ? { Authorization: `Bearer ${token}` } : {}),
@@ -1375,11 +1405,16 @@ function ChatPageContent() {
         if (done) break;
         parseEvents(decoder.decode(value, { stream: true }));
       }
-    } catch {
-      // Mark all still-streaming agents as failed
-      setCouncilResponses((prev) =>
-        prev.map((r) => r.streaming ? { ...r, content: "تعذّر الحصول على رأي هذا الوكيل", streaming: false } : r)
-      );
+    } catch (err) {
+      const isAbort = err instanceof Error && err.name === "AbortError";
+      if (!isAbort) {
+        setCouncilResponses((prev) =>
+          prev.map((r) => r.streaming ? { ...r, content: "تعذّر الحصول على رأي هذا الوكيل", streaming: false } : r)
+        );
+      }
+    } finally {
+      clearTimeout(councilTimeout);
+      councilAbortRef.current = null;
     }
 
     setCouncilLoading(false);
@@ -1730,6 +1765,20 @@ function ChatPageContent() {
                 </motion.div>
               )}
             </AnimatePresence>
+            <AnimatePresence>
+              {chatCreditExhausted && (
+                <motion.div
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0 }}
+                  className="px-2 pb-2"
+                >
+                  <CreditExhaustedBanner
+                    onRetry={() => setChatCreditExhausted(false)}
+                  />
+                </motion.div>
+              )}
+            </AnimatePresence>
             <div ref={scrollRef} className="h-4" />
           </div>
 
@@ -1968,14 +2017,16 @@ function ChatPageContent() {
 
 export default function ChatPage() {
   return (
-    <Suspense
-      fallback={
-        <AppShell>
-          <ChatSkeleton />
-        </AppShell>
-      }
-    >
-      <ChatPageContent />
-    </Suspense>
+    <ErrorBoundary>
+      <Suspense
+        fallback={
+          <AppShell>
+            <ChatSkeleton />
+          </AppShell>
+        }
+      >
+        <ChatPageContent />
+      </Suspense>
+    </ErrorBoundary>
   );
 }
