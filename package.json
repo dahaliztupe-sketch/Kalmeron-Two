@@ -74,7 +74,14 @@
     "audit:benchmarks": "QA_MODULES=benchmarks tsx audit/runner.ts",
     "audit:compare": "QA_MODULES=benchmarks tsx audit/runner.ts",
     "audit:ci": "QA_BASE_URL=http://localhost:5000 QA_FAIL_ON_CRITICAL=true tsx audit/runner.ts",
-    "precommit": "npm run typecheck && npm run lint && npm run audit:fast"
+    "precommit": "npm run typecheck && npm run lint && npm run audit:fast",
+    "gnhf:setup": "bash scripts/setup-gnhf.sh",
+    "gnhf:fix-typescript": "bash scripts/gnhf-kalmeron.sh fix-typescript",
+    "gnhf:fix-lint": "bash scripts/gnhf-kalmeron.sh fix-lint",
+    "gnhf:i18n-sync": "bash scripts/gnhf-kalmeron.sh i18n-sync",
+    "gnhf:improve-agents": "bash scripts/gnhf-kalmeron.sh improve-agents",
+    "gnhf:performance": "bash scripts/gnhf-kalmeron.sh performance",
+    "gnhf:accessibility": "bash scripts/gnhf-kalmeron.sh accessibility"
   },
   "dependencies": {
     "@ag-ui/client": "^0.0.52",
@@ -174,6 +181,7 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "gnhf": "^0.1.41",
     "@tailwindcss/postcss": "^4.2.3",
     "@tailwindcss/typography": "^0.5.19",
     "@types/node": "^25.6.0",
