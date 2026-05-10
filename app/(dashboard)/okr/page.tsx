@@ -128,6 +128,8 @@ export default function OKRPage() {
   const [error, setError] = useState<string | null>(null);
   const [genWaiting, setGenWaiting] = useState<string | null>(null);
   const [genCreditExhausted, setGenCreditExhausted] = useState(false);
+  const [genCreditBalance, setGenCreditBalance] = useState<number | undefined>(undefined);
+  const [genTimedOut, setGenTimedOut] = useState(false);
   const genAbortRef = useRef<AbortController | null>(null);
   const genTimersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
 
@@ -161,6 +163,8 @@ export default function OKRPage() {
   async function generate() {
     setGenerating(true);
     setGenWaiting(null);
+    setGenTimedOut(false);
+    setGenCreditBalance(undefined);
     const controller = new AbortController();
     genAbortRef.current = controller;
 
@@ -170,8 +174,7 @@ export default function OKRPage() {
       setTimeout(() => {
         controller.abort();
         setGenWaiting(null);
-        setGenerating(false);
-        toast.error("انتهت مهلة توليد الأهداف (30 ثانية). يرجى المحاولة مجدداً.");
+        setGenTimedOut(true);
       }, 30000),
     );
 
@@ -185,6 +188,7 @@ export default function OKRPage() {
       });
       const json = await res.json().catch(() => ({}));
       if (res.status === 402 || json.credit_exhausted === true) {
+        setGenCreditBalance(typeof json.dailyBalance === "number" ? json.dailyBalance : undefined);
         setGenCreditExhausted(true);
         return;
       }
@@ -193,7 +197,7 @@ export default function OKRPage() {
       await load();
     } catch (e: unknown) {
       if (e instanceof Error && e.name === "AbortError") return;
-      toast.error(e instanceof Error ? e.message : "خطأ غير متوقع");
+      toast.error("حدث خطأ غير متوقع، يرجى المحاولة مجدداً");
     } finally {
       clearGenTimers();
       setGenerating(false);
@@ -279,9 +283,31 @@ export default function OKRPage() {
 
         {genCreditExhausted && (
           <CreditExhaustedBanner
+            remainingBalance={genCreditBalance}
             onRetry={() => { setGenCreditExhausted(false); void generate(); }}
           />
         )}
+
+        <AnimatePresence>
+          {genTimedOut && !genCreditExhausted && (
+            <motion.div
+              initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+              className="flex items-center justify-between gap-3 rounded-2xl border border-amber-500/30 bg-amber-500/[0.06] px-5 py-3.5"
+            >
+              <div className="flex items-center gap-2 text-sm text-amber-300">
+                <Clock className="w-4 h-4 shrink-0" />
+                انتهت مهلة توليد الأهداف (30 ثانية). يرجى المحاولة مجدداً.
+              </div>
+              <Button
+                size="sm" variant="outline"
+                onClick={() => { setGenTimedOut(false); void generate(); }}
+                className="border-amber-500/40 text-amber-200 hover:bg-amber-500/20 shrink-0"
+              >
+                <RefreshCw className="w-3.5 h-3.5 ml-1.5" /> أعد الإرسال
+              </Button>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {error && !loading && (
           <div className="rounded-2xl border border-rose-500/25 bg-rose-500/[0.06] p-6 text-center text-sm text-rose-300">

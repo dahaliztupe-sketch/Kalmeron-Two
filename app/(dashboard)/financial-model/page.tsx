@@ -49,7 +49,9 @@ export default function FinancialModelPage() {
   const [result, setResult] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [timedOut, setTimedOut] = useState(false);
   const [creditExhausted, setCreditExhausted] = useState(false);
+  const [creditBalance, setCreditBalance] = useState<number | undefined>(undefined);
   const [waitingMsg, setWaitingMsg] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
 
@@ -66,7 +68,9 @@ export default function FinancialModelPage() {
     setLoading(true);
     setError("");
     setResult("");
+    setTimedOut(false);
     setCreditExhausted(false);
+    setCreditBalance(undefined);
     setWaitingMsg(null);
 
     const controller = new AbortController();
@@ -80,7 +84,7 @@ export default function FinancialModelPage() {
       setTimeout(() => {
         controller.abort();
         setWaitingMsg(null);
-        setError("انتهت مهلة الطلب (30 ثانية). يرجى المحاولة مجدداً.");
+        setTimedOut(true);
       }, 30000),
     );
 
@@ -96,12 +100,16 @@ export default function FinancialModelPage() {
         }),
       });
       const data = await res.json();
-      if (res.status === 402 || data.credit_exhausted === true) { setCreditExhausted(true); return; }
-      if (!res.ok) throw new Error(data.error || "حدث خطأ");
+      if (res.status === 402 || data.credit_exhausted === true) {
+        setCreditBalance(typeof data.dailyBalance === "number" ? data.dailyBalance : undefined);
+        setCreditExhausted(true);
+        return;
+      }
+      if (!res.ok) throw new Error("فشل الطلب، يرجى المحاولة مجدداً");
       setResult(data.result);
     } catch (e: unknown) {
       if (e instanceof Error && e.name === "AbortError") return;
-      setError(e instanceof Error ? e.message : "حدث خطأ غير متوقع");
+      setError("حدث خطأ غير متوقع، يرجى المحاولة مجدداً");
     } finally {
       clearTimers();
       setLoading(false);
@@ -241,10 +249,28 @@ export default function FinancialModelPage() {
               <AnimatePresence>
                 {creditExhausted && (
                   <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-                    <CreditExhaustedBanner onRetry={() => { setCreditExhausted(false); void handleSubmit(); }} />
+                    <CreditExhaustedBanner
+                      remainingBalance={creditBalance}
+                      onRetry={() => { setCreditExhausted(false); void handleSubmit(); }}
+                    />
                   </motion.div>
                 )}
-                {error && !creditExhausted && (
+                {timedOut && !creditExhausted && (
+                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                    className="bg-amber-900/20 border border-amber-500/30 rounded-xl p-4 text-amber-300 text-sm flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-2">
+                      <AlertCircle size={14} className="shrink-0" />
+                      انتهت مهلة الطلب (30 ثانية). يرجى المحاولة مجدداً.
+                    </div>
+                    <button
+                      onClick={() => { setTimedOut(false); void handleSubmit(); }}
+                      className="flex items-center gap-1.5 text-xs bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/40 text-amber-200 px-3 py-1.5 rounded-lg transition-all shrink-0"
+                    >
+                      <RefreshCw size={11} /> أعد الإرسال
+                    </button>
+                  </motion.div>
+                )}
+                {error && !creditExhausted && !timedOut && (
                   <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                     className="bg-red-900/30 border border-red-500/30 rounded-xl p-4 text-red-300 text-sm flex items-start gap-2">
                     <AlertCircle size={14} className="mt-0.5 shrink-0" /> {error}

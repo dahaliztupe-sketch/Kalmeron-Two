@@ -1390,6 +1390,14 @@ function ChatPageContent() {
     // 30 second AbortController for council stream
     const councilController = new AbortController();
     councilAbortRef.current = councilController;
+    const councilWaitTimer = setTimeout(() => {
+      setCouncilResponses((prev) =>
+        prev.map((r) => r.streaming && r.content === ""
+          ? { ...r, content: "يعمل المجلس على إعداد إجابته، يرجى الانتظار…" }
+          : r
+        )
+      );
+    }, 5000);
     const councilTimeout = setTimeout(() => {
       councilController.abort();
       setCouncilResponses((prev) =>
@@ -1464,6 +1472,7 @@ function ChatPageContent() {
         );
       }
     } finally {
+      clearTimeout(councilWaitTimer);
       clearTimeout(councilTimeout);
       councilAbortRef.current = null;
     }
