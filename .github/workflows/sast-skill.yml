@@ -1,0 +1,334 @@
+name: SAST Security Gate (13 Categories)
+
+# Runs all 13 SAST skill categories as heuristic grep checks on API routes and auth code.
+# Maps 1-to-1 with the 13 SAST SKILL.md files in .agents/skills/sast-*/
+#
+# DETECTION STRATEGY:
+# - grep -rL = files WITHOUT the pattern (missing-auth, missing validation)
+# - grep -rn = lines WITH the dangerous pattern (positive vulnerability detection)
+#
+# For deep AI-assisted analysis, run sast-orchestrator skill locally:
+# see .agents/skills/sast-orchestrator/SKILL.md
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'app/api/**'
+      - 'src/lib/security/**'
+      - 'src/lib/auth/**'
+      - 'middleware.ts'
+      - 'app/**/route.ts'
+  push:
+    branches: [main]
+    paths:
+      - 'app/api/**'
+      - 'src/lib/security/**'
+      - 'src/lib/auth/**'
+  schedule:
+    - cron: '0 4 * * 1'   # Weekly Monday 4AM UTC
+  workflow_dispatch:
+    inputs:
+      target_paths:
+        description: 'Paths to scan (comma-separated, default: app/api)'
+        required: false
+        default: 'app/api'
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  # ── Category 1–7: Input Validation & Injection (parallel-safe) ──────────────
+  sast-injection:
+    name: "SAST [1-7] Injection & Input Validation"
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      critical: ${{ steps.scan.outputs.critical_count }}
+      high: ${{ steps.scan.outputs.high_count }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - name: Run injection/input checks (Skills 1–7)
+        id: scan
+        run: |
+          mkdir -p sast
+          REPORT=sast/injection-report.md
+          CRITICAL=0; HIGH=0
+          echo "# SAST Injection & Input Checks (Categories 1–7)" > "$REPORT"
+          echo "Generated: $(date -u +%Y-%m-%dT%H:%M:%SZ)" >> "$REPORT"
+          echo "" >> "$REPORT"
+
+          # ── 1. SQL Injection (sast-sql-injection) ────────────────────────────
+          echo "## 1. SQL Injection" >> "$REPORT"
+          SQL_HITS=$(grep -rn "db\.query\(\`.*\${" app/api/ src/lib/ 2>/dev/null \
+            | grep -v "node_modules" | grep -v ".test." || true)
+          if [ -n "$SQL_HITS" ]; then
+            echo "⚠️  HIGH: Template literal interpolation inside db.query():" >> "$REPORT"
+            echo '```' >> "$REPORT"; echo "$SQL_HITS" >> "$REPORT"; echo '```' >> "$REPORT"
+            HIGH=$((HIGH+1))
+          else
+            echo "✅ PASS: No SQL string interpolation detected" >> "$REPORT"
+          fi
+
+          # ── 2. XSS (sast-xss) ────────────────────────────────────────────────
+          echo "" >> "$REPORT"; echo "## 2. XSS (dangerouslySetInnerHTML)" >> "$REPORT"
+          XSS_HITS=$(grep -rn "dangerouslySetInnerHTML" components/ app/ 2>/dev/null \
+            | grep -v "DOMPurify" | grep -v ".test." | grep -v "node_modules" || true)
+          if [ -n "$XSS_HITS" ]; then
+            echo "⚠️  HIGH: dangerouslySetInnerHTML without DOMPurify sanitization:" >> "$REPORT"
+            echo '```' >> "$REPORT"; echo "$XSS_HITS" >> "$REPORT"; echo '```' >> "$REPORT"
+            HIGH=$((HIGH+1))
+          else
+            echo "✅ PASS: No unsafe dangerouslySetInnerHTML found" >> "$REPORT"
+          fi
+
+          # ── 3. SSRF (sast-ssrf) ──────────────────────────────────────────────
+          echo "" >> "$REPORT"; echo "## 3. SSRF (user-controlled fetch URL)" >> "$REPORT"
+          SSRF_HITS=$(grep -rn "fetch(req\.\|fetch(request\.\|fetch(body\.\|fetch(params\." \
+            app/api/ 2>/dev/null | grep -v ".test." | grep -v "node_modules" || true)
+          if [ -n "$SSRF_HITS" ]; then
+            echo "🔴 CRITICAL: fetch() with request-derived URL — potential SSRF:" >> "$REPORT"
+            echo '```' >> "$REPORT"; echo "$SSRF_HITS" >> "$REPORT"; echo '```' >> "$REPORT"
+            CRITICAL=$((CRITICAL+1))
+          else
+            echo "✅ PASS: No request-derived fetch() URLs found" >> "$REPORT"
+          fi
+
+          # ── 4. RCE (sast-rce) ────────────────────────────────────────────────
+          echo "" >> "$REPORT"; echo "## 4. RCE (eval/exec patterns)" >> "$REPORT"
+          RCE_HITS=$(grep -rn "eval(\|execSync(\|exec(\|new Function(" app/ src/ 2>/dev/null \
+            | grep -v ".test." | grep -v "node_modules" | grep -v "// safe:" \
+            | grep -v "tsconfig\|eslint\|scripts/" || true)
+          if [ -n "$RCE_HITS" ]; then
+            echo "🔴 CRITICAL: Potential RCE — review each occurrence:" >> "$REPORT"
+            echo '```' >> "$REPORT"; echo "$RCE_HITS" >> "$REPORT"; echo '```' >> "$REPORT"
+            CRITICAL=$((CRITICAL+1))
+          else
+            echo "✅ PASS: No eval/exec patterns found" >> "$REPORT"
+          fi
+
+          # ── 5. Path Traversal (sast-path-traversal) ──────────────────────────
+          echo "" >> "$REPORT"; echo "## 5. Path Traversal (dynamic file paths)" >> "$REPORT"
+          PATH_HITS=$(grep -rn "readFileSync\|writeFileSync\|readdirSync\|unlinkSync" \
+            app/api/ src/ 2>/dev/null | grep "\${" | grep -v ".test." | grep -v "node_modules" || true)
+          if [ -n "$PATH_HITS" ]; then
+            echo "⚠️  HIGH: File system ops with dynamic paths — verify path.startsWith(BASE) check:" >> "$REPORT"
+            echo '```' >> "$REPORT"; echo "$PATH_HITS" >> "$REPORT"; echo '```' >> "$REPORT"
+            HIGH=$((HIGH+1))
+          else
+            echo "✅ PASS: No unsafe dynamic file path operations" >> "$REPORT"
+          fi
+
+          # ── 6. SSTI (sast-ssti — LLM prompt injection) ───────────────────────
+          echo "" >> "$REPORT"; echo "## 6. SSTI / Prompt Injection (user input in system prompts)" >> "$REPORT"
+          SSTI_HITS=$(grep -rn "systemPrompt\|system_prompt\|SYSTEM_PROMPT" app/api/ src/ 2>/dev/null \
+            | grep "\${.*req\.\|body\.\|params\.\|searchParams\." \
+            | grep -v ".test." | grep -v "node_modules" || true)
+          if [ -n "$SSTI_HITS" ]; then
+            echo "⚠️  HIGH: User input interpolated into AI system prompt — potential prompt injection:" >> "$REPORT"
+            echo '```' >> "$REPORT"; echo "$SSTI_HITS" >> "$REPORT"; echo '```' >> "$REPORT"
+            HIGH=$((HIGH+1))
+          else
+            echo "✅ PASS: No user input directly in system prompts" >> "$REPORT"
+          fi
+
+          # ── 7. XXE (sast-xxe — XML parsing) ─────────────────────────────────
+          echo "" >> "$REPORT"; echo "## 7. XXE (XML parsing with external entities)" >> "$REPORT"
+          XXE_HITS=$(grep -rn "xml2js\|parseXml\|DOMParser\|parseString\|xmlParser" \
+            app/ src/ 2>/dev/null | grep -v ".test." | grep -v "node_modules" || true)
+          if [ -n "$XXE_HITS" ]; then
+            echo "⚠️  HIGH: XML parser found — verify external entity processing is disabled:" >> "$REPORT"
+            echo '```' >> "$REPORT"; echo "$XXE_HITS" >> "$REPORT"; echo '```' >> "$REPORT"
+            HIGH=$((HIGH+1))
+          else
+            echo "✅ PASS: No XML parsing patterns found" >> "$REPORT"
+          fi
+
+          echo "" >> "$REPORT"
+          echo "## Summary (Categories 1–7)" >> "$REPORT"
+          echo "Critical: $CRITICAL | High: $HIGH" >> "$REPORT"
+
+          echo "critical_count=$CRITICAL" >> $GITHUB_OUTPUT
+          echo "high_count=$HIGH" >> $GITHUB_OUTPUT
+
+      - name: Upload injection report
+        if: always()
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
+        with:
+          name: sast-injection-${{ github.sha }}
+          path: sast/injection-report.md
+          retention-days: 30
+
+  # ── Category 8–13: Auth, Access & Protocol (parallel-safe) ─────────────────
+  sast-auth-access:
+    name: "SAST [8-13] Auth, Access & Protocol"
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      critical: ${{ steps.scan.outputs.critical_count }}
+      high: ${{ steps.scan.outputs.high_count }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - name: Run auth/access/protocol checks (Skills 8–13)
+        id: scan
+        run: |
+          mkdir -p sast
+          REPORT=sast/auth-report.md
+          CRITICAL=0; HIGH=0
+          echo "# SAST Auth, Access & Protocol Checks (Categories 8–13)" > "$REPORT"
+          echo "Generated: $(date -u +%Y-%m-%dT%H:%M:%SZ)" >> "$REPORT"
+          echo "" >> "$REPORT"
+
+          # ── 8. Missing Auth (sast-missing-auth) ──────────────────────────────
+          # grep -rL = lists files that do NOT contain any of these auth patterns.
+          # Intentionally public routes (auth/*, webhook, health, callback) are excluded.
+          echo "## 8. Missing Auth: API routes without authentication" >> "$REPORT"
+          echo "Strategy: grep -rL lists files WITHOUT auth patterns. Public routes excluded via allowlist." >> "$REPORT"
+
+          PUBLIC_ROUTE_PATTERN="auth/\[|/health|/webhook|/callback|/public|/og"
+
+          UNAUTH=$(grep -rL \
+            "getServerSession\|verifyIdToken\|verifySessionCookie\|requireAuth\|NextAuth\|withAuth\|getSession\|adminAuth" \
+            app/api/ 2>/dev/null \
+            | grep "route\.ts$" \
+            | grep -v "\.test\." \
+            | grep -v -E "$PUBLIC_ROUTE_PATTERN" \
+            || true)
+
+          if [ -n "$UNAUTH" ]; then
+            echo "⚠️  HIGH: These route files lack detected auth patterns — verify each is intentionally public or protected by middleware:" >> "$REPORT"
+            echo '```' >> "$REPORT"; echo "$UNAUTH" >> "$REPORT"; echo '```' >> "$REPORT"
+            echo "Action: (a) confirm protected by middleware.ts, (b) add to PUBLIC_ROUTE_PATTERN allowlist, or (c) add auth check." >> "$REPORT"
+            HIGH=$((HIGH+1))
+          else
+            echo "✅ PASS: All API routes contain at least one auth check pattern" >> "$REPORT"
+          fi
+
+          # ── 9. IDOR (sast-idor) ───────────────────────────────────────────────
+          echo "" >> "$REPORT"; echo "## 9. IDOR (direct object access without userId filter)" >> "$REPORT"
+          IDOR_HITS=$(grep -rn "\.doc(\|\.collection(\|\.get(\|where(" app/api/ 2>/dev/null \
+            | grep -v "userId\|session\.user\|getServerSession\|verifyIdToken" \
+            | grep -v ".test." | grep -v "node_modules" | head -10 || true)
+          if [ -n "$IDOR_HITS" ]; then
+            echo "⚠️  HIGH: Firestore/DB reads without userId filter — potential IDOR:" >> "$REPORT"
+            echo '```' >> "$REPORT"; echo "$IDOR_HITS" >> "$REPORT"; echo '```' >> "$REPORT"
+            echo "Ensure .where('userId','==',session.user.uid) is applied before .get()" >> "$REPORT"
+            HIGH=$((HIGH+1))
+          else
+            echo "✅ PASS: No obvious IDOR patterns (Firestore reads appear userId-scoped)" >> "$REPORT"
+          fi
+
+          # ── 10. JWT (sast-jwt) ────────────────────────────────────────────────
+          echo "" >> "$REPORT"; echo "## 10. JWT: insecure jwt.decode() usage" >> "$REPORT"
+          JWT_HITS=$(grep -rn "jwt\.decode(" app/ src/ 2>/dev/null \
+            | grep -v ".test." | grep -v "node_modules" || true)
+          if [ -n "$JWT_HITS" ]; then
+            echo "⚠️  HIGH: jwt.decode() found — does NOT verify signature (use jwt.verify() instead):" >> "$REPORT"
+            echo '```' >> "$REPORT"; echo "$JWT_HITS" >> "$REPORT"; echo '```' >> "$REPORT"
+            HIGH=$((HIGH+1))
+          else
+            echo "✅ PASS: No insecure jwt.decode() usage" >> "$REPORT"
+          fi
+
+          # ── 11. Broken Auth (sast-broken-auth) ───────────────────────────────
+          echo "" >> "$REPORT"; echo "## 11. Broken Auth (hardcoded credentials / weak session)" >> "$REPORT"
+          BAUTH_HITS=$(grep -rn \
+            "password.*=.*['\"][^'\"]\{4,\}['\"]" \
+            app/ src/ 2>/dev/null \
+            | grep -v ".test." | grep -v "node_modules" \
+            | grep -v "process\.env\|NEXT_PUBLIC_\|secrets\.\|env\." || true)
+          if [ -n "$BAUTH_HITS" ]; then
+            echo "🔴 CRITICAL: Potential hardcoded credentials detected:" >> "$REPORT"
+            echo '```' >> "$REPORT"; echo "$BAUTH_HITS" >> "$REPORT"; echo '```' >> "$REPORT"
+            CRITICAL=$((CRITICAL+1))
+          else
+            echo "✅ PASS: No hardcoded credential patterns found" >> "$REPORT"
+          fi
+
+          # ── 12. File Upload (sast-file-upload) ───────────────────────────────
+          echo "" >> "$REPORT"; echo "## 12. File Upload (dangerous MIME / missing size limit)" >> "$REPORT"
+          # Check for file upload routes that don't validate MIME type
+          UPLOAD_ROUTES=$(grep -rL "mimetype\|contentType\|fileType\|allowedTypes\|application/pdf\|image/" \
+            app/api/ 2>/dev/null \
+            | grep "route\.ts$" \
+            | xargs grep -l "formData\|multipart\|file\|upload" 2>/dev/null \
+            | grep -v ".test." || true)
+          if [ -n "$UPLOAD_ROUTES" ]; then
+            echo "⚠️  HIGH: File upload routes without detected MIME validation:" >> "$REPORT"
+            echo '```' >> "$REPORT"; echo "$UPLOAD_ROUTES" >> "$REPORT"; echo '```' >> "$REPORT"
+            HIGH=$((HIGH+1))
+          else
+            echo "✅ PASS: File upload routes appear to validate MIME types" >> "$REPORT"
+          fi
+
+          # ── 13. GraphQL (sast-graphql) ────────────────────────────────────────
+          echo "" >> "$REPORT"; echo "## 13. GraphQL (introspection / depth limits)" >> "$REPORT"
+          GQL_HITS=$(grep -rn "graphql\|ApolloServer\|GraphQLSchema" app/ src/ 2>/dev/null \
+            | grep -v ".test." | grep -v "node_modules" || true)
+          if [ -n "$GQL_HITS" ]; then
+            GQL_INTROSPECT=$(echo "$GQL_HITS" | grep -v "introspection.*false\|depthLimit\|complexityLimit" || true)
+            if [ -n "$GQL_INTROSPECT" ]; then
+              echo "⚠️  HIGH: GraphQL detected without confirmed introspection disable or depth limits:" >> "$REPORT"
+              echo '```' >> "$REPORT"; echo "$GQL_HITS" >> "$REPORT"; echo '```' >> "$REPORT"
+              HIGH=$((HIGH+1))
+            else
+              echo "✅ PASS: GraphQL found with introspection/depth protections" >> "$REPORT"
+            fi
+          else
+            echo "✅ PASS (N/A): No GraphQL server detected" >> "$REPORT"
+          fi
+
+          echo "" >> "$REPORT"
+          echo "## Summary (Categories 8–13)" >> "$REPORT"
+          echo "Critical: $CRITICAL | High: $HIGH" >> "$REPORT"
+
+          echo "critical_count=$CRITICAL" >> $GITHUB_OUTPUT
+          echo "high_count=$HIGH" >> $GITHUB_OUTPUT
+
+      - name: Upload auth/access report
+        if: always()
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
+        with:
+          name: sast-auth-${{ github.sha }}
+          path: sast/auth-report.md
+          retention-days: 30
+
+  # ── Final Gate: aggregate both parallel jobs ─────────────────────────────────
+  sast-gate:
+    name: "SAST Gate (All 13 Categories)"
+    runs-on: ubuntu-latest
+    needs: [sast-injection, sast-auth-access]
+    if: always()
+    steps:
+      - name: SAST Gate Decision
+        run: |
+          INJ_CRIT=${{ needs.sast-injection.outputs.critical }}
+          INJ_HIGH=${{ needs.sast-injection.outputs.high }}
+          AUTH_CRIT=${{ needs.sast-auth-access.outputs.critical }}
+          AUTH_HIGH=${{ needs.sast-auth-access.outputs.high }}
+
+          TOTAL_CRIT=$((INJ_CRIT + AUTH_CRIT))
+          TOTAL_HIGH=$((INJ_HIGH + AUTH_HIGH))
+
+          echo "=== SAST Results (all 13 categories) ==="
+          echo "Injection checks (1-7):  Critical=$INJ_CRIT  High=$INJ_HIGH"
+          echo "Auth/access checks (8-13): Critical=$AUTH_CRIT  High=$AUTH_HIGH"
+          echo "TOTAL: Critical=$TOTAL_CRIT  High=$TOTAL_HIGH"
+          echo "========================================"
+
+          if [ "$TOTAL_CRIT" -gt 0 ]; then
+            echo "::error::SAST Gate FAILED: $TOTAL_CRIT critical finding(s) across 13 categories. Fix before merging."
+            exit 1
+          fi
+
+          if [ "$TOTAL_HIGH" -gt 3 ]; then
+            echo "::error::SAST Gate FAILED: $TOTAL_HIGH high-severity findings exceed threshold (max 3)."
+            exit 1
+          fi
+
+          if [ "$TOTAL_HIGH" -gt 0 ]; then
+            echo "::warning::$TOTAL_HIGH high-severity finding(s) across 13 categories — review before release."
+          fi
+
+          echo "✅ SAST Gate PASSED (13 categories: Critical=$TOTAL_CRIT, High=$TOTAL_HIGH)"

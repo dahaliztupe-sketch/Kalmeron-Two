@@ -1,19 +1,36 @@
 # Kalmeron AI (ai-studio-applet)
 
-## Agent Skills — 99 مهارة مثبتة (2026-05-03)
+## Agent Skills — 120+ مهارة مثبتة (آخر تحديث: 2026-05-10)
 
 ### المصادر المستخدمة
-| المستودع | المهارات المضافة |
+| المستودع | المهارات المضافة | تاريخ الإضافة |
+|---|---|---|
+| `pbakaus/impeccable` | impeccable (UI/UX mastery) | 2026-05-03 |
+| `obra/superpowers` | 14 مهارة: brainstorming, systematic-debugging, tdd, writing-plans, verification-before-completion, … | 2026-05-03 |
+| `lackeyjb/playwright-skill` | playwright-skill (browser automation & testing) | 2026-05-03 |
+| `blader/humanizer` | humanizer (Arabic/English text quality) | 2026-05-03 |
+| `ZeroZ-lab/cc-design` | cc-design (high-fidelity HTML prototyping) | 2026-05-03 |
+| `glebis/claude-skills` | deep-research, tdd, decision-toolkit, context-builder, balanced, brand-agency | 2026-05-03 |
+| `jezweb/claude-skills` | ai-image-generator, color-palette, favicon-gen, icon-set-generator, git-workflow, ux-audit, vitest, stripe-payments, mcp-builder-jw, deep-research-jw | 2026-05-03 |
+| `sickn33/antigravity-awesome-skills` | 20+ مهارة: nextjs-*, react-*, seo, landing-page-generator, i18n-localization, 3d-web-experience, performance-engineer, … | 2026-05-03 |
+| `alirezarezvani/claude-skills` | c-level-advisor (28 sub-skill), business-growth-skills, product-skills, a11y-audit, adversarial-reviewer, competitive-teardown, apple-hig-expert, … | 2026-05-03 |
+| `utkusen/sast-skills` | 13 مهارة أمنية: sql-injection, xss, rce, ssrf, idor, xxe, ssti, jwt, path-traversal, file-upload, broken-auth, missing-auth, graphql + orchestrator | 2026-05-10 |
+| `VoltAgent/awesome-agent-skills` | 5 مهارات بنية تحتية رسمية: firebase-patterns, vercel-deployment, stripe-integration, auth0-patterns, sentry-monitoring | 2026-05-10 |
+| `cytostack/openwolf` | openwolf-memory + نظام الذاكرة (.wolf/) + CLAUDE.md | 2026-05-10 |
+
+### GitHub Actions Workflows النشطة (18+)
+| الملف | الغرض |
 |---|---|
-| `pbakaus/impeccable` | impeccable (UI/UX mastery) |
-| `obra/superpowers` | 14 مهارة: brainstorming, systematic-debugging, tdd, writing-plans, verification-before-completion, … |
-| `lackeyjb/playwright-skill` | playwright-skill (browser automation & testing) |
-| `blader/humanizer` | humanizer (Arabic/English text quality) |
-| `ZeroZ-lab/cc-design` | cc-design (high-fidelity HTML prototyping) |
-| `glebis/claude-skills` | deep-research, tdd, decision-toolkit, context-builder, balanced, brand-agency |
-| `jezweb/claude-skills` | ai-image-generator, color-palette, favicon-gen, icon-set-generator, git-workflow, ux-audit, vitest, stripe-payments, mcp-builder-jw, deep-research-jw |
-| `sickn33/antigravity-awesome-skills` | 20+ مهارة: nextjs-*, react-*, seo, landing-page-generator, i18n-localization, 3d-web-experience, performance-engineer, … |
-| `alirezarezvani/claude-skills` | c-level-advisor (28 sub-skill), business-growth-skills, product-skills, a11y-audit, adversarial-reviewer, competitive-teardown, apple-hig-expert, … |
+| `ci.yml` | TypeScript + ESLint + Vitest + Next.js build |
+| `ai-code-review.yml` | PR quality gate (lint + lexicon) |
+| `eval.yml` | AI eval gate (pass rate ≥ 80%) |
+| `full-audit.yml` | تدقيق شامل يومي للتطبيق |
+| `semgrep.yml` | SAST: Semgrep (rule-based) |
+| `trivy.yml` | Dependency & secret scanning |
+| `sast-skill.yml` | **جديد** — SAST skill-based security gate (AI-assisted) |
+| `skill-validation.yml` | **جديد** — التحقق من صحة SKILL.md files |
+| `token-budget.yml` | **جديد** — مراقبة أسبوعية لميزانية الـ tokens |
+| `codeql.yml`, `gitleaks.yml`, `osv-scanner.yml`, … | مسح أمني متعدد الطبقات |
 
 ### Workflows النشطة
 - **Start application** → Next.js 16 dev server على port 5000

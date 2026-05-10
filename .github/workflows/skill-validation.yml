@@ -1,0 +1,167 @@
+name: Skill Validation
+
+# Validates all SKILL.md files added or modified in .agents/skills/.
+# Checks: frontmatter completeness, naming conventions, size limits,
+# no duplicate skill names, and registry consistency.
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.agents/skills/**'
+      - 'src/lib/agent-skills/registry.ts'
+  push:
+    branches: [main]
+    paths:
+      - '.agents/skills/**'
+      - 'src/lib/agent-skills/registry.ts'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-skills:
+    name: Validate Agent Skills
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+
+      - name: Validate SKILL.md files
+        id: validate
+        run: |
+          ERRORS=0
+          WARNINGS=0
+          SKILL_NAMES=()
+
+          echo "## Skill Validation Report" > skill-validation-report.txt
+          echo "Date: $(date -u)" >> skill-validation-report.txt
+          echo "" >> skill-validation-report.txt
+
+          # Find all SKILL.md files
+          while IFS= read -r -d '' skillfile; do
+            SKILL_DIR=$(dirname "$skillfile")
+            SKILL_NAME=$(basename "$SKILL_DIR")
+
+            # ── Check 1: File size limit (max 20KB) ────────────────────
+            SIZE=$(stat -c%s "$skillfile" 2>/dev/null || stat -f%z "$skillfile")
+            if [ "$SIZE" -gt 20480 ]; then
+              echo "::warning file=$skillfile::Skill file exceeds 20KB ($SIZE bytes). Consider splitting."
+              echo "⚠️  WARN [$SKILL_NAME]: File size ${SIZE}B exceeds 20KB limit" >> skill-validation-report.txt
+              WARNINGS=$((WARNINGS + 1))
+            fi
+
+            # ── Check 2: Has frontmatter ───────────────────────────────
+            if ! head -1 "$skillfile" | grep -q "^---"; then
+              echo "::error file=$skillfile::Missing YAML frontmatter (must start with ---)"
+              echo "❌ ERROR [$SKILL_NAME]: Missing frontmatter" >> skill-validation-report.txt
+              ERRORS=$((ERRORS + 1))
+              continue
+            fi
+
+            # ── Check 3: Has 'name' field in frontmatter ───────────────
+            if ! grep -q "^name:" "$skillfile"; then
+              echo "::error file=$skillfile::Missing 'name:' field in frontmatter"
+              echo "❌ ERROR [$SKILL_NAME]: Missing 'name' field in frontmatter" >> skill-validation-report.txt
+              ERRORS=$((ERRORS + 1))
+            else
+              FM_NAME=$(grep "^name:" "$skillfile" | head -1 | sed 's/name: *//' | tr -d '"'"'" | tr -d '\r')
+              SKILL_NAMES+=("$FM_NAME")
+            fi
+
+            # ── Check 4: Has 'description' field ──────────────────────
+            if ! grep -q "^description:" "$skillfile"; then
+              echo "::error file=$skillfile::Missing 'description:' field in frontmatter"
+              echo "❌ ERROR [$SKILL_NAME]: Missing 'description' field in frontmatter" >> skill-validation-report.txt
+              ERRORS=$((ERRORS + 1))
+            else
+              DESC=$(grep "^description:" "$skillfile" | head -1 | sed 's/description: *//')
+              DESC_LEN=${#DESC}
+              if [ "$DESC_LEN" -lt 50 ]; then
+                echo "::warning file=$skillfile::Description too short ($DESC_LEN chars). Aim for 50-200 chars."
+                echo "⚠️  WARN [$SKILL_NAME]: Description too short (${DESC_LEN} chars)" >> skill-validation-report.txt
+                WARNINGS=$((WARNINGS + 1))
+              fi
+              if [ "$DESC_LEN" -gt 500 ]; then
+                echo "::warning file=$skillfile::Description very long ($DESC_LEN chars). Keep under 500 chars."
+                echo "⚠️  WARN [$SKILL_NAME]: Description very long (${DESC_LEN} chars)" >> skill-validation-report.txt
+                WARNINGS=$((WARNINGS + 1))
+              fi
+            fi
+
+            # ── Check 5: Has actual content ────────────────────────────
+            CONTENT_LINES=$(grep -c "." "$skillfile" 2>/dev/null || echo "0")
+            if [ "$CONTENT_LINES" -lt 10 ]; then
+              echo "::warning file=$skillfile::Skill file seems too short ($CONTENT_LINES lines)"
+              echo "⚠️  WARN [$SKILL_NAME]: Only $CONTENT_LINES lines — may be incomplete" >> skill-validation-report.txt
+              WARNINGS=$((WARNINGS + 1))
+            fi
+
+            # ── Check 6: Directory name matches name field ─────────────
+            if grep -q "^name:" "$skillfile"; then
+              FM_NAME=$(grep "^name:" "$skillfile" | head -1 | sed 's/name: *//' | tr -d '"'"'" | tr -d '\r')
+              # Allow nested skills (e.g., c-level-advisor/ceo-advisor)
+              LEAF_NAME=$(basename "$SKILL_DIR")
+              if [ "$FM_NAME" != "$LEAF_NAME" ] && [ "$FM_NAME" != "$SKILL_NAME" ]; then
+                echo "::warning file=$skillfile::Name field '$FM_NAME' doesn't match directory '$LEAF_NAME'"
+                echo "⚠️  WARN [$SKILL_NAME]: name='$FM_NAME' doesn't match dir='$LEAF_NAME'" >> skill-validation-report.txt
+                WARNINGS=$((WARNINGS + 1))
+              fi
+            fi
+
+            echo "✅ OK  [$SKILL_NAME]" >> skill-validation-report.txt
+
+          done < <(find .agents/skills -name "SKILL.md" -print0)
+
+          # ── Check 7: Duplicate skill names ────────────────────────────
+          echo "" >> skill-validation-report.txt
+          echo "## Duplicate Name Check" >> skill-validation-report.txt
+          SORTED_NAMES=($(printf '%s\n' "${SKILL_NAMES[@]}" | sort))
+          PREV=""
+          for name in "${SORTED_NAMES[@]}"; do
+            if [ "$name" = "$PREV" ]; then
+              echo "::error::Duplicate skill name detected: '$name'"
+              echo "❌ ERROR: Duplicate name '$name'" >> skill-validation-report.txt
+              ERRORS=$((ERRORS + 1))
+            fi
+            PREV="$name"
+          done
+          echo "✅ No duplicate names detected" >> skill-validation-report.txt
+
+          # ── Summary ────────────────────────────────────────────────────
+          TOTAL_SKILLS=$(find .agents/skills -name "SKILL.md" | wc -l)
+          echo "" >> skill-validation-report.txt
+          echo "## Summary" >> skill-validation-report.txt
+          echo "Total SKILL.md files: $TOTAL_SKILLS" >> skill-validation-report.txt
+          echo "Errors: $ERRORS" >> skill-validation-report.txt
+          echo "Warnings: $WARNINGS" >> skill-validation-report.txt
+
+          cat skill-validation-report.txt
+
+          echo "errors=$ERRORS" >> $GITHUB_OUTPUT
+          echo "warnings=$WARNINGS" >> $GITHUB_OUTPUT
+          echo "total=$TOTAL_SKILLS" >> $GITHUB_OUTPUT
+
+      - name: Skill Validation Gate
+        run: |
+          ERRORS=${{ steps.validate.outputs.errors }}
+          TOTAL=${{ steps.validate.outputs.total }}
+          echo "Total skills: $TOTAL | Errors: $ERRORS"
+          if [ "$ERRORS" -gt 0 ]; then
+            echo "::error::Skill validation failed with $ERRORS error(s). Fix SKILL.md files before merging."
+            exit 1
+          fi
+          echo "✅ All $TOTAL SKILL.md files validated successfully"
+
+      - name: Upload validation report
+        if: always()
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
+        with:
+          name: skill-validation-report
+          path: skill-validation-report.txt
+          retention-days: 14
+          if-no-files-found: ignore

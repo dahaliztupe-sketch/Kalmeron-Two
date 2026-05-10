@@ -115,3 +115,78 @@ The skill itself tells you which.
 ## User Instructions
 
 Instructions say WHAT, not HOW. "Add X" or "Fix Y" doesn't mean skip workflows.
+
+---
+
+## Available Skills Reference (Kalmeron — 2026-05-10)
+
+**Total: ~128 skills** across categories. Key categories:
+
+### Session Start (Always Read First)
+- `openwolf-memory` — start every session with .wolf/anatomy.md + cerebrum.md
+- `token-optimization` — read anatomy first, save ~30K tokens per session
+- `memory-persistence` — how to update .wolf/ memory files and hooks
+- `CLAUDE.md` (root) — project rules, patterns, architecture
+
+### OpenWolf Hooks (.wolf/hooks/)
+- `session-start.sh` — orient in 200 tokens, surface bugs/rules
+- `session-end.sh` — capture learnings before closing
+- `pre-commit.sh` — quality gates: tsc + i18n + route conflicts
+- `learn-from-error.sh` — log a new bug to buglog.json
+- `memory-persist.sh` — append a learning to cerebrum.md
+- `scan-anatomy.sh` — refresh token estimates in anatomy.md
+
+### Security (SAST — Run before releases)
+- `sast-orchestrator` — runs all 13 SAST skill checks in parallel
+- `sast-sql-injection`, `sast-xss`, `sast-rce`, `sast-ssrf`, `sast-idor`
+- `sast-xxe`, `sast-ssti`, `sast-jwt`, `sast-path-traversal`, `sast-file-upload`
+- `sast-broken-auth`, `sast-missing-auth`, `sast-graphql`
+- CI gate: `.github/workflows/sast-skill.yml` (auto-runs on app/api/* changes)
+
+### Infrastructure (VoltAgent-style)
+- `firebase-patterns` — Firestore/Auth/Storage (Kalmeron-specific)
+- `vercel-deployment` — Next.js deployment & optimization
+- `stripe-integration` — Payment integration (Stripe + Fawry context)
+- `auth0-patterns` — Enterprise SSO alternative to Firebase Auth
+- `sentry-monitoring` — Error tracking & performance
+
+### Professional Workflow (ECC-inspired)
+- `pro-workflow` — full development loop: plan→read→edit→check→verify→commit
+- `parallelization` — batch independent operations, SAST parallel patterns
+- `verification-loops` — evidence before assertions, run commands then report
+- `token-optimization` — anatomy-first reading, targeted grep strategies
+- `memory-persistence` — .wolf/ memory system, when and what to persist
+
+### Kalmeron-Specific
+- `kalmeron-firestore-patterns` — Mandatory Firestore patterns (userId scoping, limit)
+- `kalmeron-i18n-workflow` — i18n mandatory workflow (ar.json + en.json)
+- `kalmeron-route-guide` — Route placement (dashboard vs root app/)
+- `kalmeron-agent-builder` — Adding/extending agents
+- `kalmeron-ui-polish` — UI quality for Arabic-first screens
+
+### Process & Workflow
+- `brainstorming` — before any creative/feature work
+- `systematic-debugging` — before fixing bugs
+- `verification-before-completion` — before claiming work is done
+- `writing-plans` — for multi-step tasks
+- `tdd` — test-driven development
+- `subagent-driven-development` — parallel subagent execution
+
+### C-Suite Advisory (34 skills)
+- `c-level-advisor/chief-of-staff` — orchestration entry point
+- `c-level-advisor/board-meeting` — structured multi-role deliberation
+- Individual advisors: `ceo`, `cto`, `cfo`, `coo`, `cmo`, `clo`, `chro`, `cso`
+
+### Egyptian Business Seeds (17)
+- `kalmeron-seeds/ceo-egypt`, `cto-egypt`, `cfo-egypt`, etc.
+
+### Product & Design
+- `impeccable` — UI/UX mastery
+- `frontend-design` — production-grade frontend
+- `product-skills/*` — 15 PM toolkit skills
+- `ux-audit` — walkthrough-based UX testing
+
+### Finance
+- `finance-skills/financial-analyst`
+- `finance-skills/saas-metrics-coach`
+- `finance-skills/business-investment-advisor`

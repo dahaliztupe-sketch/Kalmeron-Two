@@ -104,13 +104,14 @@ export const AGENT_SKILL_REGISTRY: Record<AgentName, string[]> = {
     'c-level-advisor/ma-playbook/SKILL.md',
   ],
 
-  // المدير المالي: نمذجة + تحليل ماليّ + استثمار + SaaS metrics
+  // المدير المالي: نمذجة + تحليل ماليّ + استثمار + SaaS metrics + stripe integration
   cfo_agent: [
     'kalmeron-seeds/cfo-egypt/SKILL.md',
     'c-level-advisor/cfo-advisor/SKILL.md',
     'finance-skills/financial-analyst/SKILL.md',
     'finance-skills/business-investment-advisor/SKILL.md',
     'finance-skills/saas-metrics-coach/SKILL.md',
+    'stripe-integration/SKILL.md',
   ],
 
   // المرشد القانوني: عقود + خصوصيّة + تشريعات مصرية
@@ -149,9 +150,12 @@ export const AGENT_SKILL_REGISTRY: Record<AgentName, string[]> = {
     'business-growth-skills/customer-success-manager/SKILL.md',
   ],
 
-  // المحادثة العامّة: خفيفة + مرشد تنفيذي عام
+  // المحادثة العامّة: خفيفة + مرشد تنفيذي عام + memory/token tools
   general_chat: [
     'c-level-advisor/chief-of-staff/SKILL.md',
+    'token-optimization/SKILL.md',
+    'memory-persistence/SKILL.md',
+    'openwolf-memory/SKILL.md',
   ],
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -186,12 +190,17 @@ export const AGENT_SKILL_REGISTRY: Record<AgentName, string[]> = {
     'c-level-advisor/competitive-intel/SKILL.md',
   ],
 
-  // مدير التقنية CTO
+  // مدير التقنية CTO — firebase + vercel + security + workflow + monitoring
   cto_agent: [
     'kalmeron-seeds/cto-egypt/SKILL.md',
     'c-level-advisor/cto-advisor/SKILL.md',
     'c-level-advisor/ciso-advisor/SKILL.md',
-    'product-skills/product-analytics/SKILL.md',
+    'firebase-patterns/SKILL.md',
+    'vercel-deployment/SKILL.md',
+    'sast-orchestrator/SKILL.md',
+    'sentry-monitoring/SKILL.md',
+    'pro-workflow/SKILL.md',
+    'verification-loops/SKILL.md',
   ],
 
   // المستشار القانوني CLO
@@ -293,9 +302,27 @@ export const AGENT_SKILL_REGISTRY: Record<AgentName, string[]> = {
   code_interpreter: [
     'product-skills/product-analytics/SKILL.md',
     'product-skills/research-summarizer/SKILL.md',
+    'parallelization/SKILL.md',
+    'verification-loops/SKILL.md',
+    'token-optimization/SKILL.md',
   ],
 
+  // امتثال أمني: جميع الـ 13 SAST skill + CISO + عقود
   compliance: [
+    'sast-orchestrator/SKILL.md',
+    'sast-missing-auth/SKILL.md',
+    'sast-idor/SKILL.md',
+    'sast-sql-injection/SKILL.md',
+    'sast-xss/SKILL.md',
+    'sast-rce/SKILL.md',
+    'sast-ssrf/SKILL.md',
+    'sast-jwt/SKILL.md',
+    'sast-path-traversal/SKILL.md',
+    'sast-file-upload/SKILL.md',
+    'sast-broken-auth/SKILL.md',
+    'sast-graphql/SKILL.md',
+    'sast-xxe/SKILL.md',
+    'sast-ssti/SKILL.md',
     'c-level-advisor/ciso-advisor/SKILL.md',
     'business-growth-skills/contract-and-proposal-writer/SKILL.md',
   ],
@@ -304,11 +331,15 @@ export const AGENT_SKILL_REGISTRY: Record<AgentName, string[]> = {
     'c-level-advisor/coo-advisor/SKILL.md',
     'c-level-advisor/company-os/SKILL.md',
     'c-level-advisor/strategic-alignment/SKILL.md',
+    'pro-workflow/SKILL.md',
   ],
 
   digital_twin: [
     'c-level-advisor/cto-advisor/SKILL.md',
     'product-skills/product-analytics/SKILL.md',
+    'sentry-monitoring/SKILL.md',
+    'firebase-patterns/SKILL.md',
+    'vercel-deployment/SKILL.md',
   ],
 };
 

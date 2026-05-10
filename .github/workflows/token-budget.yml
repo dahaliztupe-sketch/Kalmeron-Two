@@ -1,0 +1,95 @@
+name: Token Budget Monitor
+
+# Weekly check on project token estimates.
+# Warns when skill count and file estimates suggest sessions
+# could exceed the 500K token threshold — suggests optimization.
+
+on:
+  schedule:
+    - cron: '0 8 * * 0'   # كل أحد 8 صباحاً UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  token-budget:
+    name: Weekly Token Budget Report
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+
+      - name: Calculate token estimates
+        id: budget
+        run: |
+          echo "# Token Budget Weekly Report" > token-report.txt
+          echo "Date: $(date -u +%Y-%m-%d)" >> token-report.txt
+          echo "" >> token-report.txt
+
+          # Count skills
+          SKILL_COUNT=$(find .agents/skills -name "SKILL.md" | wc -l)
+          SKILL_BYTES=$(find .agents/skills -name "SKILL.md" -exec cat {} \; | wc -c)
+          SKILL_TOKENS=$((SKILL_BYTES / 4))  # ~4 bytes per token
+
+          # Count source files
+          SRC_FILES=$(find app/ components/ src/ -name "*.ts" -o -name "*.tsx" | wc -l)
+          SRC_BYTES=$(find app/ components/ src/ -name "*.ts" -o -name "*.tsx" -exec cat {} \; 2>/dev/null | wc -c)
+          SRC_TOKENS=$((SRC_BYTES / 4))
+
+          # Count message files
+          MSG_BYTES=$(cat messages/ar.json messages/en.json 2>/dev/null | wc -c || echo 0)
+          MSG_TOKENS=$((MSG_BYTES / 4))
+
+          TOTAL_TOKENS=$((SKILL_TOKENS + SRC_TOKENS + MSG_TOKENS))
+          THRESHOLD=500000
+
+          echo "## Token Estimates" >> token-report.txt
+          echo "| Category | Files | Est. Tokens |" >> token-report.txt
+          echo "|---|---|---|" >> token-report.txt
+          echo "| Skills (.agents/skills/) | $SKILL_COUNT SKILL.md | ~$SKILL_TOKENS |" >> token-report.txt
+          echo "| Source (app/ + components/ + src/) | $SRC_FILES files | ~$SRC_TOKENS |" >> token-report.txt
+          echo "| Messages (ar.json + en.json) | 2 files | ~$MSG_TOKENS |" >> token-report.txt
+          echo "| **Total** | — | **~$TOTAL_TOKENS** |" >> token-report.txt
+          echo "" >> token-report.txt
+          echo "Threshold: $THRESHOLD tokens" >> token-report.txt
+          echo "" >> token-report.txt
+
+          if [ "$TOTAL_TOKENS" -gt "$THRESHOLD" ]; then
+            echo "⚠️ WARNING: Estimated tokens ($TOTAL_TOKENS) exceed threshold ($THRESHOLD)" >> token-report.txt
+            echo "" >> token-report.txt
+            echo "## Optimization Suggestions" >> token-report.txt
+            echo "1. Use .wolf/anatomy.md at session start (saves ~20K tokens)" >> token-report.txt
+            echo "2. Read CLAUDE.md instead of exploring source (saves ~15K tokens)" >> token-report.txt
+            echo "3. Trim or archive unused SKILL.md files" >> token-report.txt
+            echo "4. Split large source files (>500 lines) into smaller modules" >> token-report.txt
+          else
+            echo "✅ Token budget within threshold ($TOTAL_TOKENS / $THRESHOLD)" >> token-report.txt
+          fi
+
+          cat token-report.txt
+
+          echo "total_tokens=$TOTAL_TOKENS" >> $GITHUB_OUTPUT
+          echo "threshold=$THRESHOLD" >> $GITHUB_OUTPUT
+
+      - name: Budget Gate
+        run: |
+          TOTAL=${{ steps.budget.outputs.total_tokens }}
+          THRESHOLD=${{ steps.budget.outputs.threshold }}
+          if [ "$TOTAL" -gt "$THRESHOLD" ]; then
+            echo "::warning::Token budget exceeded: ~$TOTAL tokens (threshold: $THRESHOLD). Review token-report artifact for optimization suggestions."
+          else
+            echo "✅ Token budget OK: ~$TOTAL / $THRESHOLD"
+          fi
+
+      - name: Upload token report
+        if: always()
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
+        with:
+          name: token-budget-report-${{ github.run_id }}
+          path: token-report.txt
+          retention-days: 30
+          if-no-files-found: ignore

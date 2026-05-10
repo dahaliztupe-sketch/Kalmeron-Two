@@ -9,14 +9,80 @@ on:
       - 'src/lib/compliance/**'
       - 'src/ai/orchestrator/**'
       - 'test/eval/**'
+      - '.agents/skills/**'
+      - 'src/lib/agent-skills/**'
   workflow_dispatch:
 
 permissions:
   contents: read
 
 jobs:
-  eval:
+  skill-registry-validation:
+    name: Skill Registry Integrity
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - name: Install
+        run: npm ci --no-audit --no-fund
+      - name: Skill Registry Integrity Check
+        run: |
+          echo "Checking registry.ts references against disk..."
+          ERRORS=0
+          SKILLS_ROOT=".agents/skills"
+
+          # Extract all skill paths from registry.ts (lines containing .md)
+          # Pattern: 'some/path/SKILL.md' or "some/path/SKILL.md"
+          REGISTERED_PATHS=$(grep -oE "'[^']+/SKILL\.md'" src/lib/agent-skills/registry.ts \
+            | tr -d "'" \
+            || grep -oE '"[^"]+/SKILL\.md"' src/lib/agent-skills/registry.ts \
+            | tr -d '"')
+
+          if [ -z "$REGISTERED_PATHS" ]; then
+            echo "::warning::No skill paths found in registry.ts — check parsing"
+            exit 0
+          fi
+
+          CHECKED=0
+          MISSING=0
+          while IFS= read -r relpath; do
+            [ -z "$relpath" ] && continue
+            FULL_PATH="$SKILLS_ROOT/$relpath"
+            CHECKED=$((CHECKED + 1))
+            if [ ! -f "$FULL_PATH" ]; then
+              echo "::error::Registry references missing SKILL.md: $FULL_PATH"
+              MISSING=$((MISSING + 1))
+              ERRORS=$((ERRORS + 1))
+            fi
+          done <<< "$REGISTERED_PATHS"
+
+          TOTAL_ON_DISK=$(find .agents/skills -name "SKILL.md" | wc -l)
+          echo "Registry entries checked: $CHECKED"
+          echo "Missing files: $MISSING"
+          echo "Total SKILL.md on disk: $TOTAL_ON_DISK"
+
+          if [ "$ERRORS" -gt 0 ]; then
+            echo "::error::$ERRORS registry reference(s) point to missing SKILL.md files. Update registry.ts or add the missing skill files."
+            exit 1
+          fi
+
+          # Minimum skill coverage check (registry should reference ≥20% of installed skills)
+          MIN_COVERAGE=$((TOTAL_ON_DISK / 5))
+          if [ "$CHECKED" -lt "$MIN_COVERAGE" ]; then
+            echo "::warning::Registry references only $CHECKED skills out of $TOTAL_ON_DISK installed. Consider expanding coverage."
+          fi
+
+          echo "✅ Skill registry integrity check passed ($CHECKED/$TOTAL_ON_DISK referenced, 0 missing)"
+
+  eval:
+    name: AI Eval Suite
+    runs-on: ubuntu-latest
+    needs: skill-registry-validation
     permissions:
       contents: read
     steps:

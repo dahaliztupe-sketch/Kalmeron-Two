@@ -1,0 +1,78 @@
+{
+  "version": "1.0",
+  "project": "kalmeron-ai",
+  "lastUpdated": "2026-05-10",
+  "bugs": [
+    {
+      "id": "BUG-001",
+      "title": "usedPct calculation inverted in UpgradeBanner",
+      "severity": "high",
+      "status": "resolved",
+      "discoveredAt": "2026-05-03",
+      "resolvedAt": "2026-05-03",
+      "file": "components/billing/UpgradeBanner.tsx",
+      "description": "dailyBalance is remaining balance, not used amount. Wrong formula showed 0% when 100% used.",
+      "wrongCode": "usedPct = (dailyBalance / dailyLimit) * 100",
+      "correctCode": "usedPct = ((dailyLimit - dailyBalance) / dailyLimit) * 100",
+      "lesson": "Always check API response shape — balance ≠ usage"
+    },
+    {
+      "id": "BUG-002",
+      "title": "setState called directly in async useEffect — ESLint error",
+      "severity": "medium",
+      "status": "resolved",
+      "discoveredAt": "2026-05-05",
+      "resolvedAt": "2026-05-05",
+      "file": "multiple",
+      "description": "react-hooks/exhaustive-deps + set-state-in-effect rule forbids direct setState in useEffect async body",
+      "correctPattern": "useEffect(() => { async function run() { setState(v); } void run(); }, [dep]);",
+      "lesson": "Wrap all setState in inner async function inside useEffect"
+    },
+    {
+      "id": "BUG-003",
+      "title": "Duplicate route conflict — (dashboard) vs app/ pages",
+      "severity": "high",
+      "status": "resolved",
+      "discoveredAt": "2026-05-03",
+      "resolvedAt": "2026-05-03",
+      "file": "app/operations/, app/market-lab/, app/investor-deck/",
+      "description": "Creating pages in app/(dashboard)/ for routes already defined in app/ causes route conflicts and double rendering",
+      "lesson": "Check app/ root before creating new (dashboard) pages. Some routes live outside the group."
+    },
+    {
+      "id": "BUG-004",
+      "title": "motion/react Variants type error with ease string",
+      "severity": "low",
+      "status": "resolved",
+      "discoveredAt": "2026-05-04",
+      "resolvedAt": "2026-05-04",
+      "file": "app/(dashboard)/weekly-report/_weekly-client.tsx",
+      "description": "ease: 'easeOut' assigned to Variants type causes TypeScript error — string not assignable to specific easing union",
+      "correctCode": "ease: 'easeOut' as const",
+      "lesson": "Use 'as const' for motion easing strings in Variants objects"
+    },
+    {
+      "id": "BUG-005",
+      "title": "@vercel/flags CVE GHSA-892p-pqrr-hxqr",
+      "severity": "critical",
+      "status": "resolved",
+      "discoveredAt": "2026-05-05",
+      "resolvedAt": "2026-05-05",
+      "file": "package.json",
+      "description": "Critical CVE in @vercel/flags — no fix available, zero imports in codebase",
+      "correctCode": "npm uninstall @vercel/flags",
+      "lesson": "Run npm audit regularly. Remove unused packages with CVEs even if no fix exists."
+    },
+    {
+      "id": "BUG-006",
+      "title": "Hardcoded Arabic text in JSX bypasses i18n",
+      "severity": "medium",
+      "status": "pattern",
+      "discoveredAt": "2026-05-04",
+      "file": "multiple dashboard pages",
+      "description": "Arabic strings embedded directly in JSX instead of using t() from useTranslations() — breaks English locale",
+      "correctPattern": "const t = useTranslations('Namespace'); return <p>{t('key')}</p>",
+      "lesson": "Always use t() — search for Arabic unicode range U+0600-U+06FF in JSX to find violations"
+    }
+  ]
+}
