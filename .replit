@@ -1,4 +1,4 @@
-modules = ["nodejs-20", "python-3.12", "web"]
+modules = ["nodejs-20", "python-3.12", "web", "bash"]
 [agent]
 expertMode = true
 stack = "GAMESTACK_JS"
@@ -164,6 +164,8 @@ EMBEDDINGS_MODEL = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
 FAWRY_BASE_URL = "https://atfawry.fawrystaging.com"
 JUDGE_MODEL = "gemini-2.5-flash-lite"
 TOKEN_METER_URL = "http://localhost:9000"
+NEXT_PUBLIC_APP_URL = "https://670d0e9a-6b94-4c9c-9a15-e4f8f91085cb-00-cwbzklfysnwo.spock.replit.dev"
+NEXT_PUBLIC_BASE_URL = "https://670d0e9a-6b94-4c9c-9a15-e4f8f91085cb-00-cwbzklfysnwo.spock.replit.dev"
 
 [deployment]
 deploymentTarget = "autoscale"
