@@ -94,3 +94,9 @@ ui-debug.log
 
 # Pre-compiled fuzz target bundles (built by scripts/build-fuzz.mjs)
 dist-fuzz/
+
+# Replit agent conversation assets (auto-generated, not source code)
+attached_assets/
+
+# Replit local state logs
+.local/state/workflow-logs/
