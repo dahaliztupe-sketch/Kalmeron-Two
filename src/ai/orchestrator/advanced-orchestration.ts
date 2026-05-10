@@ -3,7 +3,6 @@ import { StateGraph } from '@langchain/langgraph';
 // @mastra/core does not export Workflow in its current type declarations.
 // Using require() so the runtime import works; result typed as unknown to avoid `any`.
 // TODO: replace with a proper import once @mastra/core ships stable Workflow typedefs.
-// eslint-disable-next-line @typescript-eslint/no-require-imports
 const WorkflowCtor = ((require('@mastra/core') as Record<string, unknown>)['Workflow']) as new (opts: Record<string, unknown>) => unknown;
 
 // تطبيق مبادئ MARS2: وكلاء متعددون محسنون بشكل مستقل يتعاونون في بيئة بحث مشتركة

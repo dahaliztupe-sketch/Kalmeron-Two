@@ -51,6 +51,7 @@ export default function LiveWorkers() {
   const [data, setData]       = useState<StatusData | null>(null);
   const [loading, setLoading] = useState(true);
   const [lastFetch, setLastFetch] = useState<Date | null>(null);
+  const [nowMs, setNowMs] = useState<number>(() => Date.now());
 
   const fetch_ = useCallback(async () => {
     try {
@@ -66,10 +67,15 @@ export default function LiveWorkers() {
   }, []);
 
   useEffect(() => {
-    void fetch_();
-    const timer = setInterval(() => { void fetch_(); }, 30_000);
+    (async () => { await fetch_(); })();
+    const timer = setInterval(() => { (async () => { await fetch_(); })(); }, 30_000);
     return () => clearInterval(timer);
   }, [fetch_]);
+
+  useEffect(() => {
+    const t = setInterval(() => { (async () => { setNowMs(Date.now()); })(); }, 1_000);
+    return () => clearInterval(t);
+  }, []);
 
   if (loading) {
     return (
@@ -100,7 +106,7 @@ export default function LiveWorkers() {
         </h2>
         {lastFetch && (
           <span className="text-xs text-neutral-500">
-            تحدّث منذ {Math.round((Date.now() - lastFetch.getTime()) / 1000)} ث
+            تحدّث منذ {Math.round((nowMs - lastFetch.getTime()) / 1000)} ث
           </span>
         )}
       </div>

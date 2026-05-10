@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "motion/react";
 import { CheckCircle2, X } from "lucide-react";
@@ -20,20 +20,21 @@ interface Piece {
   rotate: number;
 }
 
+function makePieces(count: number): Piece[] {
+  return Array.from({ length: count }, (_, i) => ({
+    id: i,
+    x: Math.floor(Math.random() * 100),
+    color: COLORS[Math.floor(Math.random() * COLORS.length)]!,
+    size: Math.floor(Math.random() * 8) + 6,
+    delay: Math.random() * 0.8,
+    duration: Math.random() * 1.5 + 1.5,
+    rotate: Math.floor(Math.random() * 360),
+  }));
+}
+
 function usePieces(count = 60): Piece[] {
-  const ref = useRef<Piece[] | null>(null);
-  if (!ref.current) {
-    ref.current = Array.from({ length: count }, (_, i) => ({
-      id: i,
-      x: Math.floor(Math.random() * 100),
-      color: COLORS[Math.floor(Math.random() * COLORS.length)]!,
-      size: Math.floor(Math.random() * 8) + 6,
-      delay: Math.random() * 0.8,
-      duration: Math.random() * 1.5 + 1.5,
-      rotate: Math.floor(Math.random() * 360),
-    }));
-  }
-  return ref.current;
+  const [pieces] = useState<Piece[]>(() => makePieces(count));
+  return pieces;
 }
 
 export function UpgradeConfetti() {
@@ -44,17 +45,17 @@ export function UpgradeConfetti() {
   const pieces = usePieces(60);
 
   useEffect(() => {
-    if (searchParams.get("upgraded") === "true") {
+    if (searchParams.get("upgraded") !== "true") return;
+    (async () => {
       setVisible(true);
       setShowToast(true);
       const url = new URL(window.location.href);
       url.searchParams.delete("upgraded");
       router.replace(url.pathname + (url.search || ""), { scroll: false });
-      const timer = setTimeout(() => setVisible(false), 3500);
-      const toastTimer = setTimeout(() => setShowToast(false), 6000);
-      return () => { clearTimeout(timer); clearTimeout(toastTimer); };
-    }
-    return undefined;
+    })();
+    const timer = setTimeout(() => setVisible(false), 3500);
+    const toastTimer = setTimeout(() => setShowToast(false), 6000);
+    return () => { clearTimeout(timer); clearTimeout(toastTimer); };
   }, [searchParams, router]);
 
   return (

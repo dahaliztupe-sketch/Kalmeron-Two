@@ -75,8 +75,8 @@ export function WorkerHealthGuard({ pathname }: Props) {
   }, [checkHealth]);
 
   useEffect(() => {
-    void checkHealth();
-    const t = setInterval(() => void checkHealth(), POLL_INTERVAL_MS);
+    (async () => { await checkHealth(); })();
+    const t = setInterval(() => { (async () => { await checkHealth(); })(); }, POLL_INTERVAL_MS);
     return () => clearInterval(t);
   }, [checkHealth, pathname]);
 

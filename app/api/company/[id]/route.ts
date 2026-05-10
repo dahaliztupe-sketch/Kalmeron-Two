@@ -34,12 +34,13 @@ const UpdateSchema = z.object({
   logo: z.string().optional(),
 });
 
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   let userId: string;
   try { userId = await authenticate(req); } catch { return NextResponse.json({ error: 'Unauthorized' }, { status: 401 }); }
 
   try {
-    const company = await authorizeCompany(userId, params.id);
+    const company = await authorizeCompany(userId, id);
     return NextResponse.json({ company });
   } catch (err) {
     const msg = err instanceof Error ? err.message : 'error';
@@ -49,12 +50,13 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
   }
 }
 
-export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   let userId: string;
   try { userId = await authenticate(req); } catch { return NextResponse.json({ error: 'Unauthorized' }, { status: 401 }); }
 
   try {
-    await authorizeCompany(userId, params.id);
+    await authorizeCompany(userId, id);
     const body = await req.json() as unknown;
     const parsed = UpdateSchema.safeParse(body);
     if (!parsed.success) return NextResponse.json({ error: parsed.error.flatten() }, { status: 422 });
@@ -62,7 +64,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
       ...parsed.data,
       ...(parsed.data.stage ? { stage: parsed.data.stage as CompanyStage } : {}),
     } as unknown as Parameters<typeof updateCompany>[1];
-    await updateCompany(params.id, patch);
+    await updateCompany(id, patch);
     return NextResponse.json({ success: true });
   } catch (err) {
     const msg = err instanceof Error ? err.message : 'error';
@@ -72,13 +74,14 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   }
 }
 
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   let userId: string;
   try { userId = await authenticate(req); } catch { return NextResponse.json({ error: 'Unauthorized' }, { status: 401 }); }
 
   try {
-    await authorizeCompany(userId, params.id);
-    await deleteCompany(params.id);
+    await authorizeCompany(userId, id);
+    await deleteCompany(id);
     return NextResponse.json({ success: true });
   } catch (err) {
     const msg = err instanceof Error ? err.message : 'error';

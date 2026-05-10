@@ -28,11 +28,12 @@ const CreateTaskSchema = z.object({
   autoExecute: z.boolean().optional(),
 });
 
-export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
+export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   let userId: string;
   try { userId = await authenticate(req); } catch { return NextResponse.json({ error: 'Unauthorized' }, { status: 401 }); }
 
-  const company = await getCompany(params.id);
+  const company = await getCompany(id);
   if (!company) return NextResponse.json({ error: 'Company not found' }, { status: 404 });
   if (company.ownerUid !== userId) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 
@@ -44,23 +45,21 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
 
   const { autoExecute, ...taskData } = parsed.data;
 
-  // إنشاء المهمة
-  const task = await createTask(params.id, taskData);
+  const task = await createTask(id, taskData);
 
   if (autoExecute && parsed.data.involvedDepartments.length > 1) {
-    // تشغيل cross-dept router بشكل غير متزامن
-    updateTaskStatus(params.id, task.id, { status: 'in_progress' }).catch(() => null);
+    updateTaskStatus(id, task.id, { status: 'in_progress' }).catch(() => null);
 
     routeCrossDeptTask(company, task, userId)
       .then(result =>
-        updateTaskStatus(params.id, task.id, {
+        updateTaskStatus(id, task.id, {
           status: 'completed',
           output: result.synthesizedOutput,
           traceId: result.traceId,
         }),
       )
       .catch(err =>
-        updateTaskStatus(params.id, task.id, {
+        updateTaskStatus(id, task.id, {
           status: 'failed',
           output: err instanceof Error ? err.message : 'خطأ غير معروف',
         }),
@@ -72,11 +71,12 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
   return NextResponse.json({ task }, { status: 201 });
 }
 
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   let userId: string;
   try { userId = await authenticate(req); } catch { return NextResponse.json({ error: 'Unauthorized' }, { status: 401 }); }
 
-  const company = await getCompany(params.id);
+  const company = await getCompany(id);
   if (!company) return NextResponse.json({ error: 'Company not found' }, { status: 404 });
   if (company.ownerUid !== userId) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 
@@ -84,6 +84,6 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
   const status = (rawStatus ?? undefined) as (Parameters<typeof listTasks>[1] extends { status?: infer S } ? S : undefined);
   const limit = parseInt(req.nextUrl.searchParams.get('limit') ?? '20');
 
-  const tasks = await listTasks(params.id, { status, limit });
+  const tasks = await listTasks(id, { status, limit });
   return NextResponse.json({ tasks });
 }

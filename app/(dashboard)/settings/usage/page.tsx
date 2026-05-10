@@ -124,7 +124,9 @@ export default function UsagePage() {
     }
   }, [user]);
 
-  useEffect(() => { void fetchAll(); }, [fetchAll]);
+  useEffect(() => {
+    (async () => { await fetchAll(); })();
+  }, [fetchAll]);
 
   const creditsConsumedToday = wallet
     ? Math.max(0, (wallet.dailyLimit || 0) - (wallet.dailyBalance || 0))
