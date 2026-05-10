@@ -22,7 +22,7 @@ import {
   Download, ThumbsUp, ThumbsDown, Bookmark, BookmarkCheck, Star,
   Search, Users, ChevronDown, ChevronUp, ChevronRight,
   Zap, TrendingUp, Building2, Megaphone, Code, UserCheck,
-  AlertCircle, ExternalLink,
+  AlertCircle, ExternalLink, RefreshCw,
   type LucideIcon,
 } from "lucide-react";
 import { cn } from "@/src/lib/utils";
@@ -231,6 +231,8 @@ type ChatMessage = {
   timestamp?: Date;
   feedback?: "good" | "bad" | null;
   agentId?: string;
+  thinking?: boolean;
+  timedOut?: boolean;
 };
 
 type CouncilResponse = {
@@ -899,11 +901,12 @@ function ActiveAgentChip({ agent, onClear }: {
 }
 
 // ── MessageBubble ──────────────────────────────────────────────────────────
-function MessageBubble({ m, isStreaming, activePhases, onFeedback }: {
+function MessageBubble({ m, isStreaming, activePhases, onFeedback, onRetry }: {
   m: ChatMessage;
   isStreaming: boolean;
   activePhases: Phase[];
   onFeedback?: (id: string, val: "good" | "bad", comment?: string) => void;
+  onRetry?: () => void;
 }) {
   const tChat = useTranslations("Chat");
   const isUser = m.role === "user";
@@ -949,11 +952,33 @@ function MessageBubble({ m, isStreaming, activePhases, onFeedback }: {
           </div>
         ) : null}
 
-        {isStreaming && !m.content && (
-          <div className="flex items-center gap-1.5 py-1">
-            <span className="w-2 h-2 rounded-full bg-cyan-400 animate-bounce [animation-delay:0ms]" />
-            <span className="w-2 h-2 rounded-full bg-cyan-400 animate-bounce [animation-delay:150ms]" />
-            <span className="w-2 h-2 rounded-full bg-cyan-400 animate-bounce [animation-delay:300ms]" />
+        {/* Streaming or thinking indicator */}
+        {(isStreaming || m.thinking) && !m.content && !m.timedOut && (
+          <div className="flex flex-col gap-2 py-1">
+            <div className="flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-cyan-400 animate-bounce [animation-delay:0ms]" />
+              <span className="w-2 h-2 rounded-full bg-cyan-400 animate-bounce [animation-delay:150ms]" />
+              <span className="w-2 h-2 rounded-full bg-cyan-400 animate-bounce [animation-delay:300ms]" />
+            </div>
+            {m.thinking && (
+              <p className="text-[11px] text-indigo-300/60 animate-pulse">يفكّر المساعد…</p>
+            )}
+          </div>
+        )}
+
+        {/* Timeout error with retry CTA */}
+        {m.timedOut && (
+          <div className="flex flex-col gap-2 py-1" dir="rtl">
+            <p className="text-sm text-rose-300">انتهت مهلة الاستجابة (30 ثانية). يرجى المحاولة مجدداً.</p>
+            {onRetry && (
+              <button
+                onClick={onRetry}
+                className="self-start flex items-center gap-1.5 text-xs text-indigo-300 hover:text-white border border-indigo-500/30 hover:border-indigo-400/50 px-3 py-1.5 rounded-xl transition-all bg-indigo-500/5 hover:bg-indigo-500/10"
+              >
+                <RefreshCw className="w-3 h-3" />
+                أعد الإرسال
+              </button>
+            )}
           </div>
         )}
 
@@ -1040,8 +1065,10 @@ function ChatPageContent() {
   const [userStage, setUserStage] = useState<string>("default");
   const [chatWaiting, setChatWaiting] = useState<string | null>(null);
   const [chatCreditExhausted, setChatCreditExhausted] = useState(false);
+  const [chatCreditBalance, setChatCreditBalance] = useState<number | undefined>(undefined);
   const chatTimersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
   const councilAbortRef = useRef<AbortController | null>(null);
+  const isTimeoutAbortRef = useRef(false);
 
   // Slash command state
   const [slashQuery, setSlashQuery] = useState<string | null>(null);
@@ -1187,17 +1214,28 @@ function ChatPageContent() {
     setIsLoading(true);
     setActivePhases([]);
     setChatCreditExhausted(false);
+    isTimeoutAbortRef.current = false;
 
     const controller = new AbortController();
     abortRef.current = controller;
 
-    // Clear old timers then set 5s / 30s feedback timers
+    // 3s thinking indicator inside assistant bubble → 5s outer wait text → 15s updated text → 30s abort
     for (const t of chatTimersRef.current) clearTimeout(t);
     chatTimersRef.current = [];
     chatTimersRef.current.push(
+      setTimeout(() => {
+        setMessages((prev) =>
+          prev.map((m) =>
+            m.id === assistantId && m.content === "" ? { ...m, thinking: true } : m
+          )
+        );
+      }, 3000),
       setTimeout(() => setChatWaiting("المساعد يعمل على ردّك، يرجى الانتظار…"), 5000),
       setTimeout(() => setChatWaiting("يستغرق الأمر وقتاً أطول من المعتاد، يرجى الصبر…"), 15000),
-      setTimeout(() => { controller.abort(); }, 30000),
+      setTimeout(() => {
+        isTimeoutAbortRef.current = true;
+        controller.abort();
+      }, 30000),
     );
 
     try {
@@ -1224,13 +1262,11 @@ function ChatPageContent() {
         let remainingBalance: number | undefined;
         try {
           const errData = await res.clone().json();
-          if (errData.credit_exhausted === true || res.status === 402) {
-            remainingBalance = errData.remainingBalance ?? errData.balance;
-          }
+          remainingBalance = errData.remainingBalance ?? errData.balance;
         } catch {}
+        setChatCreditBalance(remainingBalance);
         setChatCreditExhausted(true);
         setMessages((prev) => prev.filter((m) => m.id !== assistantId));
-        void remainingBalance; // used in banner state
         return;
       }
       if (!res.ok || !res.body) throw new Error(`HTTP ${res.status}`);
@@ -1304,13 +1340,27 @@ function ChatPageContent() {
         }
       }
     } catch (err: unknown) {
-      if (!(err instanceof Error) || err.name !== "AbortError") {
+      const isAbort = err instanceof Error && err.name === "AbortError";
+      if (isAbort && isTimeoutAbortRef.current) {
+        // Timeout-triggered abort: show Arabic error + retry flag inside the bubble
+        setMessages((prev) =>
+          prev.map((m) =>
+            m.id === assistantId
+              ? { ...m, content: "", thinking: false, timedOut: true }
+              : m
+          )
+        );
+      } else if (!isAbort) {
         toast.error(tToasts("connectionLost"));
         setMessages((prev) =>
           prev.map((m) =>
-            m.id === assistantId ? { ...m, content: tToasts("genericError") } : m
+            m.id === assistantId ? { ...m, content: tToasts("genericError"), thinking: false } : m
           )
         );
+      }
+      // User-initiated abort (stop button): silently discard the placeholder
+      if (isAbort && !isTimeoutAbortRef.current) {
+        setMessages((prev) => prev.filter((m) => m.id !== assistantId));
       }
     } finally {
       for (const t of chatTimersRef.current) clearTimeout(t);
@@ -1319,6 +1369,7 @@ function ChatPageContent() {
       setIsLoading(false);
       setActivePhases([]);
       abortRef.current = null;
+      isTimeoutAbortRef.current = false;
     }
   };
 
@@ -1748,6 +1799,10 @@ function ChatPageContent() {
                     isStreaming={isAssistantStreaming}
                     activePhases={activePhases}
                     onFeedback={onFeedback}
+                    onRetry={m.timedOut ? () => {
+                      const lastUser = [...messages].reverse().find((x) => x.role === "user");
+                      if (lastUser) void sendMessage(lastUser.content);
+                    } : undefined}
                   />
                 );
               })
@@ -1774,6 +1829,7 @@ function ChatPageContent() {
                   className="px-2 pb-2"
                 >
                   <CreditExhaustedBanner
+                    remainingBalance={chatCreditBalance}
                     onRetry={() => setChatCreditExhausted(false)}
                   />
                 </motion.div>
