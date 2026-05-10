@@ -13,6 +13,7 @@ export const metadata: Metadata = {
  */
 import { adminDb } from '@/src/lib/firebase-admin';
 import { PublicShell } from '@/components/layout/PublicShell';
+import LiveWorkers from './_live-workers';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -102,6 +103,8 @@ export default async function StatusPage() {
             </div>
           ))}
         </div>
+
+        <LiveWorkers />
 
         <div className="mt-10 text-sm text-neutral-500 leading-7">
           <p>
