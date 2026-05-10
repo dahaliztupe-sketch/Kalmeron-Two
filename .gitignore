@@ -6,6 +6,20 @@ coverage/
 .env*
 !.env.example
 
+# OpenWolf memory — commit anatomy, cerebrum, buglog (shared team knowledge)
+# but exclude session-specific and private data
+.wolf/.session-*
+.wolf/token-ledger.json
+
+# SAST reports — generated artifacts, not source
+sast/final-report.md
+sast/*.sarif
+
+# SQLite learning databases (Pro Workflow / continual-learning)
+.copilot-memory/*.db
+*.db-shm
+*.db-wal
+
 # Environment variables
 .env*.local
 
