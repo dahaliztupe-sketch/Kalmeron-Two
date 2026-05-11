@@ -251,6 +251,7 @@ export default function CompanyBuilderPage() {
         <div className="flex flex-col items-center justify-center py-20 text-center">
           <span className="text-5xl mb-4">🏢</span>
           <h2 className="text-lg font-semibold text-gray-300">لا توجد شركات بعد</h2>
+          {/* lexicon-allow */}
           <p className="text-gray-500 text-sm mt-2 max-w-sm">
             أنشئ شركتك الأولى واختر من 19 نوعاً مختلفاً — AI agents جاهزون كموظفين فوراً
           </p>

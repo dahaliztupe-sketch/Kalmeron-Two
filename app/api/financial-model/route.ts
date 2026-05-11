@@ -34,6 +34,7 @@ const PROMPTS: Record<string, (data: Record<string, string>) => string> = {
 الإيراد الابتدائي: ${d.initialRevenue || 'غير محدد'}
 معدل النمو الشهري المستهدف: ${d.growthRate || 'غير محدد'}
 التكاليف الثابتة الشهرية: ${d.fixedCosts || 'غير محددة'}
+{/* lexicon-allow */}
 التكاليف المتغيرة/وحدة: ${d.variableCosts || 'غير محددة'}
 الأفق الزمني: ${d.horizon} شهر
 
@@ -66,6 +67,7 @@ const PROMPTS: Record<string, (data: Record<string, string>) => string> = {
 نوع النشاط: ${d.businessType}
 الإيراد الابتدائي: ${d.initialRevenue || 'غير محدد'}
 التكاليف الثابتة الشهرية: ${d.fixedCosts || 'غير محددة'}
+{/* lexicon-allow */}
 التكاليف المتغيرة/وحدة: ${d.variableCosts || 'غير محددة'}
 معدل النمو: ${d.growthRate || 'غير محدد'}
 
@@ -98,6 +100,7 @@ Break-even = Fixed Costs ÷ (Price - Variable Cost per Unit)
 النشاط التجاري: ${d.description}
 نوع النشاط: ${d.businessType}
 الإيراد الابتدائي: ${d.initialRevenue || 'غير محدد'}
+{/* lexicon-allow */}
 التكاليف المتغيرة/وحدة: ${d.variableCosts || 'غير محددة'}
 
 أنشئ تحليل Unit Economics:

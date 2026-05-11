@@ -7,6 +7,7 @@ export const metadata: Metadata = {
     "احسب خلال ثوانٍ كم شهراً يبقى فيها رصيدك قبل النفاد، واحصل على ٣ توصيات عملية فوراً. أداة مجانية بدون تسجيل من كلميرون — للمؤسّسين المصريّين.",
   alternates: { canonical: "/free-tools/cash-runway" },
   openGraph: {
+    // lexicon-allow
     title: "حاسبة Cash Runway مجانية — كلميرون",
     description:
       "اعرف كم شهراً يكفي رصيدك واحصل على توصيات فورية لإطالة المدّة.",

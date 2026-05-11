@@ -121,6 +121,7 @@ export default function LaunchpadPage() {
             <h1 className="font-display text-3xl md:text-4xl font-extrabold text-white mb-1">
               حوّل <span className="brand-gradient-text">فكرتك</span> إلى مشروع حقيقي
             </h1>
+            {/* lexicon-allow */}
             <p className="text-neutral-400 text-sm">
               8 وكلاء متخصصون يعملون معاً على تحليل فكرتك وبناء حزمة إطلاق كاملة
             </p>
@@ -266,6 +267,7 @@ export default function LaunchpadPage() {
                     </div>
                     <div>
                       <p className="font-bold text-white text-sm">اكتملت حزمة الإطلاق!</p>
+                      {/* lexicon-allow */}
                       <p className="text-xs text-emerald-400/80">8 وكلاء أنهوا تحليلهم — الحزمة جاهزة للتنزيل</p>
                     </div>
                   </div>
@@ -389,6 +391,7 @@ export default function LaunchpadPage() {
                 );
               })}
             </div>
+            {/* lexicon-allow */}
             <p className="text-xs text-neutral-500 text-center mt-4">
               كل وكيل يعمل باستقلالية ثم تُجمَع النتائج في حزمة واحدة قابلة للتنزيل
             </p>

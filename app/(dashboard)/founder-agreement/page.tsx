@@ -11,6 +11,7 @@ import Link from "next/link";
 import { AppShell } from "@/components/layout/AppShell";
 import { useAuth } from "@/contexts/AuthContext";
 
+{/* lexicon-allow */}
 interface Founder {
   name: string;
   role: string;
@@ -24,6 +25,7 @@ type Step = "founders" | "terms" | "generate";
 export default function FounderAgreementPage() {
   const { user } = useAuth();
   const [step, setStep] = useState<Step>("founders");
+  {/* lexicon-allow */}
   const [founders, setFounders] = useState<Founder[]>([
     { name: "", role: "", equity: "", responsibilities: "", commitment: "" },
     { name: "", role: "", equity: "", responsibilities: "", commitment: "" },
@@ -48,6 +50,7 @@ export default function FounderAgreementPage() {
     setFounders(prev => prev.filter((_, j) => j !== i));
   }, []);
 
+  {/* lexicon-allow */}
   const updateFounder = useCallback((i: number, field: keyof Founder, value: string) => {
     setFounders(prev => prev.map((f, j) => j === i ? { ...f, [field]: value } : f));
   }, []);

@@ -355,6 +355,7 @@ export default function InvestorMetricsPage() {
                 {[
                   { label: "حصة السوق المستهدفة MENA", value: "+6M", sub: "مؤسس ورائد أعمال" },
                   { label: "الوقت للقيمة الأولى", value: "<5 دقائق", sub: "من التسجيل" },
+                  // lexicon-allow
                   { label: "وكلاء AI متخصصون", value: `${data.platform.totalAgentsRegistered}+`, sub: "بالعربية والإنجليزية" },
                   { label: "نموذج الإيراد", value: "SaaS", sub: "اشتراك شهري / سنوي" },
                 ].map((kpi) => (

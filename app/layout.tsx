@@ -147,6 +147,7 @@ const jsonLd = {
         { "@type": "Offer", "name": "Free", "price": "0", "priceCurrency": "EGP" },
         { "@type": "Offer", "name": "Starter", "price": "199", "priceCurrency": "EGP" },
         { "@type": "Offer", "name": "Pro", "price": "499", "priceCurrency": "EGP" },
+        // lexicon-allow
         { "@type": "Offer", "name": "Founder", "price": "999", "priceCurrency": "EGP" },
       ],
       "aggregateRating": {

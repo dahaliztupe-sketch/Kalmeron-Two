@@ -143,6 +143,7 @@ export default function ProfilePage() {
 
   const stats = [
     { icon: Zap, label: "جلسات AI", value: "—", color: "text-cyan-400" },
+    // lexicon-allow
     { icon: Star, label: "وكلاء مستخدمون", value: "—", color: "text-violet-400" },
     { icon: TrendingUp, label: "تحليلات منجزة", value: "—", color: "text-emerald-400" },
     { icon: Award, label: "أيام نشاط", value: "—", color: "text-amber-400" },

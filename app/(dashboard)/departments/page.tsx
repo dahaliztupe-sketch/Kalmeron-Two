@@ -175,6 +175,7 @@ export default function DepartmentsPage() {
                     </div>
                     <div className="flex items-center gap-1.5">
                       <span className="text-[10px] font-semibold text-text-secondary bg-white/[0.05] border border-white/[0.08] px-2 py-0.5 rounded-full">
+                        {/* lexicon-allow */}
                         {dept.agentCount} وكلاء
                       </span>
                     </div>

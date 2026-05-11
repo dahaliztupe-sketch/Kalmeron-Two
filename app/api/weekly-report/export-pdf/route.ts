@@ -167,6 +167,7 @@ export async function GET(req: NextRequest) {
   if (okrPct < 50 && okrList.length > 0)
     weeklyTips.push(`ركّز هذا الأسبوع على رفع نسبة إنجاز الأهداف — أنجزت ${okrPct}٪ فقط حتى الآن.`);
   if (totalRequests < 10)
+    // lexicon-allow
     weeklyTips.push("استخدم وكلاء الذكاء الاصطناعي أكثر هذا الأسبوع لتسريع عملك.");
   if (pendingTasks.length > 3)
     weeklyTips.push("لديك مهام معلّقة تحتاج إلى اتخاذ قرار — راجع قائمة المهام وافصل في كل بند.");

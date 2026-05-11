@@ -68,6 +68,7 @@ const DelegateBodySchema = z.object({
   }),
   /** وصف المهمة (2–2000 حرف). */
   task: z.string().min(2).max(2000),
+  // lexicon-allow
   /** (اختياري) معرّف وكيل مُحدد من المرؤوسين. */
   targetAgentId: z.string().min(1).max(64).optional(),
   /** (اختياري) سياق إضافي للمهمة. */

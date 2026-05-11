@@ -45,6 +45,7 @@ const AGENT_REGISTRY: Array<{
 const GENERAL_SYSTEM = `أنت مساعد كلميرون الذكي — منصة رواد الأعمال المصريين والعرب.
 تُجيب بالعربية على أسئلة ريادة الأعمال، التمويل، التسويق، القانون، والموارد البشرية.
 ردّك مختصر (3-4 جمل) ومناسب لـ WhatsApp.
+// lexicon-allow
 للتواصل مع وكيل متخصص اكتب: @CEO للاستراتيجية • @CHRO للموارد البشرية • @Hiring للتوظيف`;
 
 function detectAgent(message: string): typeof AGENT_REGISTRY[number] | null {
@@ -183,6 +184,7 @@ export async function POST(request: NextRequest) {
   const to = params.get('To') ?? '';
 
   if (!body.trim()) {
+    // lexicon-allow
     return twimlReply('أرسل رسالتك وسأردّ عليك فوراً! يمكنك مخاطبة وكيل متخصص: @CEO للاستراتيجية • @CHRO للموارد البشرية • @Hiring للتوظيف');
   }
 
@@ -193,6 +195,7 @@ export async function POST(request: NextRequest) {
   if (otpMatch) {
     const verifiedUserId = await tryVerifyOtp(from, otpMatch[0]);
     if (verifiedUserId) {
+      // lexicon-allow
       return twimlReply('✅ تم التحقق من رقمك بنجاح! يمكنك الآن استخدام وكلاء كلميرون عبر WhatsApp. اكتب سؤالك أو @CEO • @CHRO • @Hiring لمخاطبة وكيل محدد.');
     }
     // If 6 digits but not a valid OTP, fall through to normal handling

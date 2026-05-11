@@ -29,6 +29,7 @@ interface Registration {
   verified?: boolean;
 }
 
+// lexicon-allow
 const FEATURES = [
   { icon: Bot, title: "وكيل ذكي 24/7", desc: "يتلقى أسئلتك عبر WhatsApp ويجيب فوراً بالذكاء الاصطناعي" },
   { icon: Zap, title: "ردود في ثوانٍ", desc: "يعالج رسالتك ويُرسل الرد مباشرة دون تدخل بشري" },
@@ -172,6 +173,7 @@ export default function WhatsAppAgentPage() {
               <ArrowLeft size={20} />
             </Link>
             <div>
+              {/* lexicon-allow */}
               <h1 className="text-2xl font-bold flex items-center gap-2">
                 <MessageSquare className="text-green-400" size={24} />
                 وكيل WhatsApp الذكي

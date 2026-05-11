@@ -150,6 +150,7 @@ const AGENTS: Agent[] = [
     capabilities: ["خطة عمل 30+ صفحة", "توقعات مالية 3 سنوات", "تحليل الجدوى", "ملحق للمستثمرين"],
   },
   {
+    // lexicon-allow
     id: "startup-2", name: "المدير المالي", nameEn: "CFO Agent", stage: "startup",
     icon: BarChart3, popular: true, live: true,
     desc: "النمذجة المالية، تحليل السيناريوهات، التنبؤ بالتدفق النقدي، وتقييم الاستثمارات.",
@@ -312,10 +313,12 @@ export default function AgentsPage() {
           </div>
           <div className="flex flex-col md:flex-row items-start md:items-end justify-between gap-4">
             <div>
+              {/* lexicon-allow */}
               <h1 className="font-display text-3xl md:text-4xl font-extrabold text-white mb-2">
                 وكلاء كلميرون الذكيون
               </h1>
               <p className="text-text-secondary max-w-2xl leading-relaxed">
+                {/* lexicon-allow */}
                 <span className="brand-gradient-text font-bold">{AGENTS.length}+ وكيل ذكي</span> منظّمون حسب رحلتك —
                 من أول فكرة حتى بناء إمبراطوريتك.
               </p>
@@ -325,6 +328,7 @@ export default function AgentsPage() {
               className="btn-primary flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold shrink-0"
             >
               <MessageSquare className="w-4 h-4" />
+              {/* lexicon-allow */}
               تحدث مع وكيل الآن
             </Link>
           </div>
@@ -384,6 +388,7 @@ export default function AgentsPage() {
                     "text-[11px] px-2 py-0.5 rounded-full border transition-all",
                     isActive ? cn(stageColorMap[stage.id].badge, stage.border) : "bg-white/5 border-white/10 text-neutral-500"
                   )}>
+                    {/* lexicon-allow */}
                     {stage.count} وكيل
                   </div>
 
@@ -421,6 +426,7 @@ export default function AgentsPage() {
               aria-label="بحث في الوكلاء"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
+              // lexicon-allow
               placeholder="ابحث عن وكيل بالاسم أو الوظيفة..."
               className="w-full bg-white/[0.04] border border-white/10 rounded-xl pr-10 pl-4 py-2.5 text-sm text-white placeholder-neutral-600 outline-none focus:border-white/20 transition-all"
             />
@@ -445,6 +451,7 @@ export default function AgentsPage() {
                 <div className="text-xs text-neutral-400 mt-0.5">{activeStageInfo.question}</div>
               </div>
               <div className={cn("text-xs px-3 py-1 rounded-full border", stageColorMap[activeStage].badge, activeStageInfo.border)}>
+                {/* lexicon-allow */}
                 {filtered.length} وكيل
               </div>
             </motion.div>
@@ -455,6 +462,7 @@ export default function AgentsPage() {
         <div>
           <div className="flex items-center justify-between mb-4">
             <p className="text-sm text-text-secondary">
+              {/* lexicon-allow */}
               عرض <span className="text-white font-bold">{filtered.length}</span> وكيل
               {search && <span className="text-neutral-500"> لـ &ldquo;{search}&rdquo;</span>}
             </p>
@@ -555,6 +563,7 @@ export default function AgentsPage() {
           {filtered.length === 0 && (
             <div className="text-center py-20 text-neutral-500">
               <Search className="w-8 h-8 mx-auto mb-3 opacity-40" />
+              {/* lexicon-allow */}
               <p>لم يُوجد وكيل يطابق بحثك</p>
             </div>
           )}

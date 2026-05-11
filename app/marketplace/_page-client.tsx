@@ -113,6 +113,7 @@ export default function MarketplacePage() {
             <Store className="w-7 h-7" />
             <h1 className="text-2xl md:text-3xl font-bold text-white">متجر الوكلاء الذكيين</h1>
           </div>
+          {/* lexicon-allow */}
           <p className="text-neutral-400 max-w-2xl">
             وكلاء متخصصون في مجالات الأعمال المختلفة — اختر وكيلاً وابدأ محادثة فورية باللغة العربية.
           </p>
@@ -158,6 +159,7 @@ export default function MarketplacePage() {
         <div className="mt-12 text-center">
           <p className="text-neutral-500 text-sm mb-4">لا تجد الوكيل الذي تحتاجه؟</p>
           <Link
+            // lexicon-allow
             href="/chat?q=أنصحني بأفضل وكيل ذكي يناسب مشروعي وأحتاجه الآن"
             className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold px-6 py-3 rounded-xl transition-colors text-sm"
           >

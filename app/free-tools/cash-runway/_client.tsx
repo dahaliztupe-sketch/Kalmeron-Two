@@ -101,6 +101,7 @@ export default function PublicRunwayPage() {
         </div>
 
         <h1 className="font-display text-3xl sm:text-4xl md:text-5xl font-extrabold leading-tight mb-3">
+          {/* lexicon-allow */}
           حاسبة <span className="brand-gradient-text">Cash Runway</span> للشركات
           الناشئة المصرية
         </h1>

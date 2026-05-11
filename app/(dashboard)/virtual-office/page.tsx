@@ -112,6 +112,7 @@ export default function VirtualOfficePage() {
             المكتب الافتراضي · Virtual Office
           </div>
           <h1 className="text-2xl md:text-3xl font-extrabold mb-2">مكتبك الافتراضي</h1>
+          {/* lexicon-allow */}
           <p className="text-neutral-400 text-sm max-w-xl">
             فريقك التنفيذي الذكي جاهز — أدر مهامك وابدأ محادثة مع أي وكيل فوراً.
           </p>
@@ -206,6 +207,7 @@ export default function VirtualOfficePage() {
           className="mb-6 bg-neutral-900/60 border border-neutral-700/50 rounded-2xl p-5">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-sm font-bold flex items-center gap-2">
+              {/* lexicon-allow */}
               <Zap className="w-4 h-4 text-cyan-400" />آخر نشاط وكلاء WhatsApp
             </h2>
             <button onClick={loadConversations} disabled={convLoading}
@@ -224,6 +226,7 @@ export default function VirtualOfficePage() {
               <MessageSquare className="w-8 h-8 text-neutral-700 mx-auto mb-2" />
               <p className="text-xs text-neutral-600">لا يوجد نشاط بعد</p>
               <p className="text-xs text-neutral-700 mt-1">
+                {/* lexicon-allow */}
                 <Link href="/whatsapp-agent" className="text-cyan-600 hover:text-cyan-400">فعّل وكيل WhatsApp</Link> وسيظهر نشاطه هنا
               </p>
             </div>

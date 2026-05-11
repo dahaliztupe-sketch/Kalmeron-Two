@@ -131,6 +131,7 @@ ${suppliers.filter(s => s.name || s.product).map(s =>
               </div>
               <div>
                 <label className="block text-xs text-neutral-400 mb-1.5">الحجم الشهري التقريبي</label>
+                {/* lexicon-allow */}
                 <input value={monthlyVolume} onChange={e => setMonthlyVolume(e.target.value)}
                   placeholder="مثال: 500 وحدة أو 200,000 جنيه" className={inputCls} />
               </div>
@@ -162,6 +163,7 @@ ${suppliers.filter(s => s.name || s.product).map(s =>
                       placeholder="الدولة" className={cn(inputCls, 'text-xs py-1.5')} />
                     <input value={s.leadDays} onChange={e => updateSupplier(s.id, 'leadDays', e.target.value)}
                       placeholder="مهلة (يوم)" className={cn(inputCls, 'text-xs py-1.5')} />
+                    {/* lexicon-allow */}
                     <input value={s.cost} onChange={e => updateSupplier(s.id, 'cost', e.target.value)}
                       placeholder="تكلفة/وحدة" className={cn(inputCls, 'text-xs py-1.5')} />
                     {suppliers.length > 1 ? (

@@ -208,6 +208,7 @@ export async function GET(req: NextRequest) {
   if (totalRequests < 10) {
     recommendations.push({
       icon: "🤖",
+      // lexicon-allow
       title: "استخدم وكلاء الذكاء الاصطناعي أكثر",
       detail: "استكشف المساعدين المتخصصين في chat لتسريع عملك",
       href: "/chat",

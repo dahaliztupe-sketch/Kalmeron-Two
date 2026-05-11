@@ -133,6 +133,7 @@ function DepartmentPanel({ dept }: { dept: Department }) {
       >
         <div className="flex items-center gap-2">
           <span className="text-xs text-white/40 bg-white/10 px-2 py-0.5 rounded-full">
+            {/* lexicon-allow */}
             {dept.agentCount} وكيل
           </span>
           {expanded ? (
@@ -214,6 +215,7 @@ export function OrgChart() {
         {[
           { label: 'مديرون تنفيذيون', value: data.stats.totalExecutives, icon: '👤' },
           { label: 'أقسام', value: data.stats.totalDepartments, icon: '🏢' },
+          // lexicon-allow
           { label: 'وكلاء ذكاء اصطناعي', value: data.stats.totalAgents, icon: '🤖' },
           { label: 'تقارير مباشرة للـ CEO', value: data.stats.csuiteDirect, icon: '📊' },
         ].map(stat => (

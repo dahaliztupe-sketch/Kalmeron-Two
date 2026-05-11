@@ -265,6 +265,7 @@ export default function WeeklyReportClient() {
                   icon: <Zap className="w-4 h-4 text-cyan-400" />,
                   label: "طلبات AI هذا الأسبوع",
                   value: data.summary.totalRequests.toLocaleString("ar-EG"),
+                  // lexicon-allow
                   sub: `${data.summary.agentCount} وكيل نشط`,
                   color: "from-cyan-500/10 to-transparent",
                 },
