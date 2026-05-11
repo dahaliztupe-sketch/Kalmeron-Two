@@ -101,6 +101,14 @@ localPort = 5000
 externalPort = 80
 
 [[ports]]
+localPort = 5001
+externalPort = 4200
+
+[[ports]]
+localPort = 5002
+externalPort = 5000
+
+[[ports]]
 localPort = 5009
 externalPort = 5173
 
@@ -162,6 +170,7 @@ JUDGE_MODEL = "gemini-2.5-flash-lite"
 TOKEN_METER_URL = "http://localhost:9000"
 NEXT_PUBLIC_APP_URL = "https://670d0e9a-6b94-4c9c-9a15-e4f8f91085cb-00-cwbzklfysnwo.spock.replit.dev"
 NEXT_PUBLIC_BASE_URL = "https://670d0e9a-6b94-4c9c-9a15-e4f8f91085cb-00-cwbzklfysnwo.spock.replit.dev"
+NEXT_FORCE_WASM = "1"
 
 [deployment]
 deploymentTarget = "autoscale"
