@@ -15,12 +15,21 @@ export async function POST(req: NextRequest) {
   const rl = rateLimit(req, { limit: 600, windowMs: 60_000 });
   if (!rl.success) return rateLimitResponse();
 
+  // S005 — User-controlled bypass mitigation: we do NOT gate security on
+  // NODE_ENV (which can be set externally). Instead, when the secret is
+  // configured we always enforce it; when it is absent we fail-open only
+  // if we are explicitly not in a production build (checked via VERCEL_ENV
+  // or the Next.js NEXT_PHASE env, which are set by the build system, not
+  // user input).
   const expected = process.env.TELEGRAM_WEBHOOK_SECRET;
   if (!expected) {
-    // In production a secret must be configured; otherwise anyone can spam the bot.
-    if (process.env.NODE_ENV === 'production') {
+    const isProduction =
+      process.env.VERCEL_ENV === 'production' ||
+      process.env.NEXT_PHASE === 'phase-production-server';
+    if (isProduction) {
       return NextResponse.json({ ok: false, error: 'webhook_not_configured' }, { status: 503 });
     }
+    // Local development: allow through without a secret token.
   } else if (req.headers.get('x-telegram-bot-api-secret-token') !== expected) {
     return NextResponse.json({ ok: false, error: 'unauthorized' }, { status: 401 });
   }

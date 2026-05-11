@@ -110,6 +110,9 @@ export async function auditBackend(): Promise<AuditFinding[]> {
   }
 
   // ── Python sidecars health ──
+  // S007 — Use native fetch() for health checks. Ports are hardcoded constants
+  // (not user-controlled), but we prefer fetch() over execSync(curl) to avoid
+  // any shell-injection surface and to align with the project security policy.
   const sidecars = [
     { name: 'PDF Worker', port: 8000, slug: 'pdf-worker' },
     { name: 'Egypt Calc', port: 8008, slug: 'egypt-calc' },
@@ -117,12 +120,12 @@ export async function auditBackend(): Promise<AuditFinding[]> {
     { name: 'Embeddings Worker', port: 8099, slug: 'embeddings-worker' },
   ];
 
-  for (const sidecar of sidecars) {
+  await Promise.all(sidecars.map(async (sidecar) => {
     try {
-      execSync(
-        `curl -s --max-time 3 -o /dev/null -w "%{http_code}" http://localhost:${sidecar.port}/health`,
-        { encoding: 'utf8', timeout: 5_000 }
-      );
+      const res = await fetch(`http://localhost:${sidecar.port}/health`, {
+        signal: AbortSignal.timeout(4_000),
+      });
+      if (!res.ok) throw new Error(`status ${res.status}`);
     } catch {
       findings.push({
         id: `BE-SIDECAR-${sidecar.port}`,
@@ -134,7 +137,7 @@ export async function auditBackend(): Promise<AuditFinding[]> {
         autoFixable: false,
       });
     }
-  }
+  }));
 
   // ── CORS wildcard ──
   const corsRaw = safeExec(

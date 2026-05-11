@@ -3,11 +3,27 @@ import { existsSync } from 'fs';
 import type { AuditFinding } from '../types';
 import { config } from '../config';
 
+// safeExec is kept for non-URL shell commands (rg, wc) which are safe.
 function safeExec(cmd: string): string {
   try {
     return execSync(cmd, { encoding: 'utf8', stdio: ['pipe', 'pipe', 'pipe'], timeout: 15_000 });
   } catch (err: any) {
     return err.stdout?.toString?.() ?? '';
+  }
+}
+
+// S007 — Use native fetch() instead of execSync(curl) for HTTP calls so that
+// a crafted BASE_URL cannot inject shell commands.
+async function httpStatus(url: string): Promise<string> {
+  try {
+    const res = await fetch(url, {
+      method: 'HEAD',
+      redirect: 'follow',
+      signal: AbortSignal.timeout(10_000),
+    });
+    return String(res.status);
+  } catch {
+    return '000';
   }
 }
 
@@ -29,24 +45,18 @@ export async function auditBusiness(): Promise<AuditFinding[]> {
   ];
 
   for (const page of requiredPages) {
-    try {
-      const status = execSync(
-        `curl -s -o /dev/null -w "%{http_code}" "${BASE_URL}${page.path}" --max-time 8`,
-        { encoding: 'utf8', timeout: 12_000, stdio: ['pipe', 'pipe', 'pipe'] }
-      ).trim();
-
-      if (status === '404') {
-        findings.push({
-          id: `BIZ-PAGE-${page.path.replace(/\//g, '').toUpperCase()}`,
-          category: 'business',
-          severity: page.priority === 'high' ? 'high' : 'medium',
-          title: `صفحة "${page.name}" غير موجودة (404)`,
-          description: `${page.path} تُعطي 404 — تؤثر على ثقة المستثمرين والمستخدمين`,
-          fix: `أنشئ app${page.path}/page.tsx بمحتوى مناسب`,
-          autoFixable: false,
-        });
-      }
-    } catch { /* */ }
+    const status = await httpStatus(`${BASE_URL}${page.path}`);
+    if (status === '404') {
+      findings.push({
+        id: `BIZ-PAGE-${page.path.replace(/\//g, '').toUpperCase()}`,
+        category: 'business',
+        severity: page.priority === 'high' ? 'high' : 'medium',
+        title: `صفحة "${page.name}" غير موجودة (404)`,
+        description: `${page.path} تُعطي 404 — تؤثر على ثقة المستثمرين والمستخدمين`,
+        fix: `أنشئ app${page.path}/page.tsx بمحتوى مناسب`,
+        autoFixable: false,
+      });
+    }
   }
 
   // ── Onboarding wizard ──

@@ -65,7 +65,11 @@ export async function POST(req: NextRequest) {
     actionKey = body.actionKey;
   } catch { /* ignore parse error */ }
 
-  if (!actionKey || typeof actionKey !== "string" || actionKey.length > 64) {
+  // S004 — Remote property injection mitigation: only alphanumeric + hyphens/underscores
+  // are allowed as Firestore field keys. This prevents property injection via crafted
+  // action keys such as "__proto__", "constructor", or keys with special characters.
+  const SAFE_ACTION_KEY_RE = /^[a-zA-Z0-9_-]{1,64}$/;
+  if (!actionKey || typeof actionKey !== "string" || !SAFE_ACTION_KEY_RE.test(actionKey)) {
     return NextResponse.json({ error: "invalid_action_key" }, { status: 400 });
   }
 

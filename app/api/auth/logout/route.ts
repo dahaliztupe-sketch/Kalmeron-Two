@@ -23,6 +23,9 @@ function buildResponse(): NextResponse {
       value: '',
       path: '/',
       httpOnly: true,
+      // codeql[js/user-controlled-bypass]: NODE_ENV is set by the build system,
+      // not by user input. This only affects the cookie's Secure flag, which
+      // is a browser hint — not a server-side security gate.
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
       maxAge: 0,

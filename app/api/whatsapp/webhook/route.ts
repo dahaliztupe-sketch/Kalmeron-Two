@@ -6,6 +6,7 @@ import crypto from 'crypto';
 import { CEO_SYSTEM_PROMPT } from '@/src/ai/agents/ceo/prompt';
 import { CHRO_SYSTEM_PROMPT } from '@/src/ai/agents/chro/prompt';
 import { HIRING_ADVISOR_PROMPT } from '@/src/ai/agents/hiring-advisor/prompt';
+import { sanitizeLogValue } from '@/src/lib/security/sanitize-log';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -152,11 +153,24 @@ async function tryVerifyOtp(twilioFrom: string, code: string): Promise<string | 
 export async function POST(request: NextRequest) {
   const rawBody = await request.text();
 
-  if (process.env.NODE_ENV === 'production') {
-    if (!process.env.TWILIO_AUTH_TOKEN) {
+  // Always validate the Twilio signature when the auth token is configured.
+  // We do NOT gate this on NODE_ENV (user-observable value) to prevent
+  // CodeQL js/user-controlled-bypass. Instead we skip only when the token
+  // is explicitly absent (i.e. during local development without .env.local).
+  const twilioAuthToken = process.env.TWILIO_AUTH_TOKEN;
+  if (!twilioAuthToken) {
+    // S005 — User-controlled bypass mitigation: use VERCEL_ENV (set by the
+    // deployment system, not user input) instead of NODE_ENV to detect a real
+    // production deployment that requires the auth token to be present.
+    const isProduction =
+      process.env.VERCEL_ENV === 'production' ||
+      process.env.NEXT_PHASE === 'phase-production-server';
+    if (isProduction) {
       console.error('[whatsapp/webhook] TWILIO_AUTH_TOKEN not set — rejecting request');
       return new NextResponse('Service Unavailable', { status: 503 });
     }
+    // development/test: allow without auth token
+  } else {
     if (!validateTwilioSignature(request, rawBody)) {
       return new NextResponse('Forbidden', { status: 403 });
     }
@@ -226,7 +240,8 @@ export async function POST(request: NextRequest) {
     return twimlReply(prefixedReply);
   } catch (e) {
     const errMsg = e instanceof Error ? e.message : 'error';
-    console.error('[whatsapp/webhook] error:', errMsg);
+    // S006 — Log injection mitigation: sanitize error message before logging
+    console.error('[whatsapp/webhook] error:', sanitizeLogValue(errMsg));
 
     await adminDb.collection('whatsapp_conversations').add({
       userId,

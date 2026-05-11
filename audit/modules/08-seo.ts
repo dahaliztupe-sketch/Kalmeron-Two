@@ -1,22 +1,16 @@
-import { execSync } from 'child_process';
 import type { AuditFinding } from '../types';
 import { config } from '../config';
 
-function safeFetch(url: string, opts: { extra?: string } = {}): { status: string; body: string } {
+// S007 — Indirect command injection mitigation: replaced execSync(curl …) with
+// native fetch(). The BASE_URL comes from an environment variable; using shell
+// interpolation with it could let a crafted URL escape the shell argument.
+// Native fetch() does not invoke a shell and is therefore safe.
+async function safeFetch(url: string): Promise<{ status: string; body: string }> {
   try {
-    const status = execSync(
-      `curl -s -o /dev/null -w "%{http_code}" "${url}" --max-time 8 ${opts.extra ?? ''}`,
-      { encoding: 'utf8', timeout: 12_000, stdio: ['pipe', 'pipe', 'pipe'] }
-    ).trim();
+    const res = await fetch(url, { signal: AbortSignal.timeout(10_000) });
     let body = '';
-    if (status === '200') {
-      body = execSync(`curl -s "${url}" --max-time 8 ${opts.extra ?? ''}`, {
-        encoding: 'utf8',
-        timeout: 12_000,
-        stdio: ['pipe', 'pipe', 'pipe'],
-      });
-    }
-    return { status, body };
+    if (res.ok) body = await res.text();
+    return { status: String(res.status), body };
   } catch {
     return { status: '000', body: '' };
   }
@@ -27,7 +21,7 @@ export async function auditSEO(): Promise<AuditFinding[]> {
   const BASE_URL = config.baseUrl;
 
   // ── sitemap.xml ──
-  const sitemap = safeFetch(`${BASE_URL}/sitemap.xml`);
+  const sitemap = await safeFetch(`${BASE_URL}/sitemap.xml`);
   if (sitemap.status !== '200') {
     findings.push({
       id: 'SEO-001',
@@ -42,7 +36,7 @@ export async function auditSEO(): Promise<AuditFinding[]> {
   }
 
   // ── robots.txt ──
-  const robots = safeFetch(`${BASE_URL}/robots.txt`);
+  const robots = await safeFetch(`${BASE_URL}/robots.txt`);
   if (robots.status !== '200') {
     findings.push({
       id: 'SEO-002',
@@ -66,7 +60,7 @@ export async function auditSEO(): Promise<AuditFinding[]> {
   }
 
   // ── Open Graph + Twitter + hreflang ──
-  const home = safeFetch(`${BASE_URL}/`);
+  const home = await safeFetch(`${BASE_URL}/`);
   if (home.status === '200') {
     const ogChecks = [
       { tag: 'og:title', id: 'SEO-OG-TITLE', sev: 'medium' as const },

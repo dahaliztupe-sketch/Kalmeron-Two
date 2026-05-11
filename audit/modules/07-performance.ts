@@ -1,4 +1,4 @@
-import { execSync } from 'child_process';
+import { spawnSync } from 'child_process';
 import { readFileSync, existsSync } from 'fs';
 import type { AuditFinding } from '../types';
 import { config } from '../config';
@@ -21,12 +21,27 @@ export async function auditPerformance(): Promise<AuditFinding[]> {
   }
 
   // ── Lighthouse (إذا كان متاحاً) ──
+  // S007 — Indirect command injection mitigation: replaced execSync with
+  // spawnSync using a fixed argument array. BASE_URL is passed as a separate
+  // argument — never interpolated into a shell string — so it cannot break
+  // out of the command even if it contains shell meta-characters.
   try {
-    const lighthouseResult = execSync(
-      `npx --no-install lighthouse ${BASE_URL} --only-categories=performance,accessibility,seo,best-practices --output=json --quiet --chrome-flags="--headless --no-sandbox" 2>/dev/null`,
-      { encoding: 'utf8', timeout: config.lighthouseTimeout, stdio: ['pipe', 'pipe', 'pipe'] }
+    const result = spawnSync(
+      'npx',
+      [
+        '--no-install', 'lighthouse', BASE_URL,
+        '--only-categories=performance,accessibility,seo,best-practices',
+        '--output=json', '--quiet',
+        '--chrome-flags=--headless --no-sandbox',
+      ],
+      {
+        encoding: 'utf8',
+        timeout: config.lighthouseTimeout,
+        stdio: ['pipe', 'pipe', 'pipe'],
+      }
     );
-    const report = JSON.parse(lighthouseResult);
+    if (result.status !== 0 || !result.stdout) throw new Error('lighthouse failed');
+    const report = JSON.parse(result.stdout);
     const categories = report.categories;
 
     const checks = [

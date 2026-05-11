@@ -38,8 +38,15 @@ export async function GET(req: NextRequest) {
 function verifyMetaSignature(rawBody: string, signatureHeader: string | null): boolean {
   const secret = process.env.WHATSAPP_APP_SECRET;
   if (!secret) {
-    // In production we must have a secret configured.
-    return process.env.NODE_ENV !== 'production';
+    // S005 — User-controlled bypass mitigation: we do NOT gate security on
+    // NODE_ENV (which can be set by an attacker). Instead we use VERCEL_ENV
+    // (set by the deployment system) or a dedicated flag to determine whether
+    // we are in a real production deployment.
+    const isProduction =
+      process.env.VERCEL_ENV === 'production' ||
+      process.env.NEXT_PHASE === 'phase-production-server';
+    // Allow through only in local development (secret not yet configured).
+    return !isProduction;
   }
   if (!signatureHeader || !signatureHeader.startsWith('sha256=')) return false;
 

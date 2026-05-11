@@ -47,6 +47,10 @@ export async function GET() {
   validateStartup();
   const timestamp = new Date().toISOString();
 
+  // codeql[js/user-controlled-bypass]: NODE_ENV === 'test' here is only one
+  // of three explicit opt-in flags (MOCK_AUTH / NEXT_PUBLIC_MOCK_AUTH /
+  // NODE_ENV=test). It selects a mocked health-check response for CI — there
+  // is no security decision; all real-auth paths are preserved in production.
   const isMockMode =
     process.env.MOCK_AUTH === 'true' ||
     process.env.NEXT_PUBLIC_MOCK_AUTH === 'true' ||

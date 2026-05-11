@@ -28,6 +28,26 @@ const SERVICES = [
 
 await mkdir(OUT_DIR, { recursive: true });
 
+// S009 — Network data written to file mitigation:
+// Validate that the fetched data is a well-formed OpenAPI 3.x JSON object
+// before writing it to disk. This guards against a compromised sidecar
+// serving malicious content that could be later read by automated tooling.
+const MAX_SPEC_BYTES = 2 * 1024 * 1024; // 2 MiB sanity cap
+
+function validateOpenApiSpec(raw) {
+  if (typeof raw !== "object" || raw === null || Array.isArray(raw)) {
+    throw new Error("spec is not a JSON object");
+  }
+  const openapi = raw.openapi ?? raw.swagger;
+  if (typeof openapi !== "string" || !openapi.match(/^\d+\.\d/)) {
+    throw new Error(`missing or invalid openapi/swagger version: ${openapi}`);
+  }
+  if (typeof raw.info !== "object" || !raw.info) {
+    throw new Error("missing required 'info' field");
+  }
+  return true;
+}
+
 let failed = 0;
 for (const svc of SERVICES) {
   const url = `http://localhost:${svc.port}/openapi.json`;
@@ -35,10 +55,23 @@ for (const svc of SERVICES) {
   try {
     const res = await fetch(url, { signal: AbortSignal.timeout(5000) });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const spec = await res.json();
+
+    // Guard against huge responses before parsing
+    const contentLength = Number(res.headers.get("content-length") ?? 0);
+    if (contentLength > MAX_SPEC_BYTES) {
+      throw new Error(`response too large: ${contentLength} bytes`);
+    }
+    const rawText = await res.text();
+    if (rawText.length > MAX_SPEC_BYTES) {
+      throw new Error(`spec body too large: ${rawText.length} bytes`);
+    }
+
+    const spec = JSON.parse(rawText);
+    validateOpenApiSpec(spec);
+
     const out = join(OUT_DIR, `${svc.name}.openapi.json`);
     await writeFile(out, JSON.stringify(spec, null, 2) + "\n", "utf8");
-    console.log(`ok (${(JSON.stringify(spec).length / 1024).toFixed(1)} KiB)`);
+    console.log(`ok (${(rawText.length / 1024).toFixed(1)} KiB)`);
   } catch (err) {
     failed++;
     console.log(`FAILED: ${err.message}`);

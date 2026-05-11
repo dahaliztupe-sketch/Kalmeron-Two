@@ -10,6 +10,9 @@ import { getAllCitySlugs } from '@/src/lib/seo/cities';
 
 // Always use the production domain in sitemap — never the Replit dev URL
 const rawUrl = process.env.NEXT_PUBLIC_APP_URL;
+// codeql[js/incomplete-url-substring-sanitization]: environment detection only,
+// not a security trust check. Substitutes the dev URL with the canonical
+// production domain for the sitemap — no access-control decision is made here.
 const siteUrl = (!rawUrl || rawUrl.includes('replit.dev') || rawUrl.includes('localhost'))
   ? 'https://kalmeron.app'
   : rawUrl;

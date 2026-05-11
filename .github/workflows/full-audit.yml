@@ -9,10 +9,20 @@ on:
     - cron: '0 6 * * *'   # يومياً 6 صباحاً UTC
   workflow_dispatch:
 
+# S008 — Least-privilege permissions.
+# pull-requests: write is needed for the "comment on PR" step only.
+# All other steps need contents: read.
+permissions:
+  contents: read
+  pull-requests: write
+
 jobs:
   audit:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    permissions:
+      contents: read
+      pull-requests: write
 
     steps:
       - uses: actions/checkout@v4

@@ -28,6 +28,17 @@ export function sanitizeInput(input: string): string {
   if (!input) return '';
   let out = input;
 
+  // S003 — Incomplete multi-character sanitization mitigation:
+  // Strip Unicode invisible / direction-override characters that are frequently
+  // used in prompt-injection attacks to hide malicious instructions from
+  // human reviewers while still being processed by the LLM.
+  // Covers: zero-width space/ZWNJ/ZWJ, BOM, bidirectional overrides,
+  // soft hyphen, word joiner, and related invisible formatting characters.
+  out = out.replace(
+    /[\u200B-\u200F\u202A-\u202E\u2060-\u2064\u206A-\u206F\uFEFF\uFFF9-\uFFFB]/g,
+    ''
+  );
+
   // وسوم تعليمات شائعة
   out = out.replace(/\[(?:SYSTEM|INST|AGENT|TOOL|ASSISTANT)\]/gi, '');
   out = out.replace(/\[\/(?:SYSTEM|INST|AGENT|TOOL|ASSISTANT)\]/gi, '');

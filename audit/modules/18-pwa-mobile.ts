@@ -3,24 +3,20 @@ import { readFileSync, existsSync } from 'fs';
 import type { AuditFinding } from '../types';
 import { config } from '../config';
 
-function safeFetch(url: string): { status: string; body: string } {
+// S007 — Indirect command injection mitigation: replaced execSync(curl …) with
+// native fetch() so that a crafted baseUrl cannot inject shell commands.
+async function safeFetch(url: string): Promise<{ status: string; body: string }> {
   try {
-    const status = execSync(
-      `curl -s -o /dev/null -w "%{http_code}" "${url}" --max-time 8`,
-      { encoding: 'utf8', timeout: 12_000, stdio: ['pipe', 'pipe', 'pipe'] }
-    ).trim();
+    const res = await fetch(url, { signal: AbortSignal.timeout(10_000) });
     let body = '';
-    if (status === '200') {
-      body = execSync(`curl -s "${url}" --max-time 8`, {
-        encoding: 'utf8', timeout: 12_000, stdio: ['pipe', 'pipe', 'pipe'],
-      });
-    }
-    return { status, body };
+    if (res.ok) body = await res.text();
+    return { status: String(res.status), body };
   } catch {
     return { status: '000', body: '' };
   }
 }
 
+// safeExec is kept for non-URL shell commands (rg, wc) which are safe.
 function safeExec(cmd: string): string {
   try {
     return execSync(cmd, { encoding: 'utf8', stdio: ['pipe', 'pipe', 'pipe'], timeout: 30_000 });
@@ -126,7 +122,7 @@ export async function auditPwaMobile(): Promise<AuditFinding[]> {
 
   // ── Apple meta tags ──
   if (config.baseUrl) {
-    const home = safeFetch(`${config.baseUrl}/`);
+    const home = await safeFetch(`${config.baseUrl}/`);
     if (home.status === '200') {
       if (!/apple-touch-icon|apple-mobile-web-app/.test(home.body)) {
         findings.push({

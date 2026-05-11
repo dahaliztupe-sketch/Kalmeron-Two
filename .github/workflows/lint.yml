@@ -6,10 +6,16 @@ on:
   pull_request:
     branches: ["**"]
 
+# S008 — Least-privilege permissions: ESLint only needs code read access.
+permissions:
+  contents: read
+
 jobs:
   lint:
     name: ESLint
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v4
 

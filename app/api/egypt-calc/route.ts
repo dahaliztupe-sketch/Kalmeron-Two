@@ -10,6 +10,26 @@ export const dynamic = "force-dynamic";
 
 const EGYPT_CALC_URL = process.env.EGYPT_CALC_URL ?? "http://localhost:8008";
 
+// S001 — SSRF mitigation: allowlist of hosts that the calc proxy may contact.
+// Only loopback addresses are permitted — the sidecar runs locally.
+const ALLOWED_CALC_HOSTS = new Set(["localhost", "127.0.0.1"]);
+
+/**
+ * Build and validate the target URL before fetching.
+ * Throws if the resolved host is not in the allowlist, preventing SSRF
+ * even if EGYPT_CALC_URL is tampered via the environment.
+ */
+function buildCalcUrl(endpoint: string): URL {
+  const base = EGYPT_CALC_URL.endsWith("/")
+    ? EGYPT_CALC_URL.slice(0, -1)
+    : EGYPT_CALC_URL;
+  const url = new URL(`${base}/${endpoint}`);
+  if (!ALLOWED_CALC_HOSTS.has(url.hostname)) {
+    throw new Error(`Disallowed host for calc proxy: ${url.hostname}`);
+  }
+  return url;
+}
+
 const ALLOWED_ENDPOINTS = new Set([
   "income-tax",
   "social-insurance",
@@ -41,7 +61,8 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const res = await fetch(`${EGYPT_CALC_URL}/${endpoint}`, {
+    const targetUrl = buildCalcUrl(endpoint);
+    const res = await fetch(targetUrl.toString(), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(params),
@@ -74,9 +95,8 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const res = await fetch(`${EGYPT_CALC_URL}/${endpoint}`, {
-      method: "GET",
-    });
+    const targetUrl = buildCalcUrl(endpoint);
+    const res = await fetch(targetUrl.toString(), { method: "GET" });
     const data = await res.json();
     return NextResponse.json(data, { status: res.ok ? 200 : res.status });
   } catch {

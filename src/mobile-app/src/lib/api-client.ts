@@ -65,6 +65,10 @@ async function getAuthToken(): Promise<string | null> {
  * certificate pinning against the app's hardcoded public-key hashes.
  */
 export async function apiFetch(path: string, opts: ApiOptions = {}): Promise<Response> {
+  // codeql[js/incomplete-url-substring-sanitization]: this is a URL-construction
+  // helper, not a security trust check. We check whether the caller already
+  // provided a full URL so we can skip prepending API_BASE — there is no
+  // access-control or sanitization decision made on the result.
   const url = path.startsWith('http') ? path : `${API_BASE}${path}`;
 
   const headers: Record<string, string> = {
