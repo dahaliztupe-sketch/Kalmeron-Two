@@ -169,8 +169,8 @@ FAWRY_BASE_URL = "https://atfawry.fawrystaging.com"
 JUDGE_MODEL = "gemini-2.5-flash-lite"
 TOKEN_METER_URL = "http://localhost:9000"
 NEXT_FORCE_WASM = "1"
-NEXT_PUBLIC_APP_URL = "https://89ac6265-3f2d-4a0b-9de1-4133fbd0988d-00-168302fzumzvz.worf.replit.dev"
-NEXT_PUBLIC_BASE_URL = "https://89ac6265-3f2d-4a0b-9de1-4133fbd0988d-00-168302fzumzvz.worf.replit.dev"
+NEXT_PUBLIC_APP_URL = "https://e362a23d-1261-41ff-ae2e-25043f5a99bf-00-3f6vyomm6ntz5.kirk.replit.dev"
+NEXT_PUBLIC_BASE_URL = "https://e362a23d-1261-41ff-ae2e-25043f5a99bf-00-3f6vyomm6ntz5.kirk.replit.dev"
 
 [deployment]
 deploymentTarget = "autoscale"
