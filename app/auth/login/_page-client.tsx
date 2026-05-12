@@ -81,9 +81,9 @@ export default function LoginPage() {
       </Link>
 
       <motion.div
-        initial={reduce ? { opacity: 0 } : { opacity: 0, y: 20 }}
-        animate={reduce ? { opacity: 1 } : { opacity: 1, y: 0 }}
-        transition={{ duration: reduce ? 0.2 : 0.5 }}
+        initial={reduce ? false : { opacity: 1, y: 20 }}
+        animate={reduce ? false : { opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
         className="w-full max-w-md z-10 py-6"
       >
         <div className="glass-panel rounded-3xl sm:rounded-[2.5rem] p-6 sm:p-8 md:p-10 shadow-2xl text-center space-y-6 sm:space-y-7">
