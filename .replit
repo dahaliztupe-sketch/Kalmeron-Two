@@ -174,7 +174,7 @@ NEXT_PUBLIC_BASE_URL = "https://e362a23d-1261-41ff-ae2e-25043f5a99bf-00-3f6vyomm
 
 [deployment]
 deploymentTarget = "autoscale"
-run = ["node", "./dist/index.cjs"]
+run = ["npm", "run", "start"]
 build = ["npm", "run", "build"]
 
 [postMerge]
