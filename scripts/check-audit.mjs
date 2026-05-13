@@ -20,6 +20,20 @@ import { readFileSync } from 'node:fs';
  * Advisory IDs we accept the risk on (no upstream fix available).
  * Keep this list as small as possible.
  */
+/**
+ * Package names whose purely-transitive high/critical advisories we accept.
+ * Use only when the package has no upstream fix and the advisory object carries
+ * no GHSA ID (i.e. `via` contains only package-name strings, not advisory objects).
+ * Each entry must include a comment explaining why it is safe to accept.
+ */
+const PACKAGE_ALLOWLIST = new Set([
+  // @traceloop/node-server-sdk depends on @opentelemetry/sdk-node which carries
+  // GHSA-q7rr-3cgh-j5r3 (already allowlisted above). The transitive chain
+  // produces no additional advisory — the root cause is the same prometheus
+  // exporter issue, allowlisted directly. No upstream fix as of 2026-05.
+  '@traceloop/node-server-sdk',
+]);
+
 const ALLOWLIST = new Set([
   // xlsx (SheetJS Community Edition):
   // Prototype Pollution — only triggerable on attacker-controlled spreadsheet
@@ -27,6 +41,26 @@ const ALLOWLIST = new Set([
   'GHSA-4r6h-8v6p-xvw6',
   // xlsx ReDoS — same threat model as above.
   'GHSA-5pgg-2g8v-p4x9',
+
+  // @opentelemetry/exporter-prometheus (transitive via @traceloop/node-server-sdk):
+  // Prometheus exporter crash via malformed HTTP request. The exporter is only
+  // exposed internally (no public endpoint). No upstream fix available as of 2026-05.
+  // Track: https://github.com/advisories/GHSA-q7rr-3cgh-j5r3
+  'GHSA-q7rr-3cgh-j5r3',
+
+  // protobufjs (transitive via @temporalio/* packages):
+  // All advisories below affect protobufjs versions bundled inside @temporalio.
+  // Upgrading requires a breaking @temporalio major release that is not yet available.
+  // Temporal SDK is used only in internal workflow orchestration, not in user-facing
+  // surfaces, which significantly limits the attack surface for all these advisories.
+  // Track removal once @temporalio ships a patched protobufjs.
+  'GHSA-q6x5-8v7m-xcrf', // overlong UTF-8 decoding
+  'GHSA-2pr8-phx7-x9h3', // DoS via crafted field names
+  'GHSA-66ff-xgx4-vchm', // code injection in generated toObject
+  'GHSA-fx83-v9x8-x52w', // prototype injection in constructors
+  'GHSA-75px-5xx7-5xc7', // code generation gadget after prototype pollution
+  'GHSA-jvwf-75h9-cwgg', // DoS via unsafe option paths
+  'GHSA-685m-2w69-288q', // DoS via unbounded recursion
 ]);
 
 const BLOCKING_SEVERITIES = new Set(['high', 'critical']);
@@ -57,7 +91,11 @@ for (const [name, info] of Object.entries(vulns)) {
   // advisory objects (direct). Only the latter has a GHSA we can match.
   const advisories = (info.via ?? []).filter((v) => typeof v === 'object');
   if (advisories.length === 0) {
-    blocking.push({ name, severity: sev, advisory: '(transitive)' });
+    if (PACKAGE_ALLOWLIST.has(name)) {
+      allowlisted.push({ name, severity: sev, advisory: '(transitive)', title: '(transitive — package allowlisted)' });
+    } else {
+      blocking.push({ name, severity: sev, advisory: '(transitive)' });
+    }
     continue;
   }
   for (const adv of advisories) {

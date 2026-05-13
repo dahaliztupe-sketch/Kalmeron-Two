@@ -33,10 +33,11 @@ describe('omnichannel gateway', () => {
 
   it('refuses email when key is missing', async () => {
     delete process.env.SENDGRID_API_KEY;
+    delete process.env.RESEND_API_KEY;
     const { sendMessage } = await import('@/src/lib/integrations/omnichannel');
     const res = await sendMessage('email', { text: 'hi', subject: 's' }, 'a@b.c');
     expect(res.ok).toBe(false);
-    expect(res.error).toMatch(/SendGrid/);
+    expect(res.error).toMatch(/RESEND_API_KEY|SENDGRID_API_KEY/);
   });
 
   it('returns inbound message structure with null userId when unknown', async () => {

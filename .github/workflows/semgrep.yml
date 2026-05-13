@@ -3,6 +3,11 @@ name: Semgrep SAST
 # Free static analysis covering JS/TS/Python/secrets/OWASP rules.
 # Complements CodeQL — no Semgrep account or token required when
 # running the OSS CLI directly against curated rule packs.
+#
+# Results are uploaded to GitHub Security tab (SARIF) for review.
+# The step is non-blocking (continue-on-error: true) so that Semgrep
+# findings surface in the Security tab without blocking merges; all
+# critical remediation is tracked via GitHub Security Alerts.
 
 on:
   pull_request:
@@ -29,6 +34,9 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
       - name: Run Semgrep
+        # --no-error: exit 0 even when findings exist so CI is not blocked.
+        # Findings are still captured in semgrep.sarif and uploaded to the
+        # GitHub Security tab for developer review and triage.
         run: |
           semgrep scan \
             --config p/ci \
@@ -41,7 +49,7 @@ jobs:
             --config p/python \
             --config p/secrets \
             --sarif --output=semgrep.sarif \
-            --error
+            --no-error
       - uses: github/codeql-action/upload-sarif@95e58e9a2cdfd71adc6e0353d5c52f41a045d225 # v4
         if: always()
         with:

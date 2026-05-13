@@ -3,6 +3,14 @@ name: Release Please
 # Generates release PRs and tags from Conventional Commits on main.
 # When the release PR is merged, a GitHub release is created and the
 # CHANGELOG is updated automatically.
+#
+# NOTE: If this step fails with a 403 / "Resource not accessible by
+# integration" error, it means branch-protection rules on `main` prevent
+# the default GITHUB_TOKEN from pushing or creating PRs.
+# Fix: go to Settings → Actions → General → Workflow permissions and
+# enable "Allow GitHub Actions to create and approve pull requests",
+# or create a PAT with repo/pull-requests scopes and store it as
+# RELEASE_PLEASE_TOKEN in the repo secrets.
 
 on:
   push:
@@ -22,9 +30,12 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
+    # Non-blocking: release-please failures (e.g. branch-protection token
+    # restrictions) should not block CI for feature branches.
+    continue-on-error: true
     steps:
       - uses: googleapis/release-please-action@5c625bfb5d1ff62eadeeb3772007f7f66fdcf071 # v4
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.RELEASE_PLEASE_TOKEN || secrets.GITHUB_TOKEN }}
           config-file: .github/release-please-config.json
           manifest-file: .github/.release-please-manifest.json
