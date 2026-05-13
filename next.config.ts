@@ -161,6 +161,31 @@ const nextConfig: NextConfig = {
     // ملاحظة: cacheComponents معطّل عمداً — يتعارض مع `export const runtime = 'nodejs'`
     // المستخدم في عدة مسارات API تحتاج Node runtime (Firebase Admin SDK، WebSockets).
     // لتفعيله مستقبلاً يجب نقل تلك المسارات إلى edge أو إزالة إعلان runtime.
+
+    // ── Output File Tracing ───────────────────────────────────────────────
+    // نمنع @vercel/nft من فحص مجلدات الوكلاء والأدوات الداخلية لأن:
+    //   1. هذه الملفات مسارات نسبية تُحسب ديناميكياً في runtime-loader.ts
+    //      (path.join(SKILLS_ROOT, relPath)) ولا يستطيع NFT تتبّعها بشكل صحيح.
+    //   2. runtime-loader.ts يتعامل بأمان مع الملفات الغائبة عبر existsSync.
+    //   3. محاولة NFT تتبّع المسارات تُنتج أخطاء ENOENT لملفات غير موجودة
+    //      (مثال: engineering-team/a11y-audit/SKILL.md) وتوقف النشر.
+    // الـ skills ستكون متاحة في Vercel عبر outputFileTracingIncludes أدناه.
+    outputFileTracingExcludes: {
+      '*': [
+        '.agents/**',
+        '.local/**',
+        '.wolf/**',
+        'scripts/**',
+        'audit/**',
+        'docs/**',
+        'test/**',
+        'qa/**',
+      ],
+    },
+    outputFileTracingIncludes: {
+      // نضمّن ملفات SKILL.md صراحةً حتى تكون متاحة في serverless functions.
+      '*': ['.agents/skills/**/*.md'],
+    },
   },
   logging: {
     fetches: {
