@@ -5,6 +5,46 @@ omitted unless they affect a user. The most recent release is at the top.
 
 ---
 
+## [0.1.1](https://github.com/dahaliztupe-sketch/Kalmeron-Two/compare/v0.1.0...v0.1.1) (2026-05-14)
+
+
+### Features
+
+* **ai:** Phase 3 — AI agent quality improvements ([d8360fb](https://github.com/dahaliztupe-sketch/Kalmeron-Two/commit/d8360fb76ed303b287c162abbf8851995f764b2a))
+* **ai:** Phase 3 — AI agent quality improvements (complete) ([f7ee4a3](https://github.com/dahaliztupe-sketch/Kalmeron-Two/commit/f7ee4a3cfca950baf8c48f052c6ae0ccc95c5d11))
+* **billing:** Phase 4 — complete billing & payments pipeline ([0ac5ddb](https://github.com/dahaliztupe-sketch/Kalmeron-Two/commit/0ac5ddb679053fe91e9cb7e4dad7fc2c8874239d))
+* complete Zod validation at call sites + structured persona JSON for customer discovery ([5f3fc15](https://github.com/dahaliztupe-sketch/Kalmeron-Two/commit/5f3fc15b3303753c3ee471a93255cac2de8f6ac5))
+* create three critical Kalmeron operational skills ([3670a8e](https://github.com/dahaliztupe-sketch/Kalmeron-Two/commit/3670a8e6becd6888e8c7580b3296617eba37a3f5))
+* **digital-twin:** activate Neo4j Digital Twin — graph-builder, continuous-updater, graphrag ([c7252c4](https://github.com/dahaliztupe-sketch/Kalmeron-Two/commit/c7252c4809cde8bc25b3e751b0820ce8f1d52714))
+* GitHub repositories integration — OpenWolf + ECC + VoltAgent + SAST + Pro Workflow ([0beda2e](https://github.com/dahaliztupe-sketch/Kalmeron-Two/commit/0beda2e793ff4e17cc409625467aff6b4cb3c787))
+* **onboarding:** Onboarding UX Overhaul — First Mission Activation ([bdd05a2](https://github.com/dahaliztupe-sketch/Kalmeron-Two/commit/bdd05a2d0482051efe8f6a51b720d528a992e793))
+* **orchestrator:** connect 8 new specialist agents to intelligent conversation ([a3a0f35](https://github.com/dahaliztupe-sketch/Kalmeron-Two/commit/a3a0f35f5d7eeb503cd7143f576bb566d7d91653))
+* **pdf-worker:** Arabic complex document support — multi-column, tables, bidi, OCR fix ([8705489](https://github.com/dahaliztupe-sketch/Kalmeron-Two/commit/87054893bddb328101055ffd622d6ff642f0aafb))
+* **phase-3:** complete agent hardening and eval suite expansion ([156d1bc](https://github.com/dahaliztupe-sketch/Kalmeron-Two/commit/156d1bc3e5849e05fdfcceeee53db3a10c0e1150))
+* remove [@ts-nocheck](https://github.com/ts-nocheck) from orchestrator core and RAG layer (Task [#2](https://github.com/dahaliztupe-sketch/Kalmeron-Two/issues/2)) ([5963842](https://github.com/dahaliztupe-sketch/Kalmeron-Two/commit/5963842b338d6f6ff28eacf79112825ea963e488))
+* **workers:** add psutil memory reporting + CORS startup logging to all 4 workers ([9b26cef](https://github.com/dahaliztupe-sketch/Kalmeron-Two/commit/9b26cef5afd2c990f3cabebb37ecf4a996ff9f1f))
+* إعداد gnhf لتشغيل وكلاء Kalmeron ليلاً ([083c238](https://github.com/dahaliztupe-sketch/Kalmeron-Two/commit/083c238142e5da0bbf7fc78d075684ff515c0d9f))
+
+
+### Bug Fixes
+
+* API stubs — Passkeys 410, Billing sales fallback, Temporal null-safe ([18138cf](https://github.com/dahaliztupe-sketch/Kalmeron-Two/commit/18138cff7c428ffa6399d0684ee9678cf42443a2))
+* approved-with-comments — pricing strategies, business plan template, security fixes ([fc61b26](https://github.com/dahaliztupe-sketch/Kalmeron-Two/commit/fc61b26a87abc8908bcb01abffb7d6063ba036ea))
+* **arch:** full architectural cleanup — RAG + multi-provider + cache + Neo4j + embeddings ([b9e8dd6](https://github.com/dahaliztupe-sketch/Kalmeron-Two/commit/b9e8dd6a4921ad9a590a4bf6749a706dfd3994d2))
+* bring ESLint to 0 errors/warnings and clean up npm dependencies ([f4f6410](https://github.com/dahaliztupe-sketch/Kalmeron-Two/commit/f4f64108fdc11af0467c2d4c0e2864806f8ffb5e))
+* **dashboard+chat+brief+onboarding:** address all APPROVED_WITH_COMMENTS items ([6319cb7](https://github.com/dahaliztupe-sketch/Kalmeron-Two/commit/6319cb7b191402a8be792838eea77bee79b07ded))
+* **kalmeron-seeds:** add frontmatter, deepen 4 seeds, create parent SKILL.md ([7efa68b](https://github.com/dahaliztupe-sketch/Kalmeron-Two/commit/7efa68b5ce83023d5cb3d930a5a36e8c83981d96))
+* **phase-1a:** address all 5 code-review rejections + 2 approved-with-comments items ([f505274](https://github.com/dahaliztupe-sketch/Kalmeron-Two/commit/f505274f1d57c4ceaf40c4a5e18beb021b2d09aa))
+* properly type core lib files, orchestrator/panel — remove [@ts-nocheck](https://github.com/ts-nocheck) (Task [#1](https://github.com/dahaliztupe-sketch/Kalmeron-Two/issues/1)) ([155f2c9](https://github.com/dahaliztupe-sketch/Kalmeron-Two/commit/155f2c9fa1f4cd2b16c458f2ec13d852ecffb7fa))
+* resolve all 52 TypeScript errors, ESLint crash, mockup sandbox startup failure ([55c525c](https://github.com/dahaliztupe-sketch/Kalmeron-Two/commit/55c525c250cc57b142fcb5078ef7de11e5c2b694))
+* resolve all code-review blockers — TS clean, runway cron, agent memory write, Zod validation ([7a1a0e5](https://github.com/dahaliztupe-sketch/Kalmeron-Two/commit/7a1a0e5b1c2610559d7f28ecb1fd4f682c72a359))
+* resolve all ESLint lint-disable suppressions and TypeScript lib.dom.d.ts parse error ([e7fb6f5](https://github.com/dahaliztupe-sketch/Kalmeron-Two/commit/e7fb6f5823ba69fcc1a3a3e922cc868c9e1ec2be))
+
+
+### Documentation
+
+* Wave 6 — complete all 69 agent system cards + update README ([b22e1a9](https://github.com/dahaliztupe-sketch/Kalmeron-Two/commit/b22e1a98cfa19f6fe4ae6cda97ab043f0575c67a))
+
 ## v2026.04.28-a — Hero Redesign + Brand Fix (2026-04-28)
 
 A focused design pass on the most-trafficked surface — the marketing home —
