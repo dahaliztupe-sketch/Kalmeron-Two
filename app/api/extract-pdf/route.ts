@@ -51,6 +51,17 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'No file provided' }, { status: 400 });
     }
 
+    // MIME type validation — only allow PDF uploads.
+    const allowedTypes = ['application/pdf'];
+    const fileType = file.type || '';
+    const fileName = file.name?.toLowerCase() || '';
+    if (!allowedTypes.includes(fileType) && !fileName.endsWith('.pdf')) {
+      return NextResponse.json(
+        { error: 'نوع الملف غير مدعوم. يُسمح بملفات PDF فقط.' },
+        { status: 415 },
+      );
+    }
+
     if (file.size > MAX_BYTES) {
       return NextResponse.json(
         { error: `الملف يتجاوز الحد الأقصى المسموح به (${MAX_BYTES / 1024 / 1024} MB).` },

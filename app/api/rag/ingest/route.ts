@@ -96,6 +96,26 @@ export async function POST(req: NextRequest) {
 
   const file = form.get('file') as File | null;
   if (!file) return NextResponse.json({ error: 'file_required' }, { status: 400 });
+
+  // MIME type / extension allowlist — only known document formats accepted.
+  const allowedTypes = [
+    'application/pdf',
+    'text/csv',
+    'text/plain',
+    'application/vnd.ms-excel',
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  ];
+  const allowedExtensions = ['.pdf', '.csv', '.txt', '.xls', '.xlsx'];
+  const fileType = file.type || '';
+  const fileName = file.name?.toLowerCase() || '';
+  const extOk = allowedExtensions.some((ext) => fileName.endsWith(ext));
+  if (!allowedTypes.includes(fileType) && !extOk) {
+    return NextResponse.json(
+      { error: 'unsupported_file_type', allowedTypes: allowedExtensions },
+      { status: 415 },
+    );
+  }
+
   if (file.size > 10 * 1024 * 1024) return NextResponse.json({ error: 'file_too_large_10mb' }, { status: 413 });
 
   try {

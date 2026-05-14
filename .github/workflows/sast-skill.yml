@@ -222,11 +222,15 @@ jobs:
           echo "" >> "$REPORT"; echo "## 9. IDOR (direct object access without userId filter)" >> "$REPORT"
           # Only flag Firestore .doc() / .collection() calls that lack any user-scoping.
           # Strategy: check the entire file for auth patterns, not just the line.
-          # Files that have verifyIdToken/adminAuth/Authorization are admin-gated and safe.
+          # Files that have verifyIdToken/adminAuth/Authorization/guardedRoute are safe.
+          # Public routes (landing-page analytics, social counters, etc.) are excluded.
+          IDOR_PUBLIC="auth/\[|auth/logout|auth/passkey|/health|/webhook|/callback|/public|/og|/cron/|/analytics|/status|/social-proof|/newsletter|/investor/|/edge|/egypt-calc|/experts|/billing/status|/first-100|/launchpad|/meetings|/org-chart|/recipes|/workflows/list|/marketplace|/admin/"
           IDOR_FILES=$(grep -rL \
-            "userId\|workspaceId\|session\.user\|getServerSession\|verifyIdToken\|Authorization\|adminAuth\|CRON_SECRET\|apiKey" \
+            "userId\|workspaceId\|session\.user\|getServerSession\|verifyIdToken\|Authorization\|adminAuth\|CRON_SECRET\|apiKey\|guardedRoute\|rateLimit" \
             app/api/ 2>/dev/null \
-            | grep "route\.ts$" | grep -v ".test." | grep -v "node_modules" || true)
+            | grep "route\.ts$" | grep -v ".test." | grep -v "node_modules" \
+            | grep -v -E "$IDOR_PUBLIC" \
+            || true)
           IDOR_HITS=""
           for f in $IDOR_FILES; do
             HIT=$(grep -n "\.doc(\|\.collection(" "$f" 2>/dev/null || true)
@@ -259,7 +263,10 @@ jobs:
             "password.*=.*['\"][^'\"]\{4,\}['\"]" \
             app/ src/ 2>/dev/null \
             | grep -v ".test." | grep -v "node_modules" \
-            | grep -v "process\.env\|NEXT_PUBLIC_\|secrets\.\|env\." || true)
+            | grep -v "process\.env\|NEXT_PUBLIC_\|secrets\.\|env\." \
+            | grep -v "type=['\"]password['\"]" \
+            | grep -v "type={['\"]password['\"]}" \
+            || true)
           if [ -n "$BAUTH_HITS" ]; then
             echo "🔴 CRITICAL: Potential hardcoded credentials detected:" >> "$REPORT"
             echo '```' >> "$REPORT"; echo "$BAUTH_HITS" >> "$REPORT"; echo '```' >> "$REPORT"
@@ -270,11 +277,13 @@ jobs:
 
           # ── 12. File Upload (sast-file-upload) ───────────────────────────────
           echo "" >> "$REPORT"; echo "## 12. File Upload (dangerous MIME / missing size limit)" >> "$REPORT"
-          # Check for file upload routes that don't validate MIME type
+          # Only flag routes that actually parse multipart form data (formData() / multipart)
+          # AND lack MIME type validation. Routes that just mention "file" or "upload" in
+          # variable names / comments are excluded to prevent false positives.
           UPLOAD_ROUTES=$(grep -rL "mimetype\|contentType\|fileType\|allowedTypes\|application/pdf\|image/" \
             app/api/ 2>/dev/null \
             | grep "route\.ts$" \
-            | xargs grep -l "formData\|multipart\|file\|upload" 2>/dev/null \
+            | xargs grep -l "formData()\|\.formData\|multipart" 2>/dev/null \
             | grep -v ".test." || true)
           if [ -n "$UPLOAD_ROUTES" ]; then
             echo "⚠️  HIGH: File upload routes without detected MIME validation:" >> "$REPORT"

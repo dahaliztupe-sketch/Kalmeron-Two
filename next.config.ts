@@ -184,10 +184,11 @@ const nextConfig: NextConfig = {
       'qa/**',
     ],
   },
-  // نُضمّن ملفات SKILL.md صراحةً لتكون متاحة للـ serverless functions على Vercel.
-  outputFileTracingIncludes: {
-    '*': ['.agents/skills/**/*.md'],
-  },
+  // ملاحظة: outputFileTracingIncludes أُزيلت عمداً.
+  // كانت تُسبّب خطأ ENOENT على Vercel لأنّ NFT يحاول lstat على المسارات
+  // القصيرة مثل (engineering-team/adversarial-reviewer/SKILL.md) المُستخرجة
+  // من registry.ts، وهي غير موجودة في جذر المشروع.
+  // runtime-loader.ts يتعامل بأمان مع الملفات الغائبة عبر existsSync.
   logging: {
     fetches: {
       fullUrl: true,
