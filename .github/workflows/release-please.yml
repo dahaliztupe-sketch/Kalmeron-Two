@@ -4,13 +4,17 @@ name: Release Please
 # When the release PR is merged, a GitHub release is created and the
 # CHANGELOG is updated automatically.
 #
-# NOTE: If this step fails with a 403 / "Resource not accessible by
-# integration" error, it means branch-protection rules on `main` prevent
-# the default GITHUB_TOKEN from pushing or creating PRs.
-# Fix: go to Settings → Actions → General → Workflow permissions and
-# enable "Allow GitHub Actions to create and approve pull requests",
-# or create a PAT with repo/pull-requests scopes and store it as
-# RELEASE_PLEASE_TOKEN in the repo secrets.
+# REQUIRED one-time setup (choose one):
+#
+#   Option A — GitHub UI (simplest):
+#     Settings → Actions → General → Workflow permissions
+#     ✓ Enable "Allow GitHub Actions to create and approve pull requests"
+#
+#   Option B — PAT token (more reliable with branch protection):
+#     Create a PAT at github.com/settings/tokens (scopes: repo + workflow)
+#     Store it as secret RELEASE_PLEASE_TOKEN in this repository
+#
+# Without either option this step exits 0 (non-blocking) and logs a warning.
 
 on:
   push:
@@ -26,16 +30,35 @@ concurrency:
 
 jobs:
   release-please:
+    name: Release Please
     runs-on: ubuntu-latest
     permissions:
       contents: write
       pull-requests: write
-    # Non-blocking: release-please failures (e.g. branch-protection token
-    # restrictions) should not block CI for feature branches.
-    continue-on-error: true
     steps:
-      - uses: googleapis/release-please-action@5c625bfb5d1ff62eadeeb3772007f7f66fdcf071 # v4
+      # The action is marked continue-on-error at the STEP level so that
+      # the JOB exits 0 (green checkmark) even when release-please cannot
+      # create a PR due to missing repository permissions or a token secret.
+      # The workflow is informational only — it does not gate any CI jobs.
+      - name: Run release-please
+        id: release
+        continue-on-error: true
+        uses: googleapis/release-please-action@5c625bfb5d1ff62eadeeb3772007f7f66fdcf071 # v4
         with:
-          token: ${{ secrets.RELEASE_PLEASE_TOKEN || secrets.GITHUB_TOKEN }}
+          # Prefer a PAT stored as RELEASE_PLEASE_TOKEN (needed when branch
+          # protection rules block the default GITHUB_TOKEN from pushing).
+          # Falls back to the built-in GITHUB_TOKEN for repositories where
+          # "Allow GitHub Actions to create PRs" is enabled in settings.
+          token: ${{ secrets.RELEASE_PLEASE_TOKEN || github.token }}
           config-file: .github/release-please-config.json
           manifest-file: .github/.release-please-manifest.json
+
+      # Surface a clear hint when the step failed so engineers know exactly
+      # what to fix without digging through logs.
+      - name: Warn on permission failure
+        if: steps.release.outcome == 'failure'
+        run: |
+          echo "::warning::release-please could not create a PR." \
+               "Enable 'Allow GitHub Actions to create and approve pull requests'" \
+               "in Settings → Actions → General, or add a RELEASE_PLEASE_TOKEN secret." \
+               "See .github/workflows/release-please.yml for details."
