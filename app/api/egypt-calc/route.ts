@@ -66,6 +66,8 @@ export async function POST(req: NextRequest) {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(params),
+      redirect: "error",
+      signal: AbortSignal.timeout(10_000),
     });
     const data = await res.json();
     if (!res.ok) {
@@ -96,7 +98,11 @@ export async function GET(req: NextRequest) {
 
   try {
     const targetUrl = buildCalcUrl(endpoint);
-    const res = await fetch(targetUrl.toString(), { method: "GET" });
+    const res = await fetch(targetUrl.toString(), {
+      method: "GET",
+      redirect: "error",
+      signal: AbortSignal.timeout(10_000),
+    });
     const data = await res.json();
     return NextResponse.json(data, { status: res.ok ? 200 : res.status });
   } catch {

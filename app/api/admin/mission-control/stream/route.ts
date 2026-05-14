@@ -18,7 +18,9 @@ export const dynamic = 'force-dynamic';
 
 export async function GET(req: NextRequest) {
   const token = new URL(req.url).searchParams.get('token');
-  if (!token) {
+  // Validate token presence and length before passing to Firebase SDK.
+  // Rejects obviously-malformed tokens early (Firebase JWTs are 800-1500 chars).
+  if (!token || token.length < 20 || token.length > 4096) {
     return NextResponse.json({ error: 'unauthorized', message: 'Missing ?token query parameter' }, { status: 401 });
   }
   let uid: string;

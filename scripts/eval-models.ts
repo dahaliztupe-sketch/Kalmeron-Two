@@ -158,9 +158,20 @@ async function main(): Promise<void> {
   const outDir = join(process.cwd(), 'audit', 'reports');
   await mkdir(outDir, { recursive: true });
   const ts = new Date().toISOString().replace(/[:.]/g, '-');
-  const path = join(outDir, `model-eval-${ts}.md`);
-  await writeFile(path, lines.join('\n'), 'utf8');
-  console.log(`\nReport written: ${path}`);
+  const outPath = join(outDir, `model-eval-${ts}.md`);
+
+  // S013 — Network data written to file mitigation: the `lines` array
+  // contains LLM responses which are network-sourced data. Slice content
+  // to a hard cap to prevent unbounded writes, and confirm the resolved
+  // path stays within the expected audit/reports directory.
+  const MAX_REPORT_CHARS = 2_000_000; // 2 MB cap
+  const safeContent = lines.join('\n').slice(0, MAX_REPORT_CHARS);
+  const resolvedOut = join(outDir, outPath.slice(outDir.length + 1));
+  if (!resolvedOut.startsWith(outDir)) {
+    throw new Error(`eval-models: output path escapes audit/reports: ${resolvedOut}`);
+  }
+  await writeFile(resolvedOut, safeContent, 'utf8');
+  console.log(`\nReport written: ${resolvedOut}`);
 }
 
 main().catch((e) => { console.error(e); process.exit(1); });

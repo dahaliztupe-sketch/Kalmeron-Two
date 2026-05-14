@@ -70,8 +70,18 @@ export function mockupPreviewPlugin(): Plugin {
     }));
   }
 
+  // S012 — Validate that discovered file paths contain only safe characters
+  // before embedding them in generated TypeScript source code. Although
+  // JSON.stringify already escapes special characters, an explicit allowlist
+  // prevents maliciously-named files from injecting unexpected tokens into
+  // the auto-generated module (CodeQL: js/code-injection mitigation).
+  function isSafePath(p: string): boolean {
+    return /^[\w\-./]+\.tsx$/.test(p);
+  }
+
   function generateSource(components: Array<DiscoveredComponent>): string {
     const entries = components
+      .filter((c) => isSafePath(c.globKey) && isSafePath(c.importPath))
       .map(
         (c) =>
           `  ${JSON.stringify(c.globKey)}: () => import(${JSON.stringify(c.importPath)})`,

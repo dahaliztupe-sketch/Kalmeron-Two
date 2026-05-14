@@ -49,7 +49,7 @@ self.addEventListener("fetch", (event) => {
   // Never intercept HMR, API calls, or external services
   const isFirebase = host === "firebaseio.com" || host.endsWith(".firebaseio.com");
   const isGoogle = host === "googleapis.com" || host.endsWith(".googleapis.com");
-  const isGemini = host.includes("generativelanguage.googleapis.com");
+  const isGemini = host === "generativelanguage.googleapis.com" || host.endsWith(".generativelanguage.googleapis.com");
 
   if (
     url.pathname.startsWith("/_next/webpack-hmr") ||
@@ -139,12 +139,26 @@ self.addEventListener("notificationclick", (event) => {
   event.notification.close();
   if (event.action === "dismiss") return;
 
-  const url = event.notification.data?.url || "/notifications";
+  const rawUrl = event.notification.data?.url || "/notifications";
+  // S010 — Validate notification URL: only allow relative paths within the app.
+  // Prevents open-redirect / phishing via a crafted push-notification payload.
+  const url =
+    typeof rawUrl === "string" && /^\/[\w\-./]*$/.test(rawUrl)
+      ? rawUrl
+      : "/notifications";
+
   event.waitUntil(
     self.clients
       .matchAll({ type: "window", includeUncontrolled: true })
       .then((clients) => {
-        const existing = clients.find((c) => c.url.includes(url));
+        const existing = clients.find((c) => {
+          try {
+            const clientUrl = new URL(c.url);
+            return clientUrl.pathname === url;
+          } catch {
+            return false;
+          }
+        });
         if (existing) return existing.focus();
         return self.clients.openWindow(url);
       })

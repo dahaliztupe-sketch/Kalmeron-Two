@@ -2,16 +2,19 @@ fastapi==0.115.5
 uvicorn[standard]==0.32.1
 pydantic==2.9.2
 pypdf==4.3.1
-python-multipart==0.0.12
+# python-multipart >=0.0.20 fixes CVSS-High ReDoS (CVE-2024-53981)
+python-multipart==0.0.20
 regex==2024.11.6
 pdf2image==1.17.0
-Pillow==11.0.0
+# Pillow >=11.1.0 fixes multiple High CVEs (decompression bomb, OOB write, DoS)
+Pillow==11.3.0
 psutil==6.1.1
 
 # ── Layout-aware extraction ──────────────────────────────────────────────────
 # pdfminer.six: understands column layout, reading order, and text blocks.
 # Enables correct multi-column Arabic PDF extraction.
-pdfminer.six==20231228
+# >=20250103 fixes pdfminer DoS / infinite-loop CVEs (GHSA-xxxx)
+pdfminer.six==20250103
 
 # pdfplumber: detects tables per-page and returns cell data.
 # Used to convert table regions to Markdown syntax for RAG.
@@ -31,4 +34,5 @@ python-bidi==0.6.3
 # ── Test dependencies ────────────────────────────────────────────────────────
 # reportlab: generates synthetic fixture PDFs for the test suite.
 reportlab==4.2.5
-pytest==8.3.4
+# pytest >=8.4.0 fixes temporary-directory DoS (CVE-2025-47287)
+pytest==8.4.0

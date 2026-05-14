@@ -9,11 +9,15 @@ const postSchema = z.object({
 
 export const GET = guardedRoute(
   async ({ req }) => {
-    const workspaceId = req.nextUrl.searchParams.get('workspaceId') || 'default';
+    const raw = req.nextUrl.searchParams.get('workspaceId') || 'default';
+    // S011 — Reject workspaceId values that look structurally invalid.
+    // Prevents path-traversal-style values like "../other" reaching the
+    // storage layer while still allowing the 'default' fallback.
+    const workspaceId = /^[\w\-]{1,128}$/.test(raw) ? raw : 'default';
     const skills = await listSkills(workspaceId);
     return NextResponse.json({ skills });
   },
-  { rateLimit: { limit: 60, windowMs: 60_000 } }
+  { requireAuth: true, rateLimit: { limit: 60, windowMs: 60_000 } }
 );
 
 export const POST = guardedRoute(
