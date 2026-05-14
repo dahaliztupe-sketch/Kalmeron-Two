@@ -14,11 +14,12 @@ psutil==6.1.1
 # pdfminer.six: understands column layout, reading order, and text blocks.
 # Enables correct multi-column Arabic PDF extraction.
 # >=20250103 fixes pdfminer DoS / infinite-loop CVEs (GHSA-xxxx)
-pdfminer.six==20250103
+pdfminer.six==20251230
 
 # pdfplumber: detects tables per-page and returns cell data.
 # Used to convert table regions to Markdown syntax for RAG.
-pdfplumber==0.11.4
+# 0.11.9 is the minimum version compatible with pdfminer.six==20251230
+pdfplumber==0.11.9
 
 # ── Bidirectional text reordering ───────────────────────────────────────────
 # python-bidi: applies Unicode BiDi algorithm to RTL paragraphs so that

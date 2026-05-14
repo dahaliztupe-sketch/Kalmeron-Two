@@ -242,6 +242,15 @@ const nextConfig: NextConfig = {
         ignored: /.*/,
       };
     }
+    // Suppress "Critical dependency: the request of a dependency is an expression"
+    // emitted by @prisma/instrumentation → @opentelemetry/instrumentation.
+    // This is a known webpack false-positive in the OpenTelemetry package; it
+    // does not affect runtime behaviour and is safe to ignore.
+    config.ignoreWarnings = [
+      ...(config.ignoreWarnings ?? []),
+      { module: /node_modules\/@opentelemetry\/instrumentation/ },
+      { module: /node_modules\/@prisma\/instrumentation/ },
+    ];
     return config;
   },
 };
