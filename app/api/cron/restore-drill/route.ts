@@ -53,15 +53,24 @@ export async function GET(req: NextRequest) {
       const fresh = ageHours <= STALE_HOURS;
 
       // 2. Optionally HEAD the backup artifact URL to verify reachability.
+      // S010 — SSRF mitigation: validate the URL from Firestore against the
+      // outbound URL allowlist (blocks private IPs, localhost, internal suffixes,
+      // and non-HTTPS schemes) before issuing any outbound request.
       let httpStatus: number | null = null;
       let contentLength: number | null = null;
       const url = data?.url ?? data?.storageUrl;
       if (typeof url === 'string') {
         try {
-          const r = await fetch(url, { method: 'HEAD' });
-          httpStatus = r.status;
-          const cl = r.headers.get('content-length');
-          contentLength = cl ? Number(cl) : null;
+          const { assertSafeUrlNode } = await import('@/src/lib/security/url-allowlist');
+          const check = await assertSafeUrlNode(url);
+          if (!check.ok) {
+            result.urlError = `SSRF guard blocked URL: ${check.reason}`;
+          } else {
+            const r = await fetch(url, { method: 'HEAD', signal: AbortSignal.timeout(10_000) });
+            httpStatus = r.status;
+            const cl = r.headers.get('content-length');
+            contentLength = cl ? Number(cl) : null;
+          }
         } catch (e: unknown) {
           httpStatus = null;
           result.urlError = toErrorMessage(e);

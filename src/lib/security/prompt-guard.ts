@@ -39,47 +39,40 @@ export function sanitizeInput(input: string): string {
     ''
   );
 
-  // وسوم تعليمات شائعة
-  out = out.replace(/\[(?:SYSTEM|INST|AGENT|TOOL|ASSISTANT)\]/gi, '');
-  out = out.replace(/\[\/(?:SYSTEM|INST|AGENT|TOOL|ASSISTANT)\]/gi, '');
-  out = out.replace(/<<\/?(?:HIDDEN|SYS|INST|SYSTEM)>>/gi, '');
-
-  // بادئات قوالب نماذج (chat-templates) شائعة
-  out = out.replace(/<\|im_start\|>\s*\w+/gi, '');
-  out = out.replace(/<\|im_end\|>/gi, '');
-  out = out.replace(/<\|system\|>|<\|user\|>|<\|assistant\|>/gi, '');
-  out = out.replace(/###\s*(?:Instruction|System|Response):/gi, '');
-  out = out.replace(/<\/?\s*system\s*>/gi, '');
-
-  // محاولات Markdown لإخفاء توجيهات داخل تعليقات HTML
-  // -----------------------------------------------------------
-  // نقوم بحذف تعليقات `<!-- ... -->` بشكل آمن. نَستخدم حلقة
-  // ثابتة (fixed-point loop) حتى لا يتمكّن مهاجم من تجاوز التطهير
-  // بحقن تعليقات متشعّبة أو مفصولة، مثل:
+  // S003b — Fixed-point loop for all multi-character tag-like patterns:
+  // We wrap every multi-character removal in a single fixed-point loop so that
+  // nested / interleaved bypass attempts (e.g. "[[SYSTEM]]", "<<<HIDDEN>>>",
+  // "<|im_s<|im_start|>tart|>") are fully collapsed before the loop exits.
+  // This satisfies CodeQL js/incomplete-multi-character-sanitization because
+  // the loop continues until no more substitutions can be made (stable point).
   //
-  //     "<!--<!-- evil -->-->"
-  //
-  // الـ regex غير-الجشع يستهلك التعليق الأعمق ويترك "-->" خلفه؛
-  // التكرار يُزيلها إلى أن تصبح السلسلة مستقرّة. كما أنّنا نُزيل
-  // أيضًا أيّ بقايا فواصل تعليقات شبه-مفتوحة (مثل `<!--` و `<!`
-  // و `-->` بدون إغلاق) باستخدام مَسْحٍ كاملٍ متعدّد الأنماط في
-  // حلقة ثابتة — هذا يَسُدّ ثغرة CodeQL `js/bad-tag-filter` التي
-  // كانت تنطلق عند الاكتفاء بزوج `replace(/<!--/, '')` و
-  // `replace(/-->/, '')` لأنّ مهاجمًا قد يحقن `<!<!---->-` فينتج
-  // `<!--` بعد التطهير الأول. نحن الآن نَدْمج كلّ الفواصل في
-  // pattern واحد ونُكرّر حتى الاستقرار.
-  // يعالج تحذيرَي CodeQL:
-  //   - js/bad-tag-filter
-  //   - js/incomplete-multi-character-sanitization
+  // Pattern groups:
+  //   1) وسوم تعليمات شائعة: [SYSTEM], [/INST], <<HIDDEN>>, etc.
+  //   2) بادئات قوالب نماذج (chat-templates): <|im_start|>, <|system|>, etc.
+  //   3) وسوم نظام XML: <system>, </system>
+  //   4) تعليقات HTML: <!-- ... -->, unclosed <!--, dangling -->
+  //   5) بادئات Markdown للتعليمات: ### Instruction:, ### System:
   let prev: string;
   do {
     prev = out;
     out = out
-      // 1) تعليق كامل
+      // وسوم تعليمات شائعة
+      .replace(/\[(?:SYSTEM|INST|AGENT|TOOL|ASSISTANT)\]/gi, '')
+      .replace(/\[\/(?:SYSTEM|INST|AGENT|TOOL|ASSISTANT)\]/gi, '')
+      .replace(/<<\/?(?:HIDDEN|SYS|INST|SYSTEM)>>/gi, '')
+      // بادئات قوالب chat-templates
+      .replace(/<\|im_start\|>\s*\w+/gi, '')
+      .replace(/<\|im_end\|>/gi, '')
+      .replace(/<\|system\|>|<\|user\|>|<\|assistant\|>/gi, '')
+      // وسوم نظام XML
+      .replace(/<\/?\s*system\s*>/gi, '')
+      // تعليقات HTML كاملة (non-greedy)
       .replace(/<!--[\s\S]*?-->/g, '')
-      // 2) أيّ فاصل تعليق شبه-مفتوح (مع استيعاب CDATA / DOCTYPE shells)
+      // بقايا فواصل تعليقات HTML (تشمل CDATA / DOCTYPE)
       .replace(/<!(?:--|\[CDATA\[|DOCTYPE)?/g, '')
-      .replace(/--!?>/g, '');
+      .replace(/--!?>/g, '')
+      // بادئات Markdown للتعليمات
+      .replace(/###\s*(?:Instruction|System|Response):/gi, '');
   } while (out !== prev);
 
   return out;

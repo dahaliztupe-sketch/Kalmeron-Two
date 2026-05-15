@@ -29,6 +29,9 @@ async function probe(url: string, timeoutMs = 2500): Promise<{ ok: boolean; late
   const timer = setTimeout(() => controller.abort(), timeoutMs);
   const start = Date.now();
   try {
+    // codeql[js/server-side-request-forgery]: `url` always comes from
+    // DEMO_SIDECARS — a static compile-time config of internal loopback URLs
+    // (e.g. http://localhost:8000/health). No user-supplied URL reaches here.
     const res = await fetch(url, { signal: controller.signal, cache: "no-store" });
     const latencyMs = Date.now() - start;
     if (!res.ok) return { ok: false, latencyMs, detail: `HTTP ${res.status}` };

@@ -35,6 +35,10 @@ async function handle(req: NextRequest): Promise<NextResponse> {
   let status: 'healthy' | 'degraded' | 'down';
   let payload: unknown;
   try {
+    // codeql[js/server-side-request-forgery]: baseUrl is derived exclusively
+    // from NEXT_PUBLIC_APP_URL / VERCEL_URL / PORT — all operator-controlled
+    // environment variables, never user input. The path is the fixed literal
+    // "/api/health". No external or user-supplied URL is used here.
     const res = await fetch(`${baseUrl}/api/health`, { cache: 'no-store' });
     payload = await res.json();
     const obj = payload as { status?: string };

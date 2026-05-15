@@ -5,9 +5,6 @@
 # Google-maintained base images; pinning to a digest is impractical because
 # Google rotates them frequently for security patches.
 # Reference: https://google.github.io/clusterfuzzlite/build-integration/javascript-lang/
-# trivy:ignore:AVD-DS-0002 — see USER directive below: we cannot drop root for
-#                            the fuzzer build, but we explicitly mark the
-#                            container as ephemeral CI-only (never deployed).
 # checkov:skip=CKV_DOCKER_3 — OSS-Fuzz base image requires root for libfuzzer
 #                            instrumentation; this container runs ONLY in CI
 #                            ephemeral runners, never deployed.
@@ -27,6 +24,7 @@ COPY .clusterfuzzlite/build.sh $SRC/build.sh
 # instead of inherited silently — this satisfies the spirit of
 # AVD-DS-0002 / CKV_DOCKER_3 / DL3002 while staying compatible with the
 # ClusterFuzzLite contract.
+# trivy:ignore:AVD-DS-0002
 USER root
 
 # This image runs only inside the OSS-Fuzz / ClusterFuzzLite ephemeral CI
