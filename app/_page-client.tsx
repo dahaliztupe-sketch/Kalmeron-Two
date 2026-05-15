@@ -215,14 +215,15 @@ function Hero() {
 
       {/* Centered content */}
       <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-4 sm:px-6 max-w-5xl mx-auto w-full text-center">
-        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
-          className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 rounded-full border border-white/[0.08] bg-white/[0.03] backdrop-blur-md mb-6 sm:mb-8"
+        <motion.div initial={{ y: 10 }} animate={{ y: 0 }} transition={{ delay: 0.08, duration: 0.5 }}
+          className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full border border-indigo-500/25 bg-indigo-500/[0.07] backdrop-blur-md mb-6 sm:mb-8"
         >
-          <Sparkles className="w-3.5 h-3.5 text-indigo-300 shrink-0" />
-          <span className="text-[11px] sm:text-xs font-medium text-white/80 tracking-wide truncate">{t("eyebrow")}</span>
+          <span className="live-dot" />
+          <Sparkles className="w-3 h-3 text-indigo-300 shrink-0" />
+          <span className="text-[11px] sm:text-xs font-semibold text-indigo-200 tracking-wide truncate">{t("eyebrow")}</span>
         </motion.div>
 
-        <motion.h1 initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}
+        <motion.h1 initial={{ y: 18 }} animate={{ y: 0 }} transition={{ delay: 0.12, duration: 0.55 }}
           className="font-display font-bold tracking-tight leading-[1.08] mb-5 sm:mb-6 break-words [text-wrap:balance]"
           style={{ fontSize: "clamp(2rem, 1rem + 6vw, 5.5rem)" }}
         >
@@ -230,7 +231,7 @@ function Hero() {
           <span className="block brand-gradient-text pb-2">{t("titleLine2")}</span>
         </motion.h1>
 
-        <motion.p initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}
+        <motion.p initial={{ y: 14 }} animate={{ y: 0 }} transition={{ delay: 0.18, duration: 0.5 }}
           className="text-base sm:text-lg md:text-xl text-white/75 max-w-3xl mx-auto mb-10 sm:mb-12 leading-[1.8] font-medium px-2 [text-wrap:pretty]"
         >
           {t("subtitleLead")}
@@ -241,7 +242,7 @@ function Hero() {
         </motion.p>
 
         {/* Single focal CTA — chat-style input */}
-        <motion.form initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35, ease: "easeOut" }}
+        <motion.form initial={{ y: 18 }} animate={{ y: 0 }} transition={{ delay: 0.26, ease: "easeOut", duration: 0.5 }}
           onSubmit={submit} className="relative w-full max-w-2xl group"
         >
           <div className="absolute -inset-1 rounded-3xl bg-gradient-to-r from-cyan-500/25 via-indigo-500/25 to-fuchsia-500/25 opacity-0 group-focus-within:opacity-100 blur-xl transition-opacity duration-500" />
@@ -265,7 +266,7 @@ function Hero() {
         </motion.form>
 
         {/* Suggestion chips — minimal pill outlines */}
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}
+        <motion.div initial={{ y: 8 }} animate={{ y: 0 }} transition={{ delay: 0.34, duration: 0.45 }}
           className="flex flex-wrap items-center justify-center gap-2 mt-6 max-w-3xl"
           aria-label={t("eyebrow")}
         >
@@ -281,7 +282,7 @@ function Hero() {
           })}
         </motion.div>
 
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.9 }}
+        <motion.div initial={{ y: 6 }} animate={{ y: 0 }} transition={{ delay: 0.42, duration: 0.45 }}
           className="flex flex-col items-center gap-2 mt-12 sm:mt-16 text-white/65 text-xs"
         >
           <a
@@ -295,22 +296,23 @@ function Hero() {
       </div>
 
       {/* Trust badges — WCAG-AA compliant contrast (≥4.5:1 on #04060B) */}
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.7 }}
+      <motion.div initial={{ y: 10 }} animate={{ y: 0 }} transition={{ delay: 0.38, duration: 0.5 }}
         className="relative z-10 w-full pb-8 sm:pb-10 pt-6 flex justify-center"
       >
-        <ul className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 sm:gap-x-10 px-4 list-none" role="list">
-          <li className="flex items-center gap-2 text-white/70 hover:text-white transition-colors text-xs sm:text-sm font-medium">
-            <ShieldCheck className="w-4 h-4 shrink-0 text-cyan-300/80" aria-hidden="true" /> {tBadges("lawCompliant")}
-          </li>
-          <li className="flex items-center gap-2 text-white/70 hover:text-white transition-colors text-xs sm:text-sm font-medium">
-            <Globe2 className="w-4 h-4 shrink-0 text-indigo-300/80" aria-hidden="true" /> {tBadges("arabicNative")}
-          </li>
-          <li className="flex items-center gap-2 text-white/70 hover:text-white transition-colors text-xs sm:text-sm font-medium">
-            <TrendingUp className="w-4 h-4 shrink-0 text-fuchsia-300/80" aria-hidden="true" /> {tBadges("founderCount")}
-          </li>
-          <li className="flex items-center gap-2 text-white/70 hover:text-white transition-colors text-xs sm:text-sm font-medium">
-            <Zap className="w-4 h-4 shrink-0 text-amber-300/80" aria-hidden="true" /> {tBadges("freeStart")}
-          </li>
+        <ul className="flex flex-wrap items-center justify-center gap-2 px-4 list-none" role="list">
+          {([
+            { Icon: ShieldCheck, color: "text-cyan-300",    key: "lawCompliant"  },
+            { Icon: Globe2,      color: "text-indigo-300",  key: "arabicNative"  },
+            { Icon: TrendingUp,  color: "text-fuchsia-300", key: "founderCount"  },
+            { Icon: Zap,         color: "text-amber-300",   key: "freeStart"     },
+          ] as const).map(({ Icon, color, key }) => (
+            <li key={key}>
+              <span className="trust-badge">
+                <Icon className={`w-3.5 h-3.5 shrink-0 ${color}`} aria-hidden="true" />
+                {tBadges(key)}
+              </span>
+            </li>
+          ))}
         </ul>
       </motion.div>
     </motion.section>

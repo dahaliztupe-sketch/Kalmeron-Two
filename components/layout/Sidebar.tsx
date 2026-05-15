@@ -248,12 +248,33 @@ export function Sidebar() {
 
       {/* ── Footer ── */}
       <div
-        className="px-2 pb-4 pt-3 shrink-0"
+        className="px-2 pb-4 pt-2 shrink-0 space-y-1"
         style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}
       >
+        {/* Upgrade hint */}
+        <Link
+          href="/pricing"
+          className="flex items-center gap-2.5 w-full px-3 py-2.5 rounded-xl upgrade-card text-[12px] font-semibold transition-all outline-none focus-visible:ring-2 focus-visible:ring-brand-indigo/50 group"
+        >
+          <div
+            className="w-6 h-6 rounded-lg flex items-center justify-center shrink-0"
+            style={{
+              background: "linear-gradient(135deg, #4F46E5 0%, #8B5CF6 100%)",
+              boxShadow: "0 0 12px -2px rgba(99,102,241,0.5)",
+            }}
+          >
+            <Sparkles className="w-3 h-3 text-white" />
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="text-indigo-300 group-hover:text-indigo-200 transition-colors truncate">ترقية الخطة</p>
+            <p className="text-white/20 text-[10px] truncate">احصل على ٥× رسائل يومياً</p>
+          </div>
+          <ChevronRight className="w-3 h-3 text-indigo-400/40 shrink-0 group-hover:text-indigo-300 transition-colors" />
+        </Link>
+
         <button
           onClick={() => signOut()}
-          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-semibold text-rose-400/50 hover:text-rose-300 hover:bg-rose-500/[0.07] transition-all duration-150 outline-none focus-visible:ring-2 focus-visible:ring-rose-400/40"
+          className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-[12.5px] font-semibold text-white/20 hover:text-rose-300 hover:bg-rose-500/[0.07] transition-all duration-150 outline-none focus-visible:ring-2 focus-visible:ring-rose-400/40"
         >
           <LogOut className="w-3.5 h-3.5 shrink-0" />
           <span>تسجيل الخروج</span>

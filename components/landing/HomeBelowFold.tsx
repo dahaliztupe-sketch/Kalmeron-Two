@@ -233,39 +233,38 @@ function CompCell({ value, kalmeron = false }: { value: boolean | string; kalmer
 
 function StatsStrip() {
   const stats = [
-    { icon: Users,      value: "٣٢٠٠+",   label: "مؤسّس نشط",       color: "text-cyan-400" },
-    { icon: TrendingUp, value: "٧ أقسام", label: "تشغيلية كاملة",  color: "text-indigo-400" },
-    { icon: Zap,        value: "١٦",       label: "مساعداً ذكياً",   color: "text-fuchsia-400" },
-    { icon: Clock,      value: "٢٤/٧",     label: "متاح بلا انقطاع", color: "text-emerald-400" },
+    { value: "٣٢٠٠+",  label: "مؤسّس نشط",        gradient: "from-cyan-400 to-sky-300",      border: "border-cyan-500/12",    glow: "rgba(56,189,248,0.08)"  },
+    { value: "٧",       label: "أقسام تشغيلية",    gradient: "from-indigo-400 to-violet-400", border: "border-indigo-500/12",  glow: "rgba(99,102,241,0.08)"  },
+    { value: "٥٧",      label: "مساعداً ذكياً",    gradient: "from-fuchsia-400 to-pink-400",  border: "border-fuchsia-500/12", glow: "rgba(217,70,239,0.08)"  },
+    { value: "٢٤/٧",    label: "متاح بلا انقطاع",  gradient: "from-emerald-400 to-teal-300",  border: "border-emerald-500/12", glow: "rgba(16,185,129,0.08)"  },
   ];
 
   return (
     <section
-      className="px-4 py-10 md:py-14"
+      className="relative px-4 py-10 md:py-14 overflow-hidden"
       style={{
-        background: "rgba(255,255,255,0.018)",
-        borderTop: "1px solid rgba(255,255,255,0.055)",
-        borderBottom: "1px solid rgba(255,255,255,0.055)",
+        background: "rgba(255,255,255,0.013)",
+        borderTop: "1px solid rgba(255,255,255,0.05)",
+        borderBottom: "1px solid rgba(255,255,255,0.05)",
       }}
     >
-      <div className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-6">
-        {stats.map((s, i) => {
-          const Icon = s.icon;
-          return (
-            <motion.div
-              key={s.label}
-              initial={{ opacity: 0, y: 12 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.07 }}
-              className="flex flex-col items-center text-center gap-1"
-            >
-              <Icon className={`w-5 h-5 mb-1 ${s.color}`} />
-              <div className="font-display font-black text-2xl md:text-3xl text-white">{s.value}</div>
-              <div className="text-xs text-neutral-500">{s.label}</div>
-            </motion.div>
-          );
-        })}
+      <div className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+        {stats.map((s, i) => (
+          <motion.div
+            key={s.label}
+            initial={{ opacity: 0, y: 14 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: i * 0.08, ease: "easeOut" }}
+            className={`relative flex flex-col items-center text-center gap-1.5 rounded-2xl border ${s.border} p-5 md:p-6`}
+            style={{ background: `radial-gradient(ellipse at 50% -10%, ${s.glow}, transparent 65%)` }}
+          >
+            <div className={`font-display font-black text-3xl md:text-4xl bg-gradient-to-b ${s.gradient} bg-clip-text text-transparent stat-number leading-none`}>
+              {s.value}
+            </div>
+            <div className="text-[11px] text-neutral-500 font-medium tracking-wide mt-0.5">{s.label}</div>
+          </motion.div>
+        ))}
       </div>
     </section>
   );

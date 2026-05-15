@@ -956,6 +956,106 @@ html::-webkit-scrollbar-thumb:hover {
 }
 
 /* ════════════════════════════════════════════════════════════════════
+   STAT NUMBER  (landing page counters — tabular, no letter-spacing)
+   ════════════════════════════════════════════════════════════════════ */
+.stat-number {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1, "kern" 1;
+  letter-spacing: -0.03em;
+  font-optical-sizing: none;
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   UPGRADE CARD  (sidebar & inline upgrade CTAs)
+   ════════════════════════════════════════════════════════════════════ */
+.upgrade-card {
+  background: linear-gradient(135deg,
+    rgb(79 70 229 / 0.09) 0%,
+    rgb(139 92 246 / 0.07) 50%,
+    rgb(192 38 211 / 0.05) 100%);
+  border: 1px solid rgb(99 102 241 / 0.18);
+  transition:
+    border-color var(--dur-base) ease,
+    box-shadow var(--dur-base) ease,
+    background var(--dur-base) ease;
+}
+.upgrade-card:hover {
+  border-color: rgb(99 102 241 / 0.38);
+  box-shadow: 0 8px 30px -10px rgb(79 70 229 / 0.28);
+  background: linear-gradient(135deg,
+    rgb(79 70 229 / 0.14) 0%,
+    rgb(139 92 246 / 0.10) 50%,
+    rgb(192 38 211 / 0.07) 100%);
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   SECTION DIVIDER  (premium separator line)
+   ════════════════════════════════════════════════════════════════════ */
+.section-divider {
+  height: 1px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgb(255 255 255 / 0.07) 25%,
+    rgb(99 102 241 / 0.15) 50%,
+    rgb(255 255 255 / 0.07) 75%,
+    transparent 100%);
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   HERO INPUT  (landing search — drop-shadow on focus-within)
+   ════════════════════════════════════════════════════════════════════ */
+.hero-input-wrap { transition: filter var(--dur-slow) ease; }
+.hero-input-wrap:focus-within {
+  filter: drop-shadow(0 0 28px rgb(79 70 229 / 0.22));
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   FEATURE BADGE  (section label pills)
+   ════════════════════════════════════════════════════════════════════ */
+.feature-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.3rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  border: 1px solid rgb(255 255 255 / 0.08);
+  background: rgb(255 255 255 / 0.035);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: rgb(255 255 255 / 0.70);
+  transition: color var(--dur-base) ease, border-color var(--dur-base) ease;
+}
+.feature-badge:hover {
+  color: rgb(255 255 255 / 0.90);
+  border-color: rgb(255 255 255 / 0.18);
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   TRUST BADGE  (landing page inline pill badges)
+   ════════════════════════════════════════════════════════════════════ */
+.trust-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  border: 1px solid rgb(255 255 255 / 0.09);
+  background: rgb(255 255 255 / 0.035);
+  color: rgb(255 255 255 / 0.60);
+  transition: color var(--dur-base) ease, border-color var(--dur-base) ease, background var(--dur-base) ease;
+}
+.trust-badge:hover {
+  color: rgb(255 255 255 / 0.88);
+  border-color: rgb(255 255 255 / 0.18);
+  background: rgb(255 255 255 / 0.06);
+}
+
+/* ════════════════════════════════════════════════════════════════════
    ACCESSIBILITY  (motion · contrast)
    ════════════════════════════════════════════════════════════════════ */
 @media (prefers-reduced-motion: reduce) {
