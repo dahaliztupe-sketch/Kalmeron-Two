@@ -182,6 +182,13 @@ const nextConfig: NextConfig = {
       'docs/**',
       'test/**',
       'qa/**',
+      // NFT picks up string literals like 'c-level-advisor/ceo-advisor/SKILL.md'
+      // from registry.ts and tries to lstat them relative to the project root
+      // (not relative to the runtime SKILLS_ROOT = .agents/skills/).
+      // Excluding **/SKILL.md prevents the resulting ENOENT on Vercel.
+      // runtime-loader.ts uses existsSync before readFileSync so missing
+      // files are handled gracefully at runtime.
+      '**/SKILL.md',
     ],
   },
   // ملاحظة: outputFileTracingIncludes أُزيلت عمداً.

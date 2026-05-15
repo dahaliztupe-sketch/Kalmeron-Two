@@ -32,6 +32,20 @@ const PACKAGE_ALLOWLIST = new Set([
   // produces no additional advisory — the root cause is the same prometheus
   // exporter issue, allowlisted directly. No upstream fix as of 2026-05.
   '@traceloop/node-server-sdk',
+
+  // @temporalio/* packages bundle protobufjs internally. All underlying
+  // protobufjs advisory GHSAs (GHSA-66ff-xgx4-vchm, GHSA-2pr8-phx7-x9h3,
+  // GHSA-fx83-v9x8-x52w, GHSA-75px-5xx7-5xc7, GHSA-jvwf-75h9-cwgg,
+  // GHSA-685m-2w69-288q, GHSA-q6x5-8v7m-xcrf) are already in ALLOWLIST above.
+  // These four packages carry no additional GHSA of their own — npm audit
+  // surfaces them as pure transitive HIGH entries (via: package-name only).
+  // Temporal SDK is used only for internal workflow orchestration with no
+  // user-facing surface; no upstream fix available as of 2026-05.
+  // Track: https://github.com/temporalio/sdk-node/issues — awaiting protobufjs bump.
+  '@temporalio/client',
+  '@temporalio/common',
+  '@temporalio/proto',
+  '@temporalio/workflow',
 ]);
 
 const ALLOWLIST = new Set([
