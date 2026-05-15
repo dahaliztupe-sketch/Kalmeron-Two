@@ -66,6 +66,8 @@ export async function GET(req: NextRequest) {
           if (!check.ok) {
             result.urlError = `SSRF guard blocked URL: ${check.reason}`;
           } else {
+            // URL passed assertSafeUrlNode() SSRF guard above — only allowed origins reach here.
+            // codeql[js/server-side-request-forgery]
             const r = await fetch(url, { method: 'HEAD', signal: AbortSignal.timeout(10_000) });
             httpStatus = r.status;
             const cl = r.headers.get('content-length');

@@ -1,9 +1,10 @@
 fastapi==0.115.5
 uvicorn[standard]==0.32.1
 pydantic==2.9.2
-pypdf==4.3.1
-# python-multipart >=0.0.20 fixes CVSS-High ReDoS (CVE-2024-53981)
-python-multipart==0.0.20
+# pypdf >=5.1.0 fixes multiple DoS CVEs (large image sizes, trailer size, memory exhaustion)
+pypdf==6.11.0
+# python-multipart >=0.0.20 fixes ReDoS; >=0.0.21 fixes path-traversal (CVE-2025-50181)
+python-multipart==0.0.28
 regex==2024.11.6
 pdf2image==1.17.0
 # Pillow >=11.1.0 fixes multiple High CVEs (decompression bomb, OOB write, DoS)

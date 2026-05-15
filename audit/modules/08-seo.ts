@@ -112,13 +112,10 @@ export async function auditSEO(): Promise<AuditFinding[]> {
     }
 
     // ── Schema.org JSON-LD ──
-    // We are scanning the rendered HTML body of *our own* homepage looking for
-    // the literal substring `schema.org` inside a `<script type="application/ld+json">`
-    // block. This is NOT a URL allow-list / origin check — `home.body` is HTML,
-    // not a URL — so CodeQL's `js/incomplete-url-substring-sanitization`
-    // heuristic does not apply here.
-    // codeql[js/incomplete-url-substring-sanitization]: substring scan over our
-    //   own rendered HTML, not a host-trust check.
+    // Scanning our own homepage HTML for the literal string "schema.org" inside a
+    // <script type="application/ld+json"> block. This is NOT a URL allow-list /
+    // origin check — home.body is HTML text, not a URL being trusted.
+    // codeql[js/incomplete-url-substring-sanitization]
     if (!home.body.includes('application/ld+json') && !home.body.includes('schema.org')) {
       findings.push({
         id: 'SEO-SCHEMA',

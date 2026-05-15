@@ -61,11 +61,10 @@ export async function POST(req: NextRequest) {
   }
 
   try {
+    // URL validated by buildCalcUrl(): enforces loopback-only allowlist.
+    // EGYPT_CALC_URL is operator-controlled env var, not user input.
     const targetUrl = buildCalcUrl(endpoint);
-    // codeql[js/server-side-request-forgery]: URL is validated by buildCalcUrl()
-    // which enforces an allowlist of loopback-only hosts (localhost / 127.0.0.1)
-    // before this fetch is reached. The env var EGYPT_CALC_URL is controlled by
-    // the operator, not user input, and redirect is set to "error".
+    // codeql[js/server-side-request-forgery]
     const res = await fetch(targetUrl.toString(), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -101,9 +100,9 @@ export async function GET(req: NextRequest) {
   }
 
   try {
+    // Same allowlist guard as POST: buildCalcUrl() enforces loopback-only hosts.
     const targetUrl = buildCalcUrl(endpoint);
-    // codeql[js/server-side-request-forgery]: same allowlist guard as POST —
-    // buildCalcUrl() enforces loopback-only hosts; endpoint is from ALLOWED_ENDPOINTS.
+    // codeql[js/server-side-request-forgery]
     const res = await fetch(targetUrl.toString(), {
       method: "GET",
       redirect: "error",

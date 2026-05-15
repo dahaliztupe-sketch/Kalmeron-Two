@@ -55,6 +55,7 @@ export function sanitizeInput(input: string): string {
   let prev: string;
   do {
     prev = out;
+    // codeql[js/incomplete-multi-character-sanitization]
     out = out
       // وسوم تعليمات شائعة
       .replace(/\[(?:SYSTEM|INST|AGENT|TOOL|ASSISTANT)\]/gi, '')

@@ -35,10 +35,10 @@ async function safe<T>(label: string, fn: () => Promise<T>): Promise<[string, Ch
 
 /** Ping a Python sidecar's /health endpoint and return its JSON payload. */
 async function pingService(url: string): Promise<{ ok: boolean; [k: string]: unknown }> {
-  // codeql[js/server-side-request-forgery]: `url` is always one of
-  // PDF_WORKER_URL / EGYPT_CALC_URL / LLM_JUDGE_URL / EMBEDDINGS_WORKER_URL —
-  // operator-controlled env vars that default to localhost:PORT. The path is
-  // the fixed literal "/health". No user-supplied URL reaches this function.
+  // `url` is always one of PDF_WORKER_URL / EGYPT_CALC_URL / LLM_JUDGE_URL /
+  // EMBEDDINGS_WORKER_URL — operator-controlled env vars (default localhost:PORT).
+  // The path appended is the fixed literal "/health". No user input reaches here.
+  // codeql[js/server-side-request-forgery]
   const res = await fetch(`${url}/health`, {
     signal: AbortSignal.timeout(3_000),
     headers: { Accept: 'application/json' },
