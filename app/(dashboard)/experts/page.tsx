@@ -114,7 +114,7 @@ export default function ExpertsPage() {
           </div>
           <h1 className="text-2xl md:text-3xl font-extrabold text-white mb-2">سوق الخبراء</h1>
           <p className="text-sm text-neutral-400 max-w-xl">
-            أنشئ خبراء ذكاء اصطناعي متخصصين من وصف بالعربية — يتعلّمون نطاقهم ويُجيبون على أسئلتك الدقيقة.
+            أنشئ خبراء ذكاء اصطناعي متخصصين — يتعلّمون نطاقهم ويُجيبون على أسئلتك الدقيقة.
           </p>
         </motion.div>
 

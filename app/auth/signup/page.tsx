@@ -3,7 +3,7 @@ import PageClient from "./_page-client";
 
 export const metadata: Metadata = {
   title: "إنشاء حساب مجاني في Kalmeron AI",
-  description: "ابدأ مع Kalmeron AI مجاناً وانضم إلى آلاف رواد الأعمال العرب. احصل على ٥٧ مساعداً ذكياً متخصصاً يعملون كفريقك المؤسّس بالعربية الأصيلة.",
+  description: "ابدأ مجاناً وادخل إلى نظام تشغيل شركتك — سبعة أقسام تشغيلية تعمل معاً في منصة واحدة مُصمَّمة للمؤسسين.",
 };
 
 export default function Page() {

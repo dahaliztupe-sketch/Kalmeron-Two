@@ -25,7 +25,7 @@ const TONES = [
   { value: "professional", label: "احترافي رسمي" },
   { value: "friendly", label: "ودي ومريح" },
   { value: "direct", label: "مباشر وموجز" },
-  { value: "arabic", label: "عربي أصيل" },
+  { value: "arabic", label: "عربية" },
 ];
 
 export default function EmailAIPage() {

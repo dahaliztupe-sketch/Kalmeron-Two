@@ -198,7 +198,7 @@ const AGENTS: Agent[] = [
     id: "growth-2", name: "مدرب المبيعات", nameEn: "Sales Coach", stage: "growth",
     icon: Briefcase, isNew: true, live: true,
     desc: "يصمم استراتيجية مبيعات فعّالة وسكريبت البيع وتقنيات إغلاق الصفقة.",
-    capabilities: ["استراتيجية مبيعات", "سكريبت البيع بالعربي", "تقنيات إغلاق الصفقة", "KPIs المبيعات"],
+    capabilities: ["استراتيجية مبيعات", "سكريبت البيع الاحترافي", "تقنيات إغلاق الصفقة", "KPIs المبيعات"],
   },
   {
     id: "growth-3", name: "استراتيجي التسويق", nameEn: "Marketing Strategist", stage: "growth",

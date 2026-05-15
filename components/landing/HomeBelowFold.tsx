@@ -105,7 +105,7 @@ const HOW_IT_WORKS = [
   {
     step: "٣",
     icon: MessageSquare,
-    title: "تحدّث مع فريقك الكامل",
+    title: "تحدّث مع أقسامك المتخصصة",
     desc: "اسأل أي سؤال — الاستراتيجية، المالية، القانوني، التسويق — الإجابة فورية ودقيقة.",
     color: "from-violet-500 to-fuchsia-500",
     border: "border-violet-500/20",
@@ -180,11 +180,11 @@ const FEATURES_BENTO = [
 // ─── COMPARISON DATA ─────────────────────────────────────────────────────────
 
 const COMPARISON = [
-  { feature: "متاح ٢٤/٧", kalmeron: true,   consultant: false,       tools: "جزئياً" },
+  { feature: "متاح على مدار الساعة", kalmeron: true,   consultant: false,       tools: "جزئياً" },
   { feature: "يفهم سياق أعمالك وسوقك",  kalmeron: true,   consultant: "أحياناً", tools: false },
   { feature: "نمذجة مالية احترافية", kalmeron: true, consultant: true,  tools: false },
   { feature: "عقود قانونية جاهزة",  kalmeron: true,   consultant: true,      tools: false },
-  { feature: "لغة عربية أصيلة",    kalmeron: true,   consultant: false,      tools: false },
+  { feature: "ذاكرة مؤسسية مشتركة", kalmeron: true,   consultant: false,      tools: false },
   { feature: "يتعلم من بياناتك",    kalmeron: true,   consultant: false,      tools: false },
   { feature: "أسعار واضحة وثابتة",  kalmeron: true,   consultant: false,      tools: "بعضها" },
 ];
@@ -427,15 +427,15 @@ function DepartmentsSection() {
           className="text-center mb-12 md:mb-16"
         >
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-white/[0.08] bg-white/[0.04] text-[11px] text-cyan-200 mb-5">
-            <Sparkles className="w-3 h-3" /> أقسام متخصصة — كل قسم له فريقه من المساعدين
+            <Sparkles className="w-3 h-3" /> سبعة أقسام تشغيلية — كل شيء في مكانه
           </div>
           <h2 className="font-display text-2xl sm:text-3xl md:text-5xl font-extrabold text-white mb-4 leading-tight">
-            فريقك المؤسس الكامل
+            سبعة أقسام تشغيلية
             <br />
-            <span className="brand-gradient-text">بالعربية، ٢٤/٧</span>
+            <span className="brand-gradient-text">مترابطة في مكان واحد</span>
           </h2>
           <p className="text-neutral-400 text-base md:text-lg max-w-2xl mx-auto leading-relaxed">
-            بدلاً من إنفاق الآلاف على مستشارين متفرقين — كل خبرة تحتاجها في مكان واحد.
+            من الفكرة الأولى حتى اليوم المئة — قرارات أسرع وأدق في كل مرحلة.
           </p>
         </motion.div>
 
@@ -641,7 +641,7 @@ function FinalCTA() {
           transition={{ duration: 0.5 }}
         >
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-indigo-500/30 bg-indigo-500/[0.06] text-xs text-indigo-300 mb-6">
-            <Sparkles className="w-3.5 h-3.5" /> ابدأ مجاناً — بدون بطاقة ائتمان
+            <Sparkles className="w-3.5 h-3.5" /> ابدأ مجاناً
           </div>
 
           <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-extrabold text-white mb-5 leading-tight">
@@ -731,7 +731,7 @@ function SiteFooter() {
           <div className="col-span-2 md:col-span-1">
             <BrandLogo size={36} iconOnly showWordmark={false} />
             <p className="mt-4 text-sm text-neutral-500 leading-relaxed max-w-[200px]">
-              شريكك الذكي في بناء شركتك — بالعربية.
+              مقرّ عمليات شركتك.
             </p>
             <div className="mt-4 flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />

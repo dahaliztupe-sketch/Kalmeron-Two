@@ -115,15 +115,15 @@ export default function InvestorsPage() {
               رائد الأعمال المصري يدفع{" "}
               <strong className="text-white">5,000 إلى 50,000 جنيه شهرياً</strong>{" "}
               على مستشارين متفرقين في المالية، القانون، التسويق، والعمليات —
-              ومع ذلك يبقى وحيداً أمام أصعب القرارات، بدون أدوات بالعربية،
-              وبدون فهم للسياق المحلي والقوانين.
+              ومع ذلك يبقى وحيداً أمام أصعب القرارات،
+              بدون فهم للسياق المحلي والقوانين.
             </p>
           </div>
           <div className="glass rounded-3xl p-8 border-l-4 border-[rgb(var(--brand-cyan))]/60">
             <h3 className="text-2xl font-bold text-white mb-4">الحل</h3>
             <p className="text-neutral-300 leading-relaxed text-lg">
               <strong className="text-white">٥٧ مساعداً ذكياً متخصصاً</strong>{" "}
-              يعملون 24/7 بالعربية الفصحى، بدءاً من{" "}
+              يعملون على مدار الساعة، بدءاً من{" "}
               <strong className="text-white">199 جنيهاً شهرياً</strong> — مع
               فهم كامل لقانون 151، التأمينات الاجتماعية، ضرائب الدخل، وتفاصيل
               الترخيص في كل من مصر، السعودية، والإمارات.

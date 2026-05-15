@@ -56,21 +56,21 @@
     "profile": "My Account"
   },
   "CTA": {
-    "primarySignup": "Start free — no credit card required",
-    "watchDemo": "Watch Kalmeron in action (2 min)",
+    "primarySignup": "Start free",
+    "watchDemo": "Explore the platform",
     "buildFirstDept": "Build your first department in 5 minutes",
-    "startTrial": "Start free — no card needed",
-    "returnLogin": "Welcome back — your team is waiting",
+    "startTrial": "Start free",
+    "returnLogin": "Welcome back",
     "bookCall": "Talk to our team",
     "learnMore": "Learn more",
     "viewPricing": "See plans",
     "newConversation": "New conversation"
   },
   "Trust": {
-    "label": "Trusted by 2,000+ founders across 15 countries",
+    "label": "Trusted by 3,200+ founders across 15 countries",
     "noCard": "No credit card",
     "cancelAnytime": "Cancel anytime",
-    "arabicNative": "Native Arabic — no machine translation",
+    "arabicNative": "Deep local context — Egypt & Gulf",
     "privateData": "Your data is yours alone",
     "gdprReady": "GDPR-ready & international data protection compliant"
   },
@@ -88,23 +88,23 @@
       }
     },
     "hero": {
-      "eyebrow": "Kalmeron · 57 AI assistants for founders",
-      "titleLine1": "Your complete strategic team",
-      "titleLine2": "working 24/7 in native Arabic",
-      "subtitleLead": "Instead of spending thousands on financial advisors, lawyers, and market analysts,",
-      "subtitleHighlight": "57 specialised AI assistants",
-      "subtitleTail": "work across 7 departments as your full team — analysing your market, planning with you, and guiding every decision.",
-      "inputPlaceholder": "Write your idea or question — Kalmeron is ready…",
-      "submitLabel": "Start now",
-      "primaryCta": "Start free — no card",
-      "secondaryCta": "Watch a live demo (2 min)",
-      "scrollHint": "See how it works"
+      "eyebrow": "The Founders' Operating System",
+      "titleLine1": "Everything you need to build your company",
+      "titleLine2": "in one place",
+      "subtitleLead": "From financial modelling to legal contracts —",
+      "subtitleHighlight": "seven operational departments",
+      "subtitleTail": "working together in one platform built for founders.",
+      "inputPlaceholder": "Ask a question or share your idea…",
+      "submitLabel": "Analyse",
+      "primaryCta": "Start free",
+      "secondaryCta": "Explore the platform",
+      "scrollHint": "Learn about the platform"
     },
     "trustBadges": {
       "lawCompliant": "International data protection compliant",
-      "arabicNative": "Native Arabic — no machine translation",
-      "founderCount": "2,000+ active founders",
-      "freeStart": "Free to start — no card"
+      "arabicNative": "Deep local context — Egypt & Gulf",
+      "founderCount": "3,200+ active founders",
+      "freeStart": "Free to start"
     },
     "suggestions": {
       "platform": "Analyse a learning platform idea for freelancers in my market",

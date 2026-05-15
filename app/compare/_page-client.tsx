@@ -283,7 +283,7 @@ export default function ComparePage() {
             <div className="flex flex-wrap items-center justify-center gap-4 mt-6 text-xs text-neutral-600">
               <span className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> مجاني للبداية</span>
               <span className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> ألغ في أي وقت</span>
-              <span className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> دعم فوري بالعربي</span>
+              <span className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> دعم فوري</span>
             </div>
           </motion.div>
         </div>

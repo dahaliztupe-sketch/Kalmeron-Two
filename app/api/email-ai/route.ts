@@ -29,7 +29,7 @@ const TONE_MAP: Record<string, string> = {
   professional: 'رسمي احترافي، مهذّب ومحترم',
   friendly: 'ودي ودافئ، كالتحدث مع صديق يحترمه',
   direct: 'مباشر وموجز، يحترم وقت القارئ',
-  arabic: 'عربي أصيل، يستخدم مفردات راقية ومناسبة للثقافة المصرية',
+  arabic: 'بالعربية، يستخدم مفردات راقية ومناسبة للثقافة المصرية',
 };
 
 const MODE_PROMPTS: Record<string, (d: Record<string, string>) => string> = {

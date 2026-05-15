@@ -8,7 +8,7 @@ export const metadata = {
 };
 
 const ROWS: { feature: string; kalmeron: string; chatgpt: string }[] = [
-  { feature: "اللغة الأم", kalmeron: "عربي أصيل + مصطلحات السوق", chatgpt: "إنجليزي مترجم" },
+  { feature: "عمق السياق", kalmeron: "سياق محلي معمّق + مصطلحات السوق", chatgpt: "نموذج عام بلا سياق محلي" },
   { feature: "معرفة السوق المحلي", kalmeron: "أسعار، رسوم، تراخيص ٢٠ بلداً عربياً", chatgpt: "عام، يحتاج توضيحاً مستمرّاً" },
   { feature: "النماذج المالية", kalmeron: "بالعملة المحلية، حسب نظام الضرائب الفعلي", chatgpt: "يحتاج تحويل يدوي" },
   { feature: "العقود القانونية", kalmeron: "قوالب مصرية/خليجية مراجعة", chatgpt: "نماذج عامة، قد تحتاج محامياً" },
@@ -73,7 +73,7 @@ export default function VsChatgptPage() {
                 <ArrowLeft className="w-4 h-4" />
               </Link>
               <Link href="/why-arabic" className="btn-ghost inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full text-sm">
-                لماذا عربي أصيل؟
+                لماذا السياق المحلي مهم؟
               </Link>
             </div>
           </div>

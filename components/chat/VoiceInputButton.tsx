@@ -106,7 +106,7 @@ export function VoiceInputButton({ onTranscript, lang = "ar-EG", className }: Pr
       size="icon"
       variant="ghost"
       onClick={toggle}
-      title={listening ? "إيقاف التسجيل" : "تحدّث بالعربية"}
+      title={listening ? "إيقاف التسجيل" : "إدخال صوتي"}
       aria-label={listening ? "إيقاف التسجيل" : "بدء الإدخال الصوتي"}
       className={cn(
         listening && "text-rose-400 animate-pulse",
