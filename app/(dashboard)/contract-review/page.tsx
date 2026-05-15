@@ -310,7 +310,7 @@ export default function ContractReviewPage() {
               <div className="flex items-center justify-between mb-3">
                 <label className="text-sm font-semibold text-white">{t("contractTextLabel")}</label>
                 <div className="flex items-center gap-2">
-                  <span className="text-xs text-white/30">{contractText.length.toLocaleString("ar-EG")} حرف</span>
+                  <span className="text-xs text-white/30">{contractText.length.toLocaleString("ar-EG-u-nu-latn")} حرف</span>
                   <button onClick={handlePaste} className="flex items-center gap-1.5 text-xs text-amber-400 hover:text-amber-300 transition-colors border border-amber-500/20 rounded-lg px-2.5 py-1">
                     <Upload className="w-3 h-3" /> {t("pasteFromClipboard")}
                   </button>

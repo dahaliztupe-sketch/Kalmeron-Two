@@ -12,8 +12,8 @@ import { cn } from "@/src/lib/utils";
 
 function formatEGP(n: number) {
   if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)} مليون ج.م`;
-  if (n >= 1_000) return `${Math.round(n / 1_000).toLocaleString("ar-EG")} ألف ج.م`;
-  return `${Math.round(n).toLocaleString("ar-EG")} ج.م`;
+  if (n >= 1_000) return `${Math.round(n / 1_000).toLocaleString("ar-EG-u-nu-latn")} ألف ج.م`;
+  return `${Math.round(n).toLocaleString("ar-EG-u-nu-latn")} ج.م`;
 }
 
 const CONSULTANT_RATES: Record<string, number> = {

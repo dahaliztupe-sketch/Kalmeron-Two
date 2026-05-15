@@ -32,7 +32,7 @@ export async function cofounderHealthCheckAction(input: CofounderHealthInput): P
 
       const foundersText = input.founders.map(f => {
         const avg = Object.values(f.answers).reduce((a, b) => a + b, 0) / Object.keys(f.answers).length;
-        return `**${f.name}** (${f.role} — ${f.equity}٪):
+        return `**${f.name}** (${f.role} — ${f.equity}%):
 - توافق الرؤية: ${f.answers.visionAlignment}/5
 - وضوح الدور: ${f.answers.roleClarity}/5
 - جودة التواصل: ${f.answers.communicationQuality}/5
@@ -51,7 +51,7 @@ ${foundersText}
 قدّم تقرير صحة الفريق:
 
 ## 🌡️ التشخيص الكلي
-(درجة صحة الفريق من ١٠ مع تبرير موجز)
+(درجة صحة الفريق من 10 مع تبرير موجز)
 
 ## ✅ نقاط القوة الجوهرية
 (ما الذي يعمل جيداً في هذا الفريق؟)
@@ -59,8 +59,8 @@ ${foundersText}
 ## ⚠️ مناطق الخطر
 (لكل خطر: ما هو؟ لماذا مهم؟ ما التأثير المتوقع لو لم يُعالج؟)
 
-## 🔧 خطة العمل (٣٠ يوماً)
-(٣-٥ خطوات محددة وقابلة للتنفيذ فوراً)
+## 🔧 خطة العمل (30 يوماً)
+(3-5 خطوات محددة وقابلة للتنفيذ فوراً)
 
 ## 📋 محادثات يجب أن تحدث هذا الأسبوع
 (محاور الحوار الحرج التي يجب أن يجريها المؤسسون الآن)

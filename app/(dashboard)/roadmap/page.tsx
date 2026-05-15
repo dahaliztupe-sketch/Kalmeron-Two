@@ -98,7 +98,7 @@ export default function RoadmapPage() {
                       </div>
                       {t.updatedAt && (
                         <p className="text-xs text-text-secondary/70">
-                          {new Date(t.updatedAt).toLocaleString('ar-EG')}
+                          {new Date(t.updatedAt).toLocaleString('ar-EG-u-nu-latn')}
                         </p>
                       )}
                     </div>

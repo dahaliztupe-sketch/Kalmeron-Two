@@ -77,7 +77,7 @@ export default async function AiLogsDashboard() {
               </CardTitle>
             </CardHeader>
             <CardContent className="text-2xl font-mono text-indigo-300">
-              {totalTokens.toLocaleString("ar-EG")}
+              {totalTokens.toLocaleString("ar-EG-u-nu-latn")}
             </CardContent>
           </Card>
 
@@ -150,10 +150,10 @@ export default async function AiLogsDashboard() {
                         </span>
                       </TableCell>
                       <TableCell className="text-neutral-300 font-mono text-sm">
-                        {log.promptTokens.toLocaleString("ar-EG")}
+                        {log.promptTokens.toLocaleString("ar-EG-u-nu-latn")}
                       </TableCell>
                       <TableCell className="text-neutral-300 font-mono text-sm">
-                        {log.completionTokens.toLocaleString("ar-EG")}
+                        {log.completionTokens.toLocaleString("ar-EG-u-nu-latn")}
                       </TableCell>
                       <TableCell className="text-rose-400 font-mono text-sm">
                         {fmtUsd(log.costUsd)}

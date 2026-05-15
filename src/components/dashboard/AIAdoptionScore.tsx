@@ -71,7 +71,7 @@ export function AIAdoptionScore({ metrics = {} }: AIAdoptionScoreProps) {
               <span className="text-xs text-white/50 font-medium">مؤشر تبنّي الذكاء الاصطناعي</span>
             </div>
             <div className={`text-3xl font-black bg-gradient-to-r ${color} bg-clip-text text-transparent`}>
-              {score}٪
+              {score}%
             </div>
             <div className="text-xs text-white/40 mt-0.5">{level}</div>
           </div>

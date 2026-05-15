@@ -297,7 +297,7 @@ export default function CapTablePage() {
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-sm font-semibold text-slate-300">المساهمون</span>
-                <span className="text-xs text-slate-500">إجمالي الأسهم: {totalShares.toLocaleString("ar-EG")}</span>
+                <span className="text-xs text-slate-500">إجمالي الأسهم: {totalShares.toLocaleString("ar-EG-u-nu-latn")}</span>
               </div>
 
               <div className="grid grid-cols-12 gap-2 px-3 pb-1">

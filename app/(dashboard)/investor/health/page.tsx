@@ -259,7 +259,7 @@ export default function InvestorHealthPage() {
             </section>
 
             <p className="text-xs text-white/40 text-center">
-              آخر فحص في {new Date(data.generatedAt).toLocaleString("ar-EG")}
+              آخر فحص في {new Date(data.generatedAt).toLocaleString("ar-EG-u-nu-latn")}
             </p>
           </>
         )}

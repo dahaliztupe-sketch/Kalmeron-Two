@@ -15,9 +15,9 @@ import { useTranslations } from "next-intl";
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 
 const fmt = (n: number) =>
-  new Intl.NumberFormat("ar-EG", { maximumFractionDigits: 2 }).format(n);
+  new Intl.NumberFormat("ar-EG-u-nu-latn", { maximumFractionDigits: 2 }).format(n);
 
-const pct = (n: number) => `${(n * 100).toFixed(1)}٪`;
+const pct = (n: number) => `${(n * 100).toFixed(1)}%`;
 
 type CalcTab = "income-tax" | "social" | "total-cost" | "vat" | "fawry" | "instapay";
 

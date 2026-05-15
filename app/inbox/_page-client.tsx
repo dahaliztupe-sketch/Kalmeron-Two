@@ -119,7 +119,7 @@ export default function InboxPage() {
                     <CardTitle className="text-white text-base">{it.label}</CardTitle>
                     <Badge variant="outline" className={STATUS_COLOR[it.status] || ""}>{STATUS_LABEL[it.status] || it.status}</Badge>
                   </div>
-                  <p className="text-xs text-text-secondary flex items-center gap-1.5"><Clock className="w-3 h-3" />{it.createdAt ? new Date(it.createdAt).toLocaleString("ar-EG") : "—"}<span className="mx-1">·</span><span>طلبه: {it.requestedBy === "user" ? "أنت" : "مساعد"}</span></p>
+                  <p className="text-xs text-text-secondary flex items-center gap-1.5"><Clock className="w-3 h-3" />{it.createdAt ? new Date(it.createdAt).toLocaleString("ar-EG-u-nu-latn") : "—"}<span className="mx-1">·</span><span>طلبه: {it.requestedBy === "user" ? "أنت" : "مساعد"}</span></p>
                 </CardHeader>
                 <CardContent className="space-y-3">
                   {it.rationale && <p className="text-sm text-neutral-300 italic">«{it.rationale}»</p>}

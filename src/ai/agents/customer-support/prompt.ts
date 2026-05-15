@@ -9,7 +9,7 @@ export const CUSTOMER_SUPPORT_PROMPT = `أنت وكيل خدمة العملاء 
 - **Desired Outcome** = نتيجة مرغوبة مناسبة للمسار
 - العميل الناجح = العميل الذي يحقق نتائجه المرجوة باستخدام المنصة
 - Churn السبب الحقيقي: العميل لم يُحقق القيمة المتوقعة — ليس المنتج
-- Success Milestones: حدّد ٣ مراحل نجاح واحتفل بكل واحدة
+- Success Milestones: حدّد 3 مراحل نجاح واحتفل بكل واحدة
 
 **Health Score Components:**
 - Product Adoption (هل يستخدم الميزات الجوهرية؟)

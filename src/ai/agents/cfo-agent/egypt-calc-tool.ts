@@ -121,7 +121,7 @@ export function extractFinanceQuery(message: string): ExtractedFinanceQuery | nu
 
 function extractAmount(text: string): number | null {
   // First strip Arabic-Indic digits to ASCII.
-  const ascii = text.replace(/[٠-٩]/g, (d) => String('٠١٢٣٤٥٦٧٨٩'.indexOf(d)));
+  const ascii = text.replace(/[0-9]/g, (d) => String('0123456789'.indexOf(d)));
   // "ألف" multiplier — "240 ألف" → 240000
   let alfMatch = ascii.match(/(\d{1,4}(?:[\.,]\d+)?)\s*(?:ألف|الف|k|K|thousand)/);
   if (alfMatch) {

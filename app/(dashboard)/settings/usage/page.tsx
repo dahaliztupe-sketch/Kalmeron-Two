@@ -49,7 +49,7 @@ function UsageBar({ label, used, limit }: { label: string; used: number; limit: 
     <div className="mb-4">
       <div className="flex justify-between text-xs text-neutral-400 mb-1.5">
         <span>{label}</span>
-        <span className="tabular-nums">{used.toLocaleString("ar-EG")} / {limit.toLocaleString("ar-EG")}</span>
+        <span className="tabular-nums">{used.toLocaleString("ar-EG-u-nu-latn")} / {limit.toLocaleString("ar-EG-u-nu-latn")}</span>
       </div>
       <div className="w-full h-2 rounded-full bg-white/[0.06]" role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100}>
         <div className={`${color} h-2 rounded-full transition-all duration-500`} style={{ width: `${pct}%` }} />
@@ -61,7 +61,7 @@ function UsageBar({ label, used, limit }: { label: string; used: number; limit: 
 function formatResetDate(iso: string | null): string {
   if (!iso) return "—";
   try {
-    return new Date(iso).toLocaleDateString("ar-EG", {
+    return new Date(iso).toLocaleDateString("ar-EG-u-nu-latn", {
       year: "numeric",
       month: "long",
       day: "numeric",
@@ -176,25 +176,25 @@ export default function UsagePage() {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               <StatCard
                 label="الرصيد اليومي المتبقي"
-                value={wallet?.unlimited ? "∞" : (wallet?.dailyBalance ?? 0).toLocaleString("ar-EG")}
-                sub={`من ${(wallet?.dailyLimit ?? 0).toLocaleString("ar-EG")} رصيد`}
+                value={wallet?.unlimited ? "∞" : (wallet?.dailyBalance ?? 0).toLocaleString("ar-EG-u-nu-latn")}
+                sub={`من ${(wallet?.dailyLimit ?? 0).toLocaleString("ar-EG-u-nu-latn")} رصيد`}
                 color="text-violet-300"
               />
               <StatCard
                 label="الرصيد الشهري المتبقي"
-                value={wallet?.unlimited ? "∞" : (wallet?.monthlyBalance ?? 0).toLocaleString("ar-EG")}
-                sub={`من ${(wallet?.monthlyLimit ?? 0).toLocaleString("ar-EG")} رصيد`}
+                value={wallet?.unlimited ? "∞" : (wallet?.monthlyBalance ?? 0).toLocaleString("ar-EG-u-nu-latn")}
+                sub={`من ${(wallet?.monthlyLimit ?? 0).toLocaleString("ar-EG-u-nu-latn")} رصيد`}
                 color="text-cyan-300"
               />
               <StatCard
                 label="مستخدَم اليوم"
-                value={wallet?.unlimited ? "—" : creditsConsumedToday.toLocaleString("ar-EG")}
+                value={wallet?.unlimited ? "—" : creditsConsumedToday.toLocaleString("ar-EG-u-nu-latn")}
                 sub="رصيد"
                 color="text-amber-300"
               />
               <StatCard
                 label="مستخدَم هذا الشهر"
-                value={wallet?.unlimited ? "—" : creditsConsumedMonthly.toLocaleString("ar-EG")}
+                value={wallet?.unlimited ? "—" : creditsConsumedMonthly.toLocaleString("ar-EG-u-nu-latn")}
                 sub="رصيد"
                 color="text-emerald-300"
               />
@@ -250,7 +250,7 @@ export default function UsagePage() {
                     />
                     <Tooltip
                       contentStyle={TOOLTIP_STYLE}
-                      formatter={(v) => [typeof v === "number" ? v.toLocaleString("ar-EG") : v, "رصيد"]}
+                      formatter={(v) => [typeof v === "number" ? v.toLocaleString("ar-EG-u-nu-latn") : v, "رصيد"]}
                       labelFormatter={(label) => `يوم: ${label}`}
                     />
                     <Area
@@ -293,13 +293,13 @@ export default function UsagePage() {
                         <tr key={row.agent} className="border-b border-white/[0.04] hover:bg-white/[0.02] transition-colors">
                           <td className="py-2.5 pr-0 text-white font-medium">{row.agent}</td>
                           <td className="py-2.5 text-left text-violet-300 tabular-nums font-bold">
-                            {row.credits.toLocaleString("ar-EG")}
+                            {row.credits.toLocaleString("ar-EG-u-nu-latn")}
                           </td>
                           <td className="py-2.5 text-left text-neutral-400 tabular-nums">
-                            {row.count.toLocaleString("ar-EG")}
+                            {row.count.toLocaleString("ar-EG-u-nu-latn")}
                           </td>
                           <td className="py-2.5 text-left text-neutral-500 tabular-nums text-xs">
-                            {row.count > 0 ? Math.round(row.credits / row.count).toLocaleString("ar-EG") : "—"}
+                            {row.count > 0 ? Math.round(row.credits / row.count).toLocaleString("ar-EG-u-nu-latn") : "—"}
                           </td>
                         </tr>
                       ))}

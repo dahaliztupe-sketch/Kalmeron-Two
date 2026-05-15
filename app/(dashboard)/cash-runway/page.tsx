@@ -20,7 +20,7 @@ import { fmtMonths } from "@/src/lib/runway/calc";
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 import { CardSkeleton } from "@/components/ui/PageSkeleton";
 
-const fmt = (n: number) => new Intl.NumberFormat("ar-EG").format(Math.round(n));
+const fmt = (n: number) => new Intl.NumberFormat("ar-EG-u-nu-latn").format(Math.round(n));
 
 export default function CashRunwayPage() {
   const t = useTranslations("CashRunway");

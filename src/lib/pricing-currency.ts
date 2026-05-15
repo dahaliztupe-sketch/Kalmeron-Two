@@ -56,7 +56,7 @@ export function formatLocalPrice(usdPrice: number, pricing: RegionalPricing): st
   const adjustedUsd = pricing.applyPppDiscount ? usdPrice * pricing.pppFactor : usdPrice;
   const local = adjustedUsd * pricing.fxRate;
   const rounded = local >= 100 ? Math.round(local / 5) * 5 : Math.round(local);
-  return `${pricing.formatPrefix || pricing.currencySymbol} ${rounded.toLocaleString("ar-EG")}`;
+  return `${pricing.formatPrefix || pricing.currencySymbol} ${rounded.toLocaleString("ar-EG-u-nu-latn")}`;
 }
 
 /** Return both USD anchor and local price. */

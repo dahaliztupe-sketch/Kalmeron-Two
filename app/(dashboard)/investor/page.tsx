@@ -369,7 +369,7 @@ export default function InvestorMetricsPage() {
             </section>
 
             <p className="text-xs text-white/40 text-center">
-              مولّد في {new Date(data.generatedAt).toLocaleString("ar-EG")}
+              مولّد في {new Date(data.generatedAt).toLocaleString("ar-EG-u-nu-latn")}
             </p>
           </>
         )}

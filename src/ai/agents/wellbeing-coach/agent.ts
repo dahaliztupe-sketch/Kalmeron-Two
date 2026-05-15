@@ -44,12 +44,12 @@ export async function wellbeingCoachAction(assessment: WellbeingAssessment): Pro
         .join('، ');
 
       const prompt = `تقييم رائد الأعمال: ${scoresText}
-المجموع: ${percentage}٪ — المستوى: ${level}
+المجموع: ${percentage}% — المستوى: ${level}
 ${assessment.context ? `السياق الإضافي: ${assessment.context}` : ''}
 
 قدّم تحليلاً دافئاً وعملياً يشمل:
 1. **قراءة حالتك الآن** — ما تعيشه بكلمات إنسانية حقيقية
-2. **أهم ٣ خطوات عملية** لهذا الأسبوع (محددة وقابلة للتطبيق)
+2. **أهم 3 خطوات عملية** لهذا الأسبوع (محددة وقابلة للتطبيق)
 3. **تقنية واحدة** للتطبيق الفوري (تنفس، تأمل، ممارسة بدنية — مناسبة لجدول رائد الأعمال)
 4. **جملة تحفيزية** من تجربة رائد أعمال عربي ناجح مر بنفس الموقف
 5. **متى تطلب مساعدة متخصص؟** (بوضوح وبدون وصمة)
@@ -67,7 +67,7 @@ export async function quickCheckInAction(mood: string): Promise<string> {
   return instrumentAgent(
     'wellbeing_coach_checkin',
     async () => {
-      const system = `أنت مدرب الرفاه النفسي في كلميرون. رد بإيجاز دافئ (٥٠-١٠٠ كلمة) على حالة رائد الأعمال. كن عملياً وداعماً.`;
+      const system = `أنت مدرب الرفاه النفسي في كلميرون. رد بإيجاز دافئ (50-100 كلمة) على حالة رائد الأعمال. كن عملياً وداعماً.`;
       const { text } = await generateText({
         model: MODELS.FLASH,
         system,

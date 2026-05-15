@@ -264,7 +264,7 @@ export default function WeeklyReportClient() {
                 {
                   icon: <Zap className="w-4 h-4 text-cyan-400" />,
                   label: "طلبات AI هذا الأسبوع",
-                  value: data.summary.totalRequests.toLocaleString("ar-EG"),
+                  value: data.summary.totalRequests.toLocaleString("ar-EG-u-nu-latn"),
                   // lexicon-allow
                   sub: `${data.summary.agentCount} وكيل نشط`,
                   color: "from-cyan-500/10 to-transparent",
@@ -279,7 +279,7 @@ export default function WeeklyReportClient() {
                 {
                   icon: <AlertTriangle className="w-4 h-4 text-amber-400" />,
                   label: "مهام معلّقة",
-                  value: data.summary.pendingTasksCount.toLocaleString("ar-EG"),
+                  value: data.summary.pendingTasksCount.toLocaleString("ar-EG-u-nu-latn"),
                   sub: `${data.summary.criticalAlertsCount} تنبيه حرج`,
                   color: data.summary.pendingTasksCount > 0 ? "from-amber-500/10 to-transparent" : "from-white/[0.02] to-transparent",
                 },

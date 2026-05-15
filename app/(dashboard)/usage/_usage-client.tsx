@@ -125,8 +125,8 @@ export default function UsageClient() {
       {s && (
         <>
           <section className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4" aria-label="ملخص الاستخدام">
-            <StatCard icon={Coins} label="اعتمادات مستخدمة" value={s.creditsUsed.toLocaleString("ar-EG")} hint={`${s.creditsRemaining.toLocaleString("ar-EG")} متبقية`} />
-            <StatCard icon={Activity} label="طلبات هذا الشهر" value={s.requestsThisMonth.toLocaleString("ar-EG")} />
+            <StatCard icon={Coins} label="اعتمادات مستخدمة" value={s.creditsUsed.toLocaleString("ar-EG-u-nu-latn")} hint={`${s.creditsRemaining.toLocaleString("ar-EG-u-nu-latn")} متبقية`} />
+            <StatCard icon={Activity} label="طلبات هذا الشهر" value={s.requestsThisMonth.toLocaleString("ar-EG-u-nu-latn")} />
             <StatCard icon={TrendingUp} label="تكلفة تقديرية" value={`$${s.estimatedCostUsd.toFixed(2)}`} hint="بالدولار" />
             <StatCard icon={Cpu} label="عدد الوكلاء النشطين" value={String(s.byAgent.length)} />
           </section>
@@ -170,7 +170,7 @@ export default function UsageClient() {
                     {s.byAgent.map((a) => (
                       <tr key={a.agent} className="border-b last:border-0">
                         <td className="py-2 font-medium">{a.agent}</td>
-                        <td className="py-2">{a.requests.toLocaleString("ar-EG")}</td>
+                        <td className="py-2">{a.requests.toLocaleString("ar-EG-u-nu-latn")}</td>
                         <td className="py-2">${a.cost.toFixed(3)}</td>
                       </tr>
                     ))}
@@ -197,7 +197,7 @@ export default function UsageClient() {
                 <li key={ev.id} className="flex items-center justify-between py-3 text-sm">
                   <div>
                     <div className="font-medium">{ev.agent} <span className="text-xs text-muted-foreground">({ev.model})</span></div>
-                    <div className="text-xs text-muted-foreground">{new Date(ev.createdAt).toLocaleString("ar-EG")}</div>
+                    <div className="text-xs text-muted-foreground">{new Date(ev.createdAt).toLocaleString("ar-EG-u-nu-latn")}</div>
                   </div>
                   <div className="text-left">
                     <div>{ev.inputTokens + ev.outputTokens} توكن</div>

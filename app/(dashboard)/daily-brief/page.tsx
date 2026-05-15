@@ -100,7 +100,7 @@ export default function DailyBriefPage() {
           </div>
         </div>
         {brief?.generatedAt && (
-          <p className="text-neutral-500 text-xs">آخر إيجاز: {new Date(brief.generatedAt).toLocaleString("ar-EG")}</p>
+          <p className="text-neutral-500 text-xs">آخر إيجاز: {new Date(brief.generatedAt).toLocaleString("ar-EG-u-nu-latn")}</p>
         )}
       </motion.div>
 

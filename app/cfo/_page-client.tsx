@@ -19,7 +19,7 @@ import { cn } from "@/src/lib/utils";
 function formatEGP(n: number) {
   if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M ج.م`;
   if (n >= 1_000) return `${(n / 1_000).toFixed(0)}K ج.م`;
-  return `${n.toLocaleString("ar-EG")} ج.م`;
+  return `${n.toLocaleString("ar-EG-u-nu-latn")} ج.م`;
 }
 
 const QUICK_INSIGHTS = [

@@ -85,7 +85,7 @@ export default function AuditPage() {
                     {items.map((it) => (
                       <tr key={it.id} className="text-neutral-300">
                         <td className="px-4 py-2 whitespace-nowrap">
-                          {it.timestamp ? new Date(it.timestamp).toLocaleString("ar-EG") : "—"}
+                          {it.timestamp ? new Date(it.timestamp).toLocaleString("ar-EG-u-nu-latn") : "—"}
                         </td>
                         <td className="px-4 py-2">
                           <Badge variant="outline" className="border-brand-blue/40 text-brand-blue">

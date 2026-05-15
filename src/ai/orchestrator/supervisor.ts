@@ -544,7 +544,7 @@ async function realEstateNode(state: typeof SupervisorState.State) {
       agentName: 'real-estate',
       agentDisplayNameAr: 'خبير العقارات',
       agentRoleAr:
-        'خبير عقارات استثمارية في مصر متخصص في حساب ROI، قاعدة الـ1٪، تقييم الصفقات، وتحليل الأسواق العقارية لعام 2026',
+        'خبير عقارات استثمارية في مصر متخصص في حساب ROI، قاعدة الـ1%، تقييم الصفقات، وتحليل الأسواق العقارية لعام 2026',
       userMessage: lastMessage,
       uiContext: state.uiContext,
       userId: state.userId,

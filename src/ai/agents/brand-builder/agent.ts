@@ -46,7 +46,7 @@ export async function brandBuilderAction(businessName: string, description: stri
     "personality": "وصف شخصية العلامة",
     "communicationStyle": "أسلوب التواصل"
   },
-  "brandStory": "قصة العلامة في ٣-٤ جمل",
+  "brandStory": "قصة العلامة في 3-4 جمل",
   "communicationRules": ["قاعدة1", "قاعدة2", "قاعدة3"],
   "colorSuggestions": [
     {"name": "اسم اللون", "hex": "#XXXXXX", "usage": "متى تُستخدم"}

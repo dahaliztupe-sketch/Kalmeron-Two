@@ -23,7 +23,7 @@ export async function generateWeeklyGoals(userId: string) {
       const { text } = await generateText({
         model: MODEL,
         system: OKR_PROMPT,
-        prompt: `أنت مدير قسم ${dept}. اقترح هدف أسبوعي واحد ذو ٢-٣ نتائج رئيسية قابلة للقياس بالأرقام.
+        prompt: `أنت مدير قسم ${dept}. اقترح هدف أسبوعي واحد ذو 2-3 نتائج رئيسية قابلة للقياس بالأرقام.
 سياق المشروع:
 ${context}
 

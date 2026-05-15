@@ -78,7 +78,7 @@ export function formatCurrency(
     return locale === "ar" ? "—" : "—";
   }
 
-  const intlLocale = locale === "ar" ? "ar-EG" : "en-US";
+  const intlLocale = locale === "ar" ? "ar-EG-u-nu-latn" : "en-US";
 
   // Smart fraction digits: integer-ish amounts hide decimals.
   const isIntegerish = Math.abs(amount % 1) < 0.005;
@@ -107,7 +107,7 @@ export function formatCurrency(
 /** Quick helper — a number → "1.2K MAU" style label without currency. */
 export function formatCompactNumber(amount: number, locale: CurrencyLocale = "ar"): string {
   if (!Number.isFinite(amount)) return "—";
-  return new Intl.NumberFormat(locale === "ar" ? "ar-EG" : "en-US", {
+  return new Intl.NumberFormat(locale === "ar" ? "ar-EG-u-nu-latn" : "en-US", {
     notation: "compact",
     maximumFractionDigits: 1,
   }).format(amount);
