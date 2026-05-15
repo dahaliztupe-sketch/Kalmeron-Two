@@ -239,28 +239,58 @@ Our automated security pipeline runs on every push:
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) before submitting a pull request.
+Contributions are welcome from everyone — developers, founders, and AI agents alike! Please read the relevant documents before contributing:
+
+| Document | Description |
+|---|---|
+| [AGENTS.md](AGENTS.md) | **Start here** if you're an AI agent (Replit, Cursor, Codex…) |
+| [CONTRIBUTING.md](CONTRIBUTING.md) | Commit conventions, test requirements, PR process |
+| [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) | Community standards & Arabic community values |
+| [SECURITY.md](SECURITY.md) | How to report vulnerabilities responsibly |
 
 ### Development Workflow
 
 ```bash
-# Create a feature branch
+# 1. Create a feature branch
 git checkout -b feat/your-feature
 
-# Make changes, then verify everything passes
-npm run typecheck && npm run lint && npm test
+# 2. Scaffold a new feature (optional)
+node scripts/scaffold-feature.mjs <name>
 
-# Submit a pull request
-# All CI checks must pass before merge
+# 3. Make changes, then verify everything passes
+npm run typecheck   # 0 TypeScript errors
+npm run lint        # 0 ESLint errors
+npm run test        # All tests pass
+
+# 4. Submit a pull request
+# → All CI checks must pass before merge
+# → Commit messages must follow Conventional Commits
 ```
 
 ### Areas for Contribution
 
-- 🌐 **Translations** — improve Arabic/English translations in `messages/`
-- 🤖 **AI Agents** — add or improve agents in `src/ai/agents/`
-- 🧪 **Tests** — expand Playwright e2e coverage or Vitest unit tests
-- 📚 **Docs** — improve runbooks in `docs/`
-- 🐛 **Bug fixes** — see [open issues](https://github.com/dahaliztupe-sketch/Kalmeron-Two/issues)
+| Area | How to Help |
+|---|---|
+| 🌐 **Translations** | Improve Arabic/English in `messages/` |
+| 🤖 **AI Agents** | Add or improve agents in `src/ai/agents/` — [open an issue first](https://github.com/dahaliztupe-sketch/Kalmeron-Two/issues/new?template=ai_agent_request.yml) |
+| 🧪 **Tests** | Expand Playwright e2e or Vitest unit coverage |
+| 📚 **Docs** | Improve runbooks in `docs/` or Architecture Decision Records |
+| 🐛 **Bug Fixes** | See [open bugs](https://github.com/dahaliztupe-sketch/Kalmeron-Two/issues?q=is%3Aissue+is%3Aopen+label%3Abug) |
+| ✨ **Features** | See [feature requests](https://github.com/dahaliztupe-sketch/Kalmeron-Two/issues?q=is%3Aissue+is%3Aopen+label%3Aenhancement) |
+
+---
+
+## 💬 Community
+
+<div align="center">
+
+| | |
+|---|---|
+| [🐛 Report a Bug](https://github.com/dahaliztupe-sketch/Kalmeron-Two/issues/new?template=bug_report.yml) | [✨ Request a Feature](https://github.com/dahaliztupe-sketch/Kalmeron-Two/issues/new?template=feature_request.yml) |
+| [🤖 Request an AI Agent](https://github.com/dahaliztupe-sketch/Kalmeron-Two/issues/new?template=ai_agent_request.yml) | [💡 Share an Idea](https://github.com/dahaliztupe-sketch/Kalmeron-Two/discussions/new?category=ideas) |
+| [❓ Ask a Question](https://github.com/dahaliztupe-sketch/Kalmeron-Two/discussions/new?category=q-a) | [🔐 Report a Vulnerability](https://github.com/dahaliztupe-sketch/Kalmeron-Two/security/advisories/new) |
+
+</div>
 
 ---
 
@@ -273,5 +303,9 @@ Licensed under the **Apache License 2.0** — see the [LICENSE](LICENSE) file fo
 <div align="center">
 
 صُنع بـ ♥ في مصر 🇪🇬 · Built with love for Arabic-speaking founders
+
+[![Code of Conduct](https://img.shields.io/badge/Contributor_Covenant-2.1-4baaaa.svg)](CODE_OF_CONDUCT.md)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
+[![Good First Issues](https://img.shields.io/github/issues/dahaliztupe-sketch/Kalmeron-Two/good-first-issue)](https://github.com/dahaliztupe-sketch/Kalmeron-Two/issues?q=is%3Aopen+is%3Aissue+label%3A%22good-first-issue%22)
 
 </div>

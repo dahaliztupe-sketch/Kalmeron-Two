@@ -1,0 +1,60 @@
+title: "❓ [سؤالك / Your question]"
+labels:
+  - question
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## مرحباً بك في مجتمع كلميرون 👋
+        لا يوجد سؤال بسيط جداً! المجتمع هنا للمساعدة.
+        ---
+        ## Welcome to the Kalmeron community 👋
+        No question is too simple! The community is here to help.
+
+  - type: dropdown
+    id: language
+    attributes:
+      label: "لغة السؤال / Question Language"
+      options:
+        - "العربية 🇪🇬"
+        - "English 🌍"
+        - "كليهما / Both"
+    validations:
+      required: true
+
+  - type: textarea
+    id: question
+    attributes:
+      label: "سؤالك / Your Question"
+      description: "كلما كان سؤالك أوضح، كلما كانت الإجابة أسرع وأدق"
+      placeholder: |
+        كيف أستطيع...؟ / How do I...?
+        ما الفرق بين...؟ / What's the difference between...?
+        لماذا...؟ / Why does...?
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: "السياق / Context"
+      description: "أي معلومات إضافية تساعد في فهم سؤالك"
+      placeholder: |
+        أنا أحاول...
+        I'm trying to...
+        لقد جرّبت...
+        I've already tried...
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: "المجال / Area"
+      options:
+        - "البدء / Getting Started"
+        - "الإعداد / Setup & Config"
+        - "المساعدون الذكيون / AI Agents"
+        - "المدفوعات / Billing"
+        - "API & Integrations"
+        - "التطوير / Development"
+        - "النشر / Deployment"
+        - "أخرى / Other"

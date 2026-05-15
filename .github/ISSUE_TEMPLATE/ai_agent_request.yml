@@ -1,0 +1,95 @@
+name: "🤖 طلب مساعد ذكي جديد / New AI Agent Request"
+description: "اقترح مساعداً ذكياً جديداً لكلميرون | Propose a new AI agent for Kalmeron"
+title: "feat(agent): [agent-name] — [وصف مختصر]"
+labels: ["agent-request", "ai", "enhancement", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## اقتراح مساعد ذكي جديد 🤖
+        كلميرون يدعم حالياً **٥٧ مساعداً ذكياً**. هل تعتقد أن هناك فراغاً؟ أخبرنا!
+        ---
+        ## New AI Agent Proposal 🤖
+        Kalmeron currently has **57 specialized AI agents**. Think there's a gap? Tell us!
+
+  - type: input
+    id: agent_name
+    attributes:
+      label: "اسم المساعد / Agent Name"
+      description: "مثال: مساعد الموارد البشرية، مساعد التصدير"
+      placeholder: "e.g., HR Advisor / مساعد الموارد البشرية"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: department
+    attributes:
+      label: "القسم / Department"
+      options:
+        - "المالي / Finance"
+        - "القانوني / Legal"
+        - "التسويق / Marketing"
+        - "منتج / Product"
+        - "العمليات / Operations"
+        - "السوق والبحث / Market Research"
+        - "الاستراتيجية / Strategy"
+        - "الموارد البشرية / HR"
+        - "قسم جديد / New Department"
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: "المشكلة التي يحلّها / Problem It Solves"
+      description: "ما الفجوة الموجودة؟ ما الذي يعجز المؤسّس العربي عن فعله الآن؟"
+      placeholder: |
+        المؤسّسون العرب يعانون من...
+        Arabic founders struggle with...
+    validations:
+      required: true
+
+  - type: textarea
+    id: capabilities
+    attributes:
+      label: "القدرات المطلوبة / Desired Capabilities"
+      description: "ما الذي يجب أن يفعله هذا المساعد تحديداً؟"
+      placeholder: |
+        - يستطيع...
+        - يُنشئ...
+        - يُحلّل...
+
+        - Can...
+        - Generates...
+        - Analyzes...
+    validations:
+      required: true
+
+  - type: textarea
+    id: arabic_context
+    attributes:
+      label: "السياق العربي / Arabic & Egyptian Context"
+      description: "ما هي الاعتبارات الخاصة بالسوق المصري أو العربي؟"
+      placeholder: |
+        يجب أن يفهم قوانين العمل المصرية...
+        Should understand Egyptian labor law...
+
+  - type: textarea
+    id: examples
+    attributes:
+      label: "أمثلة على استخدام / Usage Examples"
+      description: "أعطِنا ٢-٣ أمثلة على سؤال يمكن للمؤسّس طرحه"
+      placeholder: |
+        1. "ما هي متطلبات تأشيرة العمل للموظفين الأجانب في مصر؟"
+        2. "اكتب لي عقد عمل لمطوّر برمجيات..."
+        3. ...
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: "قائمة التحقق / Checklist"
+      options:
+        - label: "تحققت أن هذا المساعد غير موجود في القائمة الحالية / This agent doesn't already exist"
+          required: true
+        - label: "هذا مفيد لمؤسّسين عرب تحديداً / This is especially useful for Arabic-speaking founders"
+          required: true

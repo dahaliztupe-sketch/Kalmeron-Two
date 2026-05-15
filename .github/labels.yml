@@ -1,0 +1,171 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# GitHub Labels — كلميرون / Kalmeron
+#
+# يُزامن هذا الملف تسميات المستودع تلقائياً عبر GitHub Actions.
+# Synced automatically via: .github/workflows/labels.yml
+# Tool: https://github.com/EndBug/label-sync
+# ─────────────────────────────────────────────────────────────────────────────
+
+# ─── حالة / Status ───────────────────────────────────────────────────────────
+- name: "needs-triage"
+  color: "ededed"
+  description: "Waiting for maintainer review / في انتظار مراجعة المشرف"
+
+- name: "needs-info"
+  color: "d93f0b"
+  description: "Waiting for more information from the reporter"
+
+- name: "confirmed"
+  color: "0075ca"
+  description: "Issue confirmed and reproducible"
+
+- name: "in-progress"
+  color: "fbca04"
+  description: "Work is actively in progress"
+
+- name: "blocked"
+  color: "b60205"
+  description: "Blocked by another issue or external dependency"
+
+- name: "wontfix"
+  color: "ffffff"
+  description: "This will not be worked on"
+
+- name: "duplicate"
+  color: "cfd3d7"
+  description: "This issue or pull request already exists"
+
+- name: "good-first-issue"
+  color: "7057ff"
+  description: "Good for newcomers / مناسب للمساهمين الجدد"
+
+- name: "help-wanted"
+  color: "008672"
+  description: "Extra attention is needed / نحتاج مساعدة"
+
+- name: "skip-changelog"
+  color: "eeeeee"
+  description: "Exclude from release notes"
+
+# ─── نوع التغيير / Change Type ────────────────────────────────────────────────
+- name: "bug"
+  color: "d73a4a"
+  description: "Something isn't working / شيء لا يعمل"
+
+- name: "enhancement"
+  color: "a2eeef"
+  description: "New feature or improvement / ميزة جديدة أو تحسين"
+
+- name: "feat"
+  color: "0052cc"
+  description: "New feature"
+
+- name: "fix"
+  color: "e4e669"
+  description: "Bug fix"
+
+- name: "refactor"
+  color: "bfd4f2"
+  description: "Code refactoring"
+
+- name: "perf"
+  color: "f9d0c4"
+  description: "Performance improvement"
+
+- name: "docs"
+  color: "0075ca"
+  description: "Documentation only changes"
+
+- name: "test"
+  color: "d4c5f9"
+  description: "Adding or improving tests"
+
+- name: "chore"
+  color: "eeeeee"
+  description: "Maintenance, deps, CI"
+
+- name: "build"
+  color: "fef2c0"
+  description: "Build system changes"
+
+- name: "ci"
+  color: "f9f9f9"
+  description: "CI/CD pipeline changes"
+
+- name: "security"
+  color: "b60205"
+  description: "Security fix or hardening / إصلاح أمني"
+
+- name: "breaking-change"
+  color: "ee0701"
+  description: "Breaking change — requires migration"
+
+- name: "regression"
+  color: "e11d48"
+  description: "A previously working feature is now broken"
+
+# ─── المنطقة / Area ──────────────────────────────────────────────────────────
+- name: "area/frontend"
+  color: "c5def5"
+  description: "Frontend: app/, components/, hooks/"
+
+- name: "area/backend"
+  color: "0e8a16"
+  description: "Backend: src/, services/"
+
+- name: "area/ai"
+  color: "6f42c1"
+  description: "AI agents & LLM: src/ai/, services/llm-judge/"
+
+- name: "area/security"
+  color: "b60205"
+  description: "Security: src/lib/security/, firestore.rules"
+
+- name: "area/infra"
+  color: "1d76db"
+  description: "Infrastructure: .github/, scripts/, Dockerfile"
+
+- name: "area/docs"
+  color: "0075ca"
+  description: "Documentation: docs/, *.md"
+
+- name: "area/tests"
+  color: "d4c5f9"
+  description: "Tests: test/, e2e/, qa/"
+
+- name: "area/billing"
+  color: "e99695"
+  description: "Billing & payments: Fawry + Stripe"
+
+- name: "area/i18n"
+  color: "fef2c0"
+  description: "Internationalization: messages/, i18n/"
+
+# ─── طلبات خاصة / Special Requests ──────────────────────────────────────────
+- name: "agent-request"
+  color: "7c3aed"
+  description: "Request for a new AI agent / طلب مساعد ذكي جديد"
+
+- name: "ai"
+  color: "a855f7"
+  description: "Related to AI/ML functionality"
+
+- name: "arabic-specific"
+  color: "f59e0b"
+  description: "Arabic language / RTL specific issue or feature"
+
+- name: "egypt-specific"
+  color: "10b981"
+  description: "Egypt market specific (Fawry, Egyptian law, etc.)"
+
+- name: "question"
+  color: "d876e3"
+  description: "Further information is requested"
+
+- name: "idea"
+  color: "e1f5d0"
+  description: "Community idea or discussion topic"
+
+- name: "dependencies"
+  color: "0366d6"
+  description: "Pull requests that update a dependency file"

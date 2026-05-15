@@ -1,0 +1,102 @@
+name: "✨ طلب ميزة / Feature Request"
+description: "اقترح ميزة جديدة لكلميرون | Suggest a new feature for Kalmeron"
+title: "feat: [وصف مختصر / short description]"
+labels: ["enhancement", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## اقتراح ميزة جديدة ✨
+        نُرحّب بأفكارك! كلما كانت فكرتك أوضح وأكثر تحديداً، كلما كانت فرصة تنفيذها أكبر.
+        ---
+        ## Feature Request ✨
+        We love ideas! The clearer and more specific, the better the chance of implementation.
+
+  - type: dropdown
+    id: language
+    attributes:
+      label: "اللغة / Language"
+      options:
+        - "العربية 🇪🇬"
+        - "English 🌍"
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: "المشكلة التي تحلّها / Problem Statement"
+      description: "صِف المشكلة التي تواجهها أو الفرصة التي يمكن استغلالها"
+      placeholder: |
+        أنا مؤسّس وأحتاج إلى... لأن...
+        As a founder, I need... because...
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: "الحل المقترح / Proposed Solution"
+      description: "كيف تتصوّر الحل؟ كن محدداً قدر الإمكان"
+      placeholder: |
+        أريد أن يكون هناك...
+        I'd like there to be...
+    validations:
+      required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: "القسم المعني / Relevant Area"
+      multiple: true
+      options:
+        - "المساعدون / AI Agents"
+        - "المالي / Finance"
+        - "القانوني / Legal"
+        - "التسويق / Marketing"
+        - "منتج وتطوير / Product"
+        - "العمليات / Operations"
+        - "المدفوعات / Billing"
+        - "تجربة المستخدم / UX & Design"
+        - "الأداء / Performance"
+        - "API & Integrations"
+        - "أخرى / Other"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: "الأولوية بالنسبة لك / Priority for You"
+      options:
+        - "🔥 حرجة — تمنعني من الاستخدام / Critical — blocking my usage"
+        - "⬆️ عالية — تُضاف قيمة كبيرة / High — major value add"
+        - "➡️ متوسطة — تحسين ملحوظ / Medium — nice improvement"
+        - "⬇️ منخفضة — فكرة جيدة / Low — nice-to-have"
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: "البدائل التي جرّبتها / Alternatives Considered"
+      placeholder: |
+        جرّبت... لكن...
+        I tried... but...
+
+  - type: textarea
+    id: context
+    attributes:
+      label: "سياق إضافي / Additional Context"
+      description: "أي معلومات إضافية، لقطات شاشة، أو أمثلة من منتجات أخرى"
+      placeholder: "Screenshots, mockups, links to similar features in other products..."
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: "قائمة التحقق / Checklist"
+      options:
+        - label: "تحققت أن هذا الطلب لم يُقتَرح مسبقاً / I searched existing feature requests"
+          required: true
+        - label: "هذه ميزة وليست إصلاح خطأ / This is a feature, not a bug fix"
+          required: true

@@ -1,0 +1,61 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# CODEOWNERS — كلميرون / Kalmeron
+#
+# يُحدّد هذا الملف المسؤول عن مراجعة كل جزء من الكود تلقائياً عند فتح PR.
+# This file defines who automatically reviews each part of the codebase on PRs.
+#
+# الصيغة: <pattern> <@username or @org/team>
+# Format:  <pattern> <@username or @org/team>
+# ─────────────────────────────────────────────────────────────────────────────
+
+# المالك الافتراضي لكل شيء / Global owner (fallback for everything)
+*                                   @dahaliztupe-sketch
+
+# ─── واجهة المستخدم / Frontend ───────────────────────────────────────────────
+/app/                               @dahaliztupe-sketch
+/components/                        @dahaliztupe-sketch
+/hooks/                             @dahaliztupe-sketch
+/contexts/                          @dahaliztupe-sketch
+/public/                            @dahaliztupe-sketch
+/i18n/                              @dahaliztupe-sketch
+/messages/                          @dahaliztupe-sketch
+
+# ─── منطق الأعمال الأساسي / Core domain logic ────────────────────────────────
+/src/                               @dahaliztupe-sketch
+/src/ai/                            @dahaliztupe-sketch
+/src/lib/                           @dahaliztupe-sketch
+
+# ─── الأمان — يتطلب مراجعة دقيقة / Security — requires careful review ────────
+/src/lib/security/                  @dahaliztupe-sketch
+/firestore.rules                    @dahaliztupe-sketch
+/firestore.indexes.json             @dahaliztupe-sketch
+
+# ─── خدمات Python / Python microservices ─────────────────────────────────────
+/services/                          @dahaliztupe-sketch
+/services/pdf-worker/               @dahaliztupe-sketch
+/services/egypt-calc/               @dahaliztupe-sketch
+/services/llm-judge/                @dahaliztupe-sketch
+/services/embeddings-worker/        @dahaliztupe-sketch
+
+# ─── البنية التحتية / Infrastructure & CI ────────────────────────────────────
+/.github/                           @dahaliztupe-sketch
+/.github/workflows/                 @dahaliztupe-sketch
+/scripts/                           @dahaliztupe-sketch
+/next.config.ts                     @dahaliztupe-sketch
+/vercel.json                        @dahaliztupe-sketch
+
+# ─── الإعدادات الحساسة / Sensitive configs ───────────────────────────────────
+/.env*                              @dahaliztupe-sketch
+/package.json                       @dahaliztupe-sketch
+/package-lock.json                  @dahaliztupe-sketch
+
+# ─── التوثيق / Documentation ─────────────────────────────────────────────────
+/docs/                              @dahaliztupe-sketch
+/README.md                          @dahaliztupe-sketch
+/CONTRIBUTING.md                    @dahaliztupe-sketch
+/SECURITY.md                        @dahaliztupe-sketch
+
+# ─── الاختبارات / Tests ──────────────────────────────────────────────────────
+/test/                              @dahaliztupe-sketch
+/e2e/                               @dahaliztupe-sketch
+/qa/                                @dahaliztupe-sketch

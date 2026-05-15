@@ -1,0 +1,22 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# FUNDING — كلميرون / Kalmeron
+#
+# يُظهر هذا الملف زر "Sponsor" في صفحة المستودع على GitHub.
+# This file shows the "Sponsor" button on the GitHub repository page.
+# ─────────────────────────────────────────────────────────────────────────────
+
+# GitHub Sponsors
+github: []
+
+# Ko-fi (if applicable)
+# ko_fi: kalmeron
+
+# Open Collective (if applicable)
+# open_collective: kalmeron
+
+# Patreon (if applicable)
+# patreon: kalmeron
+
+# Custom links — ادعم كلميرون بالاشتراك المدفوع / Support via paid plan
+custom:
+  - https://kalmeron.app/pricing

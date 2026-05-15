@@ -1,0 +1,132 @@
+name: "🐛 تقرير خطأ / Bug Report"
+description: "أبلّغ عن خطأ في كلميرون | Report a bug in Kalmeron"
+title: "fix: [وصف مختصر / short description]"
+labels: ["bug", "needs-triage"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## شكراً على تقرير الخطأ 🙏
+        قبل الإرسال، تأكد أن هذا الخطأ **لم يُبلَّغ عنه مسبقاً** في [Issues](../issues).
+        ---
+        ## Thanks for reporting a bug 🙏
+        Before submitting, please check that this issue **hasn't been reported already**.
+
+  - type: dropdown
+    id: language
+    attributes:
+      label: "اللغة / Language"
+      options:
+        - "العربية 🇪🇬"
+        - "English 🌍"
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: "وصف الخطأ / Bug Description"
+      description: "صِف الخطأ بوضوح — ماذا توقّعت أن يحدث وماذا حدث فعلاً؟"
+      placeholder: |
+        عند الضغط على زر كذا، يظهر خطأ بدلاً من...
+        When I click X, I see Y instead of Z...
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: "خطوات إعادة الإنتاج / Steps to Reproduce"
+      description: "أدرج الخطوات التفصيلية التي تُظهر الخطأ"
+      placeholder: |
+        1. اذهب إلى صفحة...
+        2. اضغط على...
+        3. لاحِظ الخطأ...
+
+        1. Go to page...
+        2. Click on...
+        3. See error...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: "السلوك المتوقع / Expected Behavior"
+      placeholder: "ماذا توقّعت أن يحدث؟ / What did you expect to happen?"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: "المنطقة المتأثرة / Affected Area"
+      multiple: true
+      options:
+        - "الصفحة الرئيسية / Landing Page"
+        - "المحادثة / Chat"
+        - "لوحة التحكم / Dashboard"
+        - "المالي / Finance Agent"
+        - "القانوني / Legal Agent"
+        - "التسويق / Marketing Agent"
+        - "المنتج / Product Agent"
+        - "العمليات / Operations"
+        - "المدفوعات / Billing & Payments"
+        - "المصادقة / Authentication"
+        - "API"
+        - "أخرى / Other"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: "مستوى الخطورة / Severity"
+      options:
+        - "💥 حرج — يُوقف العمل / Critical — blocks work"
+        - "🔴 عالٍ — خلل رئيسي / High — major malfunction"
+        - "🟠 متوسط — وظيفة مكسورة / Medium — broken feature"
+        - "🟡 منخفض — تأثير محدود / Low — minor issue"
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: "بيئة التشغيل / Environment"
+      description: "المتصفح، نظام التشغيل، إصدار Node.js (إن عرفته)"
+      placeholder: |
+        - OS: macOS 14 / Windows 11 / Ubuntu 22
+        - Browser: Chrome 124 / Firefox 125 / Safari 17
+        - Node: 20.x
+        - Device: Desktop / Mobile
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: "سجلات الأخطاء / Error Logs"
+      description: "الصق أي رسائل خطأ أو stack traces هنا"
+      render: text
+      placeholder: "Paste error messages or stack traces here..."
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: "لقطات شاشة / Screenshots"
+      description: "أرفق لقطات شاشة إن وُجدت — اسحب وأفلت الصورة هنا"
+      placeholder: "Drag & drop screenshots here..."
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: "قائمة التحقق / Checklist"
+      options:
+        - label: "تحققت أن هذا الخطأ لم يُبلَّغ عنه مسبقاً / I searched existing issues"
+          required: true
+        - label: "جرّبت إعادة تحميل الصفحة / I tried a hard refresh"
+          required: true
+        - label: "هذا ليس خطأً أمنياً — أبلّغ عنه عبر security@kalmeron.com / Not a security issue"
+          required: true

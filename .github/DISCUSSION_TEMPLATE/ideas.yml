@@ -1,0 +1,52 @@
+title: "💡 [فكرتك / Your idea]"
+labels:
+  - idea
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## شارك فكرتك مع مجتمع كلميرون 💡
+        هل لديك فكرة لتحسين كلميرون أو قصة نجاح تريد مشاركتها؟ هذا المكان المناسب!
+        ---
+        ## Share your idea with the Kalmeron community 💡
+        Have an idea to improve Kalmeron or a success story to share? This is the right place!
+
+  - type: textarea
+    id: idea
+    attributes:
+      label: "الفكرة / The Idea"
+      description: "صِف فكرتك بوضوح / Describe your idea clearly"
+      placeholder: |
+        فكرتي هي...
+        My idea is...
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: "المشكلة التي تحلّها / Problem It Solves"
+      placeholder: |
+        هذا سيساعد المؤسّسين على...
+        This will help founders...
+
+  - type: textarea
+    id: examples
+    attributes:
+      label: "أمثلة أو مراجع / Examples or References"
+      placeholder: "روابط، لقطات شاشة، منتجات مشابهة..."
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: "التصنيف / Category"
+      options:
+        - "🤖 مساعد ذكي جديد / New AI Agent"
+        - "⚡ تحسين أداء / Performance"
+        - "🎨 تصميم وتجربة المستخدم / Design & UX"
+        - "🔗 تكاملات جديدة / New Integrations"
+        - "🌍 دعم لغات / Language Support"
+        - "💼 ميزة أعمال / Business Feature"
+        - "🔧 تطوير / Developer Experience"
+        - "📱 تطبيق الجوال / Mobile App"
+        - "أخرى / Other"

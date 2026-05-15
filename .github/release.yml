@@ -1,0 +1,71 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# GitHub Automatic Release Notes — كلميرون / Kalmeron
+#
+# يُحدّد هذا الملف كيف تُصنَّف مساهمات PRs في ملاحظات الإصدار التلقائية.
+# Defines how PR contributions are categorized in automatic release notes.
+# See: https://docs.github.com/en/repositories/releasing-projects-on-github/automatically-generated-release-notes
+# ─────────────────────────────────────────────────────────────────────────────
+
+changelog:
+  exclude:
+    labels:
+      - "skip-changelog"
+      - "dependencies"
+      - "chore"
+    authors:
+      - "release-please[bot]"
+      - "dependabot[bot]"
+      - "github-actions[bot]"
+
+  categories:
+    - title: "🚀 ميزات جديدة / New Features"
+      labels:
+        - "enhancement"
+        - "feat"
+        - "feature"
+
+    - title: "🤖 مساعدون ذكيون / AI Agents"
+      labels:
+        - "agent-request"
+        - "ai"
+        - "area/ai"
+
+    - title: "🐛 إصلاح الأخطاء / Bug Fixes"
+      labels:
+        - "bug"
+        - "fix"
+        - "regression"
+
+    - title: "⚡ تحسين الأداء / Performance"
+      labels:
+        - "perf"
+        - "performance"
+
+    - title: "🔐 الأمان / Security"
+      labels:
+        - "security"
+        - "area/security"
+
+    - title: "🌍 التوثيق / Documentation"
+      labels:
+        - "documentation"
+        - "area/docs"
+        - "docs"
+
+    - title: "🧪 الاختبارات / Tests"
+      labels:
+        - "test"
+        - "area/tests"
+
+    - title: "🏗️ البنية التحتية / Infrastructure"
+      labels:
+        - "area/infra"
+        - "ci"
+        - "build"
+
+    - title: "🔧 تحديثات أخرى / Other Changes"
+      labels:
+        - "refactor"
+        - "style"
+        - "area/frontend"
+        - "area/backend"

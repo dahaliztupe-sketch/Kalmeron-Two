@@ -1,0 +1,17 @@
+blank_issues_enabled: false
+contact_links:
+  - name: "🔐 الإبلاغ عن ثغرة أمنية / Report a Security Vulnerability"
+    url: https://github.com/dahaliztupe-sketch/Kalmeron-Two/security/advisories/new
+    about: "لا تفتح issue عام لأي ثغرة أمنية — استخدم هذا الرابط / Never open a public issue for security vulnerabilities"
+
+  - name: "💬 نقاشات المجتمع / Community Discussions"
+    url: https://github.com/dahaliztupe-sketch/Kalmeron-Two/discussions
+    about: "أسئلة عامة، أفكار، عروض / General questions, ideas, showcases"
+
+  - name: "📖 التوثيق / Documentation"
+    url: https://github.com/dahaliztupe-sketch/Kalmeron-Two/wiki
+    about: "وثائق المشروع التفصيلية / Detailed project documentation"
+
+  - name: "✉️ الدعم المباشر / Direct Support"
+    url: https://kalmeron.app/support
+    about: "للدعم المتعلق بالحساب أو الاشتراك / For account or billing support"
