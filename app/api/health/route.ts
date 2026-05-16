@@ -152,7 +152,10 @@ export async function GET() {
 
   // ── Secrets & auth ────────────────────────────────────────────────────────
   checks.cron = process.env.CRON_SECRET ? 'protected' : 'unprotected';
-  checks.firebaseAdmin = process.env.FIREBASE_SERVICE_ACCOUNT_KEY ? 'configured' : 'unconfigured';
+  checks.firebaseAdmin = (
+    process.env.FIREBASE_SERVICE_ACCOUNT_KEY ||
+    (process.env.FIREBASE_ADMIN_PROJECT_ID && process.env.FIREBASE_ADMIN_CLIENT_EMAIL && process.env.FIREBASE_ADMIN_PRIVATE_KEY)
+  ) ? 'configured' : 'unconfigured';
 
   // ── Recent launch runs ────────────────────────────────────────────────────
   try {

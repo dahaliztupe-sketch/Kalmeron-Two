@@ -87,6 +87,12 @@ service cloud.firestore {
 
       // FCM tokens — client may register/remove its own tokens.
       match /fcm_tokens/{tokenId}       { allow read, write: if isOwner(userId); }
+
+      // Decision journal — user's private decision log.
+      match /decisions/{docId}          { allow read, write: if isOwner(userId); }
+
+      // Chat saved prompts — user's pinned chat prompts.
+      match /saved_prompts/{docId}      { allow read, write: if isOwner(userId); }
     }
 
     // ============================================================
@@ -144,13 +150,22 @@ service cloud.firestore {
     }
 
     // ============================================================
-    // Account deletion requests — clients may file their own
-    // request; the server processes asynchronously.
+    // Message feedback — thumbs up/down ratings stored by the chat
+    // page. Doc ID is "{uid}_{messageId}"; ownership checked via
+    // the userId field inside the document.
+    // ============================================================
+    match /feedbacks/{docId} {
+      allow read, write: if isSignedIn() && isIncomingOwner();
+      allow read:        if isSignedIn() && isDocOwner();
+    }
+
+    // ============================================================
+    // Account deletion requests — written server-side via Admin SDK
+    // (see app/api/user/delete-request/route.ts). Explicit deny-all
+    // here is defense-in-depth; the client should never write directly.
     // ============================================================
     match /deletion_requests/{docId} {
-      allow read:   if isSignedIn() && isDocOwner();
-      allow create: if isSignedIn() && isIncomingOwner();
-      allow update, delete: if false;
+      allow read, write: if false;
     }
 
     // ============================================================

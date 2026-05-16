@@ -3,28 +3,48 @@ import { getFirestore, type Firestore } from 'firebase-admin/firestore';
 import { getAuth, type Auth } from 'firebase-admin/auth';
 
 /**
- * Parse the FIREBASE_SERVICE_ACCOUNT_KEY env var defensively.
+ * Parse Firebase Admin credentials from environment variables.
  *
- * Previously a single `JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_KEY)`
- * crashed the entire process at module-load time if the variable was a
- * malformed JSON blob — which produced an opaque "Unexpected token …"
- * error with no hint at the actual root cause. We now log a structured
- * warning and fall back to ADC (Application Default Credentials).
+ * Supports two formats:
+ *  1. FIREBASE_SERVICE_ACCOUNT_KEY — a single JSON blob with the full service account.
+ *  2. Separate vars: FIREBASE_ADMIN_PROJECT_ID + FIREBASE_ADMIN_CLIENT_EMAIL +
+ *     FIREBASE_ADMIN_PRIVATE_KEY — the format produced by Replit secrets when
+ *     individual fields are stored instead of the whole JSON blob.
+ *
+ * Returns null if neither format is available, causing initializeApp() to
+ * fall back to Application Default Credentials (ADC).
  */
 function parseServiceAccount() {
+  // Format 1: single JSON blob
   const raw = process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
-  if (!raw) return null;
-  try {
-    const parsed = JSON.parse(raw);
-    if (!parsed || typeof parsed !== 'object' || !parsed.project_id) {
-      // FIREBASE_SERVICE_ACCOUNT_KEY missing required fields — falling back to ADC
-      return null;
+  if (raw) {
+    try {
+      const parsed = JSON.parse(raw);
+      if (parsed && typeof parsed === 'object' && parsed.project_id) {
+        return parsed;
+      }
+    } catch {
+      // fall through to format 2
     }
-    return parsed;
-  } catch (e) {
-    // FIREBASE_SERVICE_ACCOUNT_KEY is not valid JSON — falling back to ADC
-    return null;
   }
+
+  // Format 2: separate env vars (Replit secrets style)
+  const projectId   = process.env.FIREBASE_ADMIN_PROJECT_ID;
+  const clientEmail = process.env.FIREBASE_ADMIN_CLIENT_EMAIL;
+  const privateKey  = process.env.FIREBASE_ADMIN_PRIVATE_KEY;
+
+  if (projectId && clientEmail && privateKey) {
+    return {
+      type: 'service_account',
+      project_id: projectId,
+      client_email: clientEmail,
+      // Replit stores newlines as literal \n sequences — unescape them so the
+      // RSA private key is in the correct PEM format.
+      private_key: privateKey.replace(/\\n/g, '\n'),
+    };
+  }
+
+  return null;
 }
 
 /**

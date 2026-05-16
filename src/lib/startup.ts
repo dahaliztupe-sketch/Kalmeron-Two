@@ -13,9 +13,17 @@ const WORKER_CONFIGS: Array<{ key: string; fallback: string; label: string }> = 
   { key: 'EMBEDDINGS_WORKER_URL', fallback: 'http://localhost:8099', label: 'Embeddings Worker' },
 ];
 
-const CRITICAL_ENV: Array<{ key: string; label: string }> = [
-  { key: 'FIREBASE_SERVICE_ACCOUNT_KEY', label: 'Firebase Admin' },
-];
+// Firebase Admin can be configured via a single JSON blob OR via separate
+// individual env vars (FIREBASE_ADMIN_PROJECT_ID + CLIENT_EMAIL + PRIVATE_KEY).
+// We flag it as missing only when neither format is present.
+function isFirebaseAdminConfigured(): boolean {
+  if (process.env.FIREBASE_SERVICE_ACCOUNT_KEY) return true;
+  return !!(
+    process.env.FIREBASE_ADMIN_PROJECT_ID &&
+    process.env.FIREBASE_ADMIN_CLIENT_EMAIL &&
+    process.env.FIREBASE_ADMIN_PRIVATE_KEY
+  );
+}
 
 const PROBE_TIMEOUT_MS = 3_000;
 
@@ -47,10 +55,8 @@ export function validateStartup(): void {
 
   const prefix = '[kalmeron:startup]';
 
-  for (const { key, label } of CRITICAL_ENV) {
-    if (!process.env[key]) {
-      console.warn(`${prefix} MISSING ${label} (${key}). Some features will be unavailable.`);
-    }
+  if (!isFirebaseAdminConfigured()) {
+    console.warn(`${prefix} MISSING Firebase Admin (FIREBASE_SERVICE_ACCOUNT_KEY or FIREBASE_ADMIN_* vars). Some features will be unavailable.`);
   }
 
   const workerChecks = WORKER_CONFIGS.map(({ key, fallback, label }) => {

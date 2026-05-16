@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/src/lib/firebase';
-import { adminAuth } from '@/src/lib/firebase-admin';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { adminDb, adminAuth } from '@/src/lib/firebase-admin';
+import { FieldValue } from 'firebase-admin/firestore';
 import { rateLimit, rateLimitResponse } from '@/src/lib/security/rate-limit';
 
 export const runtime = 'nodejs';
@@ -9,7 +8,8 @@ export const runtime = 'nodejs';
 /**
  * SECURITY: Requires a valid Firebase ID token. The userId logged in the
  * deletion-request record is the authenticated UID — not a value supplied by
- * the client.
+ * the client. Uses Admin SDK so Firestore security rules are bypassed and the
+ * write is guaranteed even when the client-side rules deny direct access.
  */
 export async function POST(req: NextRequest) {
   // Pre-deletion grace flow — allow a small flurry but block scripted abuse.
@@ -30,9 +30,9 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    await addDoc(collection(db, 'deletion_requests'), {
+    await adminDb.collection('deletion_requests').add({
       userId,
-      requestedAt: serverTimestamp(),
+      requestedAt: FieldValue.serverTimestamp(),
       status: 'pending',
     });
     return NextResponse.json({ message: 'Request received. Processing...' });
