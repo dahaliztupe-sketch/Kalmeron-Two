@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { motion, useReducedMotion } from "motion/react";
@@ -36,28 +36,27 @@ export default function SignUpPage() {
     try { router.prefetch("/dashboard"); } catch {}
   }, [router]);
 
+  // Guard against double-redirect: the effect fires once when `user` arrives
+  // (dbUserLoading may still be true) and again when the Firestore fetch
+  // settles. Without this ref the second fire may navigate to a different
+  // URL than the first, creating an unexpected extra redirect hop.
+  const navigated = useRef(false);
+
   useEffect(() => {
-    // Route the moment Firebase confirms the user — do NOT block on the
-    // Firestore profile fetch. New signups will (correctly) land on
-    // /onboarding because their fresh user doc has profile_completed=false.
-    // Existing users who happen to sign in via the signup page get sent to
-    // /dashboard once we know their profile is complete; until then we send
-    // them to /dashboard and let AuthGuard re-route to /onboarding only if
-    // truly needed. This avoids leaving the user staring at the signup form
-    // for several seconds on slow networks.
-    if (loading) return;
-    if (!user) return;
-    if (!dbUserLoading && dbUser && !dbUser.profile_completed) {
-      router.replace("/onboarding");
-    } else if (!dbUserLoading && dbUser && dbUser.profile_completed) {
+    if (loading || !user) return;
+    if (navigated.current) return;
+    if (!dbUserLoading && dbUser && dbUser.profile_completed) {
+      // Existing user signed in via signup page — send straight to dashboard.
+      navigated.current = true;
       router.replace("/dashboard");
-    } else {
-      // Profile not yet known — default to onboarding because the vast
-      // majority of users hitting /auth/signup are new. AuthGuard / the
-      // onboarding page itself will bounce already-onboarded users to
-      // /dashboard once Firestore resolves.
+    } else if (!dbUserLoading) {
+      // New user (profile_completed=false) or fetch failed (dbUser=null).
+      // Default to /onboarding — the onboarding page will bounce an
+      // already-onboarded user to /dashboard if needed.
+      navigated.current = true;
       router.replace("/onboarding");
     }
+    // Still waiting for Firestore fetch → wait for next fire
   }, [user, dbUser, loading, dbUserLoading, router]);
 
   const handleGoogleSignUp = async () => {

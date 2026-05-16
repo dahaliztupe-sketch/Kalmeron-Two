@@ -10,22 +10,54 @@ interface AuthGuardProps {
   requireProfile?: boolean;
 }
 
+/**
+ * Reads the sessionStorage flag set by finalizeOnboarding() so we never
+ * redirect a freshly-onboarded user back to /onboarding while the optimistic
+ * Firestore write is still in flight or the React context hasn't propagated
+ * the merged dbUser yet.
+ */
+function isJustOnboarded(): boolean {
+  try {
+    return typeof window !== "undefined" &&
+      sessionStorage.getItem("kalmeron_just_onboarded") === "1";
+  } catch {
+    return false;
+  }
+}
+
+function clearJustOnboarded() {
+  try { sessionStorage.removeItem("kalmeron_just_onboarded"); } catch {}
+}
+
 export function AuthGuard({ children, requireProfile = true }: AuthGuardProps) {
   const { user, dbUser, loading, dbUserLoading } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
     if (loading) return;
+
     if (!user) {
       router.replace("/auth/login");
       return;
     }
+
     if (requireProfile) {
-      // Wait for the Firestore profile fetch before deciding onboarding —
+      // Wait for the Firestore profile fetch before deciding on onboarding —
       // checking against `null` would race with the in-flight fetch.
       if (dbUserLoading) return;
+
       if (dbUser && !dbUser.profile_completed) {
+        // Don't redirect if the user JUST completed onboarding and the
+        // Firestore write / React context update is still propagating.
+        // The flag is set in finalizeOnboarding() and survives the onboarding
+        // page unmount so it's visible here on the destination page.
+        if (isJustOnboarded()) return;
         router.replace("/onboarding");
+      }
+
+      // Profile is confirmed complete — safe to clear the just-onboarded flag.
+      if (dbUser?.profile_completed) {
+        clearJustOnboarded();
       }
     }
   }, [user, dbUser, loading, dbUserLoading, router, requireProfile]);
@@ -44,9 +76,18 @@ export function AuthGuard({ children, requireProfile = true }: AuthGuardProps) {
   }
 
   if (!user) return null;
-  // Profile required but missing/incomplete → redirect already queued above;
-  // render nothing to avoid flashing protected children.
-  if (requireProfile && (!dbUser || !dbUser.profile_completed)) return null;
+
+  // Profile required but missing/incomplete → redirect already queued above.
+  // Exception: if the user JUST onboarded, trust the optimistic state and
+  // render children immediately instead of returning null (which would flash
+  // a blank screen while the context catches up).
+  if (requireProfile && (!dbUser || !dbUser.profile_completed)) {
+    if (isJustOnboarded()) {
+      // Optimistic: render children; effect will clear the flag once confirmed.
+      return <>{children}</>;
+    }
+    return null;
+  }
 
   return <>{children}</>;
 }

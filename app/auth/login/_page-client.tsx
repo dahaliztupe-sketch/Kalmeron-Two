@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { motion, useReducedMotion } from "motion/react";
@@ -37,23 +37,28 @@ export default function LoginPage() {
     try { router.prefetch("/onboarding"); } catch {}
   }, [router]);
 
+  // Guard against the effect firing multiple times as auth state resolves
+  // (once when `user` arrives, again when `dbUserLoading` settles). Without
+  // this ref the second fire can call router.replace with a different URL
+  // than the first, causing an unwanted extra redirect.
+  const navigated = useRef(false);
+
   useEffect(() => {
-    // Route the moment Firebase confirms the user — do NOT wait for the
-    // Firestore profile fetch. Waiting for `dbUserLoading` to settle keeps the
-    // user staring at the login form for several seconds on slow networks.
-    // The dashboard's own AuthGuard handles the profile check (and bounces to
-    // /onboarding if profile_completed=false), so this is safe.
-    if (loading) return;
-    if (!user) return;
+    if (loading || !user) return;
+    if (navigated.current) return;
     // If we already know the profile is incomplete, skip the dashboard hop and
-    // go straight to onboarding. Otherwise (profile complete OR not yet known)
+    // go straight to onboarding. Otherwise (profile complete OR still loading)
     // send to /dashboard — AuthGuard will re-route to /onboarding if needed
     // once the Firestore doc resolves.
     if (!dbUserLoading && dbUser && !dbUser.profile_completed) {
+      navigated.current = true;
       router.replace("/onboarding");
-    } else {
+    } else if (!dbUserLoading) {
+      // Profile loaded (complete or unknown) → dashboard
+      navigated.current = true;
       router.replace("/dashboard");
     }
+    // Still waiting for Firestore fetch: don't navigate yet, wait for next fire
   }, [user, dbUser, loading, dbUserLoading, router]);
 
   const handleGoogleLogin = async () => {
