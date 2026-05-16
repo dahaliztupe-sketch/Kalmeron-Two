@@ -108,8 +108,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const fetchOrCreateDBUser = async (currentUser: User) => {
     setDbUserLoading(true);
-    const userRef = doc(db, "users", currentUser.uid);
     try {
+      const userRef = doc(db, "users", currentUser.uid);
       const userSnap = await getDoc(userRef);
       if (!userSnap.exists()) {
         const newUser: DBUser = {
