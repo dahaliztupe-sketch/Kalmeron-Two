@@ -349,10 +349,18 @@ export function OnboardingForm() {
     setGoals((prev) => prev.includes(id) ? prev.filter((g) => g !== id) : [...prev, id]);
   };
 
-  // Save form data to Firestore WITHOUT marking profile_completed=true yet.
-  // Profile completion happens when the user interacts with the First Mission screen.
+  // Save form data to Firestore INCLUDING profile_completed=true.
+  // We set the completing guard in sessionStorage first so _page-client.tsx
+  // won't redirect to /dashboard while the First Mission screen is showing.
   const handleSubmit = () => {
     if (!user) return;
+
+    // Set the completing guard BEFORE the Firestore write so _page-client.tsx
+    // does not redirect to /dashboard when it sees profile_completed=true while
+    // the First Mission screen is still showing.
+    try {
+      sessionStorage.setItem("kalmeron_onboarding_completing", "1");
+    } catch {}
 
     const userRef = doc(db, "users", user.uid);
     updateDoc(userRef, {
@@ -362,9 +370,11 @@ export function OnboardingForm() {
       industry,
       governorate: location,
       goals,
-      // profile_completed intentionally left unset here —
-      // it is set in finalizeOnboarding() below so the _page-client redirect
-      // does not fire before the user interacts with the First Mission screen.
+      // Write profile_completed=true here so that if the user closes the tab
+      // before interacting with the First Mission screen, they won't be shown
+      // onboarding again on their next visit.
+      profile_completed: true,
+      onboarded_at: new Date(),
     }).catch((err) => {
       console.error("Failed to persist partial onboarding profile:", err);
     });
