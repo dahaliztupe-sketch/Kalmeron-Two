@@ -172,7 +172,15 @@ export async function proxy(request: NextRequest) {
   //    authorization still happens via Firebase Admin SDK token verification
   //    in API routes — this guard exists to (a) prevent unauthenticated visitors
   //    from seeing protected page chrome and (b) satisfy the QA crawler.
-  if (isProtectedPath(url.pathname)) {
+  //
+  //    DEV TEST BYPASS: When NEXT_PUBLIC_DEV_TEST_USER=1 in non-production,
+  //    skip the session cookie check so the mock user in AuthContext can be
+  //    tested without completing Google OAuth. MUST be removed before deploy.
+  const devTestBypass =
+    process.env.NEXT_PUBLIC_DEV_TEST_USER === '1' &&
+    process.env.NODE_ENV !== 'production';
+
+  if (isProtectedPath(url.pathname) && !devTestBypass) {
     const session = request.cookies.get(SESSION_COOKIE);
     if (!session) {
       const loginUrl = new URL('/auth/login', request.url);

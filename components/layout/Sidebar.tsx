@@ -168,7 +168,7 @@ export function Sidebar() {
           href="/dashboard"
           className="flex items-center gap-3 group outline-none focus-visible:ring-2 focus-visible:ring-brand-indigo/50 rounded-xl"
         >
-          <BrandLogo size={36} iconOnly showWordmark={false} />
+          <BrandLogo size={36} iconOnly showWordmark={false} href={null} />
           <div className="leading-none min-w-0">
             <p className="font-display font-black text-[15px] tracking-tight text-white group-hover:text-cyan-50 transition-colors">
               KALMERON

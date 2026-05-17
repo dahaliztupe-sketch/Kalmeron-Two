@@ -286,9 +286,11 @@ export default function DashboardPage() {
               <span className="text-xs text-emerald-400 font-medium uppercase tracking-wide">{t("headerEyebrow")}</span>
             </div>
             <h1 className="font-display text-3xl md:text-4xl font-extrabold text-white">
-              {t.rich("greeting", {
-                name: () => <span className="brand-gradient-text">{firstName}</span>,
-              })}
+              {(() => {
+                const raw = t("greeting", { name: "§" });
+                const [before, after] = raw.split("§");
+                return <>{before}<span className="brand-gradient-text">{firstName}</span>{after ?? ""}</>;
+              })()}
             </h1>
             <p className="text-text-secondary text-sm mt-1">{t("subtitle")}</p>
           </div>

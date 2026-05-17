@@ -22,6 +22,28 @@ import { toast } from "sonner";
 // and /pricing don't crash into the global error boundary.
 const FIREBASE_READY = isFirebaseConfigured();
 
+// ─── DEV-ONLY test bypass ────────────────────────────────────────────────────
+// When NEXT_PUBLIC_DEV_TEST_USER=1 is set (never in production), AuthProvider
+// returns a fully-onboarded mock user so automated tests can exercise the
+// dashboard and other protected pages without completing Google OAuth.
+// IMPORTANT: remove this flag before any production deployment.
+const DEV_TEST_USER =
+  process.env.NEXT_PUBLIC_DEV_TEST_USER === "1" &&
+  process.env.NODE_ENV !== "production";
+
+const MOCK_DB_USER: DBUser = {
+  uid: "dev-test-uid-001",
+  email: "dev-test@kalmeron.test",
+  name: "مؤسس تجريبي",
+  company_name: "شركة الاختبار",
+  startup_stage: "growth",
+  industry: "تقنية المعلومات",
+  governorate: "القاهرة",
+  goals: ["زيادة المبيعات", "توسيع الفريق"],
+  created_at: new Date(),
+  profile_completed: true,
+};
+
 interface DBUser {
   uid: string;
   email: string;
@@ -93,6 +115,22 @@ function shouldUseRedirect(): boolean {
 }
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
+  // ── DEV TEST BYPASS ──────────────────────────────────────────────────────
+  if (DEV_TEST_USER) {
+    const mockCtx: AuthContextType = {
+      user: { uid: MOCK_DB_USER.uid, displayName: MOCK_DB_USER.name ?? null, email: MOCK_DB_USER.email, emailVerified: true, getIdToken: async () => "dev-test-token" } as unknown as User,
+      dbUser: MOCK_DB_USER,
+      loading: false,
+      dbUserLoading: false,
+      signInWithGoogle: async () => {},
+      signOut: async () => {},
+      refreshDBUser: async () => {},
+      mergeDBUser: () => {},
+    };
+    return <AuthContext.Provider value={mockCtx}>{children}</AuthContext.Provider>;
+  }
+  // ─────────────────────────────────────────────────────────────────────────
+
   const [user, setUser] = useState<User | null>(null);
   const [dbUser, setDbUser] = useState<DBUser | null>(null);
   // When Firebase isn't configured we never go into a loading state — there
