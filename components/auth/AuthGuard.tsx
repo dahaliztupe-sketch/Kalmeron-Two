@@ -46,17 +46,22 @@ export function AuthGuard({ children, requireProfile = true }: AuthGuardProps) {
       // checking against `null` would race with the in-flight fetch.
       if (dbUserLoading) return;
 
-      if (dbUser && !dbUser.profile_completed) {
+      // dbUser is null here either because:
+      // 1. The Firestore fetch failed (network/permissions error), OR
+      // 2. This is a brand-new user whose doc doesn't exist yet.
+      // In both cases, redirect to onboarding — never return a blank screen.
+      if (!dbUser || !dbUser.profile_completed) {
         // Don't redirect if the user JUST completed onboarding and the
         // Firestore write / React context update is still propagating.
         // The flag is set in finalizeOnboarding() and survives the onboarding
         // page unmount so it's visible here on the destination page.
         if (isJustOnboarded()) return;
         router.replace("/onboarding");
+        return;
       }
 
       // Profile is confirmed complete — safe to clear the just-onboarded flag.
-      if (dbUser?.profile_completed) {
+      if (dbUser.profile_completed) {
         clearJustOnboarded();
       }
     }
@@ -86,7 +91,16 @@ export function AuthGuard({ children, requireProfile = true }: AuthGuardProps) {
       // Optimistic: render children; effect will clear the flag once confirmed.
       return <>{children}</>;
     }
-    return null;
+    // Redirect is already queued by the effect — show spinner instead of a
+    // completely blank screen while Next.js navigation completes.
+    return (
+      <div className="min-h-screen bg-[#0A0A0F] flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="w-10 h-10 text-[rgb(var(--brand-cyan))] animate-spin" />
+          <p className="text-neutral-400 text-sm">جاري التحميل…</p>
+        </div>
+      </div>
+    );
   }
 
   return <>{children}</>;
