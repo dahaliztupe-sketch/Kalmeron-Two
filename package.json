@@ -95,7 +95,7 @@
     "@ai-sdk/react": "^3.0.170",
     "@base-ui/react": "^1.4.1",
     "@fontsource/cairo": "^5.2.7",
-    "@google/genai": "^1.52.0",
+    "@google/genai": "^2.4.0",
     "@google/generative-ai": "^0.24.1",
     "@langchain/core": "^1.1.41",
     "@langchain/langgraph": "^1.2.9",
