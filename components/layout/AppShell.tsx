@@ -241,13 +241,13 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <div className="flex-1 w-full pb-[calc(7rem+env(safe-area-inset-bottom))] md:pb-0">
           <UpgradeBanner />
           <WorkerHealthGuard pathname={pathname} />
-          <AnimatePresence mode="wait">
+          <AnimatePresence mode="wait" initial={false}>
             <motion.div
               key={pathname}
-              initial={reduce ? false : { opacity: 0, y: 10 }}
+              initial={reduce ? false : { opacity: 0, y: 8 }}
               animate={reduce ? { opacity: 1 } : { opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: reduce ? 0 : 0.25, ease: "easeOut" }}
+              transition={{ duration: reduce ? 0 : 0.2, ease: "easeOut" }}
               className="p-4 md:p-8"
             >
               {children}
