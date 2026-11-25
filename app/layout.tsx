@@ -63,7 +63,7 @@ export async function generateMetadata(): Promise<Metadata> {
     manifest: "/manifest.json",
     openGraph: {
       title: "كلميرون — ٥٧ مساعداً ذكياً للمؤسّس العربي",
-      description: "سبعة أقسام تشغيلية مترابطة في منصة واحدة — يثق فيه +٣٢٠٠ مؤسس في ١٥ دولة.",
+      description: "سبعة أقسام تشغيلية مترابطة في منصة واحدة — من الفكرة إلى خطة العمل والنمو.",
       images: [
         {
           url: `/api/og?title=${encodeURIComponent("نظام تشغيل المؤسّس العربي")}&type=default`,
@@ -150,13 +150,6 @@ const jsonLd = {
         // lexicon-allow
         { "@type": "Offer", "name": "Founder", "price": "999", "priceCurrency": "EGP" },
       ],
-      "aggregateRating": {
-        "@type": "AggregateRating",
-        "ratingValue": "4.9",
-        "reviewCount": "1200",
-        "bestRating": "5",
-        "worstRating": "1",
-      },
       "author": { "@type": "Organization", "@id": `${siteUrl}/#org`, "name": "Kalmeron AI" },
     },
     {
