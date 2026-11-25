@@ -21,7 +21,7 @@ import { logger } from '@/src/lib/logger';
 export const runtime = 'nodejs';
 
 const stripeSecret = process.env.STRIPE_SECRET_KEY;
-const stripe = stripeSecret ? new Stripe(stripeSecret, { apiVersion: '2026-04-22.dahlia' }) : null;
+const stripe = stripeSecret ? new Stripe(stripeSecret, { apiVersion: '2026-11-18.endive' }) : null;
 
 export async function POST(req: NextRequest) {
   const rl = rateLimit(req, { limit: 10, windowMs: 60_000 });
