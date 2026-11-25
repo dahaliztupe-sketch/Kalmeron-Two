@@ -1,17 +1,19 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { Loader2, AlertCircle } from "lucide-react";
 
 export default function BillingPortalPage() {
+  const router = useRouter();
   const { user } = useAuth();
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (user === null) {
       // Not authenticated — send to login rather than infinite spinner
-      window.location.href = "/login?next=/billing/portal";
+      router.push("/login?next=/billing/portal");
       return;
     }
     if (!user) return; // Still loading (undefined)
@@ -38,7 +40,7 @@ export default function BillingPortalPage() {
     };
 
     void redirect();
-  }, [user]);
+  }, [user, router]);
 
   if (error) {
     return (
