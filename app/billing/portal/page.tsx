@@ -40,7 +40,7 @@ export default function BillingPortalPage() {
     };
 
     void redirect();
-  }, [user]);
+  }, [user, router]);
 
   if (error) {
     return (
