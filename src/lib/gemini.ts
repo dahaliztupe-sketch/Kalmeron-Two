@@ -81,9 +81,11 @@ if (!_legacyApiKey) {
 const _legacyBaseUrl = process.env.AI_INTEGRATIONS_GEMINI_BASE_URL;
 export const ai = new GoogleGenAI({
   apiKey: _legacyApiKey || '',
-  ...(
-    _legacyBaseUrl
-      ? { httpOptions: { apiVersion: '', baseUrl: _legacyBaseUrl } }
-      : {}
-  ),
+  httpOptions: {
+    // Pin v1beta explicitly: @google/genai v3 changes the Developer API
+    // default from v1beta to v1, which drops some models/features this app
+    // was written against. Keep v1beta so behavior is unchanged.
+    apiVersion: 'v1beta',
+    ...(_legacyBaseUrl ? { baseUrl: _legacyBaseUrl } : {}),
+  },
 });
