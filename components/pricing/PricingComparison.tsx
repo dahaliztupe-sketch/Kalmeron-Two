@@ -30,7 +30,7 @@ const ROWS: Row[] = [
   },
   {
     category: "الميزات",
-    feature: "وصول لكل مساعدي كلميرون الـ 16",
+    feature: "وصول لكل مساعدي كلميرون الـ 57",
     values: { free: true, starter: true, pro: true, founder: true, enterprise: true },
   },
   {
