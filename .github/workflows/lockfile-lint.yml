@@ -30,7 +30,6 @@ jobs:
           npx --yes lockfile-lint@^4 \
             --path package-lock.json \
             --type npm \
-            --validate-https \
             --validate-integrity \
             --allowed-hosts npm \
             --allowed-schemes "https:"
