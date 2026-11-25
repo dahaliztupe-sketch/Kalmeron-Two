@@ -67,7 +67,7 @@
     "newConversation": "محادثة جديدة"
   },
   "Trust": {
-    "label": "يثق فيه +3200 مؤسس في 15 دولة",
+    "label": "مصمَّم للمؤسسين في مصر والخليج",
     "noCard": "بدون بطاقة ائتمان",
     "cancelAnytime": "ألغِ في أي وقت",
     "arabicNative": "سياق محلي معمّق — مصر والخليج",
@@ -101,9 +101,9 @@
       "scrollHint": "تعرّف على المنصة"
     },
     "trustBadges": {
-      "lawCompliant": "متوافق مع أنظمة حماية البيانات الدولية",
+      "lawCompliant": "تحكم كامل في بياناتك: تصدير وحذف ذاتي",
       "arabicNative": "سياق محلي معمّق — مصر والخليج",
-      "founderCount": "+3200 مؤسس نشط",
+      "founderCount": "٧ أقسام تشغيلية في منصة واحدة",
       "freeStart": "مجاناً للبداية"
     },
     "suggestions": {
@@ -113,8 +113,8 @@
       "cloudKitchen": "احسب التكاليف المبدئية والـ breakeven لمطعم سحابي"
     },
     "socialProof": {
-      "rating": "4.9/5",
-      "founderCount": "+2000 رائد أعمال",
+      "rating": "ابدأ في دقائق",
+      "founderCount": "بدون فريق تقني",
       "noCard": "بدون بطاقة"
     }
   },
