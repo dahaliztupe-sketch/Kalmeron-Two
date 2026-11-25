@@ -28,7 +28,7 @@ export const dynamic = 'force-dynamic';
 
 const stripeSecret = process.env.STRIPE_SECRET_KEY;
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
-const stripe = stripeSecret ? new Stripe(stripeSecret, { apiVersion: '2026-04-22.dahlia' }) : null;
+const stripe = stripeSecret ? new Stripe(stripeSecret, { apiVersion: '2026-11-18.endive' }) : null;
 
 /** Resolve user email for notification sending */
 async function getUserEmail(userId: string): Promise<string | null> {
