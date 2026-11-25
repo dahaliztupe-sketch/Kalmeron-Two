@@ -1,1 +1,0 @@
-../../../product-team/apple-hig-expert/SKILL.md
