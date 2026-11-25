@@ -21,7 +21,7 @@ export const GET = guardedRoute(
     const opportunities = await detectCollaborationOpportunity();
     return NextResponse.json({ meetings, opportunities });
   },
-  { rateLimit: { limit: 60, windowMs: 60_000 } }
+  { requireAuth: true, rateLimit: { limit: 60, windowMs: 60_000 } }
 );
 
 export const POST = guardedRoute(
@@ -29,5 +29,5 @@ export const POST = guardedRoute(
     const meeting = await conveneMeeting(body.topic, body.departmentIds, body.context || {});
     return NextResponse.json({ meeting });
   },
-  { schema: postSchema, rateLimit: { limit: 10, windowMs: 60_000 } }
+  { requireAuth: true, schema: postSchema, rateLimit: { limit: 10, windowMs: 60_000 } }
 );
