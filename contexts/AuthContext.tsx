@@ -116,21 +116,31 @@ function shouldUseRedirect(): boolean {
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   // ── DEV TEST BYPASS ──────────────────────────────────────────────────────
+  // The mock lives in its own component so React hooks are never called
+  // conditionally (react-hooks/rules-of-hooks). DEV_TEST_USER is a
+  // build-time constant, so exactly one branch renders for the app's
+  // lifetime and hook order stays stable.
   if (DEV_TEST_USER) {
-    const mockCtx: AuthContextType = {
-      user: { uid: MOCK_DB_USER.uid, displayName: MOCK_DB_USER.name ?? null, email: MOCK_DB_USER.email, emailVerified: true, getIdToken: async () => "dev-test-token" } as unknown as User,
-      dbUser: MOCK_DB_USER,
-      loading: false,
-      dbUserLoading: false,
-      signInWithGoogle: async () => {},
-      signOut: async () => {},
-      refreshDBUser: async () => {},
-      mergeDBUser: () => {},
-    };
-    return <AuthContext.Provider value={mockCtx}>{children}</AuthContext.Provider>;
+    return <MockAuthProvider>{children}</MockAuthProvider>;
   }
-  // ─────────────────────────────────────────────────────────────────────────
+  return <FirebaseAuthProvider>{children}</FirebaseAuthProvider>;
+}
 
+function MockAuthProvider({ children }: { children: React.ReactNode }) {
+  const mockCtx: AuthContextType = {
+    user: { uid: MOCK_DB_USER.uid, displayName: MOCK_DB_USER.name ?? null, email: MOCK_DB_USER.email, emailVerified: true, getIdToken: async () => "dev-test-token" } as unknown as User,
+    dbUser: MOCK_DB_USER,
+    loading: false,
+    dbUserLoading: false,
+    signInWithGoogle: async () => {},
+    signOut: async () => {},
+    refreshDBUser: async () => {},
+    mergeDBUser: () => {},
+  };
+  return <AuthContext.Provider value={mockCtx}>{children}</AuthContext.Provider>;
+}
+
+function FirebaseAuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [dbUser, setDbUser] = useState<DBUser | null>(null);
   // When Firebase isn't configured we never go into a loading state — there
