@@ -133,7 +133,7 @@
     "date-fns": "^4.4.0",
     "drizzle-zod": "^0.8.3",
     "exceljs": "^4.4.0",
-    "firebase": "^12.12.1",
+    "firebase": "^13.4.0",
     "firebase-admin": "^13.10.0",
     "geist": "^1.9.2",
     "jose": "^6.2.18",
