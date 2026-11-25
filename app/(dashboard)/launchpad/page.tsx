@@ -85,14 +85,17 @@ export default function LaunchpadPage() {
     if (!runId || run?.bundle) return;
     const t = setInterval(async () => {
       try {
-        const r = await fetch(`/api/launchpad?runId=${runId}`);
+        const token = user ? await user.getIdToken().catch(() => null) : null;
+        const r = await fetch(`/api/launchpad?runId=${runId}`, {
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+        });
         const j = await r.json();
         if (j.run) setRun(j.run);
         if (j.run?.status === "completed") clearInterval(t);
       } catch { /* silent */ }
     }, 2500);
     return () => clearInterval(t);
-  }, [runId, run]);
+  }, [runId, run, user]);
 
   const lastPct = run?.lastProgress?.pct ?? (run?.bundle ? 100 : 0);
   const lastStageId = run?.lastProgress?.stage;
