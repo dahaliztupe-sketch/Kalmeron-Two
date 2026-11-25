@@ -68,7 +68,7 @@ export function PricingHero({ billing, setBilling }: Props) {
           transition={{ duration: 0.7, delay: 0.4 }}
           className="text-base md:text-xl text-neutral-300 max-w-2xl mx-auto leading-relaxed mb-10"
         >
-          ابدأ مجاناً مع رصيد يكفيك لتختبر كل مساعدي كلميرون الـ 16. ارتقِ في أي وقت — بدون عقود، بدون مفاجآت.
+          ابدأ مجاناً مع رصيد يكفيك لتختبر كل مساعدي كلميرون الـ 57. ارتقِ في أي وقت — بدون عقود، بدون مفاجآت.
         </motion.p>
 
         {/* Billing toggle */}
@@ -87,7 +87,7 @@ export function PricingHero({ billing, setBilling }: Props) {
             active={billing === "annual"}
             onClick={() => setBilling("annual")}
             label="سنوي"
-            badge="وفّر 20%"
+            badge="وفّر 33%"
           />
         </motion.div>
 
@@ -105,7 +105,7 @@ export function PricingHero({ billing, setBilling }: Props) {
             <Zap className="h-3.5 w-3.5 text-cyan-400" /> دعم باللغة العربية
           </span>
           <span className="flex items-center gap-1.5">
-            <Zap className="h-3.5 w-3.5 text-cyan-400" /> تشفير E2E
+            <Zap className="h-3.5 w-3.5 text-cyan-400" /> بياناتك تحت تحكمك
           </span>
         </motion.div>
       </div>
