@@ -27,7 +27,7 @@ const DEPARTMENTS = [
   },
   {
     icon: Bot,
-    title: "١٦ مساعداً ذكياً",
+    title: "٥٧ مساعداً ذكياً",
     subtitle: "Your AI Team",
     desc: "فريق متكامل من المسوّقين والمحاسبين والمحامين والمحلّلين بدوام كامل.",
     gradient: "from-indigo-500 to-violet-500",

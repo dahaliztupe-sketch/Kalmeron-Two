@@ -12,6 +12,7 @@ import { AppShell } from "@/components/layout/AppShell";
 import { useAuth } from "@/contexts/AuthContext";
 import { cn } from "@/src/lib/utils";
 import { useTranslations } from "next-intl";
+import { useWorkersHealth, isWorkerUp } from "@/src/hooks/useWorkersHealth";
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 
 const fmt = (n: number) =>
@@ -128,6 +129,8 @@ export default function EgyptCalcPage() {
   const { user } = useAuth();
   const t = useTranslations("EgyptCalc");
   const TABS = TAB_META.map(m => ({ ...m, label: t(`tabs.${m.id}`) }));
+  const workers = useWorkersHealth();
+  const calcUnavailable = !isWorkerUp(workers, "egyptCalc");
   const [tab, setTab] = useState<CalcTab>("income-tax");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -215,6 +218,12 @@ export default function EgyptCalcPage() {
             {t("subtitle")}
           </p>
         </div>
+
+        {calcUnavailable && (
+          <div className="mb-6 rounded-2xl border border-amber-400/30 bg-amber-400/[0.06] px-5 py-3 text-sm text-amber-100">
+            حاسبة الضرائب والتأمينات المصرية قيد التفعيل حالياً — ستعود للعمل قريباً.
+          </div>
+        )}
 
         <div className="flex flex-wrap gap-2 mb-6">
           {TABS.map(t => {
