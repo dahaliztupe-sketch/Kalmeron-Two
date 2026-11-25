@@ -13,7 +13,7 @@ export const POST = guardedRoute(
     const result = await launchStartup(body);
     return NextResponse.json(result);
   },
-  { schema: postSchema, rateLimit: { limit: 5, windowMs: 60_000 } }
+  { requireAuth: true, schema: postSchema, rateLimit: { limit: 5, windowMs: 60_000 } }
 );
 
 export const GET = guardedRoute(
@@ -23,5 +23,5 @@ export const GET = guardedRoute(
     const run = await getLaunchRun(runId);
     return NextResponse.json({ run });
   },
-  { rateLimit: { limit: 120, windowMs: 60_000 } }
+  { requireAuth: true, rateLimit: { limit: 120, windowMs: 60_000 } }
 );
