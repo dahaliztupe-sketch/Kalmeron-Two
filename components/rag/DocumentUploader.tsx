@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
+import { useWorkersHealth, isWorkerUp } from "@/src/hooks/useWorkersHealth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -16,6 +17,9 @@ interface DocItem {
 
 export function DocumentUploader({ title = "مكتبة المستندات" }: { title?: string }) {
   const { user } = useAuth();
+  const workers = useWorkersHealth();
+  const ragAvailable =
+    isWorkerUp(workers, "pdfWorker") && isWorkerUp(workers, "embeddingsWorker");
   const [docs, setDocs] = useState<DocItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
@@ -104,7 +108,7 @@ export function DocumentUploader({ title = "مكتبة المستندات" }: { 
           size="sm"
           variant="secondary"
           onClick={() => inputRef.current?.click()}
-          disabled={uploading || !user}
+          disabled={uploading || !user || !ragAvailable}
         >
           {uploading ? <Loader2 className="w-4 h-4 animate-spin ml-1" /> : <Upload className="w-4 h-4 ml-1" />}
           رفع PDF / CSV / Excel
@@ -121,7 +125,11 @@ export function DocumentUploader({ title = "مكتبة المستندات" }: { 
         />
       </CardHeader>
       <CardContent>
-        {!user ? (
+        {!ragAvailable ? (
+          <p className="text-sm text-text-secondary">
+            رفع المستندات قيد التفعيل حالياً وسيُتاح قريباً.
+          </p>
+        ) : !user ? (
           <p className="text-sm text-text-secondary">سجّل دخولك لرفع المستندات.</p>
         ) : loading ? (
           <p className="text-sm text-text-secondary">جاري التحميل...</p>
