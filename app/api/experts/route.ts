@@ -27,7 +27,7 @@ export const GET = guardedRoute(
     const experts = await listExperts({ workspaceId });
     return NextResponse.json({ experts });
   },
-  { rateLimit: { limit: 60, windowMs: 60_000 } }
+  { requireAuth: true, rateLimit: { limit: 60, windowMs: 60_000 } }
 );
 
 export const POST = guardedRoute(
@@ -43,5 +43,5 @@ export const POST = guardedRoute(
     const id = await saveExpert(expert);
     return NextResponse.json({ expert: { ...expert, id } });
   },
-  { schema: postSchema, rateLimit: { limit: 15, windowMs: 60_000 } }
+  { requireAuth: true, schema: postSchema, rateLimit: { limit: 15, windowMs: 60_000 } }
 );
