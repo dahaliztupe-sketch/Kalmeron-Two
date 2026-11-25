@@ -8,10 +8,10 @@ interface SocialProof {
   plansBuilt: number;
 }
 
-const FALLBACK: SocialProof = {
-  founders: 1_000,
-  ideasAnalyzed: 5_000,
-  plansBuilt: 1_500,
+const EMPTY: SocialProof = {
+  founders: 0,
+  ideasAnalyzed: 0,
+  plansBuilt: 0,
 };
 
 function arabicNumber(n: number): string {
@@ -22,15 +22,12 @@ function arabicNumber(n: number): string {
 }
 
 /**
- * Hero pill that used to read a hard-coded "+1000 entrepreneurs". Now fetches
- * `/api/social-proof` (cached server-side for 5 minutes) so the number reflects
- * real platform usage with floor minimums until live counts overtake them.
- *
- * Renders the floor instantly so first paint is never empty, then upgrades
- * to live numbers when the API responds.
+ * Hero pill showing real platform usage from `/api/social-proof` (cached
+ * server-side for 5 minutes). Renders nothing until real usage exists —
+ * no fabricated placeholder numbers.
  */
 export function SocialProofLine() {
-  const [data, setData] = useState<SocialProof>(FALLBACK);
+  const [data, setData] = useState<SocialProof>(EMPTY);
 
   useEffect(() => {
     let cancelled = false;
@@ -41,18 +38,21 @@ export function SocialProofLine() {
         const json = (await res.json()) as Partial<SocialProof>;
         if (cancelled) return;
         setData({
-          founders: Math.max(json.founders ?? 0, FALLBACK.founders),
-          ideasAnalyzed: Math.max(json.ideasAnalyzed ?? 0, FALLBACK.ideasAnalyzed),
-          plansBuilt: Math.max(json.plansBuilt ?? 0, FALLBACK.plansBuilt),
+          founders: json.founders ?? 0,
+          ideasAnalyzed: json.ideasAnalyzed ?? 0,
+          plansBuilt: json.plansBuilt ?? 0,
         });
       } catch {
-        // Keep fallback — never break the hero on a network error.
+        // Keep empty state — never break the hero on a network error.
       }
     })();
     return () => {
       cancelled = true;
     };
   }, []);
+
+  // Nothing honest to show yet — render no pill instead of fake numbers.
+  if (!data.founders) return null;
 
   return (
     <>
