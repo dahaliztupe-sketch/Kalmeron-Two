@@ -67,7 +67,7 @@
     "newConversation": "New conversation"
   },
   "Trust": {
-    "label": "Trusted by 3,200+ founders across 15 countries",
+    "label": "Built for founders in Egypt and the Gulf",
     "noCard": "No credit card",
     "cancelAnytime": "Cancel anytime",
     "arabicNative": "Deep local context — Egypt & Gulf",
@@ -101,9 +101,9 @@
       "scrollHint": "Learn about the platform"
     },
     "trustBadges": {
-      "lawCompliant": "International data protection compliant",
+      "lawCompliant": "Your data stays yours: self-serve export and deletion",
       "arabicNative": "Deep local context — Egypt & Gulf",
-      "founderCount": "3,200+ active founders",
+      "founderCount": "7 operational departments in one platform",
       "freeStart": "Free to start"
     },
     "suggestions": {
@@ -113,8 +113,8 @@
       "cloudKitchen": "Calculate startup costs and break-even for a cloud kitchen"
     },
     "socialProof": {
-      "rating": "4.9/5",
-      "founderCount": "2,000+ founders",
+      "rating": "Start in minutes",
+      "founderCount": "No technical team needed",
       "noCard": "No card required"
     }
   },

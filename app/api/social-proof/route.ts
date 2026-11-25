@@ -1,10 +1,9 @@
 /**
  * /api/social-proof — public, cached snapshot of real platform usage.
  *
- * Replaces the hard-coded "+1000 entrepreneurs" pill on the landing page with
- * live numbers derived from Firestore. Returns SAFE MINIMUMS so the hero never
- * shows an embarrassingly small number to a first-time visitor (e.g. during
- * the bootstrap phase when only a few founders have signed up).
+ * Serves live numbers derived from Firestore. Returns only real, measured
+ * counts: during the bootstrap phase these can legitimately be zero, and the
+ * UI renders nothing rather than inflating the numbers.
  *
  * All counts are aggregated server-side and cached for 5 minutes — visitors
  * never query Firestore directly.
@@ -16,12 +15,11 @@ import { rateLimit } from '@/src/lib/security/rate-limit';
 export const runtime = 'nodejs';
 export const revalidate = 300; // 5 minutes
 
-// Floor values — what the marketing copy promised on day 1. Real numbers
-// gradually overtake these as the platform grows.
+// No fabricated floors: the API reports measured usage only.
 const FLOOR = {
-  founders: 1_000,
-  ideasAnalyzed: 5_000,
-  plansBuilt: 1_500,
+  founders: 0,
+  ideasAnalyzed: 0,
+  plansBuilt: 0,
 } as const;
 
 interface SocialProof {

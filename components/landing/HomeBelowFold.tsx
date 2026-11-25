@@ -6,7 +6,7 @@ import {
   ArrowLeft, Sparkles, Brain, Shield, Radar,
   Briefcase, Scale, FlaskConical, Bot,
   Check, CheckCircle2, XCircle,
-  Star, Trophy, Users, TrendingUp, Clock, Zap,
+  Trophy, Users, TrendingUp, Clock, Zap,
   MessageSquare, BarChart3, Rocket, FileText,
 } from "lucide-react";
 import Link from "next/link";
@@ -56,7 +56,7 @@ const DEPARTMENTS = [
     icon: Scale,
     title: "الحارس القانوني",
     subtitle: "Legal Guard",
-    desc: "عقود ونماذج متوافقة مع التشريعات الدولية ومعايير حماية البيانات العالمية.",
+    desc: "عقود ونماذج قانونية جاهزة تغطي الاحتياجات الأساسية لشركتك الناشئة.",
     gradient: "from-amber-500 to-orange-500",
     border: "border-amber-500/20 hover:border-amber-400/50",
     glowColor: "rgba(245,158,11,0.12)",
@@ -65,7 +65,7 @@ const DEPARTMENTS = [
     icon: Shield,
     title: "حارس الأخطاء",
     subtitle: "Mistake Shield",
-    desc: "يحذرك من الأخطاء القاتلة قبل وقوعها — مبني على تجارب مئات الشركات.",
+    desc: "يحذرك من أخطاء التأسيس الشائعة قبل وقوعها.",
     gradient: "from-violet-500 to-purple-500",
     border: "border-violet-500/20 hover:border-violet-400/50",
     glowColor: "rgba(139,92,246,0.12)",
@@ -158,7 +158,7 @@ const FEATURES_BENTO = [
   {
     icon: Scale,
     title: "عقود قانونية جاهزة",
-    desc: "عقود مؤسسين، NDA، عقود خدمات — محررة باحترافية ومتوافقة مع التشريعات.",
+    desc: "عقود مؤسسين، NDA، عقود خدمات — محررة باحترافية وجاهزة للتخصيص.",
     span: "",
     gradient: "from-amber-500/10 to-orange-500/5",
     border: "border-amber-500/15",
@@ -189,38 +189,6 @@ const COMPARISON = [
   { feature: "أسعار واضحة وثابتة",  kalmeron: true,   consultant: false,      tools: "بعضها" },
 ];
 
-// ─── TESTIMONIALS ─────────────────────────────────────────────────────────────
-
-const TESTIMONIALS = [
-  {
-    name: "أحمد سامي",
-    role: "مؤسّس SaaS للعقارات",
-    avatar: "أ",
-    color: "from-cyan-500 to-indigo-500",
-    stars: 5,
-    text: "كلميرون ساعدني أعمل خطة أعمال كاملة في ثلاث ساعات بدل ثلاثة أشهر. المستثمر انبهر بالنموذج المالي.",
-    metric: "أغلق جولة تمويل ناجحة خلال ٣ أشهر",
-  },
-  {
-    name: "مريم خالد",
-    role: "صاحبة مشروع تجارة إلكترونية",
-    avatar: "م",
-    color: "from-fuchsia-500 to-pink-500",
-    stars: 5,
-    text: "المساعد القانوني وفّر عليّ ثمن محامٍ بالكامل. العقود جاهزة وقابلة للتخصيص في دقائق.",
-    metric: "وفّرت أكثر من ٦٠٪ من تكاليف المستشارين",
-  },
-  {
-    name: "كريم منصور",
-    role: "مؤسّس شركة لوجستيك",
-    avatar: "ك",
-    color: "from-emerald-500 to-cyan-500",
-    stars: 5,
-    text: "رادار الفرص نبّهني بمسابقة ITIDA قبل الميعاد بأسبوعين — فزنا بالجائزة الثانية.",
-    metric: "٣ جوائز في ٦ أشهر",
-  },
-];
-
 // ─── COMPARISON CELL ─────────────────────────────────────────────────────────
 
 function CompCell({ value, kalmeron = false }: { value: boolean | string; kalmeron?: boolean }) {
@@ -233,7 +201,7 @@ function CompCell({ value, kalmeron = false }: { value: boolean | string; kalmer
 
 function StatsStrip() {
   const stats = [
-    { value: "٣٢٠٠+",  label: "مؤسّس نشط",        gradient: "from-cyan-400 to-sky-300",      border: "border-cyan-500/12",    glow: "rgba(56,189,248,0.08)"  },
+    { value: "مجاناً",  label: "ابدأ بدون بطاقة ائتمان",        gradient: "from-cyan-400 to-sky-300",      border: "border-cyan-500/12",    glow: "rgba(56,189,248,0.08)"  },
     { value: "٧",       label: "أقسام تشغيلية",    gradient: "from-indigo-400 to-violet-400", border: "border-indigo-500/12",  glow: "rgba(99,102,241,0.08)"  },
     { value: "٥٧",      label: "مساعداً ذكياً",    gradient: "from-fuchsia-400 to-pink-400",  border: "border-fuchsia-500/12", glow: "rgba(217,70,239,0.08)"  },
     { value: "٢٤/٧",    label: "متاح بلا انقطاع",  gradient: "from-emerald-400 to-teal-300",  border: "border-emerald-500/12", glow: "rgba(16,185,129,0.08)"  },
@@ -553,68 +521,6 @@ function ComparisonSection() {
   );
 }
 
-// ─── TESTIMONIALS ─────────────────────────────────────────────────────────────
-
-function TestimonialsSection() {
-  return (
-    <section id="testimonials" className="relative px-4 py-16 md:py-24">
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[500px] h-[350px] rounded-full bg-violet-600/5 blur-[80px]" />
-      </div>
-
-      <div className="relative max-w-6xl mx-auto">
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-center mb-12"
-        >
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-white/[0.08] bg-white/[0.04] text-[11px] text-violet-200 mb-5">
-            <Star className="w-3 h-3 fill-violet-300 text-violet-300" /> آراء حقيقية
-          </div>
-          <h2 className="font-display text-2xl sm:text-3xl md:text-4xl font-extrabold text-white">
-            رواد أعمال <span className="brand-gradient-text">حققوا نتائج</span>
-          </h2>
-        </motion.div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-5">
-          {TESTIMONIALS.map((t, i) => (
-            <motion.div
-              key={t.name}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.1 }}
-              className="rounded-2xl border border-white/[0.07] p-6 hover:border-white/[0.14] transition-colors"
-              style={{ background: "rgba(255,255,255,0.025)" }}
-            >
-              <div className="flex items-start gap-3 mb-4">
-                <div className={`w-11 h-11 rounded-full bg-gradient-to-br ${t.color} flex items-center justify-center text-white font-bold text-lg shrink-0`}>
-                  {t.avatar}
-                </div>
-                <div>
-                  <div className="font-bold text-white text-sm">{t.name}</div>
-                  <div className="text-xs text-neutral-500 mt-0.5">{t.role}</div>
-                  <div className="flex gap-0.5 mt-1.5">
-                    {Array.from({ length: t.stars }).map((_, j) => (
-                      <Star key={j} className="w-3 h-3 fill-amber-400 text-amber-400" />
-                    ))}
-                  </div>
-                </div>
-              </div>
-              <p className="text-sm text-neutral-300 leading-relaxed mb-4">&ldquo;{t.text}&rdquo;</p>
-              <div className="flex items-center gap-2 pt-3 border-t border-white/[0.06]">
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                <span className="text-xs font-semibold text-emerald-400">{t.metric}</span>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
 // ─── FINAL CTA ───────────────────────────────────────────────────────────────
 
 function FinalCTA() {
@@ -651,7 +557,7 @@ function FinalCTA() {
           </h2>
 
           <p className="text-neutral-400 text-base sm:text-lg mb-10 max-w-xl mx-auto leading-relaxed">
-            انضم لآلاف رواد الأعمال الذين يبنون شركاتهم مع كلميرون كل يوم.
+            منصة واحدة تأخذك من الفكرة الأولى إلى شركة جاهزة للإطلاق.
           </p>
 
           <form onSubmit={submit} className="relative max-w-xl mx-auto group mb-8">
@@ -675,7 +581,7 @@ function FinalCTA() {
           <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-neutral-500">
             <span className="flex items-center gap-1.5"><Check className="w-3.5 h-3.5 text-emerald-400" /> مجاني للبداية</span>
             <span className="flex items-center gap-1.5"><Check className="w-3.5 h-3.5 text-emerald-400" /> بدون بطاقة ائتمان</span>
-            <span className="flex items-center gap-1.5"><Check className="w-3.5 h-3.5 text-emerald-400" /> آمن ومشفّر E2E</span>
+            <span className="flex items-center gap-1.5"><Check className="w-3.5 h-3.5 text-emerald-400" /> بياناتك تحت تحكمك</span>
           </div>
         </motion.div>
       </div>
@@ -781,7 +687,6 @@ export default function HomeBelowFold() {
       <FeaturesBento />
       <DepartmentsSection />
       <ComparisonSection />
-      <TestimonialsSection />
       <FinalCTA />
       <SiteFooter />
     </>
