@@ -52,4 +52,9 @@ paths = [
   '''docs/INVESTOR_READINESS_AUDIT_2026_04_25\.md''',
   # CHANGELOG entries that reference the rotation history.
   '''CHANGELOG\.md''',
+  # Historical files (removed from HEAD) that contain only the public
+  # Firebase web config / placeholder env snippets. Still scanned in
+  # history, so allowlist their paths.
+  '''docs/HEDGING_PLAN\.md''',
+  '''firebase-applet-config\.json''',
 ]
