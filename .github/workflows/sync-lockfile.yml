@@ -1,0 +1,23 @@
+name: sync-lockfile
+on:
+  push:
+    branches: [fix/honest-landing-claims]
+permissions:
+  contents: write
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: npm install --package-lock-only --no-audit --no-fund
+      - name: Commit lockfile if changed
+        run: |
+          git config user.name "instinct-agent"
+          git config user.email "agent@instinct.com"
+          git add package-lock.json
+          if git diff --cached --quiet; then
+            echo "lockfile already in sync"
+          else
+            git commit -m "chore(deps): sync package-lock.json with uuid ^11.1.1 override"
+            git push
+          fi
