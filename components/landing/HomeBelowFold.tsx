@@ -557,7 +557,7 @@ function FinalCTA() {
           </h2>
 
           <p className="text-neutral-400 text-base sm:text-lg mb-10 max-w-xl mx-auto leading-relaxed">
-            انضم لآلاف رواد الأعمال الذين يبنون شركاتهم مع كلميرون كل يوم.
+            منصة واحدة تأخذك من الفكرة الأولى إلى شركة جاهزة للإطلاق.
           </p>
 
           <form onSubmit={submit} className="relative max-w-xl mx-auto group mb-8">
@@ -581,7 +581,7 @@ function FinalCTA() {
           <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-neutral-500">
             <span className="flex items-center gap-1.5"><Check className="w-3.5 h-3.5 text-emerald-400" /> مجاني للبداية</span>
             <span className="flex items-center gap-1.5"><Check className="w-3.5 h-3.5 text-emerald-400" /> بدون بطاقة ائتمان</span>
-            <span className="flex items-center gap-1.5"><Check className="w-3.5 h-3.5 text-emerald-400" /> آمن ومشفّر E2E</span>
+            <span className="flex items-center gap-1.5"><Check className="w-3.5 h-3.5 text-emerald-400" /> بياناتك تحت تحكمك</span>
           </div>
         </motion.div>
       </div>
