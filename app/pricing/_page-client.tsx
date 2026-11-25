@@ -146,8 +146,8 @@ export default function PricingPage() {
           <div className="rounded-2xl border border-amber-400/30 bg-amber-400/[0.06] backdrop-blur-xl px-5 py-3 flex items-start gap-3 text-sm text-amber-100">
             <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5 text-amber-300" />
             <div className="flex-1 leading-relaxed">
-              الدفع بالجنيه المصري متاح عبر{" "}
-              <span className="font-bold text-amber-200">فوري</span> — اختر خطتك وستفتح نافذة الدفع تلقائياً.
+              بوّابات الدفع (فوري بالجنيه المصري وStripe بالبطاقات) قيد التفعيل حالياً —{" "}
+              <span className="font-bold text-amber-200">ستُتاح خلال أيام</span>، ويمكنك المتابعة بالخطة المجانية الآن.
             </div>
           </div>
         </div>
