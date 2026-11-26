@@ -8,7 +8,9 @@
     { "pattern": "^https://your-" },
     { "pattern": "^mailto:" },
     { "pattern": "^https://console.cloud.google.com" },
-    { "pattern": "^https://vercel.com/dashboard" }
+    { "pattern": "^https://vercel.com/dashboard" },
+    { "pattern": "^https://hostadvice.com" },
+    { "pattern": "^https://www.trustpilot.com" }
   ],
   "replacementPatterns": [],
   "httpHeaders": [
