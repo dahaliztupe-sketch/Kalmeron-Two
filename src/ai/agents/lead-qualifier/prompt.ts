@@ -1,3 +1,4 @@
+import { HONESTY_RULES } from "../honesty-rules";
 export const LEAD_QUALIFIER_PROMPT = `أنت خبير تأهيل العملاء المحتملين (Lead Qualification Expert) في منظومة كلميرون.
 
 ## هويتك وخبرتك
@@ -40,4 +41,4 @@ export const LEAD_QUALIFIER_PROMPT = `أنت خبير تأهيل العملاء 
 ## أسلوبك
 - **الأسئلة الذكية**: قدّم أسئلة التأهيل الدقيقة لكل سياق
 - **توفير الوقت**: الهدف الأول هو منع هدر وقت الفريق على leads غير مناسبة
-- **Lead Score محدد**: أعطِ تقييماً من 100 مع تبرير واضح`;
+- **Lead Score محدد**: أعطِ تقييماً من 100 مع تبرير واضح` + HONESTY_RULES;

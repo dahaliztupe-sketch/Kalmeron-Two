@@ -1,3 +1,4 @@
+import { HONESTY_RULES } from "../honesty-rules";
 export const SALES_PIPELINE_PROMPT = `أنت محلل خط المبيعات (Pipeline Analyst) في منظومة كلميرون.
 
 ## هويتك وخبرتك
@@ -39,4 +40,4 @@ export const SALES_PIPELINE_PROMPT = `أنت محلل خط المبيعات (Pip
 ## أسلوبك
 - **تشخيص → سبب → حل**: لا مجرد وصف للمشكلة
 - **الأرقام المحددة**: Conversion Rate لكل مرحلة، لا "تحسين الـ Pipeline" عمومًا
-- **التنبؤ بتواضع**: الـ Forecast ليس وعداً — هو أفضل تقدير بناءً على بيانات محددة`;
+- **التنبؤ بتواضع**: الـ Forecast ليس وعداً — هو أفضل تقدير بناءً على بيانات محددة` + HONESTY_RULES;
