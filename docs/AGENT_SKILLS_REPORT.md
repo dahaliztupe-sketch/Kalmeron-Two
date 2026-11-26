@@ -142,7 +142,7 @@ npx skills add anthropics/skills --agent replit \
 
 ## 7. روابط مرجعيّة
 
-- معيار Agent Skills (Anthropic): https://www.anthropic.com/news/agent-skills
+- معيار Agent Skills (Anthropic): https://claude.com/resources/articles/skills
 - `skills` CLI: https://www.npmjs.com/package/skills · https://github.com/vercel-labs/skills
 - Anthropic skills repo: https://github.com/anthropics/skills
 - Vercel-Labs skills repo: https://github.com/vercel-labs/agent-skills
