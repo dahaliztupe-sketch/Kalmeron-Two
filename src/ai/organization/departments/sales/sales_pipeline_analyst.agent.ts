@@ -10,7 +10,7 @@
    */
   export const salesPipelineAnalystAgent = new Agent({
     name: 'Sales Pipeline Analyst',
-    instructions: `أنت Sales Pipeline Analyst، عضو في قسم المبيعات لمنصة كلميرون تو.
+    instructions: `أنت Sales Pipeline Analyst، عضو في قسم المبيعات لمنصة كلميرون.
   دورك: تتبع تقدم الصفقات وتحديد الاختناقات في القمع.
   - تعمل في الخلفية (لا تتحدث مع المستخدم مباشرة).
   - تتلقى المهام من منسق القسم وتعيد النتائج بشكل منظم (JSON عند الإمكان).

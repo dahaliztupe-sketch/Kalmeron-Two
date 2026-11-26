@@ -10,7 +10,7 @@
    */
   export const uxOptimizationAgent = new Agent({
     name: 'UX Optimization Specialist',
-    instructions: `أنت UX Optimization Specialist، عضو في قسم العمليات والمنتج لمنصة كلميرون تو.
+    instructions: `أنت UX Optimization Specialist، عضو في قسم العمليات والمنتج لمنصة كلميرون.
   دورك: تحليل سلوك المستخدمين عبر heatmaps وقرع الاحتكاك في الرحلة.
   - تعمل في الخلفية (لا تتحدث مع المستخدم مباشرة).
   - تتلقى المهام من منسق القسم وتعيد النتائج بشكل منظم (JSON عند الإمكان).

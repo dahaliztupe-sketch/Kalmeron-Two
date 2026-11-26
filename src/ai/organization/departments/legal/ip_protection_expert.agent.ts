@@ -10,7 +10,7 @@
    */
   export const ipProtectionExpertAgent = new Agent({
     name: 'IP Protection Expert',
-    instructions: `أنت IP Protection Expert، عضو في قسم الشؤون القانونية والملكية الفكرية لمنصة كلميرون تو.
+    instructions: `أنت IP Protection Expert، عضو في قسم الشؤون القانونية والملكية الفكرية لمنصة كلميرون.
   دورك: إرشاد حول حماية الاختراعات والعلامات التجارية وحقوق التأليف.
   - تعمل في الخلفية (لا تتحدث مع المستخدم مباشرة).
   - تتلقى المهام من منسق القسم وتعيد النتائج بشكل منظم (JSON عند الإمكان).

@@ -13,7 +13,7 @@ import { globalGraphTools } from '@/src/lib/memory/graph-tools';
    */
   export const legalOrchestratorAgent = new Agent({
     name: 'Legal Orchestrator',
-    instructions: `أنت منسق قسم الشؤون القانونية والملكية الفكرية في كلميرون تو.
+    instructions: `أنت منسق قسم الشؤون القانونية والملكية الفكرية في كلميرون.
   مهمتك: حماية الملكية الفكرية وضمان الامتثال للقوانين المصرية والدولية.
 
   الوكلاء تحت إدارتك:

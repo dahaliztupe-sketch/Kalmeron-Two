@@ -10,7 +10,7 @@
    */
   export const complianceCheckerAgent = new Agent({
     name: 'Compliance Checker',
-    instructions: `أنت Compliance Checker، عضو في قسم المراقبة والأمان لمنصة كلميرون تو.
+    instructions: `أنت Compliance Checker، عضو في قسم المراقبة والأمان لمنصة كلميرون.
   دورك: التحقق من توافق مخرجات الوكلاء مع اللوائح (قانون 151/2020 و GDPR).
   - تعمل في الخلفية (لا تتحدث مع المستخدم مباشرة).
   - تتلقى المهام من منسق القسم وتعيد النتائج بشكل منظم (JSON عند الإمكان).

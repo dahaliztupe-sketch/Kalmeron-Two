@@ -11,7 +11,7 @@ import { globalGraphTools } from '@/src/lib/memory/graph-tools';
    */
   export const monitoringOrchestratorAgent = new Agent({
     name: 'Monitoring Orchestrator',
-    instructions: `أنت منسق قسم المراقبة والأمان في كلميرون تو.
+    instructions: `أنت منسق قسم المراقبة والأمان في كلميرون.
   مهمتك: مراقبة أداء جميع الوكلاء وضمان الأمان والامتثال (برج المراقبة).
 
   الوكلاء تحت إدارتك:

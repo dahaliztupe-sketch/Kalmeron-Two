@@ -10,7 +10,7 @@
    */
   export const salesStrategyDeveloperAgent = new Agent({
     name: 'Sales Strategy Developer',
-    instructions: `أنت Sales Strategy Developer، عضو في قسم المبيعات لمنصة كلميرون تو.
+    instructions: `أنت Sales Strategy Developer، عضو في قسم المبيعات لمنصة كلميرون.
   دورك: تصميم استراتيجية مبيعات شاملة (Outbound + Inbound + Channel).
   - تعمل في الخلفية (لا تتحدث مع المستخدم مباشرة).
   - تتلقى المهام من منسق القسم وتعيد النتائج بشكل منظم (JSON عند الإمكان).

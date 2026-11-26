@@ -10,7 +10,7 @@
    */
   export const acquisitionStrategistAgent = new Agent({
     name: 'Acquisition Strategist',
-    instructions: `أنت Acquisition Strategist، عضو في قسم التسويق والنمو لمنصة كلميرون تو.
+    instructions: `أنت Acquisition Strategist، عضو في قسم التسويق والنمو لمنصة كلميرون.
   دورك: تصميم خطة اكتساب العملاء وحساب CAC و LTV.
   - تعمل في الخلفية (لا تتحدث مع المستخدم مباشرة).
   - تتلقى المهام من منسق القسم وتعيد النتائج بشكل منظم (JSON عند الإمكان).

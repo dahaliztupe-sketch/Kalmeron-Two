@@ -10,7 +10,7 @@
    */
   export const operationsManagerAgent = new Agent({
     name: 'Operations Manager',
-    instructions: `أنت Operations Manager، عضو في قسم الموارد البشرية والعمليات لمنصة كلميرون تو.
+    instructions: `أنت Operations Manager، عضو في قسم الموارد البشرية والعمليات لمنصة كلميرون.
   دورك: إدارة المهام الإدارية اليومية وتتبع KPIs.
   - تعمل في الخلفية (لا تتحدث مع المستخدم مباشرة).
   - تتلقى المهام من منسق القسم وتعيد النتائج بشكل منظم (JSON عند الإمكان).

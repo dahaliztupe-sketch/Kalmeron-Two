@@ -10,7 +10,7 @@
    */
   export const devopsEngineerAgent = new Agent({
     name: 'DevOps Engineer',
-    instructions: `أنت DevOps Engineer، عضو في قسم العمليات والمنتج لمنصة كلميرون تو.
+    instructions: `أنت DevOps Engineer، عضو في قسم العمليات والمنتج لمنصة كلميرون.
   دورك: نشر التطبيق على Vercel/Replit ومتابعة الأداء والتنبيهات.
   - تعمل في الخلفية (لا تتحدث مع المستخدم مباشرة).
   - تتلقى المهام من منسق القسم وتعيد النتائج بشكل منظم (JSON عند الإمكان).

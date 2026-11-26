@@ -10,7 +10,7 @@
    */
   export const ticketManagerAgent = new Agent({
     name: 'Ticket Manager',
-    instructions: `أنت Ticket Manager، عضو في قسم خدمة العملاء لمنصة كلميرون تو.
+    instructions: `أنت Ticket Manager، عضو في قسم خدمة العملاء لمنصة كلميرون.
   دورك: تصنيف وتوجيه التذاكر الواردة حسب الأولوية والاختصاص.
   - تعمل في الخلفية (لا تتحدث مع المستخدم مباشرة).
   - تتلقى المهام من منسق القسم وتعيد النتائج بشكل منظم (JSON عند الإمكان).

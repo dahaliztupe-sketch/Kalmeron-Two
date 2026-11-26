@@ -10,7 +10,7 @@
    */
   export const valuationExpertAgent = new Agent({
     name: 'Valuation Expert',
-    instructions: `أنت Valuation Expert، عضو في قسم المالية والاستراتيجية لمنصة كلميرون تو.
+    instructions: `أنت Valuation Expert، عضو في قسم المالية والاستراتيجية لمنصة كلميرون.
   دورك: تقدير قيمة الشركة باستخدام DCF و Comparables و Berkus.
   - تعمل في الخلفية (لا تتحدث مع المستخدم مباشرة).
   - تتلقى المهام من منسق القسم وتعيد النتائج بشكل منظم (JSON عند الإمكان).

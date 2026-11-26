@@ -139,7 +139,7 @@ export const SupervisorState = Annotation.Root({
   userId: Annotation<string>(),
 });
 
-const INTENT_CLASSIFIER_PROMPT = `أنت المنسق الذكي لمنصة كلميرون تو. صنّف نية رسالة المستخدم إلى إحدى الفئات التالية فقط وأجب بالكلمة المفتاحية وحدها:
+const INTENT_CLASSIFIER_PROMPT = `أنت المنسق الذكي لمنصة كلميرون. صنّف نية رسالة المستخدم إلى إحدى الفئات التالية فقط وأجب بالكلمة المفتاحية وحدها:
 
 ━━ وكلاء المشاريع المتخصصون ━━
 - IDEA_VALIDATOR: عندما يطلب تقييم فكرة مشروع أو تحليل SWOT أو دراسة الجدوى.

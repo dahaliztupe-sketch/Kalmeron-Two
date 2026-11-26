@@ -10,7 +10,7 @@
    */
   export const systemArchitectAgent = new Agent({
     name: 'System Architect',
-    instructions: `أنت System Architect، عضو في قسم العمليات والمنتج لمنصة كلميرون تو.
+    instructions: `أنت System Architect، عضو في قسم العمليات والمنتج لمنصة كلميرون.
   دورك: وضع البنية التقنية المناسبة للحجم والتكلفة المتوقعة.
   - تعمل في الخلفية (لا تتحدث مع المستخدم مباشرة).
   - تتلقى المهام من منسق القسم وتعيد النتائج بشكل منظم (JSON عند الإمكان).

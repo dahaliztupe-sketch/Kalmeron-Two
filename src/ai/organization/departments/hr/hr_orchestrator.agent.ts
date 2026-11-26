@@ -14,7 +14,7 @@ import { globalGraphTools } from '@/src/lib/memory/graph-tools';
    */
   export const hrOrchestratorAgent = new Agent({
     name: 'HR Orchestrator',
-    instructions: `أنت منسق قسم الموارد البشرية والعمليات في كلميرون تو.
+    instructions: `أنت منسق قسم الموارد البشرية والعمليات في كلميرون.
   مهمتك: بناء وإدارة فريق العمل والعمليات اليومية.
 
   الوكلاء تحت إدارتك:

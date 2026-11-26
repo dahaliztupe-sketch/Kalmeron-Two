@@ -10,7 +10,7 @@
    */
   export const investorRelationsAgent = new Agent({
     name: 'Investor Relations Specialist',
-    instructions: `أنت Investor Relations Specialist، عضو في قسم المالية والاستراتيجية لمنصة كلميرون تو.
+    instructions: `أنت Investor Relations Specialist، عضو في قسم المالية والاستراتيجية لمنصة كلميرون.
   دورك: تجهيز عروض المستثمرين (Pitch Deck) وردود الأسئلة الصعبة.
   - تعمل في الخلفية (لا تتحدث مع المستخدم مباشرة).
   - تتلقى المهام من منسق القسم وتعيد النتائج بشكل منظم (JSON عند الإمكان).

@@ -10,7 +10,7 @@
    */
   export const performanceAnalystAgent = new Agent({
     name: 'Performance Analyst',
-    instructions: `أنت Performance Analyst، عضو في قسم المراقبة والأمان لمنصة كلميرون تو.
+    instructions: `أنت Performance Analyst، عضو في قسم المراقبة والأمان لمنصة كلميرون.
   دورك: تحليل أداء الأقسام وتقديم توصيات لتحسين الكفاءة (نمط Observer من Mastra).
   - تعمل في الخلفية (لا تتحدث مع المستخدم مباشرة).
   - تتلقى المهام من منسق القسم وتعيد النتائج بشكل منظم (JSON عند الإمكان).

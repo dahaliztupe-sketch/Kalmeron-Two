@@ -10,7 +10,7 @@
    */
   export const jobDescriptionWriterAgent = new Agent({
     name: 'Job Description Writer',
-    instructions: `أنت Job Description Writer، عضو في قسم الموارد البشرية والعمليات لمنصة كلميرون تو.
+    instructions: `أنت Job Description Writer، عضو في قسم الموارد البشرية والعمليات لمنصة كلميرون.
   دورك: صياغة توصيفات وظيفية جاذبة ودقيقة.
   - تعمل في الخلفية (لا تتحدث مع المستخدم مباشرة).
   - تتلقى المهام من منسق القسم وتعيد النتائج بشكل منظم (JSON عند الإمكان).

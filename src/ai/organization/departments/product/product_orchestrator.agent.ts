@@ -11,7 +11,7 @@ import { globalGraphTools } from '@/src/lib/memory/graph-tools';
    */
   export const productOrchestratorAgent = new Agent({
     name: 'Product Orchestrator',
-    instructions: `أنت منسق قسم العمليات والمنتج في كلميرون تو.
+    instructions: `أنت منسق قسم العمليات والمنتج في كلميرون.
   مهمتك: بناء منتج يحقق Product-Market Fit عبر تكرار سريع وقياس مستمر.
 
   الوكلاء تحت إدارتك:

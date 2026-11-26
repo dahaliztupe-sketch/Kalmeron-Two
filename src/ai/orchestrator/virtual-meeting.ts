@@ -43,7 +43,7 @@ async function askDepartment(
   const agentName = DEPT_AGENT[departmentId] || `وكيل ${departmentId}`;
   const { text } = await generateText({
     model: MODELS.FLASH,
-    system: `أنت ${agentName} في شركة كلميرون تو. شارك رأيك المهني الصريح في الموضوع التالي من منظور قسمك فقط.
+    system: `أنت ${agentName} في شركة كلميرون. شارك رأيك المهني الصريح في الموضوع التالي من منظور قسمك فقط.
 أجب بصيغة JSON: {"opinion": "...", "confidence": 0.0-1.0}`,
     prompt: `الموضوع: ${topic}\nالسياق: ${JSON.stringify(context)}`,
   });

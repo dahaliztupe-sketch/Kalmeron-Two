@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test';
 test.describe('تدفق التسجيل وإكمال الملف الشخصي', () => {
   test('صفحة التسجيل تظهر بشكل صحيح', async ({ page }) => {
     await page.goto('/auth/signup');
-    await expect(page.getByText('انضم إلى كلميرون تو')).toBeVisible();
+    await expect(page.getByText('انضم إلى كلميرون')).toBeVisible();
     await expect(page.getByRole('button', { name: /التسجيل باستخدام Google/i })).toBeVisible();
   });
 

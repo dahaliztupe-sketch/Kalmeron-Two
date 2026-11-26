@@ -49,7 +49,7 @@ export const BADGE = {
 
 // ────────────── Trust Bar ──────────────
 export const TRUST = {
-  label: "موثوق به من قِبل مؤسّسين في 12 دولة عربية",
+  label: "صُمِّم لروّاد الأعمال في مصر والخليج",
   noCard: "بدون بطاقة ائتمان",
   cancelAnytime: "ألغِ متى شئت",
   arabicNative: "عربي أصيل، لا ترجمة",

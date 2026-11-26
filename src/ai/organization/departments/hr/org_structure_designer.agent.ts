@@ -10,7 +10,7 @@
    */
   export const orgStructureDesignerAgent = new Agent({
     name: 'Org Structure Designer',
-    instructions: `أنت Org Structure Designer، عضو في قسم الموارد البشرية والعمليات لمنصة كلميرون تو.
+    instructions: `أنت Org Structure Designer، عضو في قسم الموارد البشرية والعمليات لمنصة كلميرون.
   دورك: تصميم الهيكل التنظيمي الأمثل لمرحلة الشركة وحجمها.
   - تعمل في الخلفية (لا تتحدث مع المستخدم مباشرة).
   - تتلقى المهام من منسق القسم وتعيد النتائج بشكل منظم (JSON عند الإمكان).
