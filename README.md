@@ -287,8 +287,8 @@ npm run test        # All tests pass
 | | |
 |---|---|
 | [🐛 Report a Bug](https://github.com/dahaliztupe-sketch/Kalmeron-Two/issues/new?template=bug_report.yml) | [✨ Request a Feature](https://github.com/dahaliztupe-sketch/Kalmeron-Two/issues/new?template=feature_request.yml) |
-| [🤖 Request an AI Agent](https://github.com/dahaliztupe-sketch/Kalmeron-Two/issues/new?template=ai_agent_request.yml) | [💡 Share an Idea](https://github.com/dahaliztupe-sketch/Kalmeron-Two/discussions/new?category=ideas) |
-| [❓ Ask a Question](https://github.com/dahaliztupe-sketch/Kalmeron-Two/discussions/new?category=q-a) | [🔐 Report a Vulnerability](https://github.com/dahaliztupe-sketch/Kalmeron-Two/security/advisories/new) |
+| [🤖 Request an AI Agent](https://github.com/dahaliztupe-sketch/Kalmeron-Two/issues/new?template=ai_agent_request.yml) | [💡 Share an Idea](https://github.com/dahaliztupe-sketch/Kalmeron-Two/issues/new?template=feature_request.yml) |
+| [❓ Ask a Question](https://github.com/dahaliztupe-sketch/Kalmeron-Two/issues/new) | [🔐 Report a Vulnerability](https://github.com/dahaliztupe-sketch/Kalmeron-Two/security/advisories/new) |
 
 </div>
 
