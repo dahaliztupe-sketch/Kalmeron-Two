@@ -54,7 +54,7 @@ export const TRUST = {
   cancelAnytime: "ألغِ متى شئت",
   arabicNative: "عربي أصيل، لا ترجمة",
   privateData: "بياناتك خاصّة بك وحدك",
-  gdprReady: "متوافق مع GDPR",
+  gdprReady: "مسودات تراعي مبادئ حماية البيانات (ليست شهادة امتثال)",
 } as const;
 
 // ────────────── Empty States ──────────────
