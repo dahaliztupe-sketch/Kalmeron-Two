@@ -43,21 +43,22 @@ export interface Workspace {
 export function sanitizeWorkspace(body: unknown): Workspace | null {
   const parsed = WorkspaceBodySchema.safeParse(body);
   if (!parsed.success) return null;
-  const state: CompanyState = {};
+  const entries = new Map<string, CompanyState[string]>();
   for (const [role, st] of Object.entries(parsed.data.state)) {
     if (!isRoleId(role)) continue;
     const hasOutput = st.status === "done" || st.status === "approved";
     if (hasOutput) {
       const out = ROLES[role].outputSchema.safeParse(st.output);
       if (!out.success) {
-        state[role] = { status: "idle", warnings: [] };
+        entries.set(role, { status: "idle", warnings: [] });
         continue;
       }
-      state[role] = { status: st.status as RoleStatus, output: out.data, warnings: st.warnings, ...(st.stale ? { stale: true } : {}) };
+      entries.set(role, { status: st.status as RoleStatus, output: out.data, warnings: st.warnings, ...(st.stale ? { stale: true } : {}) });
     } else {
-      state[role] = { status: st.status === "failed" ? "failed" : "idle", warnings: [], ...(st.error ? { error: st.error } : {}) };
+      entries.set(role, { status: st.status === "failed" ? "failed" : "idle", warnings: [], ...(st.error ? { error: st.error } : {}) });
     }
   }
+  const state = Object.fromEntries(entries) as CompanyState;
   const ws: Workspace = { plan: parsed.data.plan, intake: parsed.data.intake, state };
   if (JSON.stringify(ws).length > MAX_WORKSPACE_BYTES) return null;
   return ws;
