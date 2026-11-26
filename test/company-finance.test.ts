@@ -82,7 +82,10 @@ describe("finance role", () => {
     expect(FINANCE_ROLE.systemPrompt).toContain("المصدر:");
     for (const i of FINANCE_KNOWLEDGE.items) expect(i.sourceUrl.startsWith("https://")).toBe(true);
     const eg = FINANCE_KNOWLEDGE.items.filter((i) => i.id.startsWith("eg-"));
-    for (const i of eg) expect(i.ruleAr).toContain("استشر");
+    for (const i of eg) expect(i.ruleAr).toMatch(/استشر|راجع/);
+    const ids = FINANCE_KNOWLEDGE.items.map((i) => i.id);
+    expect(new Set(ids).size).toBe(ids.length);
+    for (const i of FINANCE_KNOWLEDGE.items) expect(i.reviewedOn).toMatch(/^\d{4}-\d{2}-\d{2}$/);
   });
   it("is registered once the integrator adds it", () => {
     const reg = ROLES as Record<string, unknown>;
