@@ -15,7 +15,7 @@ const good: FinancePlan = {
   pricePerUnit: { valueEgp: 500, basis: "assumption" },
   variableCostPerUnit: { valueEgp: 200, basis: "assumption" },
   openingCash: { valueEgp: 20000, basis: "assumption" },
-  fixedCosts: [{ name: "إيجار", monthlyEgp: 4000, basis: "assumption" }, { name: "أدوات", monthlyEgp: 2000, basis: "assumption" }],
+  fixedCosts: [{ name: "إيجار", monthlyEgp: 4000, basis: "assumption" }, { name: "أدوات ورسوم دفع", monthlyEgp: 2000, basis: "needs_check" }],
   months: [m1, m2, m3],
   breakEven: { unitsPerMonth: 20, revenuePerMonthEgp: 10000, note: "الثوابت ÷ هامش المساهمة.", basis: "assumption" },
   risks: [],
@@ -50,6 +50,33 @@ describe("finance role", () => {
     expect(codes({ ...good, risks: [{ text: "أرباح مضمونة", basis: "assumption" }] })).toContain("overpromise");
     expect(codes({ ...good, risks: [{ text: "السوق ينمو 30%", basis: "assumption" }] })).toContain("unsupported_statistic");
     expect(codes({ ...good, handoff: [] })).toContain("tax_needs_professional");
+  });
+  it("warns when price is below unit cost", () => {
+    expect(codes({ ...good, variableCostPerUnit: { valueEgp: 600, basis: "assumption" } })).toContain("price_below_cost");
+  });
+  it("warns when payment fees are not mentioned", () => {
+    const noFees = { ...good, fixedCosts: [{ name: "إيجار", monthlyEgp: 6000, basis: "assumption" as const }] };
+    expect(codes(noFees)).toContain("payment_fees_missing");
+    expect(codes(good)).not.toContain("payment_fees_missing");
+  });
+  describe("golden cases", () => {
+    // Hand-computed: fixed 6000, price 500, unit cost 200 => margin 300, break-even 20 units, revenue 10000.
+    it("exactly at break-even gives zero net cash", () => {
+      const at = m(1, 20, 20000);
+      expect(at.netCashEgp).toBe(0);
+      expect(codes({ ...good, months: [at, m(2, 20, 20000), m(3, 20, 20000)] })).not.toContain("net_mismatch");
+    });
+    it("non-integer break-even is accepted within 1 unit", () => {
+      const odd = { ...good, fixedCosts: [{ name: "رسوم", monthlyEgp: 6100, basis: "assumption" as const }], months: [m1, m2, m3].map((x) => ({ ...x, fixedCostsEgp: 6100, netCashEgp: x.netCashEgp - 100 })) };
+      // 6100/300 = 20.33; 20 is within 1 unit
+      let bal = 20000;
+      const months = odd.months.map((x) => { bal += x.netCashEgp; return { ...x, endingCashEgp: bal }; });
+      expect(codes({ ...odd, months, breakEven: { ...good.breakEven, unitsPerMonth: 20, revenuePerMonthEgp: 10200 } }).filter((c) => c.startsWith("breakeven"))).toEqual([]);
+    });
+    it("null break-even is valid when margin is zero", () => {
+      const z = { ...good, variableCostPerUnit: { valueEgp: 500, basis: "assumption" as const }, breakEven: { ...good.breakEven, unitsPerMonth: null, revenuePerMonthEgp: null } };
+      expect(codes(z).filter((c) => c.startsWith("breakeven"))).toEqual([]);
+    });
   });
   it("prompt carries sources; knowledge has real https URLs and honest status", () => {
     expect(FINANCE_ROLE.systemPrompt).toContain("المصدر:");

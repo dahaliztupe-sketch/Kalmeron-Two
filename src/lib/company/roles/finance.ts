@@ -79,6 +79,12 @@ export function financeChecks(out: FinancePlan, brief?: { constraints?: { budget
     else if (out.breakEven.revenuePerMonthEgp !== null && Math.abs(out.breakEven.revenuePerMonthEgp - units * price) > Math.max(TOL, price)) err("breakeven_revenue_mismatch", "إيراد التعادل لا يساوي وحدات التعادل × السعر.");
   }
 
+  if (cm <= 0) warn("price_below_cost", "سعر الوحدة لا يغطي تكلفتها المتغيرة.");
+  const feeRe = /(رسوم|عمولة|دفع|إنستاباي|انستاباي|محفظ|بطاق)/;
+  if (!out.fixedCosts.some((c) => feeRe.test(c.name)) && !out.risks.some((r) => feeRe.test(r.text)) && !feeRe.test(out.assumptionsSummary)) {
+    warn("payment_fees_missing", "لا ذكر لرسوم قنوات الدفع (إنستاباي أو محافظ أو بطاقات). أضفها كبند needs_check.");
+  }
+
   const budget = brief?.constraints?.budgetEgp ?? null;
   if (budget !== null) {
     const spend = nums.reduce((s, m) => s + m.variableCostsEgp + m.fixedCostsEgp, 0);
@@ -108,6 +114,7 @@ ${knowledgePrompt(FINANCE_KNOWLEDGE, new Date())}
 - فصّل التكاليف الثابتة الشهرية عن التكلفة المتغيرة للوحدة، وحدد سعر الوحدة والرصيد الافتتاحي.
 - الأشهر الثلاثة: units، revenueEgp = units × السعر، variableCostsEgp = units × التكلفة المتغيرة، fixedCostsEgp = مجموع الثوابت، netCashEgp = الإيراد − التكاليف، endingCashEgp = الرصيد السابق + الصافي. المجاميع يجب أن تتطابق.
 - نقطة التعادل (وحدات/شهر) = الثوابت ÷ (السعر − التكلفة المتغيرة)، وnull إن كان الهامش ≤ 0.
+- رسوم قنوات الدفع (إنستاباي أو المحافظ أو البطاقات) بند تكلفة needs_check بلا نسب مخترعة.
 - اذكر افتراض توقيت التحصيل في collectionNote.
 - إن نزل الرصيد تحت الصفر أو تجاوز الإنفاق الميزانية فاذكر ذلك في risks.
 - الضرائب: ملاحظات عامة فقط (taxNotes) مع handoff إلى دور القانون أو محاسب مرخص. لا تذكر شرائح ضريبية.
