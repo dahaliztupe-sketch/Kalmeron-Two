@@ -193,9 +193,12 @@ export default function ValidateClient({ initialIdea = "" }: { initialIdea?: str
               <CompanyDashboard plan={plan} getToken={() => user.getIdToken()} budgetEgp={budget.trim() !== "" && Number.isFinite(Number(budget)) ? Number(budget) : null} />
             </>
           ) : (
-            <p className="mt-8 print:hidden">
-              <Link href="/auth/login?next=/validate" className="text-sm text-cyan-300 underline">سجّل الدخول لتشغيل فريق الأدوار (التسويق والمبيعات والمالية وغيرها)</Link>
-            </p>
+            <>
+              <p className="mt-8 print:hidden">
+                <Link href="/auth/login?next=/validate" className="text-sm text-cyan-300 underline">سجّل الدخول لتشغيل فريق الأدوار (التسويق والمبيعات والمالية وغيرها)</Link>
+              </p>
+              <CompanyDashboard guest plan={plan} getToken={async () => ""} budgetEgp={null} />
+            </>
           )}
           <div className="mt-6 flex items-center gap-3 text-sm text-neutral-400 print:hidden">
             {fb ? (

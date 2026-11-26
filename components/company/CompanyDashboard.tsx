@@ -4,14 +4,15 @@ import type { ValidatedPlan } from "@/src/lib/plan/validated-plan";
 import { MarketingView } from "@/components/plan/MarketingView";
 import type { MarketingPlan } from "@/src/lib/company/roles/marketing";
 import { RoleOutputView } from "./RoleOutputView";
-import { DEPENDS_ON, ROLE_LABELS_AR, initState, nextPending, orderedRoles, reduce, summary } from "@/src/lib/company/orchestrator";
+import { DEPENDS_ON, GUEST_ROLES, ROLE_LABELS_AR, initState, nextPending, orderedRoles, reduce, summary } from "@/src/lib/company/orchestrator";
 
-const ROLES = orderedRoles(["marketing", "sales", "finance", "product", "legal", "ops"]);
+const ALL_ROLES = orderedRoles(["marketing", "sales", "finance", "product", "legal", "ops"]);
 const STATUS_AR = { idle: "لم يبدأ", running: "جارٍ", done: "جاهز للمراجعة", failed: "فشل", approved: "اعتمدته (مراجعة محلية)" } as const;
 
 type Result = { ok: true; output: unknown; warnings: string[] } | { ok: false; rate: boolean };
 
-export function CompanyDashboard({ plan, getToken, budgetEgp }: { plan: ValidatedPlan; getToken: () => Promise<string>; budgetEgp: number | null }) {
+export function CompanyDashboard({ plan, getToken, budgetEgp, guest = false }: { plan: ValidatedPlan; getToken: () => Promise<string>; budgetEgp: number | null; guest?: boolean }) {
+  const ROLES = guest ? ALL_ROLES.filter((r) => GUEST_ROLES.includes(r)) : ALL_ROLES;
   const [state, dispatch] = useReducer(reduce, ROLES, initState);
   const [open, setOpen] = useState<string | null>(null);
   const [note, setNote] = useState<string | null>(null);
@@ -30,13 +31,19 @@ export function CompanyDashboard({ plan, getToken, budgetEgp }: { plan: Validate
         const d = st[dep];
         if (d && (d.status === "done" || d.status === "approved") && d.output != null) context[dep] = d.output;
       }
-      const token = await getToken();
+      const token = guest ? null : await getToken();
       const res = await fetch("/api/company/role", {
         method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
         body: JSON.stringify({ role, plan, constraints: { budgetEgp, days: 30 }, context }),
       });
-      if (res.status === 429) return { ok: false, rate: true };
+      if (res.status === 429) {
+        if (guest) {
+          setNote("وصلنا للحد اليومي أو المؤقت للتجربة المجانية. سجّل الدخول أو حاول لاحقاً.");
+          return { ok: false, rate: false };
+        }
+        return { ok: false, rate: true };
+      }
       if (!res.ok) return { ok: false, rate: false };
       const d = await res.json();
       return { ok: true, output: d.output, warnings: (d.issues ?? []).map((i: { message: string }) => i.message) };
@@ -84,6 +91,7 @@ export function CompanyDashboard({ plan, getToken, budgetEgp }: { plan: Validate
     <section className="mt-8 rounded-2xl border border-white/10 bg-white/[0.02] p-5 print:hidden" aria-label="لوحة الشركة">
       <h3 className="font-bold text-white mb-1">لوحة الشركة: فريق من الأدوار الآلية</h3>
       <p className="text-sm text-neutral-400 mb-3">
+        {guest && <strong className="block mb-1 text-amber-300">تجربة بدون تسجيل: دور التسويق فقط، بنموذج أخف وبحد يومي عام. التسجيل يفتح بقية الأدوار.</strong>}
         كل دور يُعدّ خطة ومسودات فقط، ولا ينفّذ شيئاً خارج هذه الصفحة. المخرجات مولَّدة بالذكاء الاصطناعي وغير مراجَعة؛ الاعتماد هنا علامة مراجعة محلية ولا يُحفظ.
       </p>
       <div className="flex flex-wrap items-center gap-3 mb-4">
