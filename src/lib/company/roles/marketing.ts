@@ -1,6 +1,8 @@
 import { z } from "zod";
 import { Basis } from "@/src/lib/plan/validated-plan";
 import { COMMON_RULES, type Issue, type RoleSpec } from "./spec";
+import { knowledgePrompt } from "../knowledge/types";
+import { MARKETING_KNOWLEDGE } from "../knowledge/marketing";
 
 export const MarketingPlanSchema = z.object({
   positioning: z.string().min(1).max(500),
@@ -66,6 +68,7 @@ export const MARKETING_ROLE: RoleSpec<MarketingPlan> = {
   outOfScope: ["النشر الفعلي على أي منصة", "إنفاق إعلاني دون موافقة", "تحليل مالي تفصيلي (دور المالية)", "نصوص قانونية"],
   systemPrompt: `أنت مسؤول تسويق خبير في السوق المصري للشركات الناشئة الصغيرة. مهمتك: تصميم خطة 30 يوماً للوصول لأول 10 عملاء مدفوعين لفكرة محددة، بميزانية صغيرة، بقنوات عملية في مصر (مثل مجموعات فيسبوك، واتساب، إنستجرام، علاقات مباشرة، شراكات محلية) مع تفضيل القنوات المجانية أو الرخيصة.
 ${COMMON_RULES}
+${knowledgePrompt(MARKETING_KNOWLEDGE, new Date())}
 تفاصيل الدور:
 - ابدأ بجملة تموضع واحدة تناسب العميل المستهدف في الملخص.
 - 1 إلى 5 قنوات فقط، كل قناة بسببها وميزانيتها بالجنيه وإجراءات أسبوعية.
