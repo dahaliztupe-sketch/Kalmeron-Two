@@ -21,14 +21,6 @@ export default function LoginPage() {
   // preference reflected in the UI. Using a lazy initialiser avoids the
   // setState-in-effect anti-pattern (cascading renders); on the server
   // `window` is undefined so we just return the default.
-  // Suffix for the signup cross-link: carries the `next` target so the
-  // intended destination survives switching between login and signup.
-  const [nextSuffix, setNextSuffix] = useState("");
-  useEffect(() => {
-    const n = readSafeNextPath();
-    if (n) setNextSuffix(`?next=${encodeURIComponent(n)}`);
-  }, []);
-
   const [remember, setRemember] = useState<boolean>(() => {
     if (typeof window === "undefined") return true;
     try {
@@ -176,7 +168,18 @@ export default function LoginPage() {
 
           <p className="text-neutral-400 text-sm">
             ليس لديك حساب؟{" "}
-            <Link href={`/auth/signup${nextSuffix}`} className="text-cyan-300 hover:text-cyan-200 hover:underline font-bold">
+            <Link
+              href="/auth/signup"
+              onClick={(e) => {
+                // Carry the intended destination across to signup, if any.
+                const n = readSafeNextPath();
+                if (n) {
+                  e.preventDefault();
+                  router.push(withNextParam("/auth/signup", n));
+                }
+              }}
+              className="text-cyan-300 hover:text-cyan-200 hover:underline font-bold"
+            >
               سجل الآن مجاناً
             </Link>
           </p>
