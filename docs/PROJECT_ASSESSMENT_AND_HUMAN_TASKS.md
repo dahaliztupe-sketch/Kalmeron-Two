@@ -254,7 +254,7 @@
 
 | # | المهمّة | المدّة | المخاطرة لو لم تُنفَّذ |
 |---|---|---|---|
-| 1 | **حذف بلوك `[userenv]` و `[userenv.shared]` من `.replit`** يدويّاً (السطور 142-151). يحتوي مفتاح Firebase مسرَّب: `AIzaSy8RRcFPp2YwhQYawPvs9pUckwmCKcXzQhW`. | 5 د | استغلال المفتاح، فاتورة Firebase ضخمة، اختراق بيانات. |
+| 1 | **حذف بلوك `[userenv]` و `[userenv.shared]` من `.replit`** يدويّاً (السطور 142-151). يحتوي مفتاح Firebase مسرَّب: `AIza<redacted>`. | 5 د | استغلال المفتاح، فاتورة Firebase ضخمة، اختراق بيانات. |
 | 2 | **تدوير المفتاح المسرَّب في Firebase Console** — Project Settings → APIs → Restrict + Regenerate. أضف HTTP referrer restriction (`*.kalmeron.com`، `*.replit.app`). | 15 د | المفتاح القديم يبقى صالح حتى التدوير. |
 | 3 | **إضافة `GOOGLE_GENERATIVE_AI_API_KEY`** في Replit Secrets. احصل عليه من https://aistudio.google.com/app/apikey. | 5 د | كلّ الـ AI agents معطَّلة بدونه — المنتج لا يعمل أصلاً. |
 | 4 | **إضافة `STRIPE_SECRET_KEY`** + `STRIPE_PUBLISHABLE_KEY` + `STRIPE_WEBHOOK_SECRET` في Secrets. | 30 د | المستخدمون يرون "تواصل مع المبيعات" بدلاً من "اشترك" → 0 إيراد. |
