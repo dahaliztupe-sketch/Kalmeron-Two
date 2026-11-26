@@ -25,7 +25,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const t = getTemplateBySlug(slug);
   if (!t) return { title: "قالب غير موجود" };
   return {
-    title: `${t.titleAr} | قالب جاهز للتنزيل`,
+    title: `${t.titleAr} | قالب`,
     description: t.metaDescriptionAr,
     keywords: t.keywords,
     alternates: { canonical: `/templates/${slug}` },
@@ -121,7 +121,7 @@ export default async function TemplatePage({ params }: PageProps) {
         </section>
 
         <section className="mb-12">
-          <h2 className="text-2xl font-bold text-white mb-4">المخرجات</h2>
+          <h2 className="text-2xl font-bold text-white mb-4">ما يغطيه القالب (مسودة تحتاج مراجعتك)</h2>
           <ul className="space-y-2">
             {t.outcomes.map((o, i) => (
               <li key={i} className="text-zinc-300 flex gap-2">

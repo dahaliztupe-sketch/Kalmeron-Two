@@ -85,62 +85,10 @@ export default async function ComparePage({ params }: PageProps) {
         </div>
       </div>
 
-      {/* Feature matrix */}
-      <section className="mb-16">
-        <h2 className="text-3xl font-bold text-white mb-8">مصفوفة الميزات</h2>
-        <div className="rounded-2xl bg-white/[0.03] border border-white/10 overflow-hidden">
-          <table className="w-full">
-            <thead className="bg-white/[0.03]">
-              <tr className="text-zinc-400 text-sm">
-                <th className="text-right p-4">الميزة</th>
-                <th className="p-4">كلميرون</th>
-                <th className="p-4">{c.competitorName}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {c.featureMatrix.map((f, i) => (
-                <tr key={i} className="border-t border-white/5 hover:bg-white/[0.02]">
-                  <td className="text-right p-4 text-zinc-200">{f.feature}</td>
-                  <td className="p-4"><VerdictCell value={f.kalmeron} /></td>
-                  <td className="p-4"><VerdictCell value={f.competitor} /></td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      {/* Pricing */}
-      <section className="mb-16">
-        <h2 className="text-3xl font-bold text-white mb-8">مقارنة الأسعار</h2>
-        <div className="rounded-2xl bg-white/[0.03] border border-white/10 overflow-hidden">
-          <table className="w-full">
-            <thead className="bg-white/[0.03]">
-              <tr className="text-zinc-400 text-sm">
-                <th className="text-right p-4">الخطة</th>
-                <th className="text-right p-4">كلميرون</th>
-                <th className="text-right p-4">{c.competitorName}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {c.pricingComparison.map((p, i) => (
-                <tr key={i} className="border-t border-white/5">
-                  <td className="text-right p-4 text-zinc-200 font-medium">{p.plan}</td>
-                  <td className="text-right p-4 text-cyan-300">{p.kalmeron}</td>
-                  <td className="text-right p-4 text-zinc-400">{p.competitor}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      {/* Verdict */}
-      <section className="mb-16">
-        <div className="rounded-2xl bg-gradient-to-br from-amber-500/10 to-orange-500/10 border border-amber-500/20 p-8">
-          <h2 className="text-2xl font-bold text-white mb-4">حُكمنا الصادق</h2>
-          <p className="text-lg text-zinc-200 leading-relaxed">{c.verdictAr}</p>
-        </div>
+      <section className="mb-16 rounded-2xl border border-white/10 bg-white/[0.03] p-6">
+        <p className="text-zinc-300 leading-relaxed">
+          أزلنا جدول الميزات والأسعار وحكم المقارنة لأنها لم تكن موثقة بمصادر حديثة ولا مختبَرة. تتغير ميزات المنافسين وأسعارهم، فراجع موقع {c.competitorName} مباشرة. القوائم أعلاه آراء عامة وليست نتائج اختبار.
+        </p>
       </section>
     </SeoLandingShell>
   );

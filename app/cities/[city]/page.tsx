@@ -7,8 +7,7 @@ import {
   getAllCitySlugs,
 } from "@/src/lib/seo/cities";
 import { SeoLandingShell } from "@/components/seo/SeoLandingShell";
-import { localBusinessSchema, breadcrumbSchema } from "@/src/lib/seo/schema";
-import {TrendingUp, Building2, Trophy } from "lucide-react";
+import { breadcrumbSchema } from "@/src/lib/seo/schema";
 import { sanitizeJsonLd } from "@/src/lib/security/safe-json-ld";
 import { SITE_URL } from "@/src/lib/site";
 
@@ -45,12 +44,6 @@ export default async function CityPage({ params }: PageProps) {
   const others = CITIES.filter((x) => x.slug !== city).slice(0, 6);
 
   const jsonLd = [
-    localBusinessSchema({
-      name: `كلميرون ${c.cityAr}`,
-      city: c.cityEn,
-      country: c.countryEn,
-      description: c.metaDescriptionAr,
-    }),
     breadcrumbSchema([
       { name: "الرئيسية", url: `${SITE_URL}/` },
       { name: "المدن", url: `${SITE_URL}/cities` },
@@ -68,84 +61,17 @@ export default async function CityPage({ params }: PageProps) {
       <SeoLandingShell
         eyebrow={`📍 ${c.countryAr}`}
         title={`ستارت أبس ${c.cityAr}`}
-        description={c.heroIntroAr}
+        description={`دليل مبدئي لرواد الأعمال في ${c.cityAr}. أزلنا الأرقام والأسماء التي لم نتحقق منها من مصدر.`}
         breadcrumbs={[
           { label: "المدن", href: "/cities" },
           { label: c.cityAr },
         ]}
       >
-        <section className="mb-12">
-          <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
-            <TrendingUp className="w-6 h-6 text-cyan-400" /> الـ Ecosystem
-          </h2>
-          <div className="grid md:grid-cols-2 gap-3">
-            {c.ecosystemFactsAr.map((f, i) => (
-              <div key={i} className="rounded-xl bg-white/[0.03] border border-white/10 p-4 text-zinc-300">
-                {f}
-              </div>
-            ))}
-          </div>
+        <section className="mb-12 rounded-2xl border border-white/10 bg-white/[0.03] p-6">
+          <p className="text-zinc-300 leading-relaxed">
+            كان هذا القسم يعرض أرقاماً عن حجم المنظومة والتمويل وقصص نجاح بلا مصادر، فأزلناه إلى أن نوثّقه من مصادر منشورة. يمكنك مع ذلك التحقق من فكرتك وتجهيز خطة أولية من صفحة التحقق.
+          </p>
         </section>
-
-        {c.topVCs.length > 0 && (
-          <section className="mb-12">
-            <h2 className="text-2xl font-bold text-white mb-6">أهم الـ VCs</h2>
-            <div className="flex flex-wrap gap-2">
-              {c.topVCs.map((vc) => (
-                <span
-                  key={vc}
-                  className="px-4 py-2 rounded-full bg-white/[0.05] border border-white/10 text-zinc-300 text-sm"
-                >
-                  {vc}
-                </span>
-              ))}
-            </div>
-          </section>
-        )}
-
-        <section className="mb-12">
-          <h2 className="text-2xl font-bold text-white mb-6">Use Cases الرائجة</h2>
-          <div className="grid md:grid-cols-2 gap-4">
-            {c.popularUseCasesAr.map((u, i) => (
-              <div key={i} className="rounded-xl bg-white/[0.03] border border-white/10 p-5">
-                <h3 className="text-lg font-semibold text-white mb-2">{u.title}</h3>
-                <p className="text-sm text-zinc-400">{u.description}</p>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {c.localResources.length > 0 && (
-          <section className="mb-12">
-            <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
-              <Building2 className="w-6 h-6 text-indigo-400" /> الموارد المحلية
-            </h2>
-            <div className="grid md:grid-cols-2 gap-3">
-              {c.localResources.map((r) => (
-                <div key={r.name} className="rounded-xl bg-white/[0.03] border border-white/10 p-4">
-                  <div className="text-base font-semibold text-white mb-1">{r.name}</div>
-                  <div className="text-sm text-zinc-400">{r.description}</div>
-                </div>
-              ))}
-            </div>
-          </section>
-        )}
-
-        {c.successStories.length > 0 && (
-          <section className="mb-12">
-            <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
-              <Trophy className="w-6 h-6 text-amber-400" /> قصص نجاح
-            </h2>
-            <div className="space-y-3">
-              {c.successStories.map((s) => (
-                <div key={s.name} className="rounded-xl bg-white/[0.03] border border-white/10 p-4">
-                  <div className="text-base font-semibold text-white">{s.name}</div>
-                  <div className="text-sm text-zinc-400">{s.achievement}</div>
-                </div>
-              ))}
-            </div>
-          </section>
-        )}
 
         <div className="rounded-2xl bg-gradient-to-br from-cyan-500/10 to-indigo-600/10 border border-cyan-500/20 p-8 text-center mb-12">
           <h3 className="text-2xl font-bold text-white mb-2">

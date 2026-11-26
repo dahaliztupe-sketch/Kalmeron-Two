@@ -107,7 +107,7 @@ export default async function UseCasePage({ params }: PageProps) {
           </div>
           <div className="rounded-xl bg-white/[0.03] border border-white/10 p-4">
             <Zap className="w-5 h-5 text-emerald-400 mb-2" />
-            <div className="text-xs text-zinc-500">المخرجات</div>
+            <div className="text-xs text-zinc-500">أهداف</div>
             <div className="text-lg font-semibold text-white">{uc.outcomes.length}</div>
           </div>
         </div>
@@ -132,7 +132,7 @@ export default async function UseCasePage({ params }: PageProps) {
 
         {/* Outcomes */}
         <section className="mb-16">
-          <h2 className="text-3xl font-bold text-white mb-8">ما الذي ستحصل عليه</h2>
+          <h2 className="text-3xl font-bold text-white mb-8">أهداف يساعد كلميرون على مسودتها (مسودات آلية تحتاج مراجعتك، بلا ضمان نتيجة)</h2>
           <div className="rounded-2xl bg-gradient-to-br from-emerald-500/5 to-cyan-500/5 border border-emerald-500/20 p-6">
             <ul className="space-y-3">
               {uc.outcomes.map((o, i) => (

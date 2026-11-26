@@ -155,6 +155,7 @@ export default async function BlogPostPage({ params }: PageProps) {
           </div>
 
           {/* Body */}
+          <p className="mb-6 rounded-xl border border-amber-500/30 bg-amber-500/10 p-4 text-sm text-amber-200">تنبيه: هذا مقال عام. الأرقام والنسب والأسعار فيه تقريبية وغير موثقة بمصادر، ولا تصلح أساساً لقرار مالي أو قانوني. تحقق منها من مصدرها قبل الاعتماد عليها.</p>
           <div className="prose prose-invert max-w-none">{renderMarkdown(post.contentAr)}</div>
         </article>
 
