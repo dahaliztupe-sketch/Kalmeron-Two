@@ -63,9 +63,9 @@ export const COMPARISONS: Comparison[] = [
     ],
     pricingComparison: [
       { plan: 'مجاني', kalmeron: '200 رسالة/يوم', competitor: 'محدود' },
-      { plan: 'فردي', kalmeron: '$19/شهر (Builder)', competitor: '$20/شهر (Plus)' },
-      { plan: 'فريق', kalmeron: '$79/شهر (Operator)', competitor: '$25/user/شهر' },
-      { plan: 'مؤسسات', kalmeron: 'بدءاً من $2.5K/شهر', competitor: 'اتصل بنا' },
+      { plan: 'فردي', kalmeron: 'لم يُحدد بعد', competitor: '$20/شهر (Plus)' },
+      { plan: 'فريق', kalmeron: 'لم يُحدد بعد', competitor: '$25/user/شهر' },
+      { plan: 'مؤسسات', kalmeron: 'لم يُحدد بعد', competitor: 'اتصل بنا' },
     ],
     verdictAr: 'لرواد الأعمال في مصر والخليج، كلميرون يقدم قيمة أعلى بسبب التخصص والامتثال والوكلاء المتعددة. ChatGPT يبقى ممتاز للاستخدام العام والإبداعي. الكثيرون يستخدمون الاثنين معاً.',
     category: 'general-ai',
@@ -101,8 +101,8 @@ export const COMPARISONS: Comparison[] = [
     ],
     pricingComparison: [
       { plan: 'مجاني', kalmeron: '200 رسالة/يوم', competitor: 'محدود يومياً' },
-      { plan: 'احترافي', kalmeron: '$19/شهر', competitor: '$20/شهر (Pro)' },
-      { plan: 'فريق', kalmeron: '$79/شهر', competitor: '$30/user/شهر (Team)' },
+      { plan: 'احترافي', kalmeron: 'لم يُحدد بعد', competitor: '$20/شهر (Pro)' },
+      { plan: 'فريق', kalmeron: 'لم يُحدد بعد', competitor: '$30/user/شهر (Team)' },
     ],
     verdictAr: 'Claude يتفوق في التفكير المعقد والـ context الطويل. كلميرون أفضل لرواد الأعمال العرب الذين يحتاجون فريق متخصص جاهز. الكثير من فرق الأعمال يستخدمون كلميرون للعمليات اليومية و Claude للبحث المعمق.',
     category: 'general-ai',
@@ -134,8 +134,8 @@ export const COMPARISONS: Comparison[] = [
     ],
     pricingComparison: [
       { plan: 'مجاني', kalmeron: 'متوفر', competitor: 'تجريبي' },
-      { plan: 'احترافي', kalmeron: '$19/شهر', competitor: '$39/شهر' },
-      { plan: 'فريق', kalmeron: '$79/شهر', competitor: '$199/شهر' },
+      { plan: 'احترافي', kalmeron: 'لم يُحدد بعد', competitor: '$39/شهر' },
+      { plan: 'فريق', kalmeron: 'لم يُحدد بعد', competitor: '$199/شهر' },
     ],
     verdictAr: 'كلميرون أفضل بكثير للأسواق العربية وريادة الأعمال المتخصصة. Manus AI خيار جيد للمستخدمين العالميين الذين يبحثون عن أتمتة عامة.',
     category: 'multi-agent',
@@ -165,7 +165,7 @@ export const COMPARISONS: Comparison[] = [
     ],
     pricingComparison: [
       { plan: 'مجاني', kalmeron: '200 رسالة/يوم', competitor: 'محدود' },
-      { plan: 'احترافي', kalmeron: '$19/شهر', competitor: '$20/شهر' },
+      { plan: 'احترافي', kalmeron: 'لم يُحدد بعد', competitor: '$20/شهر' },
     ],
     verdictAr: 'استخدمهما معاً. Lovable لبناء MVP في أيام، كلميرون لإدارة كل شيء حول المنتج (التسويق، المالية، القانون، فريق العمل).',
     category: 'no-code',
@@ -200,8 +200,8 @@ export const COMPARISONS: Comparison[] = [
     ],
     pricingComparison: [
       { plan: 'مجاني', kalmeron: '200 رسالة/يوم', competitor: 'محدود' },
-      { plan: 'احترافي', kalmeron: '$19/شهر', competitor: '$20/شهر (Advanced)' },
-      { plan: 'فريق', kalmeron: '$79/شهر', competitor: '$30/user (Workspace)' },
+      { plan: 'احترافي', kalmeron: 'لم يُحدد بعد', competitor: '$20/شهر (Advanced)' },
+      { plan: 'فريق', kalmeron: 'لم يُحدد بعد', competitor: '$30/user (Workspace)' },
     ],
     verdictAr:
       'Gemini ممتاز لمستخدمي Google Workspace ومحتوى متعدد الوسائط. كلميرون أفضل لرواد الأعمال العرب الذين يحتاجون فريق متخصص. كثيرون يستخدمون الاثنين.',
@@ -236,8 +236,8 @@ export const COMPARISONS: Comparison[] = [
     ],
     pricingComparison: [
       { plan: 'مجاني', kalmeron: '200 رسالة/يوم', competitor: '5 Pro searches' },
-      { plan: 'احترافي', kalmeron: '$19/شهر', competitor: '$20/شهر (Pro)' },
-      { plan: 'فريق', kalmeron: '$79/شهر', competitor: '$40/user (Enterprise)' },
+      { plan: 'احترافي', kalmeron: 'لم يُحدد بعد', competitor: '$20/شهر (Pro)' },
+      { plan: 'فريق', kalmeron: 'لم يُحدد بعد', competitor: '$40/user (Enterprise)' },
     ],
     verdictAr:
       'استخدمهما معاً. Perplexity للبحث والمصادر، كلميرون للتنفيذ والإنتاج. كل منهما يحل مشكلة مختلفة.',
@@ -271,8 +271,8 @@ export const COMPARISONS: Comparison[] = [
     ],
     pricingComparison: [
       { plan: 'مجاني', kalmeron: '200 رسالة/يوم', competitor: 'لا يوجد' },
-      { plan: 'احترافي', kalmeron: '$19/شهر', competitor: '$30/user' },
-      { plan: 'فريق', kalmeron: '$79/شهر', competitor: '$200/user (Studio)' },
+      { plan: 'احترافي', kalmeron: 'لم يُحدد بعد', competitor: '$30/user' },
+      { plan: 'فريق', kalmeron: 'لم يُحدد بعد', competitor: '$200/user (Studio)' },
     ],
     verdictAr: 'إذا كنت ستارت أب أو SME عربية، كلميرون أفضل بـ 90%. إذا كنت مؤسسة كبرى على Microsoft 365، Copilot منطقي.',
     category: 'business-ai',
@@ -296,7 +296,7 @@ export const COMPARISONS: Comparison[] = [
     ],
     pricingComparison: [
       { plan: 'مجاني', kalmeron: '200 رسالة/يوم', competitor: 'محدود' },
-      { plan: 'Pro', kalmeron: '$19/شهر', competitor: '$39/شهر' },
+      { plan: 'Pro', kalmeron: 'لم يُحدد بعد', competitor: '$39/شهر' },
     ],
     verdictAr: 'لرواد الأعمال العرب، كلميرون اختيار واضح بسبب التخصص والسعر. Manus لـ general research مفيد.',
     category: 'multi-agent',
@@ -318,7 +318,7 @@ export const COMPARISONS: Comparison[] = [
     ],
     pricingComparison: [
       { plan: 'Free', kalmeron: '200 رسالة', competitor: '50 messages/day' },
-      { plan: 'Pro', kalmeron: '$19', competitor: '$25' },
+      { plan: 'Pro', kalmeron: 'لم يُحدد بعد', competitor: '$25' },
     ],
     verdictAr: 'استخدمهما معاً. Lovable لبناء MVP سريع، كلميرون لتشغيل الشركة بعدها.',
     category: 'no-code',
@@ -338,7 +338,7 @@ export const COMPARISONS: Comparison[] = [
       { feature: 'العربية', kalmeron: 'yes', competitor: 'partial' },
     ],
     pricingComparison: [
-      { plan: 'Pro', kalmeron: '$19', competitor: '$25' },
+      { plan: 'Pro', kalmeron: 'لم يُحدد بعد', competitor: '$25' },
     ],
     verdictAr: 'منتجان مختلفان. Replit للمطورين، كلميرون للمؤسسين.',
     category: 'no-code',
@@ -359,7 +359,7 @@ export const COMPARISONS: Comparison[] = [
       { feature: 'العربية', kalmeron: 'yes', competitor: 'no' },
     ],
     pricingComparison: [
-      { plan: 'Use', kalmeron: '$19/شهر', competitor: 'free + infra' },
+      { plan: 'Use', kalmeron: 'لم يُحدد بعد', competitor: 'free + infra' },
     ],
     verdictAr: 'إذا كنت dev team، Crew AI أرخص. غير ذلك، كلميرون يوفر شهور من العمل.',
     category: 'multi-agent',
@@ -379,7 +379,7 @@ export const COMPARISONS: Comparison[] = [
       { feature: 'العربية', kalmeron: 'yes', competitor: 'partial' },
     ],
     pricingComparison: [
-      { plan: 'Per user', kalmeron: '$19/m', competitor: '$50+/m' },
+      { plan: 'Per user', kalmeron: 'لم يُحدد بعد', competitor: '$50+/m' },
     ],
     verdictAr: 'حسب حجم شركتك. < 100 employees → كلميرون. > 1000 → Glean.',
     category: 'business-ai',
@@ -399,7 +399,7 @@ export const COMPARISONS: Comparison[] = [
       { feature: 'سعر مناسب SME', kalmeron: 'yes', competitor: 'no' },
     ],
     pricingComparison: [
-      { plan: 'Pro', kalmeron: '$19', competitor: '$5000+' },
+      { plan: 'Pro', kalmeron: 'لم يُحدد بعد', competitor: '$5000+' },
     ],
     verdictAr: 'Harvey للمحامين الكبار. كلميرون لرواد الأعمال الذين يحتاجون legal sanity check.',
     category: 'business-ai',
@@ -419,7 +419,7 @@ export const COMPARISONS: Comparison[] = [
       { feature: 'العربية', kalmeron: 'yes', competitor: 'partial' },
     ],
     pricingComparison: [
-      { plan: 'Pro', kalmeron: '$19', competitor: '$10 add-on' },
+      { plan: 'Pro', kalmeron: 'لم يُحدد بعد', competitor: '$10 add-on' },
     ],
     verdictAr: 'استخدمهما معاً. Notion للوثائق، كلميرون للعمليات والقرارات.',
     category: 'business-ai',
@@ -437,7 +437,7 @@ export const COMPARISONS: Comparison[] = [
       { feature: 'Coding', kalmeron: 'no', competitor: 'yes' },
       { feature: 'Business ops', kalmeron: 'yes', competitor: 'no' },
     ],
-    pricingComparison: [{ plan: 'Pro', kalmeron: '$19', competitor: '$500/m' }],
+    pricingComparison: [{ plan: 'Pro', kalmeron: 'لم يُحدد بعد', competitor: '$500/m' }],
     verdictAr: 'منتجان لـ jobs مختلفة. كلميرون للمؤسسين، Devin للمطورين.',
     category: 'no-code',
   },
