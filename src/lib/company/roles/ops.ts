@@ -66,6 +66,9 @@ export function opsChecks(out: OpsPlan, brief: { constraints: { budgetEgp: numbe
     }, 0);
     if (total > cap) issues.push({ level: "error", code: "budget_exceeded", message: `تكلفة الفريق التقديرية (${Math.round(total)} جنيه) تتجاوز الميزانية.` });
   }
+  if (out.roles.some((r) => r.engagement === "employee") && !/تأمين/.test(out.complianceNote)) {
+    issues.push({ level: "warn", code: "insurance_not_mentioned", message: "دور بصفة موظف: اذكر في complianceNote أن اشتراكات التأمينات الاجتماعية تضاف إلى التكلفة وتحتاج حساب محاسب." });
+  }
   if (!/(محامي|محاسب|مستشار)/.test(out.complianceNote)) {
     issues.push({ level: "warn", code: "missing_consult_line", message: "أضف سطر مراجعة محامٍ أو محاسب لعقود العمل والتأمينات." });
   }

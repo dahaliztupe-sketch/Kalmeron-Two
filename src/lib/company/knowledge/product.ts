@@ -3,7 +3,7 @@ import type { RoleKnowledge } from "./types";
 /** Sources below were opened and read on reviewedOn. Product practice only; no Egypt-specific legal claims. */
 export const PRODUCT_KNOWLEDGE: RoleKnowledge = {
   roleId: "product",
-  maxAgeDays: 90,
+  maxAgeDays: 30,
   items: [
     {
       id: "mvp-smallest-usable",
@@ -23,12 +23,49 @@ export const PRODUCT_KNOWLEDGE: RoleKnowledge = {
       reviewedOn: "2026-11-26",
       status: "verified_primary",
     },
+    {
+      id: "supabase-plans",
+      ruleAr: "حسب صفحة الأسعار: خطة Supabase المجانية 0 دولار شهرياً (قاعدة بيانات 500 ميجابايت) وتُوقَف المشاريع المجانية بعد أسبوع بلا نشاط؛ خطة Pro من 25 دولاراً شهرياً. الأسعار بالدولار وتتغير: تُذكر في المخرجات بوسم needs_check ولا يُحوَّل لجنيه دون سعر صرف مصدره معروف.",
+      sourceUrl: "https://supabase.com/pricing",
+      sourceTitle: "Supabase Pricing",
+      sourceDate: null,
+      reviewedOn: "2026-11-26",
+      status: "verified_primary",
+    },
+    {
+      id: "vercel-plans",
+      ruleAr: "حسب صفحات Vercel: خطة Hobby مجانية بحدود استخدام شهرية (مثلاً 100 جيجابايت Fast Data Transfer ومليون استدعاء دالة) وإن تجاوزتها تنتظر 30 يوماً لاستعادة الميزة؛ خطة Pro بسعر 20 دولاراً شهرياً. الأسعار بالدولار دون ضرائب. لم أقرأ شروط الاستخدام التجاري لخطة Hobby: تحقق منها قبل إطلاق منتج مدفوع.",
+      sourceUrl: "https://vercel.com/pricing",
+      sourceTitle: "Vercel Pricing (and Hobby plan docs: https://vercel.com/docs/plans/hobby)",
+      sourceDate: null,
+      reviewedOn: "2026-11-26",
+      status: "verified_primary",
+    },
+    {
+      id: "nextjs-i18n-routing",
+      ruleAr: "يدعم Next.js تدويل المسارات بمسار فرعي (/fr/products) أو بنطاق، واختيار اللغة من ترويسة Accept-Language. صفحة التوثيق لا تتناول الاتجاه من اليمين لليسار (RTL).",
+      sourceUrl: "https://nextjs.org/docs/app/guides/internationalization",
+      sourceTitle: "Next.js docs: Internationalization",
+      sourceDate: null,
+      reviewedOn: "2026-11-26",
+      status: "verified_primary",
+    },
+    {
+      id: "html-dir-rtl",
+      ruleAr: "للعربية اضبط dir=\"rtl\" صراحة على العنصر الجذر؛ فـ lang لا يحدد الاتجاه، والاتجاه الافتراضي من اليسار لليمين خطأ للنصوص العربية، ويؤثر على الترقيم وترتيب أعمدة الجداول.",
+      sourceUrl: "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Global_attributes/dir",
+      sourceTitle: "MDN: dir HTML global attribute",
+      sourceDate: null,
+      reviewedOn: "2026-11-26",
+      status: "verified_primary",
+    },
   ],
   workflowAr: [
     "اقرأ الملخص: الفكرة والعميل والميزانية والمدة، وتعامل مع النقاط غير المتحقق منها كافتراضات.",
     "حدد المشكلة الأساسية الواحدة التي سيحلها المنتج الأولي وما سيُتعلَّم منه.",
     "صنّف الميزات إلى: يجب (must) ويُستحسن (should) ولن نبنيه الآن (won't) مع سبب كل بند.",
     "اقترح مكدس تقنيات بسيطاً مع سبب وmarker basis لكل طبقة، وبدائل أبسط إن وُجدت. لا تذكر أسعار أدوات دون وسم needs_check.",
+    "إن طُلبت التكلفة فاذكر شرائح الأدوات (مجانية/مدفوعة) بالدولار كما في المصدر بوسم needs_check، ولا تحوّل للجنيه دون سعر صرف مصدره معروف. واجعل الواجهة العربية RTL صراحة.",
     "اكتب قائمة بناء بالأسابيع تتسع للمدة والميزانية في الملخص، لكل أسبوع معيار إنجاز.",
     "أي كتابة كود أو نشر أو إنشاء حسابات لصالح عميل ليست من دورك: اذكرها كخطوة يقوم بها المؤسس أو فريقه، وحوّل التسعير والقانون إلى أدوارهما.",
   ],

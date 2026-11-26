@@ -19,6 +19,10 @@ export const ProductPlanSchema = z.object({
     .array(z.object({ week: z.number().int().min(1).max(26), tasks: z.array(z.string().min(1).max(200)).min(1).max(6), doneWhen: z.string().min(1).max(200) }))
     .min(1)
     .max(26),
+  costTiers: z
+    .array(z.object({ tool: z.string().min(1).max(60), tier: z.string().min(1).max(60), monthlyUsd: z.number().min(0).max(100_000).nullable(), basis: Basis, note: z.string().max(200).default("") }))
+    .max(8)
+    .default([]),
   risks: z.array(z.object({ text: z.string().min(1).max(250), basis: Basis })).max(6),
   handoff: z.array(z.object({ role: z.string().max(40), reason: z.string().max(200) })).max(4).default([]),
 });
@@ -58,6 +62,12 @@ export function productChecks(out: ProductPlan, brief: { constraints: { days: nu
   if (out.techStack.some((t) => PRICE.test(`${t.suggestion} ${t.reason}`) && t.basis !== "needs_check")) {
     issues.push({ level: "warn", code: "price_needs_check", message: "سعر أداة بلا وسم needs_check. الأسعار تتغير، راجع المصدر." });
   }
+  if (out.costTiers.some((c) => c.monthlyUsd != null && c.basis !== "needs_check")) {
+    issues.push({ level: "error", code: "cost_not_needs_check", message: "سعر أداة بلا وسم needs_check. الأسعار تتغير ومصدرها صفحة المورّد." });
+  }
+  if (brief.constraints.budgetEgp != null && out.costTiers.some((c) => c.monthlyUsd != null && c.monthlyUsd > 0)) {
+    issues.push({ level: "warn", code: "usd_vs_egp_budget", message: "تكاليف بالدولار والميزانية بالجنيه: لا تُقارن دون سعر صرف مصدره معروف." });
+  }
   if (out.mvpScope.must.length > 5) issues.push({ level: "warn", code: "scope_too_wide", message: "أكثر من 5 ميزات أساسية: النطاق قد لا يناسب منتجاً أولياً." });
   return issues;
 }
@@ -74,9 +84,10 @@ ${knowledgePrompt(PRODUCT_KNOWLEDGE, new Date())}
 - حدد المشكلة الأساسية وهدف التعلّم من المنتج الأولي.
 - نطاق: 1 إلى 8 ميزات يجب، حتى 8 يستحسن، و1 إلى 8 لن نبنيها الآن، مع سبب لكل بند وbasis.
 - مكدس تقنيات بسيط (1 إلى 8 طبقات) مع سبب وbasis. أسعار الأدوات وحدودها needs_check.
+- costTiers (اختياري): شرائح الأدوات بالدولار كما في المعرفة أعلاه، basis: needs_check دائماً، بلا تحويل للجنيه. الواجهة العربية بـ dir=rtl.
 - قائمة بناء أسبوعية مرتبة، لكل أسبوع مهام ومعيار إنجاز، ولا تتجاوز مدة الملخص.
 - التسعير والقانون والتوظيف تذهب إلى handoff.`,
-  outputShape: `{"coreProblem":string,"learningGoal":string,"mvpScope":{"must":[{"feature":string,"reason":string,"basis":"assumption"|"user_fact"|"needs_check"}],"should":[same],"wont":[same]},"techStack":[{"layer":string,"suggestion":string,"reason":string,"basis":...}],"buildChecklist":[{"week":number,"tasks":[string],"doneWhen":string}],"risks":[{"text":string,"basis":...}],"handoff":[{"role":string,"reason":string}]}`,
+  outputShape: `{"coreProblem":string,"learningGoal":string,"mvpScope":{"must":[{"feature":string,"reason":string,"basis":"assumption"|"user_fact"|"needs_check"}],"should":[same],"wont":[same]},"techStack":[{"layer":string,"suggestion":string,"reason":string,"basis":...}],"buildChecklist":[{"week":number,"tasks":[string],"doneWhen":string}],"costTiers":[{"tool":string,"tier":string,"monthlyUsd":number|null,"basis":"needs_check","note":string}],"risks":[{"text":string,"basis":...}],"handoff":[{"role":string,"reason":string}]}`,
   outputSchema: ProductPlanSchema,
   checks: (out, brief) => productChecks(out, brief),
 };

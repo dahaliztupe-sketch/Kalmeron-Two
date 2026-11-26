@@ -35,6 +35,10 @@ describe("ops/hr role", () => {
   it("warns when sensitive candidate data is requested", () => {
     expect(codes({ ...good, hiringSteps: [{ step: "اطلب صحيفة الحالة الجنائية من المرشح", consentBasis: "they_applied" }] })).toContain("sensitive_data_needs_check");
   });
+  it("warns when an employee role has no insurance note", () => {
+    expect(codes({ ...good, roles: [{ ...role, engagement: "employee" }], complianceNote: "راجع محامياً" })).toContain("insurance_not_mentioned");
+    expect(codes({ ...good, roles: [{ ...role, engagement: "employee" }], complianceNote: "التأمين الاجتماعي يضاف للتكلفة، راجع محاسباً" })).not.toContain("insurance_not_mentioned");
+  });
   it("flags budget overrun and start after duration", () => {
     expect(codes(good, { constraints: { budgetEgp: 5000, days: 60 } })).toContain("budget_exceeded");
     expect(codes({ ...good, roles: [{ ...role, startWeek: 20 }] }, { constraints: { budgetEgp: null, days: 30 } })).toContain("start_after_duration");

@@ -13,6 +13,7 @@ const good: ProductPlan = {
     { week: 1, tasks: ["نمذجة البيانات"], doneWhen: "نموذج جاهز" },
     { week: 2, tasks: ["شاشة الطلبات"], doneWhen: "إدخال طلب" },
   ],
+  costTiers: [],
   risks: [],
   handoff: [],
 };
@@ -42,6 +43,11 @@ describe("product role", () => {
     expect(codes({ ...good, coreProblem: "ok", buildChecklist: [{ week: 1, tasks: ["يرفع التحويل 30%"], doneWhen: "y" }] })).toContain("unsupported_statistic");
     const p = { ...good, techStack: [{ layer: "استضافة", suggestion: "خطة 20 دولار شهر", reason: "r", basis: "assumption" as const }] };
     expect(codes(p)).toContain("price_needs_check");
+  });
+  it("requires needs_check on tool costs and warns on USD vs EGP budget", () => {
+    const tier = { tool: "Supabase", tier: "Pro", monthlyUsd: 25, basis: "assumption" as const, note: "" };
+    expect(codes({ ...good, costTiers: [tier] })).toContain("cost_not_needs_check");
+    expect(codes({ ...good, costTiers: [{ ...tier, basis: "needs_check" }] }, { constraints: { days: 56, budgetEgp: 50000 } })).toContain("usd_vs_egp_budget");
   });
   it("prompt carries sources", () => {
     expect(PRODUCT_ROLE.systemPrompt).toContain("المصدر:");
