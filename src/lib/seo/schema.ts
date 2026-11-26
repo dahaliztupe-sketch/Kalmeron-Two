@@ -1,3 +1,5 @@
+import { SITE_URL } from "@/src/lib/site";
+
 /**
  * Schema.org JSON-LD generators for SEO.
  * Use these to add structured data to landing pages.
@@ -7,12 +9,8 @@ const ORG_BASE = {
   "@type": "Organization",
   name: "كلميرون",
   alternateName: "Kalmeron",
-  url: "https://kalmeron.com",
-  logo: "https://kalmeron.com/icon.png",
-  sameAs: [
-    "https://twitter.com/kalmeron",
-    "https://linkedin.com/company/kalmeron",
-  ],
+  url: SITE_URL,
+  logo: `${SITE_URL}/icon.png`,
 };
 
 export function organizationSchema() {
@@ -153,7 +151,7 @@ export function definedTermSchema(opts: {
     inDefinedTermSet: {
       "@type": "DefinedTermSet",
       name: "قاموس كلميرون لرواد الأعمال",
-      url: "https://kalmeron.com/glossary",
+      url: `${SITE_URL}/glossary`,
     },
   };
 }

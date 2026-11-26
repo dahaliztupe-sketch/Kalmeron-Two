@@ -16,7 +16,7 @@ export const dynamic = 'force-static';
 export const revalidate = 3600;
 
 export async function GET() {
-  const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://kalmeron.app';
+  const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://kalmeron-two.vercel.app';
 
   const lines: string[] = [];
   lines.push('# Kalmeron AI');

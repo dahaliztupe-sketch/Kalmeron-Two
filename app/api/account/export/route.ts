@@ -15,6 +15,8 @@ const COLLECTIONS = [
   'notifications',
   'api_keys',
   'webhook_subscriptions',
+  'company_workspaces',
+  'validated_plans',
 ];
 
 export const GET = guardedRoute(

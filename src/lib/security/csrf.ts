@@ -21,8 +21,7 @@ import type { NextRequest } from "next/server";
 const ALLOWED_ORIGINS = [
   process.env.NEXT_PUBLIC_APP_URL,
   process.env.NEXT_PUBLIC_SITE_URL,
-  "https://kalmeron.ai",
-  "https://www.kalmeron.ai",
+  "https://kalmeron-two.vercel.app",
 ].filter(Boolean) as string[];
 
 export class CsrfError extends Error {

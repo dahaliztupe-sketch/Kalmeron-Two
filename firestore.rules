@@ -283,6 +283,10 @@ service cloud.firestore {
     match /ops_tasks/{doc}              { allow read, write: if false; }
     match /twins/{doc}                  { allow read, write: if false; }
     match /plans/{doc}                  { allow read, write: if false; }
+    // Server-only (Admin SDK) collections for the validate + company-in-a-box flow.
+    // The API checks the caller's token; clients never touch these directly.
+    match /validated_plans/{doc}        { allow read, write: if false; }
+    match /company_workspaces/{doc}     { allow read, write: if false; }
 
     // ============================================================
     // Consent ledger — append-only legal record.

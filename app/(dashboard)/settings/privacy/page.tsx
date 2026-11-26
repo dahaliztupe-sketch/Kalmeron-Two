@@ -28,7 +28,7 @@ export default function PrivacyPage() {
   }
 
   async function deleteAccount() {
-    if (!confirm("سيتم جدولة حذف حسابك بعد 30 يوماً. هل أنت متأكد؟")) return;
+    if (!confirm("سيُسجَّل طلب حذف حسابك. لا توجد مهمة آلية تنفّذه بعد، فالتنفيذ يدوي. هل أنت متأكد؟")) return;
     setDeleting(true);
     try {
       const r = await apiJson<{ scheduledFor: string }>("/api/account/delete", {
@@ -62,7 +62,7 @@ export default function PrivacyPage() {
         <Card className="border-red-300">
           <h2 className="font-semibold mb-2 text-rose-700">حذف الحساب</h2>
           <p className="text-sm text-gray-500 mb-3">
-            سيتم حذف حسابك وجميع بياناتك بعد 30 يوماً. يمكنك إلغاء الطلب خلال هذه الفترة.
+            يسجّل هذا الزر طلب حذف الحساب فقط، ولا يوجد تنفيذ آلي له بعد. للحذف الفوري لبياناتك المحفوظة استخدم «حذف بياناتي» في صفحة الإعدادات الرئيسية.
           </p>
           <button
             onClick={deleteAccount}

@@ -1,3 +1,4 @@
+import { CONTACT_EMAIL } from "@/src/lib/site";
 import { PublicShell } from "@/components/layout/PublicShell";
 import type { Metadata } from "next";
 
@@ -91,8 +92,7 @@ export default function TermsPage() {
             <ul className="list-disc list-inside space-y-1 text-sm mb-3">
               <li>تُجدَّد الاشتراكات الشهرية والسنوية تلقائياً ما لم يتم إلغاؤها قبل موعد التجديد بـ 24 ساعة.</li>
               <li>الأسعار المعروضة بالجنيه المصري أو الدولار الأمريكي حسب خيار المستخدم.</li>
-              <li>يحق للمستخدمين الجدد استرداد المبلغ المدفوع كاملاً خلال 30 يوماً من الاشتراك الأول دون أسئلة.</li>
-              <li>لا تُسترد المبالغ بعد انتهاء مدة الاسترداد أو في حال انتهاك هذه الشروط.</li>
+              <li>سياسة الاسترداد (المدة وشروطها) تُعلن بوضوح قبل أي دفع. لا نعد باسترداد غير مشروط قبل ذلك.</li>
             </ul>
             <p className="text-sm text-neutral-400">
               تحتفظ الشركة بحق تعديل الأسعار مع إشعار مسبق لا يقل عن 30 يوماً عبر البريد الإلكتروني المسجّل.
@@ -109,10 +109,10 @@ export default function TermsPage() {
               التي تُشكّل جزءاً لا يتجزأ من هذه الاتفاقية.
             </p>
             <ul className="list-disc list-inside space-y-1 text-sm text-neutral-400">
-              <li>تلتزم المنصة بقانون حماية البيانات الشخصية المصري رقم 151 لسنة 2020 ولائحته التنفيذية.</li>
-              <li>تلتزم المنصة باللائحة العامة لحماية البيانات الأوروبية (GDPR) للمستخدمين الأوروبيين.</li>
+              <li>نعمل على مواءمة المنصة مع قانون حماية البيانات الشخصية المصري رقم 151 لسنة 2020 ولائحته التنفيذية، ولم يُجرَ تدقيق امتثال مستقل بعد.</li>
+              <li>لا ندّعي الامتثال الكامل للائحة GDPR الأوروبية حالياً.</li>
               <li>يمكنك طلب تصدير بياناتك أو حذفها بالكامل عبر إعدادات الحساب أو بالتواصل مع فريق الدعم.</li>
-              <li>لا تُباع بيانات المستخدمين لأطراف ثالثة بأي شكل من الأشكال.</li>
+              <li>لا نبيع بيانات المستخدمين.</li>
             </ul>
           </section>
 
@@ -174,10 +174,7 @@ export default function TermsPage() {
           <section className="glass p-8 rounded-3xl bg-cyan-500/[0.03]">
             <h2 className="text-xl font-bold text-white mb-3">التواصل بشأن الشروط</h2>
             <p className="text-sm">
-              لأي استفسار قانوني يتعلق بهذه الشروط، يرجى التواصل على:{" "}
-              <a href="mailto:legal@kalmeron.ai" className="text-cyan-400 underline hover:text-white transition-colors" dir="ltr">
-                legal@kalmeron.ai
-              </a>
+              لأي استفسار قانوني يتعلق بهذه الشروط، راسلنا على <a href={`mailto:${CONTACT_EMAIL}`} className="underline" dir="ltr">{CONTACT_EMAIL}</a>.
             </p>
           </section>
 

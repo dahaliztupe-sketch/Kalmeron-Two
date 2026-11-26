@@ -89,7 +89,7 @@ export async function sendSubscriptionConfirmation(
   return sendEmail({
     to: email,
     subject: `🎉 تم تفعيل اشتراكك في كلميرون — ${plan}`,
-    text: `مرحباً،\n\nتم تفعيل اشتراكك في باقة "${plan}" (${cycleAr}) بنجاح.\nالمبلغ المدفوع: ${amountFormatted}\n\nيمكنك الآن الاستفادة الكاملة من جميع مميزات الباقة.\n\nلإدارة اشتراكك أو تنزيل الفواتير، زُر: https://kalmeron.app/account/billing\n\nشكراً لثقتك في كلميرون!\nفريق كلميرون`,
+    text: `مرحباً،\n\nتم تفعيل اشتراكك في باقة "${plan}" (${cycleAr}) بنجاح.\nالمبلغ المدفوع: ${amountFormatted}\n\nيمكنك الآن الاستفادة الكاملة من جميع مميزات الباقة.\n\nلإدارة اشتراكك أو تنزيل الفواتير، زُر: https://kalmeron-two.vercel.app/account/billing\n\nشكراً لثقتك في كلميرون!\nفريق كلميرون`,
     html: `<div dir="rtl" style="font-family:sans-serif;max-width:520px;margin:auto;color:#1a1a2e">
       <h2 style="color:#7c3aed">🎉 تم تفعيل اشتراكك بنجاح!</h2>
       <p>مرحباً،</p>
@@ -99,7 +99,7 @@ export async function sendSubscriptionConfirmation(
         <tr><td style="padding:8px 16px;font-weight:bold">المبلغ المدفوع</td><td style="padding:8px 16px">${amountFormatted}</td></tr>
       </table>
       <p>يمكنك الآن الاستفادة الكاملة من جميع مميزات الباقة.</p>
-      <a href="https://kalmeron.app/account/billing" style="display:inline-block;margin:12px 0;padding:10px 24px;background:#7c3aed;color:#fff;border-radius:8px;text-decoration:none;font-weight:bold">إدارة الاشتراك</a>
+      <a href="https://kalmeron-two.vercel.app/account/billing" style="display:inline-block;margin:12px 0;padding:10px 24px;background:#7c3aed;color:#fff;border-radius:8px;text-decoration:none;font-weight:bold">إدارة الاشتراك</a>
       <p style="color:#888;font-size:12px">فريق كلميرون</p>
     </div>`,
   });
@@ -114,13 +114,13 @@ export async function sendCreditWarning(
   return sendEmail({
     to: email,
     subject: `⚠️ تنبيه: استخدمت ${pctStr}% من رصيدك في كلميرون`,
-    text: `مرحباً،\n\nلقد استخدمت ${pctStr}% من رصيدك الشهري في كلميرون.\n\nلتجنب انقطاع الخدمة، يُنصح بترقية باقتك أو الانتظار حتى تاريخ التجديد.\n\nرقّي باقتك الآن: https://kalmeron.app/pricing\n\nفريق كلميرون`,
+    text: `مرحباً،\n\nلقد استخدمت ${pctStr}% من رصيدك الشهري في كلميرون.\n\nلتجنب انقطاع الخدمة، يُنصح بترقية باقتك أو الانتظار حتى تاريخ التجديد.\n\nرقّي باقتك الآن: https://kalmeron-two.vercel.app/pricing\n\nفريق كلميرون`,
     html: `<div dir="rtl" style="font-family:sans-serif;max-width:520px;margin:auto;color:#1a1a2e">
       <h2 style="color:#d97706">⚠️ تنبيه رصيد كلميرون</h2>
       <p>مرحباً،</p>
       <p>لقد استخدمت <strong style="color:#d97706">${pctStr}%</strong> من رصيدك الشهري.</p>
       <p>لتجنب انقطاع الخدمة، يُنصح بترقية باقتك أو الانتظار حتى تاريخ التجديد.</p>
-      <a href="https://kalmeron.app/pricing" style="display:inline-block;margin:12px 0;padding:10px 24px;background:#d97706;color:#fff;border-radius:8px;text-decoration:none;font-weight:bold">رقّي باقتك الآن</a>
+      <a href="https://kalmeron-two.vercel.app/pricing" style="display:inline-block;margin:12px 0;padding:10px 24px;background:#d97706;color:#fff;border-radius:8px;text-decoration:none;font-weight:bold">رقّي باقتك الآن</a>
       <p style="color:#888;font-size:12px">فريق كلميرون</p>
     </div>`,
   });
@@ -135,7 +135,7 @@ export async function sendAnnualRenewalConfirmation(
   return sendEmail({
     to: email,
     subject: `✅ تم تجديد اشتراكك السنوي في كلميرون — ${plan}`,
-    text: `مرحباً،\n\nتم تجديد اشتراكك السنوي في باقة "${plan}" بنجاح.\nتاريخ التجديد القادم: ${renewalDate}\n\nلإدارة اشتراكك أو تنزيل الفواتير: https://kalmeron.app/account/billing\n\nشكراً لاستمرار ثقتك في كلميرون!\nفريق كلميرون`,
+    text: `مرحباً،\n\nتم تجديد اشتراكك السنوي في باقة "${plan}" بنجاح.\nتاريخ التجديد القادم: ${renewalDate}\n\nلإدارة اشتراكك أو تنزيل الفواتير: https://kalmeron-two.vercel.app/account/billing\n\nشكراً لاستمرار ثقتك في كلميرون!\nفريق كلميرون`,
     html: `<div dir="rtl" style="font-family:sans-serif;max-width:520px;margin:auto;color:#1a1a2e">
       <h2 style="color:#059669">✅ تم تجديد اشتراكك السنوي</h2>
       <p>مرحباً،</p>
@@ -144,7 +144,7 @@ export async function sendAnnualRenewalConfirmation(
         <tr><td style="padding:8px 16px;font-weight:bold">الباقة</td><td style="padding:8px 16px">${plan}</td></tr>
         <tr><td style="padding:8px 16px;font-weight:bold">تاريخ التجديد القادم</td><td style="padding:8px 16px">${renewalDate}</td></tr>
       </table>
-      <a href="https://kalmeron.app/account/billing" style="display:inline-block;margin:12px 0;padding:10px 24px;background:#059669;color:#fff;border-radius:8px;text-decoration:none;font-weight:bold">إدارة الاشتراك</a>
+      <a href="https://kalmeron-two.vercel.app/account/billing" style="display:inline-block;margin:12px 0;padding:10px 24px;background:#059669;color:#fff;border-radius:8px;text-decoration:none;font-weight:bold">إدارة الاشتراك</a>
       <p style="color:#888;font-size:12px">فريق كلميرون</p>
     </div>`,
   });

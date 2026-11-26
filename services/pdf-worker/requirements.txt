@@ -2,13 +2,13 @@ fastapi==0.115.5
 uvicorn[standard]==0.32.1
 pydantic==2.9.2
 # pypdf >=5.1.0 fixes multiple DoS CVEs (large image sizes, trailer size, memory exhaustion)
-pypdf==6.11.0
+pypdf==7.2.0
 # python-multipart >=0.0.20 fixes ReDoS; >=0.0.21 fixes path-traversal (CVE-2025-50181)
-python-multipart==0.0.28
+python-multipart==0.0.34
 regex==2024.11.6
 pdf2image==1.17.0
-# Pillow >=11.1.0 fixes multiple High CVEs (decompression bomb, OOB write, DoS)
-Pillow==11.3.0
+# Pillow 13.0.0 (needs Python >=3.11; image uses 3.12). 12.3.0 is flagged by OSV (62 advisories, fixed in 13.0.0). Checked 2026-11-26 via PyPI and api.osv.dev.
+Pillow==13.0.0
 psutil==6.1.1
 
 # ── Layout-aware extraction ──────────────────────────────────────────────────
@@ -37,4 +37,4 @@ python-bidi==0.6.3
 # reportlab: generates synthetic fixture PDFs for the test suite.
 reportlab==4.2.5
 # pytest >=8.4.0 fixes temporary-directory DoS (CVE-2025-47287)
-pytest==8.4.0
+pytest==9.2.0

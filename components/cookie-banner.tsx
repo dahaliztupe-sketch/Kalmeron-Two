@@ -55,7 +55,7 @@ export function CookieBanner() {
               <Link href="/privacy" className="text-brand-cyan underline hover:text-white transition-colors">
                 سياسة الخصوصية
               </Link>{" "}
-              والامتثال للائحة GDPR وقانون حماية البيانات الشخصية المصري رقم 151 لسنة 2020.
+              ونعمل على مواءمة ممارساتنا مع قانون حماية البيانات الشخصية المصري رقم 151 لسنة 2020.
             </p>
             <div className="flex items-center gap-2">
               <button

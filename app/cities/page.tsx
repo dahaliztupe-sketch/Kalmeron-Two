@@ -31,7 +31,6 @@ export default function CitiesIndexPage() {
               <span className="text-xs text-zinc-500">{c.countryAr}</span>
             </div>
             <h3 className="text-xl font-bold text-white mb-2">{c.cityAr}</h3>
-            <p className="text-sm text-zinc-400 line-clamp-3">{c.heroIntroAr}</p>
           </Link>
         ))}
       </div>

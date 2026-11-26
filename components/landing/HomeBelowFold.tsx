@@ -106,7 +106,7 @@ const HOW_IT_WORKS = [
     step: "٣",
     icon: MessageSquare,
     title: "تحدّث مع أقسامك المتخصصة",
-    desc: "اسأل أي سؤال — الاستراتيجية، المالية، القانوني، التسويق — الإجابة فورية ودقيقة.",
+    desc: "اسأل أي سؤال — الاستراتيجية، المالية، القانوني، التسويق — تحصل على مسودة إجابة سريعة تحتاج مراجعتك.",
     color: "from-violet-500 to-fuchsia-500",
     border: "border-violet-500/20",
     glow: "rgba(139,92,246,0.08)",
@@ -529,8 +529,8 @@ function FinalCTA() {
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (query.trim()) router.push(`/chat?q=${encodeURIComponent(query)}`);
-    else router.push("/auth/signup");
+    if (query.trim()) router.push(`/validate?idea=${encodeURIComponent(query)}`);
+    else router.push("/validate");
   };
 
   return (

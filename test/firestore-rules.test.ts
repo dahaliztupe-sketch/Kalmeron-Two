@@ -135,4 +135,17 @@ describe('Firestore security rules', () => {
     const ctx = env.authenticatedContext('alice');
     await l.assertFails(ctx.firestore().collection('arbitrary_unknown').add({ x: 1 }));
   });
+
+  it('denies every client access to company_workspaces, even for the owner', async () => {
+    const l = await loadLib();
+    if (!l || !env) return;
+    await env.withSecurityRulesDisabled(async (admin: any) => {
+      await admin.firestore().doc('company_workspaces/alice').set({ userId: 'alice' });
+    });
+    const alice = env.authenticatedContext('alice');
+    await l.assertFails(alice.firestore().doc('company_workspaces/alice').get());
+    await l.assertFails(alice.firestore().doc('company_workspaces/alice').set({ userId: 'alice' }));
+    await l.assertFails(env.authenticatedContext('eve').firestore().doc('company_workspaces/alice').get());
+    await l.assertFails(env.unauthenticatedContext().firestore().doc('company_workspaces/alice').get());
+  });
 });

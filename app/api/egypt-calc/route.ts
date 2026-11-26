@@ -30,16 +30,25 @@ function buildCalcUrl(endpoint: string): URL {
   return url;
 }
 
-const ALLOWED_ENDPOINTS = new Set([
-  "income-tax",
-  "social-insurance",
-  "total-cost",
-  "vat",
-  "vat/rates",
-  "fawry-fee",
-  "instapay-fee",
-  "health",
-]);
+/**
+ * Fixed endpoint -> path table. The path that reaches fetch() is always one of these
+ * constants, never the request value itself, so request data cannot shape the URL.
+ */
+const ENDPOINT_PATHS: Record<string, string> = {
+  "income-tax": "income-tax",
+  "social-insurance": "social-insurance",
+  "total-cost": "total-cost",
+  "vat": "vat",
+  "vat/rates": "vat/rates",
+  "fawry-fee": "fawry-fee",
+  "instapay-fee": "instapay-fee",
+  "health": "health",
+};
+const ALLOWED_ENDPOINTS = new Set(Object.keys(ENDPOINT_PATHS));
+const pathFor = (endpoint: string): string => {
+  if (!Object.prototype.hasOwnProperty.call(ENDPOINT_PATHS, endpoint)) throw new Error("endpoint not allowed");
+  return ENDPOINT_PATHS[endpoint];
+};
 
 export async function POST(req: NextRequest) {
   const rl = rateLimit(req, { limit: 60, windowMs: 60_000 });
@@ -63,7 +72,7 @@ export async function POST(req: NextRequest) {
   try {
     // URL validated by buildCalcUrl(): enforces loopback-only allowlist.
     // EGYPT_CALC_URL is operator-controlled env var, not user input.
-    const targetUrl = buildCalcUrl(endpoint);
+    const targetUrl = buildCalcUrl(pathFor(String(endpoint)));
     // codeql[js/server-side-request-forgery]
     const res = await fetch(targetUrl.toString(), {
       method: "POST",
@@ -101,7 +110,7 @@ export async function GET(req: NextRequest) {
 
   try {
     // Same allowlist guard as POST: buildCalcUrl() enforces loopback-only hosts.
-    const targetUrl = buildCalcUrl(endpoint);
+    const targetUrl = buildCalcUrl(pathFor(endpoint));
     // codeql[js/server-side-request-forgery]
     const res = await fetch(targetUrl.toString(), {
       method: "GET",

@@ -151,7 +151,7 @@ externalPort = 6800
 [userenv]
 
 [userenv.shared]
-NEXT_PUBLIC_FIREBASE_API_KEY = "AIzaSy8RRcFPp2YwhQYawPvs9pUckwmCKcXzQhW"
+NEXT_PUBLIC_FIREBASE_API_KEY = "<set-in-env>"
 NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN = "kalmeron-two.firebaseapp.com"
 NEXT_PUBLIC_FIREBASE_PROJECT_ID = "kalmeron-two"
 NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET = "kalmeron-two.firebasestorage.app"

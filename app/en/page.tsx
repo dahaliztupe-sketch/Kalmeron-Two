@@ -128,12 +128,9 @@ export default function EnglishLanding() {
         <section className="py-16 border-t border-white/[0.05] text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">Ready to meet your AI team?</h2>
           <p className="text-neutral-400 max-w-xl mx-auto mb-8">
-            Join the first 100 companies adopting Kalmeron — lifetime pricing at 9 USD/month for early supporters.
+            Kalmeron is an experimental, AI-assisted project and is currently paused. Pricing is not set. Drafts only; nothing here is professional advice.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Link href="/first-100" className="rounded-full bg-gradient-to-r from-amber-500 to-orange-500 px-8 py-4 text-white font-semibold hover:opacity-90">
-              Claim a Founders seat
-            </Link>
             <Link href="/auth/signup" className="rounded-full border border-white/[0.1] px-8 py-4 text-white font-medium hover:bg-white/[0.04]">
               Start free trial
             </Link>

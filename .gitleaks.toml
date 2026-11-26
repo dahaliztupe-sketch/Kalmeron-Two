@@ -30,8 +30,6 @@ description = "Public Firebase web API key + documented references"
 
 # Exact key values — narrow allowlist, will not mask any other secret.
 regexes = [
-  # Public Firebase web client API key for the kalmeron-two project.
-  '''AIzaSy8RRcFPp2YwhQYawPvs9pUckwmCKcXzQhW''',
   # localStorage key constant — not a credential. Pattern is the literal
   # value, not a wildcard, to keep the allowlist tight.
   '''kalmeron-decision-journal-v1''',

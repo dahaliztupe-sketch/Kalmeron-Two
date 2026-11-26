@@ -36,8 +36,8 @@ export const BLOG_POSTS: BlogPost[] = [
 
 - أن **مكتب التنمية الصناعية (IDA)** أسرع من السجل التجاري للشركات الصناعية الصغيرة
 - أن **هيئة الاستثمار** لها fast-track لشركات التكنولوجيا
-- أن **مكتب محاماة في القاهرة الجديدة** يكلف 50% أقل من نفس الجودة في وسط البلد
-- أن **مصاريف Talabat** 25% بدلاً من 30% المعلنة لو تفاوضت
+- أن **مكتب محاماة في القاهرة الجديدة** قد يكلف أقل من وسط البلد (قارن عروض أسعار فعلية)
+- أن **مصاريف Talabat** قد تكون قابلة للتفاوض (اسأل المنصة وتحقق من العقد)
 
 هذه التفاصيل التي تصنع الفرق بين 6 أشهر تعطيلاً و3 أسابيع إطلاقاً.
 
@@ -74,7 +74,7 @@ export const BLOG_POSTS: BlogPost[] = [
     category: 'تحقق',
     keywords: ['validate business idea', 'تحقق من فكرة', 'product market fit'],
     contentAr: `
-دراسة CB Insights المشهورة: 42% من الستارت أبس تفشل لـ "no market need". أكبر سبب وحيد للفشل.
+تحليلات CB Insights لأسباب فشل الشركات الناشئة تضع غياب حاجة السوق في مقدمة الأسباب (راجع التحليل الأصلي للرقم الحالي، لم نتحقق منه هنا).
 
 ## الخطوات الخمس
 
@@ -114,7 +114,7 @@ export const BLOG_POSTS: BlogPost[] = [
     category: 'تسعير',
     keywords: ['pricing strategy', 'تسعير', 'SaaS pricing', 'startup pricing'],
     contentAr: `
-دراسة McKinsey: تحسين التسعير 1% يرفع الأرباح 8%. أكبر leverage في شركتك.
+التسعير غالباً من أقوى الرافعات على الربح، لكن حجم الأثر يختلف من شركة لأخرى (لا نملك رقماً موثقاً).
 
 ## الأخطاء الـ 7
 
@@ -122,16 +122,16 @@ export const BLOG_POSTS: BlogPost[] = [
 الخطأ الأشهر: cost + markup. الصحيح: value-based pricing.
 
 ### 2. خطة واحدة فقط
-الـ tiered pricing يرفع الإيراد 30% غالباً. ابني 3-4 خطط.
+الـ tiered pricing شائع في SaaS، وأثره غير مضمون ويحتاج اختباراً. فكر في 3-4 خطط.
 
 ### 3. عدم وجود anchor
 عندما تعرض خطة Premium بـ $500 بجانب Pro بـ $50، الـ Pro يبدو "صفقة".
 
 ### 4. خصم سنوي ضعيف
-17% خصم لا يكفي. الـ standard هو 20-33%.
+اختر خصم الدفع السنوي بعد اختبار، دون الاعتماد على رقم معياري.
 
 ### 5. عدم اختبار الزيادات
-ارفع السعر 20% كل سنة على الأقل لمستخدمين جدد.
+راجع سعرك دورياً للمستخدمين الجدد حسب تكلفتك وتقبّل السوق.
 
 ### 6. عدم الـ usage-based pricing
 إذا قيمتك تتزايد مع الاستخدام، اربط السعر بالاستخدام.
@@ -168,12 +168,12 @@ export const BLOG_POSTS: BlogPost[] = [
     readingTimeMinutes: 8,
     category: 'فريق',
     keywords: ['co-founder', 'شريك', 'startup team'],
-    contentAr: `## لماذا 65% من الستارت أبس تموت بسبب co-founder dispute؟\n\nاختيار شريك مؤسس أهم من اختيار زوجة. ستقضي معه ساعات أكثر من عائلتك.\n\n## معايير الاختيار\n\n1. **Complementary skills**: hustler + hacker، أو dreamer + executor\n2. **Aligned values**: ماذا تعنيله النجاح؟ المال أم الـ impact؟\n3. **Conflict style**: كيف يتعامل مع الضغط؟\n4. **Financial situation**: قادر يعيش بدون راتب 12 شهر؟\n5. **Long-term vision**: نفس الأفق الزمني؟\n\n## الـ Vesting الإجباري\n\n4-year vesting مع 1-year cliff. لا استثناءات. حتى لك أنت.\n\n## كيف يساعد كلميرون\n\n**Founder Network** يطابقك مع co-founders محتملين بناءً على skills وstage. مع نماذج عقود قانونية مصرية.`,
+    contentAr: `## لماذا قد تنهار الشراكة بين المؤسسين؟\n\nاختيار شريك مؤسس أهم من اختيار زوجة. ستقضي معه ساعات أكثر من عائلتك.\n\n## معايير الاختيار\n\n1. **Complementary skills**: hustler + hacker، أو dreamer + executor\n2. **Aligned values**: ماذا تعنيله النجاح؟ المال أم الـ impact؟\n3. **Conflict style**: كيف يتعامل مع الضغط؟\n4. **Financial situation**: قادر يعيش بدون راتب 12 شهر؟\n5. **Long-term vision**: نفس الأفق الزمني؟\n\n## الـ Vesting الإجباري\n\n4-year vesting مع 1-year cliff. لا استثناءات. حتى لك أنت.\n\n## كيف يساعد كلميرون\n\n**Founder Network** يطابقك مع co-founders محتملين بناءً على skills وstage. مع نماذج عقود قانونية مصرية.`,
   },
   {
     slug: 'arabic-seo-startup-playbook',
     titleAr: 'دليل SEO العربي للستارت أبس في 2026',
-    excerptAr: 'لماذا 90% من الـ SEO content العربي رديء، وكيف تتفوق عليه.',
+    excerptAr: 'كيف تكتب محتوى SEO عربي أفضل من المتوسط.',
     metaDescriptionAr: 'استراتيجية SEO عربية متكاملة: keyword research، content structure، technical SEO، وlink building.',
     authorName: 'فريق كلميرون',
     publishedAt: '2026-04-05T09:00:00Z',
@@ -196,7 +196,7 @@ export const BLOG_POSTS: BlogPost[] = [
   },
   {
     slug: 'rest-of-arab-world-not-just-egypt',
-    titleAr: 'تجاهل بقية العالم العربي = خسارة 70% من السوق',
+    titleAr: 'تجاهل بقية العالم العربي قد يعني فرصاً ضائعة',
     excerptAr: 'لماذا التركيز على مصر فقط فخ، وكيف توسع للخليج وشمال أفريقيا.',
     metaDescriptionAr: 'استراتيجية التوسع من السوق المصري إلى MENA كاملة: السعودية، الإمارات، المغرب.',
     authorName: 'فريق كلميرون',
@@ -252,7 +252,7 @@ export const BLOG_POSTS: BlogPost[] = [
     readingTimeMinutes: 7,
     category: 'تحليل',
     keywords: ['AI consulting', 'business consultant', 'consulting cost'],
-    contentAr: `## التكلفة\n\n- **Big 4 (McKinsey, BCG)**: $300K-$2M/مشروع\n- **Local consultant**: $50K-$200K\n- **Boutique**: $30K-$100K\n- **كلميرون**: $19-$99/شهر\n\n## متى تستخدم كلميرون\n\n- استراتيجية يومية\n- تحليلات سريعة\n- نماذج مالية\n- Templates قانونية\n- Marketing plans\n\n## متى تحتاج بشري\n\n- M&A معقدة\n- Crisis management\n- Industry-specific deep expertise\n- Board-level strategy\n\n## الـ Hybrid Model\n\nاستخدم كلميرون للـ 80%. Bring consultant للـ 20% الحرجة. وفر 90%.`,
+    contentAr: `## التكلفة\n\n- **Big 4 (McKinsey, BCG)**: $300K-$2M/مشروع\n- **Local consultant**: $50K-$200K\n- **Boutique**: $30K-$100K\n- **كلميرون**: السعر لم يُحدد بعد\n\n## متى تستخدم كلميرون\n\n- استراتيجية يومية\n- تحليلات سريعة\n- نماذج مالية\n- Templates قانونية\n- Marketing plans\n\n## متى تحتاج بشري\n\n- M&A معقدة\n- Crisis management\n- Industry-specific deep expertise\n- Board-level strategy\n\n## الـ Hybrid Model\n\nاستخدم كلميرون للـ 80%. Bring consultant للـ 20% الحرجة. قد توفر جزءاً من التكلفة (غير مقاس).`,
   },
   {
     slug: 'data-driven-startup-culture',

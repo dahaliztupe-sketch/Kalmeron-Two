@@ -9,24 +9,24 @@ export interface TrustBadgesProps {
 
 const BADGES = [
   {
-    icon: Scale,
-    title: "حماية البيانات الدولية",
-    subtitle: "متوافق مع تشريعات حماية البيانات العالمية",
+    icon: Lock,
+    title: "HTTPS مفروض",
+    subtitle: "الإعداد يتضمن ترويسة HSTS",
   },
   {
     icon: ShieldCheck,
-    title: "PDPL السعودي",
-    subtitle: "نظام حماية البيانات الشخصية",
+    title: "تشفير في السكون",
+    subtitle: "افتراضي لدى مزوّد السحابة (Google Cloud)",
   },
   {
     icon: FileCheck2,
-    title: "GDPR Ready",
-    subtitle: "قابل للتصدير + الحذف الذاتي",
+    title: "تصدير وحذف بياناتك",
+    subtitle: "عبر واجهات الحساب",
   },
   {
-    icon: Lock,
-    title: "تشفير TLS 1.3 + AES-256",
-    subtitle: "في النقل وفي السكون",
+    icon: Scale,
+    title: "لا تدقيق امتثال مستقل بعد",
+    subtitle: "نعمل على المواءمة ولا ندّعي شهادة",
   },
 ];
 

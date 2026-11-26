@@ -10,6 +10,7 @@ import { SeoLandingShell } from "@/components/seo/SeoLandingShell";
 import { howToSchema, breadcrumbSchema } from "@/src/lib/seo/schema";
 import { Clock, Award, FileText, Download, ArrowLeft } from "lucide-react";
 import { sanitizeJsonLd } from "@/src/lib/security/safe-json-ld";
+import { SITE_URL } from "@/src/lib/site";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -24,7 +25,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const t = getTemplateBySlug(slug);
   if (!t) return { title: "قالب غير موجود" };
   return {
-    title: `${t.titleAr} | قالب جاهز للتنزيل`,
+    title: `${t.titleAr} | قالب`,
     description: t.metaDescriptionAr,
     keywords: t.keywords,
     alternates: { canonical: `/templates/${slug}` },
@@ -57,9 +58,9 @@ export default async function TemplatePage({ params }: PageProps) {
       steps: t.sections,
     }),
     breadcrumbSchema([
-      { name: "الرئيسية", url: "https://kalmeron.com/" },
-      { name: "القوالب", url: "https://kalmeron.com/templates" },
-      { name: t.titleAr, url: `https://kalmeron.com/templates/${slug}` },
+      { name: "الرئيسية", url: `${SITE_URL}/` },
+      { name: "القوالب", url: `${SITE_URL}/templates` },
+      { name: t.titleAr, url: `${SITE_URL}/templates/${slug}` },
     ]),
   ];
 
@@ -120,7 +121,7 @@ export default async function TemplatePage({ params }: PageProps) {
         </section>
 
         <section className="mb-12">
-          <h2 className="text-2xl font-bold text-white mb-4">المخرجات</h2>
+          <h2 className="text-2xl font-bold text-white mb-4">ما يغطيه القالب (مسودة تحتاج مراجعتك)</h2>
           <ul className="space-y-2">
             {t.outcomes.map((o, i) => (
               <li key={i} className="text-zinc-300 flex gap-2">

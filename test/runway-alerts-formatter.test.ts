@@ -17,7 +17,7 @@ describe("formatRunwayEmail", () => {
     // 60k / 30k = 2 months
     expect(out.subject).toMatch(/شهر|mo|2/);
     expect(out.text).toContain("أهلاً أحمد");
-    expect(out.text).toContain("https://kalmeron.app/cash-runway");
+    expect(out.text).toContain("https://kalmeron-two.vercel.app/cash-runway");
   });
 
   it("uses neutral greeting when name is missing", () => {
@@ -46,7 +46,7 @@ describe("formatRunwayEmail", () => {
     });
     expect(out.html).toContain('dir="rtl"');
     expect(out.html).toMatch(/افتح لوحة كلميرون/);
-    expect(out.html).toMatch(/href="https:\/\/kalmeron\.app\/cash-runway"/);
+    expect(out.html).toMatch(/href="https:\/\/kalmeron-two\.vercel\.app\/cash-runway"/);
   });
 
   it("emits the user's threshold inside the message body", () => {

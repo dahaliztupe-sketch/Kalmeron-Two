@@ -39,7 +39,7 @@ function formatOpportunitiesEmail(
     '',
     ...lines.map((l, i) => `${i + 1}. ${l}`),
     '',
-    'اطّلع على التفاصيل الكاملة من لوحة كلميرون → https://kalmeron.app/opportunities',
+    'اطّلع على التفاصيل الكاملة من لوحة كلميرون → https://kalmeron-two.vercel.app/opportunities',
   ].join('\n');
 
   const html = [
@@ -58,7 +58,7 @@ function formatOpportunitiesEmail(
     ),
     '</ul>',
     '<hr/>',
-    '<p style="font-size:12px;color:#888">كلميرون · <a href="https://kalmeron.app/opportunities">فرصك كلها هنا</a></p>',
+    '<p style="font-size:12px;color:#888">كلميرون · <a href="https://kalmeron-two.vercel.app/opportunities">فرصك كلها هنا</a></p>',
     '</div>',
   ].join('\n');
 

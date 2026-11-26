@@ -110,7 +110,6 @@ export default async function StatusPage() {
           <p>
             هذه الصفحة تُحدَّث تلقائيًا كل 5 دقائق من مهمّة فحص داخلية.
             للحوادث الكبرى، يرجى مراجعة <a href="/trust" className="underline hover:text-white">مركز الثقة</a>{' '}
-            أو التواصل عبر البريد <a href="mailto:status@kalmeron.com" className="underline hover:text-white">status@kalmeron.com</a>.
           </p>
         </div>
       </div>

@@ -300,8 +300,8 @@ export const EXPERTS: Expert[] = [
     roleAr: 'خبير KYC/AML/GDPR',
     emoji: '🔐',
     metaDescriptionAr:
-      'يضمن امتثال شركتك للقوانين المحلية والدولية: قانون 151 المصري، PDPL السعودي، GDPR، KYC, AML.',
-    taglineAr: 'امتثال مستمر بدون قلق',
+      'يساعدك في تجهيز مسودات امتثال للقوانين المحلية والدولية: قانون 151 المصري، PDPL السعودي، GDPR، KYC, AML. لا يغني عن مراجعة محامٍ.',
+    taglineAr: 'مسودات امتثال تسبق مراجعة المحامي',
     whatItDoesAr:
       'مسؤول الامتثال يفحص شركتك ضد متطلبات القوانين المحلية والدولية. يبني لك policies وإجراءات. يفيدك خصوصاً في فنتك، healthtech، edtech، وكل قطاع منظّم.',
     capabilities: [
@@ -315,7 +315,7 @@ export const EXPERTS: Expert[] = [
     exampleQuestions: [
       'هل تطبيقي ممتثل للقانون 151؟',
       'ابنيلي KYC flow لمنصة BNPL',
-      'كيف أكون GDPR-compliant لو كنت بأخدم أوروبا؟',
+      'إيه اللي لازم أراجعه لو كنت بأخدم أوروبا (GDPR)؟',
       'راجعلي Privacy Policy ضد PDPL السعودي',
     ],
     bestForAr: ['شركات فنتك', 'منصات healthtech', 'منصات تخدم أوروبا', 'B2B SaaS لمؤسسات'],

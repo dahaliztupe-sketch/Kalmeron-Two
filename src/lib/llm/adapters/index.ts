@@ -24,7 +24,7 @@ export async function getModelInstance(
         apiKey: process.env.OPENROUTER_API_KEY ?? '',
         // OpenRouter recommends headers for analytics + rate-limit fairness.
         headers: {
-          'HTTP-Referer': process.env.NEXT_PUBLIC_SITE_URL ?? 'https://kalmeron.com',
+          'HTTP-Referer': process.env.NEXT_PUBLIC_SITE_URL ?? 'https://kalmeron-two.vercel.app',
           'X-Title': 'Kalmeron AI Studio',
         },
       });

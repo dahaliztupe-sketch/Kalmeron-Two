@@ -100,7 +100,7 @@ export async function POST(req: NextRequest) {
       await userRef.set({ stripeCustomerId: customerId }, { merge: true });
     }
 
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://kalmeron.app';
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://kalmeron-two.vercel.app';
     const plan = getPlan(planId);
     const session = await stripe.checkout.sessions.create({
       mode: 'subscription',

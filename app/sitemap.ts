@@ -14,7 +14,7 @@ const rawUrl = process.env.NEXT_PUBLIC_APP_URL;
 // not a security trust check. Substitutes the dev URL with the canonical
 // production domain for the sitemap — no access-control decision is made here.
 const siteUrl = (!rawUrl || rawUrl.includes('replit.dev') || rawUrl.includes('localhost'))
-  ? 'https://kalmeron.app'
+  ? 'https://kalmeron-two.vercel.app'
   : rawUrl;
 
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -34,7 +34,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${siteUrl}/founder-mode`, lastModified: now, changeFrequency: 'monthly', priority: 0.85 },
     { url: `${siteUrl}/market-pulse`, lastModified: now, changeFrequency: 'weekly', priority: 0.85 },
     { url: `${siteUrl}/investor-deck`, lastModified: now, changeFrequency: 'monthly', priority: 0.85 },
-    { url: `${siteUrl}/founder-network`, lastModified: now, changeFrequency: 'weekly', priority: 0.85 },
     { url: `${siteUrl}/api-docs`, lastModified: now, changeFrequency: 'monthly', priority: 0.7 },
     { url: `${siteUrl}/mcp-server`, lastModified: now, changeFrequency: 'monthly', priority: 0.7 },
     { url: `${siteUrl}/workflows`, lastModified: now, changeFrequency: 'monthly', priority: 0.8 },

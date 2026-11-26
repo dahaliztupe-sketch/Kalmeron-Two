@@ -9,6 +9,7 @@ import {
 import { SeoLandingShell } from "@/components/seo/SeoLandingShell";
 import { definedTermSchema, breadcrumbSchema } from "@/src/lib/seo/schema";
 import { sanitizeJsonLd } from "@/src/lib/security/safe-json-ld";
+import { SITE_URL } from "@/src/lib/site";
 
 interface PageProps {
   params: Promise<{ term: string }>;
@@ -43,12 +44,12 @@ export default async function GlossaryTermPage({ params }: PageProps) {
     definedTermSchema({
       name: t.termAr,
       description: t.fullDefinitionAr,
-      url: `https://kalmeron.com/glossary/${term}`,
+      url: `${SITE_URL}/glossary/${term}`,
     }),
     breadcrumbSchema([
-      { name: "الرئيسية", url: "https://kalmeron.com/" },
-      { name: "القاموس", url: "https://kalmeron.com/glossary" },
-      { name: t.termAr, url: `https://kalmeron.com/glossary/${term}` },
+      { name: "الرئيسية", url: `${SITE_URL}/` },
+      { name: "القاموس", url: `${SITE_URL}/glossary` },
+      { name: t.termAr, url: `${SITE_URL}/glossary/${term}` },
     ]),
   ];
 
@@ -71,6 +72,7 @@ export default async function GlossaryTermPage({ params }: PageProps) {
         <section className="mb-12">
           <h2 className="text-2xl font-bold text-white mb-4">التعريف الكامل</h2>
           <p className="text-lg text-zinc-300 leading-relaxed">{t.fullDefinitionAr}</p>
+          <p className="mt-4 text-xs text-zinc-500">تعريف عام للتوضيح. الأرقام الواردة تقريبية وغير موثقة بمصدر، وليست استشارة مالية أو قانونية.</p>
         </section>
 
         {t.examples && t.examples.length > 0 && (

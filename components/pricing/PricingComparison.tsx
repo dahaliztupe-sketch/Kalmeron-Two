@@ -75,7 +75,7 @@ const ROWS: Row[] = [
   },
   {
     category: "الدعم",
-    feature: "SLA 99.9% + دعم 24/7",
+    feature: "دعم مخصص (يُتفق عليه)",
     values: { free: false, starter: false, pro: false, founder: false, enterprise: true },
   },
   {

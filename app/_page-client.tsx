@@ -197,7 +197,7 @@ function Hero() {
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (query.trim()) router.push(`/chat?q=${encodeURIComponent(query)}`);
+    if (query.trim()) router.push(`/validate?idea=${encodeURIComponent(query)}`);
   };
 
   return (

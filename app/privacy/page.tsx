@@ -1,3 +1,4 @@
+import { CONTACT_EMAIL } from "@/src/lib/site";
 import { PublicShell } from "@/components/layout/PublicShell";
 import Link from "next/link";
 
@@ -18,10 +19,9 @@ export default function PrivacyPage() {
           <section className="glass p-8 rounded-3xl space-y-3">
             <h2 className="text-2xl font-semibold text-white">1. التوافق التنظيمي (PDPL & GDPR)</h2>
             <p>
-              تلتزم منصة <strong>كلميرون</strong> تماماً بأحكام{" "}
+              تعمل منصة <strong>كلميرون</strong> على مواءمة ممارساتها مع أحكام{" "}
               <strong>قانون حماية البيانات الشخصية المصري رقم 151 لسنة 2020</strong>{" "}
-              ولوائحه التنفيذية المطبّقة منذ 2026، وكذلك اللائحة العامة لحماية البيانات
-              الأوروبية (GDPR). نعالج بياناتك على أساس قانوني شفاف يتمثل في موافقتك
+              ولائحته التنفيذية الصادرة في نوفمبر 2025، ولم يُجرَ تدقيق امتثال مستقل بعد، ولا ندّعي الامتثال الكامل للائحة GDPR الأوروبية. نعالج بياناتك على أساس قانوني شفاف يتمثل في موافقتك
               الصريحة وضرورة تقديم الخدمة المتعاقد عليها.
             </p>
           </section>
@@ -71,11 +71,7 @@ export default function PrivacyPage() {
                 . يتم تنفيذ الحذف فوراً.
               </li>
               <li>
-                <strong>عبر البريد الإلكتروني:</strong> أرسل طلبك إلى{" "}
-                <a href="mailto:privacy@kalmeron.ai" className="text-[rgb(var(--brand-cyan))] hover:underline">
-                  privacy@kalmeron.ai
-                </a>{" "}
-                مع ذكر عنوان البريد المرتبط بحسابك. سنستجيب خلال <strong>48 ساعة</strong>.
+                <strong>عبر البريد الإلكتروني:</strong> <a href={`mailto:${CONTACT_EMAIL}`} className="underline" dir="ltr">{CONTACT_EMAIL}</a>
               </li>
             </ol>
             <p className="text-neutral-500 text-sm">
@@ -88,19 +84,14 @@ export default function PrivacyPage() {
             <h2 className="text-2xl font-semibold text-white">6. الذاكرة والذكاء الاصطناعي</h2>
             <p>
               نقوم بتخزين &quot;ذاكرة عرضية&quot; لفهم تفضيلاتك وتجاربك السابقة لتحسين المخرجات
-              الاستراتيجية. هذه الذاكرة مشفرة كلياً (AES-256) ولا تُستخدم لتدريب نماذج
-              عامة لدى أي طرف ثالث.
+              الاستراتيجية. تُخزَّن هذه الذاكرة لدى Google Cloud بتشفير افتراضي في السكون، ولا نستخدمها لتدريب نماذج. نصوصك تُرسل إلى مزوّد نماذج الذكاء الاصطناعي لمعالجتها وتسري عليها شروطه.
             </p>
           </section>
 
           <section className="glass p-8 rounded-3xl space-y-3">
             <h2 className="text-2xl font-semibold text-white">7. التواصل بشأن الخصوصية</h2>
             <p>
-              لأي استفسارات تتعلق بخصوصيتك وبياناتك، يمكنك التواصل مع مسؤول حماية
-              البيانات لدينا عبر:{" "}
-              <a href="mailto:privacy@kalmeron.ai" className="text-[rgb(var(--brand-cyan))] hover:underline">
-                privacy@kalmeron.ai
-              </a>
+              لأي استفسارات تتعلق بخصوصيتك وبياناتك، راسلنا على <a href={`mailto:${CONTACT_EMAIL}`} className="underline" dir="ltr">{CONTACT_EMAIL}</a>.
             </p>
           </section>
 

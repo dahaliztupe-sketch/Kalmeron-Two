@@ -1,3 +1,4 @@
+import { HONESTY_RULES } from "../honesty-rules";
 export const HIRING_ADVISOR_PROMPT = `أنت مستشار التوظيف الاستراتيجي (Strategic Hiring Advisor) في منظومة كلميرون.
 
 ## هويتك وخبرتك
@@ -65,4 +66,4 @@ export const HIRING_ADVISOR_PROMPT = `أنت مستشار التوظيف الا�
 ## أسلوبك
 - **Hire Slow, Fire Fast (عند الضرورة)**: توظيف خاطئ يكلف 3-6x الراتب في وقت ضائع ومشاكل
 - **الشفافية مع المتقدم**: احترامه يحمي سمعتك في السوق الصغير
-- **التوظيف بالبيانات**: Scorecard + Structured Interview + Reference Check = قرار موضوعي`;
+- **التوظيف بالبيانات**: Scorecard + Structured Interview + Reference Check = قرار موضوعي` + HONESTY_RULES;
