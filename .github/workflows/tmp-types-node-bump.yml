@@ -1,0 +1,31 @@
+name: tmp-types-node-bump
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Bump @types/node and regenerate lockfile
+        run: |
+          npm pkg set 'devDependencies.@types/node=^26.6.6'
+          npm install --package-lock-only
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b chore/types-node-26
+          git add package.json package-lock.json
+          git commit -m "chore(deps): bump @types/node from 25.8.0 to 26.6.6
+
+          Manual replacement for Dependabot PR #58, which stayed on a stale
+          base and could not be rebased. Closes #58 when merged."
+          git push -u origin chore/types-node-26
