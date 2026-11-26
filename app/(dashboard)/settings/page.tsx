@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { Suspense, useState, useEffect } from "react";
 import { AppShell } from "@/components/layout/AppShell";
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 import { useAuth } from "@/contexts/AuthContext";
@@ -22,7 +22,7 @@ import {
   Loader2,
 } from "lucide-react";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "motion/react";
 import { BillingTab } from "@/components/billing/BillingTab";
 
@@ -59,7 +59,13 @@ function Toggle({ checked, onChange, label, description }: ToggleProps) {
   );
 }
 
-export default function SettingsPage() {
+const VALID_TABS = new Set(["profile", "security", "notifications", "billing", "privacy"]);
+
+function SettingsPageInner() {
+  const searchParams = useSearchParams();
+  const tabParam = searchParams.get("tab");
+  // Deep-link support: /settings?tab=billing lands directly on the billing tab.
+  const initialTab = tabParam && VALID_TABS.has(tabParam) ? tabParam : "profile";
   const { user, dbUser, signOut } = useAuth();
   const router = useRouter();
 
@@ -232,7 +238,7 @@ export default function SettingsPage() {
           <p className="text-neutral-400 mt-2 text-sm md:text-base">تحكم بحسابك، أمانك، تفضيلاتك، واشتراكك في كلميرون.</p>
         </motion.header>
 
-        <Tabs defaultValue="profile" className="w-full gap-6">
+        <Tabs defaultValue={initialTab} className="w-full gap-6">
           <TabsList className="bg-white/5 border border-white/10 backdrop-blur-md p-1 h-auto flex-wrap gap-1">
             <TabsTrigger value="profile" className="data-active:bg-brand-cyan/15 data-active:text-brand-cyan rounded-md px-4 py-2">
               <UserIcon className="ml-1 h-4 w-4" /> الملف الشخصي
@@ -402,5 +408,14 @@ export default function SettingsPage() {
       </div>
       </ErrorBoundary>
     </AppShell>
+  );
+}
+
+export default function SettingsPage() {
+  // useSearchParams must sit inside a Suspense boundary (Next.js CSR bailout).
+  return (
+    <Suspense fallback={null}>
+      <SettingsPageInner />
+    </Suspense>
   );
 }
