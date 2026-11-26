@@ -148,7 +148,7 @@
     "next-themes": "^0.4.6",
     "node-cron": "^4.6.0",
     "p-limit": "^7.3.3",
-    "p-retry": "^8.0.0",
+    "p-retry": "^9.0.0",
     "pdf-parse": "^2.4.5",
     "pdfkit": "^0.21.0",
     "pino": "^10.4.0",
