@@ -85,8 +85,9 @@ import { downstreamOf } from "@/src/lib/company/orchestrator";
 
 describe("stale downstream", () => {
   it("computes transitive dependents", () => {
-    expect(downstreamOf("marketing").sort()).toEqual(["finance", "legal", "ops", "product", "sales"]);
-    expect(downstreamOf("ops")).toEqual([]);
+    expect(downstreamOf("marketing").sort()).toEqual(["data", "engineering", "finance", "legal", "ops", "product", "sales", "strategy", "support"]);
+    expect(downstreamOf("ops").sort()).toEqual(["strategy", "support"]);
+    expect(downstreamOf("strategy")).toEqual([]);
   });
   it("regenerating a role marks finished downstream roles stale, not idle ones", () => {
     const order = ["marketing", "sales", "finance"];

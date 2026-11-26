@@ -3,7 +3,7 @@
  * over one Company Brief. No network here; the dashboard does the calls.
  * Approval is a local review mark. It triggers nothing and is not saved.
  */
-export const ROLE_ORDER = ["marketing", "sales", "finance", "product", "legal", "ops"] as const;
+export const ROLE_ORDER = ["marketing", "sales", "finance", "product", "engineering", "legal", "ops", "data", "support", "strategy"] as const;
 
 /** Roles a signed-out visitor may try: one role, cheaper model, global daily cap (see /api/company/role). */
 export const GUEST_ROLES: string[] = ["marketing"];
@@ -15,6 +15,10 @@ export const ROLE_LABELS_AR: Record<string, string> = {
   product: "المنتج والتطوير",
   legal: "القانون والإدارة (مصر)",
   ops: "العمليات والموارد البشرية",
+  engineering: "الهندسة والتقنية",
+  data: "البيانات والمقاييس",
+  support: "دعم العملاء",
+  strategy: "الاستراتيجية وجاهزية المستثمرين",
 };
 
 /** Which earlier role outputs each role may read. Keeps prompts short and the flow explainable. */
@@ -24,6 +28,10 @@ export const DEPENDS_ON: Record<string, string[]> = {
   product: ["sales"],
   legal: ["product", "finance"],
   ops: ["product", "finance"],
+  engineering: ["product", "finance"],
+  data: ["product", "marketing", "engineering"],
+  support: ["product", "ops"],
+  strategy: ["marketing", "sales", "finance", "product", "engineering", "ops"],
 };
 
 /** All roles that read `role` directly or through another role. */

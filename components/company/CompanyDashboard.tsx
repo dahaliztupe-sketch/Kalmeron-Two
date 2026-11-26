@@ -8,9 +8,9 @@ import { RoleOutputView } from "./RoleOutputView";
 import { IntakeForm } from "./IntakeForm";
 import { intakeComplete, type Intake } from "@/src/lib/company/intake";
 import { consolidatedMarkdown } from "@/src/lib/company/export";
-import { DEPENDS_ON, GUEST_ROLES, blockedBy, currentStage, ROLE_LABELS_AR, initState, orderedRoles, reduce, summary } from "@/src/lib/company/orchestrator";
+import { ROLE_ORDER, DEPENDS_ON, GUEST_ROLES, blockedBy, currentStage, ROLE_LABELS_AR, initState, reduce, summary } from "@/src/lib/company/orchestrator";
 
-const ALL_ROLES = orderedRoles(["marketing", "sales", "finance", "product", "legal", "ops"]);
+const ALL_ROLES = [...ROLE_ORDER];
 const STATUS_AR = { idle: "لم يبدأ", running: "جارٍ", done: "جاهز للمراجعة", failed: "فشل", approved: "اعتمدته (مراجعة محلية)" } as const;
 
 type Result = { ok: true; output: unknown; warnings: string[] } | { ok: false; rate: boolean };
