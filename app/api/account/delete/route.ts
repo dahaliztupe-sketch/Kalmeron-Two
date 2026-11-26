@@ -18,7 +18,7 @@ export const POST = guardedRoute(
     return NextResponse.json({
       success: true,
       scheduledFor: until.toISOString(),
-      message: 'سيتم حذف حسابك بعد 30 يوماً. يمكنك إلغاء الطلب خلال هذه الفترة.',
+      message: 'سُجّل طلب الحذف فقط. لا توجد مهمة آلية تنفّذه بعد، فللحذف الفوري لبياناتك المحفوظة استخدم «حذف بياناتي» في الإعدادات.',
     });
   },
   {
