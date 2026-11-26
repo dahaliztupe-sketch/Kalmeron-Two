@@ -3,6 +3,8 @@ import { NextRequest } from "next/server";
 
 const generate = vi.fn();
 vi.mock("@/src/lib/gemini", () => ({ ai: { models: { generateContent: (a: unknown) => generate(a) } } }));
+const quota = vi.fn();
+vi.mock("@/src/lib/plan/guest-cap", () => ({ consumeGuestQuota: () => quota() }));
 vi.mock("@/src/lib/firebase-admin", () => ({ adminAuth: { verifyIdToken: vi.fn() } }));
 vi.mock("@/src/lib/security/rate-limit", () => ({
   rateLimit: () => ({ success: true }),
@@ -22,7 +24,7 @@ const req = (body: object) =>
   new NextRequest("http://localhost/api/ideas/analyze", { method: "POST", body: JSON.stringify(body) });
 
 describe("/api/ideas/analyze format=plan", () => {
-  beforeEach(() => generate.mockReset());
+  beforeEach(() => { generate.mockReset(); quota.mockReset(); quota.mockResolvedValue(true); });
 
   it("returns structured plan plus markdown when the model returns valid JSON", async () => {
     generate.mockResolvedValueOnce({ text: JSON.stringify(plan) });
@@ -51,5 +53,18 @@ describe("/api/ideas/analyze format=plan", () => {
     generate.mockResolvedValueOnce({ text: "قديم" });
     expect((await (await POST(req({ ideaDesc: "فكرة" }))).json()).result).toBe("قديم");
     expect((await POST(req({ ideaDesc: "  " }))).status).toBe(400);
+  });
+
+  it("refuses guests with 429 when the daily cap is used up, without calling the model", async () => {
+    quota.mockResolvedValueOnce(false);
+    const res = await POST(req({ ideaDesc: "فكرة", format: "plan" }));
+    expect(res.status).toBe(429);
+    expect(generate).not.toHaveBeenCalled();
+  });
+
+  it("uses the cheaper model for guests", async () => {
+    generate.mockResolvedValueOnce({ text: JSON.stringify(plan) });
+    await POST(req({ ideaDesc: "فكرة", format: "plan" }));
+    expect(generate.mock.calls[0][0].model).toBe("gemini-2.5-flash");
   });
 });

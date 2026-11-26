@@ -4,6 +4,7 @@ import { rateLimit, rateLimitResponse } from '@/src/lib/security/rate-limit';
 import { adminAuth } from '@/src/lib/firebase-admin';
 import { logger } from '@/src/lib/logger';
 import xss from 'xss';
+import { consumeGuestQuota } from '@/src/lib/plan/guest-cap';
 import { parseValidatedPlan, planToMarkdown } from '@/src/lib/plan/validated-plan';
 
 const PLAN_PROMPT = (idea: string, industry: string, stage: string) => `You are validating a startup idea for the Egyptian market. Be critical, not flattering.
@@ -43,6 +44,12 @@ export async function POST(request: NextRequest) {
     logger.warn({ event: 'ideas_analyze_guest_call', path: '/api/ideas/analyze' }, 'ideas_analyze_guest_call');
   }
 
+  // Guests: bounded daily spend and the cheaper model. Signed-in users keep the pro model.
+  if (isGuest && !(await consumeGuestQuota())) {
+    return NextResponse.json({ error: 'guest_cap', message: 'Daily free limit reached. Sign in to continue.' }, { status: 429 });
+  }
+  const model = isGuest ? 'gemini-2.5-flash' : 'gemini-2.5-pro';
+
   try {
     const body = await request.json();
     const ideaDesc = xss(String(body.ideaDesc ?? '').slice(0, 5000));
@@ -56,7 +63,7 @@ export async function POST(request: NextRequest) {
     if (body.format === 'plan') {
       try {
         const planResp = await ai.models.generateContent({
-          model: 'gemini-2.5-pro',
+          model,
           contents: PLAN_PROMPT(ideaDesc, industry, startup_stage),
           config: { responseMimeType: 'application/json' },
         });
@@ -72,7 +79,7 @@ export async function POST(request: NextRequest) {
     }
 
     const response = await ai.models.generateContent({
-      model: 'gemini-2.5-pro',
+      model,
       contents: `I have a startup idea. Please validate it aggressively for the Egyptian market. 
         Idea: "${ideaDesc}"
         My Target Industry is: ${industry} and Phase is ${startup_stage}.

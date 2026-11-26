@@ -35,3 +35,13 @@ export async function getPlan(id: string): Promise<ValidatedPlan | null> {
   const parsed = ValidatedPlanSchema.safeParse(snap.data()?.plan);
   return parsed.success ? parsed.data : null;
 }
+
+/** Deletes the plan only if `userId` owns it. Returns false when missing or not owned. */
+export async function deletePlan(userId: string, id: string): Promise<boolean> {
+  if (!isValidPlanId(id)) return false;
+  const ref = adminDb.collection(PLANS_COLLECTION).doc(id);
+  const snap = await ref.get();
+  if (!snap.exists || snap.data()?.userId !== userId) return false;
+  await ref.delete();
+  return true;
+}

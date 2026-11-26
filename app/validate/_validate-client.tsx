@@ -18,6 +18,38 @@ export default function ValidateClient({ initialIdea = "" }: { initialIdea?: str
   const [shareUrl, setShareUrl] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [saveMsg, setSaveMsg] = useState<string | null>(null);
+  const [savedId, setSavedId] = useState<string | null>(null);
+  const [fb, setFb] = useState<"up" | "down" | null>(null);
+
+  async function sendFeedback(rating: "up" | "down") {
+    if (!plan || fb) return;
+    setFb(rating);
+    try {
+      const token = user ? await user.getIdToken().catch(() => null) : null;
+      await fetch("/api/plans/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+        body: JSON.stringify({ rating, verdict: plan.verdict }),
+      });
+    } catch {
+      /* feedback is best-effort */
+    }
+  }
+
+  async function revoke() {
+    if (!user || !savedId) return;
+    try {
+      const token = await user.getIdToken();
+      const res = await fetch(`/api/plans/${savedId}`, { method: "DELETE", headers: { Authorization: `Bearer ${token}` } });
+      if (res.ok) {
+        setShareUrl(null);
+        setSavedId(null);
+        setSaveMsg("تم حذف الخطة وإلغاء الرابط.");
+      } else setSaveMsg("تعذّر الحذف. حاول مرة أخرى.");
+    } catch {
+      setSaveMsg("تعذّر الحذف. حاول مرة أخرى.");
+    }
+  }
 
   async function save() {
     if (!plan || !user || saving) return;
@@ -32,7 +64,11 @@ export default function ValidateClient({ initialIdea = "" }: { initialIdea?: str
       });
       if (res.status === 409) setSaveMsg("وصلت للحد الأقصى من الخطط المحفوظة.");
       else if (!res.ok) setSaveMsg("تعذّر الحفظ. حاول مرة أخرى.");
-      else setShareUrl((await res.json()).url as string);
+      else {
+        const d = await res.json();
+        setShareUrl(d.url as string);
+        setSavedId(d.id as string);
+      }
     } catch {
       setSaveMsg("تعذّر الحفظ. حاول مرة أخرى.");
     } finally {
@@ -47,6 +83,8 @@ export default function ValidateClient({ initialIdea = "" }: { initialIdea?: str
     setPlan(null);
     setFallbackText(null);
     setShareUrl(null);
+    setSavedId(null);
+    setFb(null);
     setSaveMsg(null);
     try {
       const token = user ? await user.getIdToken().catch(() => null) : null;
@@ -135,9 +173,21 @@ export default function ValidateClient({ initialIdea = "" }: { initialIdea?: str
             <div className="mb-5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-sm text-emerald-200 print:hidden">
               رابط المشاركة (أي شخص معه الرابط يقدر يشوف الخطة):{" "}
               <a href={shareUrl} className="underline break-all" dir="ltr">{shareUrl}</a>
+              <button onClick={revoke} className="ms-3 underline text-rose-200">حذف الخطة وإلغاء الرابط</button>
             </div>
           )}
           <PlanView plan={plan} />
+          <div className="mt-6 flex items-center gap-3 text-sm text-neutral-400 print:hidden">
+            {fb ? (
+              <span>شكراً على رأيك.</span>
+            ) : (
+              <>
+                <span>هل كان التحليل مفيداً؟</span>
+                <button onClick={() => sendFeedback("up")} className="rounded-lg border border-white/15 px-3 py-1 hover:bg-white/5" aria-label="مفيد">👍</button>
+                <button onClick={() => sendFeedback("down")} className="rounded-lg border border-white/15 px-3 py-1 hover:bg-white/5" aria-label="غير مفيد">👎</button>
+              </>
+            )}
+          </div>
         </>
       )}
       {fallbackText && (
