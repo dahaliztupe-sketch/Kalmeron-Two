@@ -79,7 +79,7 @@ export function reduce(s: CompanyState, a: Action): CompanyState {
       if (cur.output !== undefined) {
         for (const d of downstreamOf(a.role)) {
           const ds = next[d];
-          if (ds && ds.output !== undefined && (ds.status === "done" || ds.status === "approved")) next[d] = { ...ds, stale: true };
+          if (ds && ds.output !== undefined && (ds.status === "done" || ds.status === "approved")) next[d] = { ...ds, status: "done", stale: true };
         }
       }
       return next;
@@ -89,7 +89,7 @@ export function reduce(s: CompanyState, a: Action): CompanyState {
     case "fail":
       return { ...s, [a.role]: { status: "failed", warnings: [], error: a.error } };
     case "approve":
-      return cur.status === "done" ? { ...s, [a.role]: { ...cur, status: "approved" } } : s;
+      return cur.status === "done" && !cur.stale ? { ...s, [a.role]: { ...cur, status: "approved" } } : s;
     case "unapprove":
       return cur.status === "approved" ? { ...s, [a.role]: { ...cur, status: "done" } } : s;
   }
@@ -104,4 +104,23 @@ export function summary(s: CompanyState, order: string[]) {
   const c = { idle: 0, running: 0, done: 0, failed: 0, approved: 0 } as Record<RoleStatus, number>;
   for (const r of order) if (s[r]) c[s[r].status]++;
   return c;
+}
+
+/**
+ * Stage gate: a role may run only when every earlier role in `order` is approved
+ * (reviewed by the founder) and not stale. Returns the blocking role, or null.
+ * Gates are a review habit, not a safety control: approval is a local mark.
+ */
+export function blockedBy(s: CompanyState, order: string[], role: string): string | null {
+  const i = order.indexOf(role);
+  for (const r of order.slice(0, Math.max(i, 0))) {
+    const st = s[r];
+    if (!st || st.status !== "approved" || st.stale) return r;
+  }
+  return null;
+}
+
+/** The one role the founder should work on next under the gates, or null when all are approved. */
+export function currentStage(s: CompanyState, order: string[]): string | null {
+  return order.find((r) => s[r]?.status !== "approved") ?? null;
 }

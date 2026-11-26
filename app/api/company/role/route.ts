@@ -9,6 +9,7 @@ import { briefFromPlan, ConstraintsSchema } from "@/src/lib/company/brief";
 import { runRole, type Generate } from "@/src/lib/company/run-role";
 import { ROLES, isRoleId } from "@/src/lib/company/roles/registry";
 import { GUEST_ROLES } from "@/src/lib/company/orchestrator";
+import { IntakeSchema } from "@/src/lib/company/intake";
 import { consumeGuestQuota } from "@/src/lib/plan/guest-cap";
 import { buildContextBlock } from "@/src/lib/company/context";
 
@@ -18,6 +19,7 @@ const Body = z.object({
   role: z.string(),
   plan: ValidatedPlanSchema,
   constraints: ConstraintsSchema.partial().optional(),
+  intake: IntakeSchema.optional(),
   /** Earlier role outputs, keyed by role id. Re-validated server-side; invalid ones are dropped. */
   context: z.record(z.string(), z.unknown()).optional(),
 });
@@ -56,7 +58,7 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  const brief = briefFromPlan(parsed.data.plan, parsed.data.constraints ?? {});
+  const brief = briefFromPlan(parsed.data.plan, parsed.data.constraints ?? {}, parsed.data.intake ?? {});
   const generate: Generate = async (system, prompt) => {
     const r = await ai.models.generateContent({
       model: isGuest ? "gemini-2.5-flash" : "gemini-2.5-pro",
