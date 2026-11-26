@@ -50,3 +50,30 @@ describe("ops/hr role", () => {
     expect((ROLES as Record<string, unknown>).ops).toBeDefined();
   });
 });
+
+describe("ops golden cases", () => {
+  it("solo founder: empty plan passes, any hire is an error", () => {
+    const solo: OpsPlan = { teamPlanned: { value: false, basis: "user_fact" }, roles: [], hiringSteps: [], onboardingChecklist: [], complianceNote: "لا فريق مخطط. راجع محاسباً عند أول توظيف.", handoff: [] };
+    expect(OpsPlanSchema.safeParse(solo).success).toBe(true);
+    expect(opsChecks(solo, brief)).toEqual([]);
+    expect(codes({ ...solo, roles: [role] })).toContain("roles_without_team");
+  });
+  it("small planned team within budget passes cleanly", () => {
+    const team: OpsPlan = {
+      ...good,
+      roles: [{ ...role, engagement: "employee", monthlyCostEgp: 8000, startWeek: 3 }],
+      complianceNote: "التأمينات الاجتماعية تضاف للتكلفة. راجع محامياً أو محاسباً قبل التعاقد.",
+    };
+    expect(opsChecks(team, { constraints: { budgetEgp: 40000, days: 90 } })).toEqual([]);
+  });
+  it("a bad plan triggers acting, overpromise and budget errors together", () => {
+    const bad: OpsPlan = {
+      ...good,
+      roles: [{ ...role, monthlyCostEgp: 50000, startWeek: 1 }],
+      hiringSteps: [{ step: "سأوظف أول مرشح", consentBasis: "they_applied" }],
+      complianceNote: "نضمن الامتثال، راجع محامياً",
+    };
+    const errs = opsChecks(bad, { constraints: { budgetEgp: 20000, days: 60 } }).filter((i) => i.level === "error").map((i) => i.code).sort();
+    expect(errs).toEqual(["acts_outside_role", "budget_exceeded", "overpromise"]);
+  });
+});

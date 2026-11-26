@@ -56,3 +56,36 @@ describe("product role", () => {
     expect((ROLES as Record<string, unknown>).product).toBeDefined();
   });
 });
+
+describe("product golden cases", () => {
+  it("a realistic 8-week plan passes with no errors and no warnings", () => {
+    const plan: ProductPlan = {
+      coreProblem: "أصحاب العيادات الصغيرة يحجزون المواعيد برسائل واتساب ويضيع بعضها",
+      learningGoal: "هل تستخدم 3 عيادات صفحة الحجز كل أسبوع لمدة شهر",
+      mvpScope: {
+        must: [f("صفحة حجز بالعربية RTL"), f("لوحة مواعيد للعيادة"), f("تذكير بالموعد")],
+        should: [f("تقرير أسبوعي")],
+        wont: [f("تطبيق جوال"), f("مدفوعات إلكترونية")],
+      },
+      techStack: [
+        { layer: "واجهة وخادم", suggestion: "Next.js مع dir=rtl على العنصر الجذر", reason: "المؤسس يعرفه", basis: "assumption" },
+        { layer: "قاعدة بيانات", suggestion: "Supabase الخطة المجانية للتجربة", reason: "تكلفة صفرية في البداية", basis: "needs_check" },
+      ],
+      costTiers: [{ tool: "Supabase", tier: "Free", monthlyUsd: 0, basis: "needs_check", note: "تُوقف المشاريع بعد أسبوع بلا نشاط" }],
+      buildChecklist: Array.from({ length: 8 }, (_, i) => ({ week: i + 1, tasks: [`مهمة الأسبوع ${i + 1}`], doneWhen: "تجربة يدوية ناجحة" })),
+      risks: [{ text: "قد لا يلتزم أصحاب العيادات بأداة جديدة", basis: "assumption" }],
+      handoff: [{ role: "legal", reason: "سياسة خصوصية لبيانات المرضى" }],
+    };
+    expect(ProductPlanSchema.safeParse(plan).success).toBe(true);
+    expect(productChecks(plan, { constraints: { days: 60, budgetEgp: null } })).toEqual([]);
+  });
+  it("a plan that promises results, deploys for the customer and overruns gets all three errors", () => {
+    const bad: ProductPlan = {
+      ...good,
+      learningGoal: "نضمن 100% رضا",
+      buildChecklist: [{ week: 12, tasks: ["سأنشر المنتج للعميل"], doneWhen: "تم" }],
+    };
+    const errs = productChecks(bad, { constraints: { days: 56, budgetEgp: null } }).filter((i) => i.level === "error").map((i) => i.code);
+    expect(errs.sort()).toEqual(["acts_outside_role", "exceeds_duration", "overpromise"]);
+  });
+});

@@ -41,6 +41,15 @@ export const OPS_KNOWLEDGE: RoleKnowledge = {
       reviewedOn: "2026-11-26",
       status: "secondary",
     },
+    {
+      id: "pdpl-regs-sensitive-and-erasure",
+      ruleAr: "حسب ترجمة مكتب محاماة للائحة التنفيذية (قرار وزير الاتصالات رقم 816 لسنة 2025، نُشر في الوقائع المصرية 1 نوفمبر 2025 وفق صفحة eastlaws): معالجة البيانات الحساسة تتطلب ترخيصاً من المركز وموافقة كتابية صريحة، وأن تكون البيانات ضرورية للغرض، وحفظ سجلات مؤمَّنة بالموافقات وطلبات الحذف. وتُمحى البيانات فور انتهاء غرض الاحتفاظ بها، وإن بقيت لسبب مشروع فلا تبقى بصورة تحدد هوية صاحبها. للتوظيف: اجمع أقل بيانات لازمة من المرشحين وامسح السير الذاتية عند انتهاء الغرض. ترجمة غير رسمية: راجع محامياً.",
+      sourceUrl: "https://legalin.law/wp-content/uploads/2026/10/LegalIn-PDPL-Executive-Regulations-816-2025-English.pdf",
+      sourceTitle: "LegalIn (Egyptian law firm): Executive Regulations of the PDPL, Ministerial Decree 816/2025 (English translation)",
+      sourceDate: "2025-11-01",
+      reviewedOn: "2026-11-26",
+      status: "secondary",
+    },
   ],
   workflowAr: [
     "اسأل أولاً هل يخطط المؤسس لفريق: إن لم يكن، فلا خطة توظيف ولا أدوار؛ أخرج teamPlanned=false وقوائم فارغة.",

@@ -37,6 +37,15 @@ export const LEGAL_KNOWLEDGE: RoleKnowledge = {
       reviewedOn: "2026-11-26",
       status: "verified_primary",
     },
+    {
+      id: "pdpl-regs-direct-marketing",
+      ruleAr: "حسب ترجمة مكتب محاماة للائحة التنفيذية لقانون حماية البيانات الشخصية (قرار 816 لسنة 2025، المادة 18 وما بعدها): الرسالة التسويقية الإلكترونية المباشرة تتطلب ترخيصاً من مركز حماية البيانات لنشاط التسويق المباشر، وموافقة صريحة من صاحب البيانات، وذكر هوية المرسل وغرض التسويق في بداية الاتصال مع وسيلة للرفض أو سحب الموافقة، وحفظ سجلات إلكترونية بوقت الموافقة وطرق الحصول عليها وطلبات السحب، ومحو البيانات عند سحب الموافقة أو انتهاء الغرض. يوجد ترخيص للتسويق لحساب النفس وآخر لحساب الغير. ترجمة غير رسمية ولم أقرأ النص العربي المنشور: استشر محامياً.",
+      sourceUrl: "https://legalin.law/wp-content/uploads/2026/10/LegalIn-PDPL-Executive-Regulations-816-2025-English.pdf",
+      sourceTitle: "LegalIn (Egyptian law firm): Executive Regulations of the PDPL, Ministerial Decree 816/2025 (English translation)",
+      sourceDate: "2025-11-01",
+      reviewedOn: "2026-11-26",
+      status: "secondary",
+    },
   ],
   workflowAr: [
     "ابدأ بتنبيه أن المخرجات ليست استشارة قانونية وأن الإنفاذ والتقديم يقومان به المؤسس أو محامٍ.",

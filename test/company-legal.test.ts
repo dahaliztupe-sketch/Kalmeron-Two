@@ -61,3 +61,41 @@ describe("legal (Egypt) role", () => {
     expect((ROLES as Record<string, unknown>).legal).toBeDefined();
   });
 });
+
+describe("legal golden cases", () => {
+  it("a realistic single-founder plan passes cleanly", () => {
+    const plan: LegalPlan = {
+      disclaimer: DISCLAIMER_AR,
+      entityOptions: [
+        { type: "sole_proprietorship", fitReason: "مؤسس واحد وبداية صغيرة", basis: "assumption" },
+        { type: "single_member_company", fitReason: "مسؤولية محدودة لمؤسس واحد", basis: "needs_check" },
+      ],
+      steps: [
+        { ...step(1), title: "حجز اسم الشركة وشهادة عدم التشابه", sourceNote: "دليل GAFI الإنجليزي (ترجمة، النص العربي يسود)" },
+        { ...step(2), title: "خطاب البنك بإيداع رأس المال", authority: "بنك", documents: ["صورة البطاقة"] },
+        { ...step(3), title: "تصديق عقد التأسيس عبر مركز خدمة المستثمرين", authority: "GAFI", feeEgp: null },
+      ],
+      needsLicenceCheck: ["هل النشاط يحتاج موافقة جهة مختصة"],
+      consultProfessional: DISCLAIMER_AR,
+      handoff: [{ role: "finance", reason: "الضرائب" }],
+    };
+    expect(LegalPlanSchema.safeParse(plan).success).toBe(true);
+    expect(legalChecks(plan, { constraints: { budgetEgp: 20000 } })).toEqual([]);
+  });
+  it("a confident, unsourced plan fails on every legal safeguard", () => {
+    const bad: LegalPlan = {
+      ...good,
+      disclaimer: "خطة قانونية كاملة",
+      consultProfessional: "لا حاجة",
+      steps: [{ ...step(1), basis: "assumption", title: "سنقدم الطلب بأنفسنا" }, step(2), step(3)],
+    };
+    const errs = legalChecks(bad, brief).filter((i) => i.level === "error").map((i) => i.code).sort();
+    expect(errs).toEqual(["acts_outside_role", "missing_consult_line", "missing_disclaimer", "rule_not_needs_check"]);
+  });
+  it("knowledge never marks an item verified_primary without a real https source and a review date", () => {
+    for (const i of LEGAL_KNOWLEDGE.items) {
+      if (i.status === "verified_primary") expect(i.sourceUrl).toMatch(/^https:\/\/[a-z0-9.-]+\//);
+    }
+    expect(LEGAL_KNOWLEDGE.items.every((i) => /^\d{4}-\d{2}-\d{2}$/.test(i.reviewedOn))).toBe(true);
+  });
+});
