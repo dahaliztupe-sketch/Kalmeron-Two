@@ -100,8 +100,6 @@ const nextConfig: NextConfig = {
       { source: '/founder-network',     destination: '/',          permanent: true },
       { source: '/founder-agreement',   destination: '/terms',     permanent: true },
       { source: '/setup-egypt',         destination: '/onboarding',permanent: true },
-      { source: '/start',               destination: '/auth/signup',permanent: true },
-      { source: '/demo',                destination: '/',          permanent: true },
       { source: '/success-museum',      destination: '/',          permanent: true },
       { source: '/decision-journal',    destination: '/dashboard', permanent: true },
       { source: '/market-pulse',        destination: '/dashboard', permanent: true },
