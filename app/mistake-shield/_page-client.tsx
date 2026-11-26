@@ -35,7 +35,6 @@ const MISTAKES: Mistake[] = [
     symptoms: ["تبدأ بالتصميم والبرمجة قبل أي مقابلات", "تعتقد أنك 'تعرف' ما يريده العميل", "ليس لديك 10 عملاء تحدثت معهم هذا الشهر"],
     fix: "قبل بناء أي شيء: 20 مقابلة عميل حقيقي. اسأل عن مشاكلهم لا عن رأيهم في فكرتك.",
     preventionTip: "اطلب من كلميرون تصميم مقابلات عميل مُحكمة تكشف الاحتياج الحقيقي.",
-    realExample: "منتج أُغلق رغم 500,000$ استثمار لأن المؤسسين لم يتحدثوا مع عملاء قبل البناء.",
   },
   {
     id: "m2", severity: "critical", category: "المالية",
@@ -54,7 +53,6 @@ const MISTAKES: Mistake[] = [
     symptoms: ["لا يوجد اتفاقية مساهمين موقعة", "الحصص لم تُحدَّد بشكل رسمي", "لا يوجد Vesting Schedule للمؤسسين"],
     fix: "وقّع SHA (اتفاقية المساهمين) في أول 30 يوماً. نص صريح على Vesting وآلية الخروج.",
     preventionTip: "استخدم مُعد اتفاقية المساهمين لإنشاء مسودة SHA مُخصصة لمشروعك.",
-    realExample: "90% من خلافات المؤسسين كانت ستُحل بـ SHA موقع في البداية.",
   },
   {
     id: "m4", severity: "high", category: "القانونية",
@@ -149,12 +147,10 @@ export default function MistakeShieldPage() {
         </motion.div>
 
         {/* Danger Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 gap-3">
           {[
-            { v: "72%", l: "شركات ناشئة تفشل خلال 5 سنوات", c: "rose" },
             { v: MISTAKES.filter(m => m.severity === "critical").length + "", l: "خطأ قاتل في هذا الدليل", c: "rose" },
             { v: MISTAKES.filter(m => m.severity === "high").length + "", l: "خطأ عالي الأثر", c: "amber" },
-            { v: "90%", l: "من الإخفاقات قابلة للوقاية", c: "emerald" },
           ].map((s, i) => (
             <motion.div key={s.l} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.07 }}
               className="glass-panel rounded-2xl p-4 text-center"
