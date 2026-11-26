@@ -6,41 +6,32 @@ import { PublicShell } from "@/components/layout/PublicShell";
 export const metadata: Metadata = {
   title: "تواصل معنا — كلميرون",
   description:
-    "تواصل مع فريق كلميرون عبر البريد الإلكتروني أو واتساب — للمبيعات، الدعم الفنّي، الشراكات، والاستفسارات العامّة.",
+    "قنوات التواصل مع كلميرون قيد التجهيز.",
   alternates: { canonical: "/contact" },
   openGraph: {
     url: "/contact",
   },
 };
 
-const SALES_EMAIL = "sales@kalmeron.com";
-const SUPPORT_EMAIL = "support@kalmeron.com";
-const PARTNERSHIPS_EMAIL = "partners@kalmeron.com";
-
-const CHANNELS = [
+const CHANNELS: {
+  icon: typeof Mail;
+  title: string;
+  description: string;
+}[] = [
   {
     icon: Building2,
     title: "المبيعات والباقات الكبيرة",
-    description: "للشركات التي تبحث عن عرض مخصّص أو خصم على باقة Enterprise.",
-    cta: "راسل المبيعات",
-    href: `mailto:${SALES_EMAIL}?subject=استفسار%20Enterprise`,
-    label: SALES_EMAIL,
+    description: "الخطة المؤسسية قيد الإعداد ولا تُباع مباشرة بعد.",
   },
   {
     icon: MessageCircle,
     title: "الدعم الفنّي",
-    description: "تواجه مشكلة في الحساب أو الفوترة أو أحد الوكلاء؟ نحن هنا.",
-    cta: "افتح بطاقة دعم",
-    href: `mailto:${SUPPORT_EMAIL}?subject=مساعدة%20فنّية`,
-    label: SUPPORT_EMAIL,
+    description: "قناة الدعم الرسمية قيد التجهيز.",
   },
   {
     icon: Sparkles,
     title: "الشراكات والتعاون",
-    description: "شريك تكنولوجي، موزّع، أو ترغب بدمج كلميرون في منتجك؟",
-    cta: "اقترح شراكة",
-    href: `mailto:${PARTNERSHIPS_EMAIL}?subject=اقتراح%20شراكة`,
-    label: PARTNERSHIPS_EMAIL,
+    description: "نستقبل اقتراحات الشراكة بعد إعلان قناة التواصل الرسمية.",
   },
 ];
 
@@ -69,7 +60,7 @@ export default function ContactPage({
             نحن هنا للمساعدة
           </h1>
           <p className="text-lg text-neutral-400 max-w-2xl mx-auto leading-relaxed">
-            اختر القناة الأنسب لاستفسارك — نردّ عادةً خلال يوم عمل واحد.
+            قنوات التواصل الرسمية قيد التجهيز وستُعلن هنا فور تفعيلها.
           </p>
         </header>
 
@@ -88,15 +79,6 @@ export default function ContactPage({
                 <p className="text-sm text-neutral-400 leading-relaxed mb-5 flex-1">
                   {c.description}
                 </p>
-                <a
-                  href={c.href}
-                  className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-white text-black text-sm font-semibold hover:bg-neutral-200 transition-colors"
-                >
-                  {c.cta}
-                </a>
-                <div className="mt-3 text-xs text-neutral-500 text-center" dir="ltr">
-                  {c.label}
-                </div>
               </article>
             );
           })}
@@ -105,27 +87,10 @@ export default function ContactPage({
         <section className="rounded-2xl border border-white/10 bg-gradient-to-br from-white/[0.04] to-transparent p-6 md:p-8">
           <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
             <Phone className="w-5 h-5 text-emerald-300" />
-            معلومات الاتّصال
+            حالة قنوات التواصل
           </h3>
-          <div className="grid md:grid-cols-2 gap-4 text-sm text-neutral-300">
-            <div className="rounded-xl border border-white/5 bg-white/[0.02] p-4">
-              <div className="text-neutral-500 text-xs mb-1">البريد العام</div>
-              <a
-                href={`mailto:hello@kalmeron.ai`}
-                className="hover:text-white transition-colors"
-                dir="ltr"
-              >
-                hello@kalmeron.ai
-              </a>
-            </div>
-            <div className="rounded-xl border border-white/5 bg-white/[0.02] p-4">
-              <div className="text-neutral-500 text-xs mb-1">ساعات الاستجابة</div>
-              <div>الأحد — الخميس · 9 ص — 6 م (تقويم القاهرة)</div>
-            </div>
-          </div>
-          <p className="mt-6 text-xs text-neutral-500 leading-relaxed">
-            للاستعلامات الإعلامية والأكاديمية، يرجى التواصل عبر البريد العام
-            مع ذكر طبيعة الطلب في عنوان الرسالة.
+          <p className="text-sm text-neutral-300 leading-relaxed">
+            لا توجد قناة تواصل مباشرة منشورة حالياً. سنعلن عنوان البريد الرسمي ووقت الاستجابة هنا بعد تفعيله.
           </p>
         </section>
       </div>

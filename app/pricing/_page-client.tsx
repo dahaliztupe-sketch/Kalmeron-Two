@@ -73,7 +73,7 @@ export default function PricingPage() {
       return;
     }
     if (planId === "enterprise") {
-      toast.message("الخطة المؤسسية غير متاحة للشراء المباشر بعد. يمكنك طلب عرض من صفحة التواصل.");
+      toast.message("الخطة المؤسسية غير متاحة للشراء المباشر بعد.");
       return;
     }
     if (planId === "free") {
