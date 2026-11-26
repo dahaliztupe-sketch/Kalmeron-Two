@@ -6,8 +6,7 @@ import { Loader2 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import type { ValidatedPlan } from "@/src/lib/plan/validated-plan";
 import { PlanView } from "@/components/plan/PlanView";
-import { MarketingView } from "@/components/plan/MarketingView";
-import type { MarketingPlan } from "@/src/lib/company/roles/marketing";
+import { CompanyDashboard } from "@/components/company/CompanyDashboard";
 
 export default function ValidateClient({ initialIdea = "" }: { initialIdea?: string }) {
   const { user } = useAuth();
@@ -23,40 +22,6 @@ export default function ValidateClient({ initialIdea = "" }: { initialIdea?: str
   const [savedId, setSavedId] = useState<string | null>(null);
   const [fb, setFb] = useState<"up" | "down" | null>(null);
   const [budget, setBudget] = useState("");
-  const [mkt, setMkt] = useState<{ plan: MarketingPlan; warnings: string[] } | null>(null);
-  const [mktBusy, setMktBusy] = useState(false);
-  const [mktErr, setMktErr] = useState<string | null>(null);
-
-  async function runMarketing() {
-    if (!plan || !user || mktBusy) return;
-    setMktBusy(true);
-    setMktErr(null);
-    setMkt(null);
-    try {
-      const token = await user.getIdToken();
-      const b = Number(budget);
-      const res = await fetch("/api/company/role", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({
-          role: "marketing",
-          plan,
-          constraints: { budgetEgp: Number.isFinite(b) && budget.trim() !== "" ? b : null, days: 30 },
-        }),
-      });
-      if (res.status === 429) setMktErr("وصلت للحد المؤقت. انتظر دقيقة وحاول مرة أخرى.");
-      else if (!res.ok) setMktErr("تعذّر إعداد الخطة التسويقية الآن. حاول مرة أخرى.");
-      else {
-        const d = await res.json();
-        setMkt({ plan: d.output as MarketingPlan, warnings: (d.issues ?? []).map((i: { message: string }) => i.message) });
-      }
-    } catch {
-      setMktErr("تعذّر الاتصال. حاول مرة أخرى.");
-    } finally {
-      setMktBusy(false);
-    }
-  }
-
   async function sendFeedback(rating: "up" | "down") {
     if (!plan || fb) return;
     setFb(rating);
@@ -121,8 +86,6 @@ export default function ValidateClient({ initialIdea = "" }: { initialIdea?: str
     setShareUrl(null);
     setSavedId(null);
     setFb(null);
-    setMkt(null);
-    setMktErr(null);
     setSaveMsg(null);
     try {
       const token = user ? await user.getIdToken().catch(() => null) : null;
@@ -215,11 +178,9 @@ export default function ValidateClient({ initialIdea = "" }: { initialIdea?: str
             </div>
           )}
           <PlanView plan={plan} />
-          <section className="mt-8 rounded-2xl border border-white/10 bg-white/[0.02] p-5 print:hidden">
-            <h3 className="font-bold text-white mb-1">الخطوة التالية: خطة تسويق لأول 30 يوماً</h3>
-            <p className="text-sm text-neutral-400 mb-3">مسودة آلية لقنوات وأسابيع ورسائل مناسبة للسوق المصري. تحتاج مراجعتك.</p>
-            {user ? (
-              <div className="flex flex-wrap items-center gap-3">
+          {user ? (
+            <>
+              <div className="mt-8 flex flex-wrap items-center gap-3 print:hidden">
                 <input
                   value={budget}
                   onChange={(e) => setBudget(e.target.value.replace(/[^0-9]/g, ""))}
@@ -228,19 +189,13 @@ export default function ValidateClient({ initialIdea = "" }: { initialIdea?: str
                   className="rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2 text-sm text-white placeholder:text-neutral-600"
                   aria-label="الميزانية بالجنيه"
                 />
-                <button onClick={runMarketing} disabled={mktBusy} className="rounded-xl bg-white text-black px-4 py-2 text-sm font-semibold disabled:opacity-50">
-                  {mktBusy ? "جارٍ الإعداد..." : "جهّز خطة التسويق"}
-                </button>
               </div>
-            ) : (
-              <Link href="/auth/login?next=/validate" className="text-sm text-cyan-300 underline">سجّل الدخول لتجهيز خطة التسويق</Link>
-            )}
-            {mktErr && <p className="mt-3 text-sm text-rose-300">{mktErr}</p>}
-          </section>
-          {mkt && (
-            <div className="mt-6">
-              <MarketingView plan={mkt.plan} warnings={mkt.warnings} />
-            </div>
+              <CompanyDashboard plan={plan} getToken={() => user.getIdToken()} budgetEgp={budget.trim() !== "" && Number.isFinite(Number(budget)) ? Number(budget) : null} />
+            </>
+          ) : (
+            <p className="mt-8 print:hidden">
+              <Link href="/auth/login?next=/validate" className="text-sm text-cyan-300 underline">سجّل الدخول لتشغيل فريق الأدوار (التسويق والمبيعات والمالية وغيرها)</Link>
+            </p>
           )}
           <div className="mt-6 flex items-center gap-3 text-sm text-neutral-400 print:hidden">
             {fb ? (

@@ -3,9 +3,10 @@ import { SALES_ROLE } from "./sales";
 import { PRODUCT_ROLE } from "./product";
 import { LEGAL_ROLE } from "./legal";
 import { OPS_ROLE } from "./ops";
+import { FINANCE_ROLE } from "./finance";
 
 /** Roles available to the company-in-a-box flow. Add one role per release. */
-export const ROLES = { marketing: MARKETING_ROLE, sales: SALES_ROLE, product: PRODUCT_ROLE, legal: LEGAL_ROLE, ops: OPS_ROLE } as const;
+export const ROLES = { marketing: MARKETING_ROLE, sales: SALES_ROLE, product: PRODUCT_ROLE, legal: LEGAL_ROLE, ops: OPS_ROLE, finance: FINANCE_ROLE } as const;
 export type RoleId = keyof typeof ROLES;
 export function isRoleId(x: unknown): x is RoleId {
   return typeof x === "string" && Object.prototype.hasOwnProperty.call(ROLES, x);

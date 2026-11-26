@@ -21,12 +21,12 @@ export const LEGAL_KNOWLEDGE: RoleKnowledge = {
     },
     {
       id: "gafi-entity-minimums",
-      ruleAr: "حسب الدليل: شركة الشخص الواحد يجب ألا يقل رأس مالها المودع عن 1000 جنيه؛ الشركة ذات المسؤولية المحدودة من 2 إلى 50 شريكاً؛ شركة المساهمة 3 مؤسسين على الأقل ورأس مال مصدر لا يقل عن 250,000 جنيه مع إيداع 10% على الأقل من رأس المال المصدر. قد تفرض قوانين النشاط حداً أدنى أعلى. راجع محامياً قبل الاعتماد.",
+      ruleAr: "حسب الدليل: شركة الشخص الواحد يجب ألا يقل رأس مالها المودع عن 1000 جنيه؛ الشركة ذات المسؤولية المحدودة من 2 إلى 50 شريكاً؛ شركات المساهمة تحتاج خطاب بنك بإيداع 10% على الأقل من رأس المال. (ملاحظة المراجعة: أرقام 250,000 جنيه و3 مؤسسين و2 إلى 50 شريكاً لم أجدها في نص الدليل، فلا تعتمدها قبل التحقق من النص العربي.) قد تفرض قوانين النشاط حداً أدنى أعلى. راجع محامياً قبل الاعتماد.",
       sourceUrl: "https://gafiadmin.gafi.gov.eg/media/n22f13kw/isc-guide-2026_eng_19102026_final.pdf",
       sourceTitle: "GAFI: Investor Service Center Procedural Guidebook (English translation)",
       sourceDate: null,
       reviewedOn: "2026-11-26",
-      status: "verified_primary",
+      status: "unverified",
     },
     {
       id: "gafi-incorporation-steps-docs",
