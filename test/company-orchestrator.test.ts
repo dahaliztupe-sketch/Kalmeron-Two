@@ -80,3 +80,23 @@ describe("role-to-role context", () => {
     expect(buildContextBlock("product", { sales: long }).block.length).toBeLessThan(2900);
   });
 });
+
+import { downstreamOf } from "@/src/lib/company/orchestrator";
+
+describe("stale downstream", () => {
+  it("computes transitive dependents", () => {
+    expect(downstreamOf("marketing").sort()).toEqual(["finance", "legal", "ops", "product", "sales"]);
+    expect(downstreamOf("ops")).toEqual([]);
+  });
+  it("regenerating a role marks finished downstream roles stale, not idle ones", () => {
+    const order = ["marketing", "sales", "finance"];
+    let s = initState(order);
+    s = reduce(s, { type: "done", role: "marketing", output: { a: 1 }, warnings: [] });
+    s = reduce(s, { type: "done", role: "sales", output: { b: 1 }, warnings: [] });
+    s = reduce(s, { type: "start", role: "marketing" });
+    expect(s.sales.stale).toBe(true);
+    expect(s.finance.stale).toBeUndefined();
+    s = reduce(s, { type: "start", role: "sales" });
+    expect(s.sales.stale).toBeUndefined();
+  });
+});

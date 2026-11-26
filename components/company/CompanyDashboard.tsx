@@ -4,8 +4,7 @@ import type { ValidatedPlan } from "@/src/lib/plan/validated-plan";
 import { MarketingView } from "@/components/plan/MarketingView";
 import type { MarketingPlan } from "@/src/lib/company/roles/marketing";
 import { RoleOutputView } from "./RoleOutputView";
-import { DEPENDS_ON } from "@/src/lib/company/context";
-import { ROLE_LABELS_AR, initState, nextPending, orderedRoles, reduce, summary } from "@/src/lib/company/orchestrator";
+import { DEPENDS_ON, ROLE_LABELS_AR, initState, nextPending, orderedRoles, reduce, summary } from "@/src/lib/company/orchestrator";
 
 const ROLES = orderedRoles(["marketing", "sales", "finance", "product", "legal", "ops"]);
 const STATUS_AR = { idle: "لم يبدأ", running: "جارٍ", done: "جاهز للمراجعة", failed: "فشل", approved: "اعتمدته (مراجعة محلية)" } as const;
@@ -105,6 +104,7 @@ export function CompanyDashboard({ plan, getToken, budgetEgp }: { plan: Validate
               <div className="flex flex-wrap items-center gap-3">
                 <span className="font-semibold text-white">{ROLE_LABELS_AR[r] ?? r}</span>
                 <span className="text-xs text-neutral-400">{STATUS_AR[st.status]}</span>
+                {st.stale && <span className="text-xs text-amber-300">قديم: تغيّر دور سابق بعد إعداده، أعد التوليد</span>}
                 <span className="flex-1" />
                 {(st.status === "done" || st.status === "approved") && (
                   <button onClick={() => setOpen(open === r ? null : r)} className="text-sm text-cyan-300 underline">{open === r ? "أخفِ" : "اعرض"}</button>

@@ -1,13 +1,7 @@
 import { ROLES, isRoleId } from "@/src/lib/company/roles/registry";
+import { DEPENDS_ON } from "@/src/lib/company/orchestrator";
 
-/** Which earlier role outputs each role may read. Keeps prompts short and the flow explainable. */
-export const DEPENDS_ON: Record<string, string[]> = {
-  sales: ["marketing"],
-  finance: ["marketing", "sales"],
-  product: ["sales"],
-  legal: ["product", "finance"],
-  ops: ["product", "finance"],
-};
+export { DEPENDS_ON };
 
 const MAX_PER_ROLE = 2500;
 

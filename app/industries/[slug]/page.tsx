@@ -52,20 +52,7 @@ export default async function IndustryPage({ params }: PageProps) {
         { label: ind.nameAr },
       ]}
     >
-      {/* Market stats */}
-      <div className="grid md:grid-cols-2 gap-6 mb-16">
-        <div className="rounded-2xl bg-white/[0.03] border border-white/10 p-6">
-          <div className="text-zinc-500 text-xs mb-2">حجم السوق</div>
-          <div className="text-2xl font-bold text-white">{ind.marketSizeAr}</div>
-        </div>
-        <div className="rounded-2xl bg-white/[0.03] border border-white/10 p-6">
-          <div className="text-zinc-500 text-xs mb-2 inline-flex items-center gap-1">
-            <TrendingUp className="w-3 h-3" />
-            معدل النمو
-          </div>
-          <div className="text-2xl font-bold text-emerald-300">{ind.growthRateAr}</div>
-        </div>
-      </div>
+      {/* Market size, growth rate and case studies were removed: they were unsourced and not backed by real customers. */}
 
       {/* Challenges & Opportunities */}
       <section className="grid md:grid-cols-2 gap-6 mb-16">
@@ -110,21 +97,6 @@ export default async function IndustryPage({ params }: PageProps) {
           ))}
         </div>
       </section>
-
-      {/* Case studies */}
-      {ind.caseStudies.length > 0 && (
-        <section className="mb-16">
-          <h2 className="text-3xl font-bold text-white mb-8">قصص نجاح</h2>
-          <div className="grid md:grid-cols-2 gap-4">
-            {ind.caseStudies.map((cs, i) => (
-              <div key={i} className="rounded-2xl bg-gradient-to-br from-cyan-500/5 to-indigo-500/5 border border-cyan-500/20 p-6">
-                <h3 className="text-lg font-bold text-white mb-2">{cs.title}</h3>
-                <p className="text-cyan-300 text-sm">{cs.outcome}</p>
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
 
       {/* Related use cases */}
       {relatedUseCases.length > 0 && (

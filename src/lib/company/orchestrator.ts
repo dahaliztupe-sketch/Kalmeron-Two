@@ -14,12 +14,38 @@ export const ROLE_LABELS_AR: Record<string, string> = {
   ops: "العمليات والموارد البشرية",
 };
 
+/** Which earlier role outputs each role may read. Keeps prompts short and the flow explainable. */
+export const DEPENDS_ON: Record<string, string[]> = {
+  sales: ["marketing"],
+  finance: ["marketing", "sales"],
+  product: ["sales"],
+  legal: ["product", "finance"],
+  ops: ["product", "finance"],
+};
+
+/** All roles that read `role` directly or through another role. */
+export function downstreamOf(role: string): string[] {
+  const out = new Set<string>();
+  const walk = (r: string) => {
+    for (const [k, deps] of Object.entries(DEPENDS_ON)) {
+      if (deps.includes(r) && !out.has(k)) {
+        out.add(k);
+        walk(k);
+      }
+    }
+  };
+  walk(role);
+  return [...out];
+}
+
 export type RoleStatus = "idle" | "running" | "done" | "failed" | "approved";
 export interface RoleState {
   status: RoleStatus;
   output?: unknown;
   warnings: string[];
   error?: string;
+  /** An upstream role was regenerated after this draft was made. */
+  stale?: boolean;
 }
 export type CompanyState = Record<string, RoleState>;
 
@@ -45,8 +71,16 @@ export function reduce(s: CompanyState, a: Action): CompanyState {
   const cur = s[a.role];
   if (!cur) return s;
   switch (a.type) {
-    case "start":
-      return { ...s, [a.role]: { status: "running", warnings: [] } };
+    case "start": {
+      const next: CompanyState = { ...s, [a.role]: { status: "running", warnings: [] } };
+      if (cur.output !== undefined) {
+        for (const d of downstreamOf(a.role)) {
+          const ds = next[d];
+          if (ds && ds.output !== undefined && (ds.status === "done" || ds.status === "approved")) next[d] = { ...ds, stale: true };
+        }
+      }
+      return next;
+    }
     case "done":
       return { ...s, [a.role]: { status: "done", output: a.output, warnings: a.warnings } };
     case "fail":

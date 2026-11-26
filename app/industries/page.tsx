@@ -32,10 +32,7 @@ export default function IndustriesIndexPage() {
               {ind.metaDescriptionAr}
             </p>
             <div className="flex items-center justify-between text-xs">
-              <span className="text-emerald-400 inline-flex items-center gap-1">
-                <TrendingUp className="w-3 h-3" />
-                {ind.growthRateAr}
-              </span>
+              <span />
               <span className="text-cyan-400 inline-flex items-center gap-1 group-hover:translate-x-[-4px] transition-transform">
                 التفاصيل
                 <ArrowLeft className="w-3 h-3" />

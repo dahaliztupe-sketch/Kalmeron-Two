@@ -15,7 +15,7 @@ const ROWS: { feature: string; kalmeron: string; chatgpt: string }[] = [
   { feature: "الذاكرة بين المحادثات", kalmeron: "ذاكرة طويلة المدى لشركتك", chatgpt: "ذاكرة محدودة، تختفي بعد فترة" },
   { feature: "البحث في مستنداتك", kalmeron: "يبحث في PDFs ومستندات شركتك", chatgpt: "يحتاج رفع كل مرّة" },
   { feature: "السعر للمؤسّس العربي", kalmeron: "خطة مجانية + مدفوعة بالعملة المحلية", chatgpt: "٢٠$ شهرياً بالدولار" },
-  { feature: "الامتثال للقانون المحلي", kalmeron: "PDPL مصر + GDPR", chatgpt: "GDPR فقط" },
+  { feature: "الامتثال للقانون المحلي", kalmeron: "نعمل على مواءمة قانون 151 المصري، بلا تدقيق مستقل بعد", chatgpt: "راجع سياسات المزوّد مباشرة" },
 ];
 
 export default function VsChatgptPage() {

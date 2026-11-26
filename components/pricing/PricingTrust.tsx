@@ -4,12 +4,12 @@ import { motion } from "motion/react";
 import { Shield, Lock, Headphones, Globe, Zap, Award } from "lucide-react";
 
 const items = [
-  { icon: Shield, label: "تشفير AES-256", sub: "بيانات محمية بالكامل" },
-  { icon: Lock, label: "GDPR متوافق", sub: "خصوصية أوروبية المستوى" },
-  { icon: Headphones, label: "دعم عربي", sub: "فريق محلي يفهم سياقك" },
-  { icon: Globe, label: "متاح عالمياً", sub: "خوادم متعددة المناطق" },
-  { icon: Zap, label: "زمن استجابة <500ms", sub: "أداء مثل صاروخ" },
-  { icon: Award, label: "ضمان 30 يوماً", sub: "ارجع أموالك بدون أسئلة" },
+  { icon: Shield, label: "تشفير افتراضي", sub: "لدى مزوّد السحابة" },
+  { icon: Lock, label: "تصدير وحذف بياناتك", sub: "عبر واجهات الحساب" },
+  { icon: Headphones, label: "دعم بالعربية", sub: "عبر البريد الإلكتروني" },
+  { icon: Globe, label: "متاح عبر الويب", sub: "من أي مكان" },
+  { icon: Zap, label: "ردود الذكاء الاصطناعي", sub: "تستغرق ثوانٍ وليست لحظية" },
+  { icon: Award, label: "تجربة مجانية", sub: "قبل أي دفع" },
 ];
 
 export function PricingTrust() {
