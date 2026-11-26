@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { cn } from "@/src/lib/utils";
+import { readSafeNextPath } from "@/src/lib/auth/next-path";
 
 // ─── Data ────────────────────────────────────────────────────────────────────
 
@@ -524,7 +525,7 @@ export function OnboardingForm() {
             {/* Footer: Skip to dashboard */}
             <div className="px-6 md:px-8 pb-6 md:pb-8">
               <button
-                onClick={() => finalizeOnboarding("/dashboard")}
+                onClick={() => finalizeOnboarding(readSafeNextPath() ?? "/dashboard")}
                 className="w-full flex items-center justify-center gap-2 text-sm font-semibold py-3 rounded-2xl border border-white/10 bg-white/[0.04] text-neutral-300 hover:bg-white/[0.07] hover:text-white transition-all"
               >
                 <TrendingUp className="w-4 h-4 text-brand-cyan" />
