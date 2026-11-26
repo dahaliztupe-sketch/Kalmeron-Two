@@ -14,6 +14,24 @@ export const OPS_KNOWLEDGE: RoleKnowledge = {
       reviewedOn: "2026-11-26",
       status: "verified_primary",
     },
+    {
+      id: "pdpl-consent-and-retention",
+      ruleAr: "حسب ترجمة قانون حماية البيانات الشخصية رقم 151 لسنة 2020: لا يجوز جمع البيانات الشخصية أو معالجتها أو الإفصاح عنها إلا بموافقة صريحة من صاحبها أو في الحالات التي يجيزها القانون؛ ويجب أن يكون الغرض مشروعاً ومحدداً، وألا تُحفظ البيانات مدة أطول من اللازم. ينطبق ذلك على السير الذاتية وبيانات المرشحين المعالجة إلكترونياً. ترجمة غير رسمية، فاستشر محامياً قبل الاعتماد.",
+      sourceUrl: "https://natlex.ilo.org/dyn/natlex2/natlex2/files/download/111246/EGY111246%20Eng.pdf",
+      sourceTitle: "ILO NATLEX: Egypt Law No. 151 of 2020, Personal Data Protection Law (English translation)",
+      sourceDate: null,
+      reviewedOn: "2026-11-26",
+      status: "secondary",
+    },
+    {
+      id: "pdpl-sensitive-data",
+      ruleAr: "حسب نفس الترجمة: البيانات الحساسة تشمل الصحة النفسية والعقلية والبدنية والبيانات الوراثية والبيومترية والمالية والمعتقد الديني والآراء السياسية والسجل الجنائي، وبيانات الأطفال. لا يجوز جمعها أو معالجتها إلا بترخيص من مركز حماية البيانات وموافقة كتابية صريحة. لذلك لا تطلب هذه البيانات من المرشحين في الخطة دون مراجعة قانونية. لم تُقرأ اللائحة التنفيذية.",
+      sourceUrl: "https://natlex.ilo.org/dyn/natlex2/natlex2/files/download/111246/EGY111246%20Eng.pdf",
+      sourceTitle: "ILO NATLEX: Egypt Law No. 151 of 2020, Personal Data Protection Law (English translation)",
+      sourceDate: null,
+      reviewedOn: "2026-11-26",
+      status: "secondary",
+    },
   ],
   workflowAr: [
     "اسأل أولاً هل يخطط المؤسس لفريق: إن لم يكن، فلا خطة توظيف ولا أدوار؛ أخرج teamPlanned=false وقوائم فارغة.",
@@ -21,6 +39,7 @@ export const OPS_KNOWLEDGE: RoleKnowledge = {
     "حدد لكل دور هل هو موظف أم مستقل أم يحتاج تحققاً (needs_check)، وتكلفته الشهرية كرقم basis أو null.",
     "قارن مجموع التكلفة بالميزانية والمدة إن وُجدتا.",
     "أي تواصل مع مرشحين يحتاج أساس موافقة؛ المسودات فقط ولا إرسال.",
+    "لا تطلب من المرشحين بيانات حساسة (صحة، سجل جنائي، معتقد، بيانات بيومترية أو مالية) ولا تحتفظ بالسير الذاتية أطول من اللازم دون مراجعة قانونية.",
     "عقود العمل والتأمينات والرواتب النظامية تحتاج مراجعة محامٍ أو محاسب: أرسلها إلى handoff لدور القانون.",
   ],
 };

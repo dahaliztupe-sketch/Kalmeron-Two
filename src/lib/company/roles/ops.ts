@@ -28,6 +28,7 @@ export type OpsPlan = z.infer<typeof OpsPlanSchema>;
 const OVERPROMISE = /(مضمون|ضمان|نضمن|100\s*%|بدون مخاطر|لا مخالفة)/;
 const STAT = /(\d+(\.\d+)?\s*(%|٪)|\d+\s*(مليون|مليار))/;
 const ACTS = /(سأوظف|سنوظف|سأرسل العرض|سأوقّع العقد|تم التوظيف|سأنشر الوظيفة)/;
+const SENSITIVE = /(سجل جنائي|صحيفة الحالة الجنائية|فيش|تحليل|فحص طبي|الحالة الصحية|الديانة|المعتقد|بصمة|بيانات بنكية|criminal record|medical)/i;
 const COLD = /(رسائل جماعية|رسائل باردة|cold\s*(dm|message|outreach|email)|إرسال جماعي)/i;
 
 export function opsChecks(out: OpsPlan, brief: { constraints: { budgetEgp: number | null; days: number | null } }): Issue[] {
@@ -44,6 +45,9 @@ export function opsChecks(out: OpsPlan, brief: { constraints: { budgetEgp: numbe
   if (prose.some((t) => STAT.test(t))) issues.push({ level: "warn", code: "unsupported_statistic", message: "رقم أو نسبة داخل النص بلا وسم basis. راجعه." });
   if (out.hiringSteps.some((s) => s.consentBasis === "needs_check") || prose.some((t) => COLD.test(t))) {
     issues.push({ level: "warn", code: "consent_needs_check", message: "تواصل مع مرشحين بلا أساس موافقة واضح. راجع قبل التنفيذ." });
+  }
+  if (prose.some((t) => SENSITIVE.test(t))) {
+    issues.push({ level: "warn", code: "sensitive_data_needs_check", message: "طلب بيانات حساسة من المرشحين (صحة، سجل جنائي، معتقد، بيومترية، مالية). القانون يشترط ترخيصاً وموافقة كتابية: راجع محامياً." });
   }
   if (out.roles.some((r) => r.engagement === "needs_check")) {
     issues.push({ level: "warn", code: "engagement_needs_check", message: "نوع التعاقد (موظف أم مستقل) غير محسوم. يحتاج مراجعة قانونية." });
@@ -79,6 +83,7 @@ ${knowledgePrompt(OPS_KNOWLEDGE, new Date())}
 تفاصيل الدور:
 - حقل teamPlanned: إن لم يذكر الملخص فريقاً فاجعله false مع basis: needs_check واترك roles وhiringSteps فارغتين.
 - إن كان true: حتى 8 أدوار مع السبب ونوع التعاقد وأسبوع البداية والتكلفة الشهرية (رقم أو null) وbasis، ولا تتجاوز الميزانية والمدة.
+- لا تطلب بيانات حساسة من المرشحين (صحة، سجل جنائي، معتقد، بيومترية، مالية) دون مراجعة قانونية، واطلب أقل البيانات اللازمة.
 - خطوات توظيف مع أساس موافقة لكل تواصل، وقائمة تهيئة.
 - complianceNote: اذكر أن العقود والتأمينات تحتاج مراجعة محامٍ أو محاسب.
 - العقود والمسائل القانونية تذهب إلى handoff لدور legal.`,

@@ -32,6 +32,9 @@ describe("ops/hr role", () => {
     expect(codes({ ...good, hiringSteps: [{ step: "تواصل", consentBasis: "needs_check" }] })).toContain("consent_needs_check");
     expect(codes({ ...good, roles: [{ ...role, engagement: "needs_check" }] })).toContain("engagement_needs_check");
   });
+  it("warns when sensitive candidate data is requested", () => {
+    expect(codes({ ...good, hiringSteps: [{ step: "اطلب صحيفة الحالة الجنائية من المرشح", consentBasis: "they_applied" }] })).toContain("sensitive_data_needs_check");
+  });
   it("flags budget overrun and start after duration", () => {
     expect(codes(good, { constraints: { budgetEgp: 5000, days: 60 } })).toContain("budget_exceeded");
     expect(codes({ ...good, roles: [{ ...role, startWeek: 20 }] }, { constraints: { budgetEgp: null, days: 30 } })).toContain("start_after_duration");
