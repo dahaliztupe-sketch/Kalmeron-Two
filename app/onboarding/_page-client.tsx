@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
+import { readSafeNextPath } from "@/src/lib/auth/next-path";
 import { OnboardingForm } from "@/components/onboarding/OnboardingForm";
 import { Loader2 } from "lucide-react";
 
@@ -34,7 +35,9 @@ export default function OnboardingPage() {
       try {
         if (sessionStorage.getItem("kalmeron_onboarding_completing") === "1") return;
       } catch {}
-      router.replace("/dashboard");
+      // Honor the post-auth target the user originally asked for (e.g.
+      // /chat?q=... typed on the landing hero) instead of always /dashboard.
+      router.replace(readSafeNextPath() ?? "/dashboard");
     }
   }, [user, dbUser, loading, dbUserLoading, router]);
 

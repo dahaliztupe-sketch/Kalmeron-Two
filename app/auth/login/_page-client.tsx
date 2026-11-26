@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
+import { readSafeNextPath, withNextParam } from "@/src/lib/auth/next-path";
 import { motion, useReducedMotion } from "motion/react";
 import { Loader2, Globe, ArrowLeft, Check } from "lucide-react";
 import Link from "next/link";
@@ -50,13 +51,16 @@ export default function LoginPage() {
     // go straight to onboarding. Otherwise (profile complete OR still loading)
     // send to /dashboard — AuthGuard will re-route to /onboarding if needed
     // once the Firestore doc resolves.
+    const next = readSafeNextPath();
     if (!dbUserLoading && dbUser && !dbUser.profile_completed) {
       navigated.current = true;
-      router.replace("/onboarding");
+      // Carry the intended destination through onboarding so a visitor who
+      // typed their idea on the landing page still lands in /chat with it.
+      router.replace(next ? withNextParam("/onboarding", next) : "/onboarding");
     } else if (!dbUserLoading) {
-      // Profile loaded (complete or unknown) → dashboard
+      // Profile loaded (complete or unknown) → intended destination or dashboard
       navigated.current = true;
-      router.replace("/dashboard");
+      router.replace(next ?? "/dashboard");
     }
     // Still waiting for Firestore fetch: don't navigate yet, wait for next fire
   }, [user, dbUser, loading, dbUserLoading, router]);
@@ -164,7 +168,18 @@ export default function LoginPage() {
 
           <p className="text-neutral-400 text-sm">
             ليس لديك حساب؟{" "}
-            <Link href="/auth/signup" className="text-cyan-300 hover:text-cyan-200 hover:underline font-bold">
+            <Link
+              href="/auth/signup"
+              onClick={(e) => {
+                // Carry the intended destination across to signup, if any.
+                const n = readSafeNextPath();
+                if (n) {
+                  e.preventDefault();
+                  router.push(withNextParam("/auth/signup", n));
+                }
+              }}
+              className="text-cyan-300 hover:text-cyan-200 hover:underline font-bold"
+            >
               سجل الآن مجاناً
             </Link>
           </p>
