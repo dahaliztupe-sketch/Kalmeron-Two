@@ -45,7 +45,7 @@
 | 🧮 **حاسبة Egypt Calc** | ضريبة دخل، قيمة مضافة، تأمينات اجتماعية مصرية |
 | 📄 **معالجة PDF عربي** | استخراج، تلخيص، توقيع رقمي، تقارير بالعربية |
 | 🔍 **بحث دلالي متعدد اللغات** | embeddings محلية سريعة بدون اتصال خارجي |
-| 💳 **مدفوعات مدمجة** | Fawry للسوق المصري + Stripe للسوق العالمي |
+| 💳 **مدفوعات مدمجة** | Fawry للسوق المصري + Stripe للسوق العالمي (الكود جاهز ويعمل بعد ضبط مفاتيح التاجر) |
 | 🛡️ **أمان من الدرجة الأولى** | CodeQL، Semgrep، Trivy، OSV، Scorecard، Gitleaks |
 | 📊 **رصد إنتاجي كامل** | Sentry + Langfuse + OpenTelemetry |
 
@@ -63,7 +63,7 @@
 - **Egypt Calc** — income tax, VAT, and social insurance calculator tuned for Egyptian law
 - **Arabic PDF pipeline** — extract, summarize, sign, and generate reports natively in Arabic
 - **Multilingual semantic search** — local embeddings with no external round-trips
-- **Integrated payments** — Fawry (Egypt) + Stripe (global), ready out of the box
+- **Integrated payments** — Fawry (Egypt) + Stripe (global), code-complete and gated behind merchant keys
 - **Production security** — CodeQL, Semgrep, Trivy, OSV-Scanner, Gitleaks, OpenSSF Scorecard
 - **Full observability** — Sentry error tracking, Langfuse LLM tracing, OpenTelemetry metrics
 
@@ -75,7 +75,7 @@
 ┌─────────────────────────────────────────────────────────────────────┐
 │         Next.js 16 (App Router) · React 19 · Tailwind CSS 4        │
 │  ─────────────────────────────────────────────────────────────────  │
-│  next-intl (ar/en) · Framer Motion · Shadcn UI · Radix Primitives  │
+│  next-intl (ar/en) · Motion · Shadcn UI · Radix Primitives  │
 │  LangGraph · Mastra · Vercel AI SDK 6 · Google Gemini 2.5 Flash    │
 │  Firebase Auth + Firestore + Storage · TanStack Query · Sentry      │
 └──────────────┬──────────────────────────────────────┬──────────────┘
