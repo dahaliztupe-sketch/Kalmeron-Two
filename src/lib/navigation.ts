@@ -61,6 +61,7 @@ export const NAV_SECTIONS: NavSection[] = [
     heading: "الرئيسي",
     items: [
       { href: "/dashboard", label: "لوحة القيادة", icon: LayoutDashboard, exact: true },
+      { href: "/validate", label: "تحقق من فكرتك", icon: Brain, badge: "الأساسي", badgeColor: "emerald" },
       { href: "/chat", label: "المساعد الذكي", icon: MessageSquareText, badge: "AI", badgeColor: "cyan" },
       { href: "/daily-brief", label: "إيجاز الصباح", icon: Sun },
       { href: "/weekly-report", label: "التقرير الأسبوعي", icon: CalendarDays, badge: "جديد", badgeColor: "violet" },

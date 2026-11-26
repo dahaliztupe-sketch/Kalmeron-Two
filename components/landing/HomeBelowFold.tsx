@@ -529,8 +529,8 @@ function FinalCTA() {
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (query.trim()) router.push(`/chat?q=${encodeURIComponent(query)}`);
-    else router.push("/auth/signup");
+    if (query.trim()) router.push(`/validate?idea=${encodeURIComponent(query)}`);
+    else router.push("/validate");
   };
 
   return (

@@ -1,93 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import Link from "next/link";
 import { Loader2 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import type { ValidatedPlan } from "@/src/lib/plan/validated-plan";
-
-const VERDICT = {
-  proceed: { label: "مضي", cls: "bg-emerald-500/15 text-emerald-300 border-emerald-500/30" },
-  refine: { label: "تحسين قبل البدء", cls: "bg-amber-500/15 text-amber-300 border-amber-500/30" },
-  stop: { label: "إيقاف", cls: "bg-rose-500/15 text-rose-300 border-rose-500/30" },
-} as const;
-
-const BASIS = { assumption: "افتراض", user_fact: "معلومة منك", needs_check: "يحتاج تحقق" } as const;
-
-function Points({ title, items }: { title: string; items: ValidatedPlan["risks"] }) {
-  return (
-    <section className="rounded-2xl border border-white/10 bg-white/[0.02] p-5">
-      <h3 className="font-bold text-white mb-3">{title}</h3>
-      {items.length === 0 ? (
-        <p className="text-sm text-neutral-500">لا يوجد</p>
-      ) : (
-        <ul className="space-y-2 text-sm text-neutral-300">
-          {items.map((p, i) => (
-            <li key={i} className="flex gap-2">
-              <span>{p.text}</span>
-              <span className="shrink-0 rounded-full border border-white/10 px-2 py-0.5 text-[11px] text-neutral-400">
-                {BASIS[p.basis]}
-              </span>
-            </li>
-          ))}
-        </ul>
-      )}
-    </section>
-  );
-}
-
-export function PlanView({ plan }: { plan: ValidatedPlan }) {
-  const v = VERDICT[plan.verdict];
-  return (
-    <div className="space-y-5" data-testid="plan-view">
-      <div className={`rounded-2xl border p-5 ${v.cls}`}>
-        <div className="text-sm opacity-80 mb-1">الحكم</div>
-        <div className="text-2xl font-bold mb-2">{v.label}</div>
-        <p className="text-sm leading-7">{plan.verdictReason}</p>
-      </div>
-      <section className="rounded-2xl border border-white/10 bg-white/[0.02] p-5">
-        <h3 className="font-bold text-white mb-2">العميل المستهدف</h3>
-        <p className="text-sm text-neutral-300 leading-7">{plan.targetCustomer}</p>
-      </section>
-      <div className="grid md:grid-cols-2 gap-5">
-        <Points title="نقاط القوة" items={plan.swot.strengths} />
-        <Points title="نقاط الضعف" items={plan.swot.weaknesses} />
-        <Points title="الفرص" items={plan.swot.opportunities} />
-        <Points title="التهديدات" items={plan.swot.threats} />
-      </div>
-      <section className="rounded-2xl border border-white/10 bg-white/[0.02] p-5">
-        <h3 className="font-bold text-white mb-3">المنافسون</h3>
-        {plan.competitors.length === 0 ? (
-          <p className="text-sm text-neutral-500">لم يُحدَّد</p>
-        ) : (
-          <ul className="space-y-2 text-sm text-neutral-300">
-            {plan.competitors.map((c, i) => (
-              <li key={i}>
-                <strong className="text-white">{c.name}</strong>: {c.note}
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
-      <Points title="المخاطر" items={plan.risks} />
-      <section className="rounded-2xl border border-white/10 bg-white/[0.02] p-5">
-        <h3 className="font-bold text-white mb-3">الخطوات التالية</h3>
-        <ol className="space-y-2 text-sm text-neutral-300 list-decimal pr-5">
-          {plan.nextSteps.map((s, i) => (
-            <li key={i}>
-              {s.action}{" "}
-              <span className="text-neutral-500">
-                ({s.days} يوم{s.costEgp === null ? "" : `، ${s.costEgp} جنيه`})
-              </span>
-            </li>
-          ))}
-        </ol>
-      </section>
-      <p className="text-xs text-neutral-500 leading-6">
-        هذه نتيجة تحليل آلي مبني على وصفك وافتراضات النموذج، وليست دراسة سوق موثّقة. راجع كل بند مُعلَّم «يحتاج تحقق» قبل اتخاذ قرار.
-      </p>
-    </div>
-  );
-}
+import { PlanView } from "@/components/plan/PlanView";
 
 export default function ValidateClient() {
   const { user } = useAuth();
@@ -97,6 +15,35 @@ export default function ValidateClient() {
   const [error, setError] = useState<string | null>(null);
   const [plan, setPlan] = useState<ValidatedPlan | null>(null);
   const [fallbackText, setFallbackText] = useState<string | null>(null);
+  const [shareUrl, setShareUrl] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [saveMsg, setSaveMsg] = useState<string | null>(null);
+
+  useEffect(() => {
+    const q = new URLSearchParams(window.location.search).get("idea");
+    if (q) setIdea(q.slice(0, 5000));
+  }, []);
+
+  async function save() {
+    if (!plan || !user || saving) return;
+    setSaving(true);
+    setSaveMsg(null);
+    try {
+      const token = await user.getIdToken();
+      const res = await fetch("/api/plans", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ plan }),
+      });
+      if (res.status === 409) setSaveMsg("وصلت للحد الأقصى من الخطط المحفوظة.");
+      else if (!res.ok) setSaveMsg("تعذّر الحفظ. حاول مرة أخرى.");
+      else setShareUrl((await res.json()).url as string);
+    } catch {
+      setSaveMsg("تعذّر الحفظ. حاول مرة أخرى.");
+    } finally {
+      setSaving(false);
+    }
+  }
 
   async function submit() {
     if (!idea.trim() || loading) return;
@@ -104,6 +51,8 @@ export default function ValidateClient() {
     setError(null);
     setPlan(null);
     setFallbackText(null);
+    setShareUrl(null);
+    setSaveMsg(null);
     try {
       const token = user ? await user.getIdToken().catch(() => null) : null;
       const res = await fetch("/api/ideas/analyze", {
@@ -166,7 +115,36 @@ export default function ValidateClient() {
         </button>
       </div>
       {error && <div role="alert" className="mb-6 rounded-xl border border-rose-500/30 bg-rose-500/10 p-4 text-rose-200 text-sm">{error}</div>}
-      {plan && <PlanView plan={plan} />}
+      {plan && (
+        <>
+          <div className="flex flex-wrap items-center gap-3 mb-5 print:hidden">
+            {user ? (
+              <button
+                onClick={save}
+                disabled={saving || !!shareUrl}
+                className="rounded-xl bg-white text-black px-4 py-2 text-sm font-semibold disabled:opacity-50"
+              >
+                {saving ? "جارٍ الحفظ..." : shareUrl ? "تم الحفظ" : "احفظ وشارك"}
+              </button>
+            ) : (
+              <Link href="/auth/login?next=/validate" className="rounded-xl border border-white/15 px-4 py-2 text-sm text-white">
+                سجّل الدخول لحفظ الخطة ومشاركتها
+              </Link>
+            )}
+            <button onClick={() => window.print()} className="rounded-xl border border-white/15 bg-white/5 px-4 py-2 text-sm font-semibold text-white">
+              طباعة / حفظ PDF
+            </button>
+            {saveMsg && <span className="text-sm text-rose-300">{saveMsg}</span>}
+          </div>
+          {shareUrl && (
+            <div className="mb-5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-sm text-emerald-200 print:hidden">
+              رابط المشاركة (أي شخص معه الرابط يقدر يشوف الخطة):{" "}
+              <a href={shareUrl} className="underline break-all" dir="ltr">{shareUrl}</a>
+            </div>
+          )}
+          <PlanView plan={plan} />
+        </>
+      )}
       {fallbackText && (
         <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-5 text-sm text-neutral-300 whitespace-pre-wrap leading-7">
           {fallbackText}
