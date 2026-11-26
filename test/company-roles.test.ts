@@ -39,6 +39,11 @@ describe("marketing checks", () => {
   it("passes a good plan", () => {
     expect(marketingChecks(good, brief).filter((i) => i.level === "error")).toEqual([]);
   });
+  it("warns on bulk or cold outreach", () => {
+    const bad = { ...good, positioning: "نرسل رسائل جماعية على واتساب لكل الأرقام" };
+    expect(marketingChecks(bad, brief).map((i) => i.code)).toContain("bulk_outreach_needs_consent");
+    expect(marketingChecks(good, brief).map((i) => i.code)).not.toContain("bulk_outreach_needs_consent");
+  });
   it("flags budget mismatch and over-budget", () => {
     const codes = marketingChecks({ ...good, totalBudgetEgp: 5000 }, brief).map((i) => i.code);
     expect(codes).toContain("budget_mismatch");

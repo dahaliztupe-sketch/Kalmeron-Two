@@ -36,6 +36,7 @@ export const MarketingPlanSchema = z.object({
 export type MarketingPlan = z.infer<typeof MarketingPlanSchema>;
 
 const OVERPROMISE = /(مضمون|ضمان|نضمن|100\s*%|ارباح مؤكدة|أرباح مؤكدة|بدون مخاطر)/;
+const COLD_BULK = /(رسائل جماعية|رسائل باردة|cold\s*(dm|message|outreach)|bulk\s*(whatsapp|sms)|إرسال جماعي)/i;
 const STAT = /(\d+(\.\d+)?\s*(%|٪)|\d+\s*(مليون|مليار|ألف عميل))/;
 
 export function marketingChecks(out: MarketingPlan, brief: { constraints: { budgetEgp: number | null } }): Issue[] {
@@ -56,6 +57,9 @@ export function marketingChecks(out: MarketingPlan, brief: { constraints: { budg
   }
   if (proseFields.some((t) => STAT.test(t))) {
     issues.push({ level: "warn", code: "unsupported_statistic", message: "رقم أو نسبة داخل النص بلا وسم basis. راجعه." });
+  }
+  if (proseFields.some((t) => COLD_BULK.test(t))) {
+    issues.push({ level: "warn", code: "bulk_outreach_needs_consent", message: "اقتراح مراسلة جماعية أو باردة: يحتاج موافقة مسبقة وقد يتطلب ترخيصاً في مصر. راجع قبل التنفيذ." });
   }
   if (out.draftPosts.length === 0) issues.push({ level: "warn", code: "no_drafts", message: "لا توجد مسودات منشورات." });
   return issues;
