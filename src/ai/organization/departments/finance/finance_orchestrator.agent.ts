@@ -13,7 +13,7 @@ import { globalGraphTools } from '@/src/lib/memory/graph-tools';
    */
   export const financeOrchestratorAgent = new Agent({
     name: 'Finance Orchestrator',
-    instructions: `أنت منسق قسم المالية والاستراتيجية في كلميرون تو.
+    instructions: `أنت منسق قسم المالية والاستراتيجية في كلميرون.
   مهمتك: ضمان الاستدامة المالية والتجهيز للتمويل.
 
   الوكلاء تحت إدارتك:

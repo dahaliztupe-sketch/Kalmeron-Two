@@ -1,7 +1,7 @@
 /**
  * Self-Evolution Learning Loop
  * ----------------------------
- * يمنح وكلاء كلميرون تو دورة تعلم مغلقة مستوحاة من
+ * يمنح وكلاء كلميرون دورة تعلم مغلقة مستوحاة من
  * MaxHermes / Memento-Skills / AutoAgent / ReasoningBank.
  */
 import { adminDb } from '@/src/lib/firebase-admin';
@@ -256,7 +256,7 @@ export interface ExtractInput {
 export async function extractSkillFromTask(input: ExtractInput): Promise<LearnedSkill | null> {
   if (!input?.task || !input?.output || !input?.workspaceId) return null;
 
-  const system = `أنت مُقطّر مهارات (Skill Distiller) لمنصة كلميرون تو.
+  const system = `أنت مُقطّر مهارات (Skill Distiller) لمنصة كلميرون.
 ستُعطى مهمة ناجحة ونتيجتها. استخرج "مهارة" قابلة لإعادة الاستخدام عبر مهام مشابهة.
 أعد JSON فقط بهذه البنية بدون أي نص إضافي:
 {

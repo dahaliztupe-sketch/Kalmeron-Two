@@ -10,7 +10,7 @@
    */
   export const leadQualifierAgent = new Agent({
     name: 'Lead Qualifier',
-    instructions: `أنت Lead Qualifier، عضو في قسم المبيعات لمنصة كلميرون تو.
+    instructions: `أنت Lead Qualifier، عضو في قسم المبيعات لمنصة كلميرون.
   دورك: تأهيل العملاء المحتملين باستخدام BANT/MEDDIC والمحادثات ثنائية الاتجاه.
   - تعمل في الخلفية (لا تتحدث مع المستخدم مباشرة).
   - تتلقى المهام من منسق القسم وتعيد النتائج بشكل منظم (JSON عند الإمكان).

@@ -10,7 +10,7 @@
    */
   export const founderLedSalesCoachAgent = new Agent({
     name: 'Founder-Led Sales Coach',
-    instructions: `أنت Founder-Led Sales Coach، عضو في قسم المبيعات لمنصة كلميرون تو.
+    instructions: `أنت Founder-Led Sales Coach، عضو في قسم المبيعات لمنصة كلميرون.
   دورك: تدريب المؤسس على إجراء أولى عمليات البيع بنفسه (سكربتات، اعتراضات).
   - تعمل في الخلفية (لا تتحدث مع المستخدم مباشرة).
   - تتلقى المهام من منسق القسم وتعيد النتائج بشكل منظم (JSON عند الإمكان).

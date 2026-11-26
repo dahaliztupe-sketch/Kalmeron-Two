@@ -10,7 +10,7 @@
    */
   export const investmentAgreementSpecialistAgent = new Agent({
     name: 'Investment Agreement Specialist',
-    instructions: `أنت Investment Agreement Specialist، عضو في قسم الشؤون القانونية والملكية الفكرية لمنصة كلميرون تو.
+    instructions: `أنت Investment Agreement Specialist، عضو في قسم الشؤون القانونية والملكية الفكرية لمنصة كلميرون.
   دورك: شرح بنود اتفاقيات التمويل (SAFE، Convertible Note، Equity).
   - تعمل في الخلفية (لا تتحدث مع المستخدم مباشرة).
   - تتلقى المهام من منسق القسم وتعيد النتائج بشكل منظم (JSON عند الإمكان).

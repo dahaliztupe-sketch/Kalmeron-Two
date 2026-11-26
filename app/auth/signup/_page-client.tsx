@@ -104,9 +104,9 @@ export default function SignUpPage() {
             </div>
             <div>
               {/* Brand name kept exactly as the e2e onboarding spec asserts:
-                  "انضم إلى كلميرون تو" — must remain a contiguous text node so
+                  "انضم إلى كلميرون" — must remain a contiguous text node so
                   Playwright's getByText(string, { exact:false }) matches it. */}
-              <h1 className="font-display text-2xl sm:text-3xl font-extrabold text-white mb-2">انضم إلى كلميرون تو</h1>
+              <h1 className="font-display text-2xl sm:text-3xl font-extrabold text-white mb-2">انضم إلى كلميرون</h1>
               <p className="text-neutral-400 text-sm leading-relaxed">
                 ابدأ رحلتك مع فريق مساعدين ذكي يعمل لصالحك.
               </p>

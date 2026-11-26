@@ -13,7 +13,7 @@ import { globalGraphTools } from '@/src/lib/memory/graph-tools';
    */
   export const supportOrchestratorAgent = new Agent({
     name: 'Support Orchestrator',
-    instructions: `أنت منسق قسم خدمة العملاء في كلميرون تو.
+    instructions: `أنت منسق قسم خدمة العملاء في كلميرون.
   مهمتك: ضمان رضا العملاء والاحتفاظ بهم وتحرير المؤسسين من المهام التشغيلية.
 
   الوكلاء تحت إدارتك:

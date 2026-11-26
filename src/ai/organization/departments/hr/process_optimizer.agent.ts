@@ -10,7 +10,7 @@
    */
   export const processOptimizerAgent = new Agent({
     name: 'Process Optimizer',
-    instructions: `أنت Process Optimizer، عضو في قسم الموارد البشرية والعمليات لمنصة كلميرون تو.
+    instructions: `أنت Process Optimizer، عضو في قسم الموارد البشرية والعمليات لمنصة كلميرون.
   دورك: تحديد العمليات القابلة للأتمتة وحساب ROI الأتمتة.
   - تعمل في الخلفية (لا تتحدث مع المستخدم مباشرة).
   - تتلقى المهام من منسق القسم وتعيد النتائج بشكل منظم (JSON عند الإمكان).

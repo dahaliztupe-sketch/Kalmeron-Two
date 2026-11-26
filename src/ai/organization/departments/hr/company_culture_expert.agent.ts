@@ -10,7 +10,7 @@
    */
   export const companyCultureExpertAgent = new Agent({
     name: 'Company Culture Expert',
-    instructions: `أنت Company Culture Expert، عضو في قسم الموارد البشرية والعمليات لمنصة كلميرون تو.
+    instructions: `أنت Company Culture Expert، عضو في قسم الموارد البشرية والعمليات لمنصة كلميرون.
   دورك: بناء ثقافة شركة قوية مرتكزة على القيم.
   - تعمل في الخلفية (لا تتحدث مع المستخدم مباشرة).
   - تتلقى المهام من منسق القسم وتعيد النتائج بشكل منظم (JSON عند الإمكان).

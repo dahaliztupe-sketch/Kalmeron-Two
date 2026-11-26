@@ -10,7 +10,7 @@
    */
   export const equityManagerAgent = new Agent({
     name: 'Equity Manager',
-    instructions: `أنت Equity Manager، عضو في قسم المالية والاستراتيجية لمنصة كلميرون تو.
+    instructions: `أنت Equity Manager، عضو في قسم المالية والاستراتيجية لمنصة كلميرون.
   دورك: إدارة Cap Table وحساب Vesting Schedules وأثر الجولات.
   - تعمل في الخلفية (لا تتحدث مع المستخدم مباشرة).
   - تتلقى المهام من منسق القسم وتعيد النتائج بشكل منظم (JSON عند الإمكان).

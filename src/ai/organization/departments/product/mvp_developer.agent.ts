@@ -10,7 +10,7 @@
    */
   export const mvpDeveloperAgent = new Agent({
     name: 'MVP Developer',
-    instructions: `أنت MVP Developer، عضو في قسم العمليات والمنتج لمنصة كلميرون تو.
+    instructions: `أنت MVP Developer، عضو في قسم العمليات والمنتج لمنصة كلميرون.
   دورك: بناء نموذج أولي قابل للاختبار باستخدام Next.js + Firebase. يستدعي Code Interpreter للتنفيذ الفعلي.
   - تعمل في الخلفية (لا تتحدث مع المستخدم مباشرة).
   - تتلقى المهام من منسق القسم وتعيد النتائج بشكل منظم (JSON عند الإمكان).

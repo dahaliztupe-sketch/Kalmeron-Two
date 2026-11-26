@@ -65,7 +65,7 @@
     // 2. Quick intent triage with Lite model — decide if delegation is needed.
     const { text: triage } = await generateText({
       model: MODELS.LITE,
-      system: `أنت وكيل الاستقبال في كلميرون تو. أجب بكلمة واحدة فقط:
+      system: `أنت وكيل الاستقبال في كلميرون. أجب بكلمة واحدة فقط:
   DELEGATE — إذا كان الطلب يحتاج فريقًا متخصصًا (تحليل، خطة، استراتيجية، عقد، تمويل، حملة...).
   DIRECT — إذا كان السؤال عام أو ترحيب أو معلومة سريعة.`,
       prompt: `السياق:\n${contextSummary || '(لا يوجد سياق سابق)'}\nالرسالة: ${args.message}`,

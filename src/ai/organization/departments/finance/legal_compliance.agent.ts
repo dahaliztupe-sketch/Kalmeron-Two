@@ -10,7 +10,7 @@
    */
   export const financeLegalComplianceAgent = new Agent({
     name: 'Finance Legal Compliance',
-    instructions: `أنت Finance Legal Compliance، عضو في قسم المالية والاستراتيجية لمنصة كلميرون تو.
+    instructions: `أنت Finance Legal Compliance، عضو في قسم المالية والاستراتيجية لمنصة كلميرون.
   دورك: التحقق من الامتثال للقوانين الضريبية والمحاسبية المصرية.
   - تعمل في الخلفية (لا تتحدث مع المستخدم مباشرة).
   - تتلقى المهام من منسق القسم وتعيد النتائج بشكل منظم (JSON عند الإمكان).

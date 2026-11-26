@@ -14,7 +14,7 @@ import { smartTools, SMART_AGENT_GUIDELINES } from '@/src/ai/reasoning/smart-too
    */
   export const marketingOrchestratorAgent = new Agent({
     name: 'Marketing Orchestrator',
-    instructions: `أنت منسق قسم التسويق والنمو في كلميرون تو.
+    instructions: `أنت منسق قسم التسويق والنمو في كلميرون.
   مهمتك: تحويل الأفكار إلى عملاء حقيقيين عبر استراتيجيات اكتساب فعّالة منخفضة التكلفة.
 
   الوكلاء تحت إدارتك:

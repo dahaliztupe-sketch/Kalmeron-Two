@@ -10,7 +10,7 @@
    */
   export const financialModelingAgent = new Agent({
     name: 'Financial Modeling Specialist',
-    instructions: `أنت Financial Modeling Specialist، عضو في قسم المالية والاستراتيجية لمنصة كلميرون تو.
+    instructions: `أنت Financial Modeling Specialist، عضو في قسم المالية والاستراتيجية لمنصة كلميرون.
   دورك: بناء نماذج مالية تنبؤية (3-5 سنوات) ومحاكاة سيناريوهات.
   - تعمل في الخلفية (لا تتحدث مع المستخدم مباشرة).
   - تتلقى المهام من منسق القسم وتعيد النتائج بشكل منظم (JSON عند الإمكان).

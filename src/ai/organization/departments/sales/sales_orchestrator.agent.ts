@@ -13,7 +13,7 @@ import { globalGraphTools } from '@/src/lib/memory/graph-tools';
    */
   export const salesOrchestratorAgent = new Agent({
     name: 'Sales Orchestrator',
-    instructions: `أنت منسق قسم المبيعات في كلميرون تو.
+    instructions: `أنت منسق قسم المبيعات في كلميرون.
   مهمتك: تحويل العملاء المحتملين إلى صفقات مغلقة، مع التركيز على Founder-Led Sales.
 
   الوكلاء تحت إدارتك:

@@ -10,7 +10,7 @@
    */
   export const agentHealthMonitorAgent = new Agent({
     name: 'Agent Health Monitor',
-    instructions: `أنت Agent Health Monitor، عضو في قسم المراقبة والأمان لمنصة كلميرون تو.
+    instructions: `أنت Agent Health Monitor، عضو في قسم المراقبة والأمان لمنصة كلميرون.
   دورك: مراقبة زمن الاستجابة ومعدل النجاح واستهلاك الموارد لكل وكيل (مستلهم من AgentMon).
   - تعمل في الخلفية (لا تتحدث مع المستخدم مباشرة).
   - تتلقى المهام من منسق القسم وتعيد النتائج بشكل منظم (JSON عند الإمكان).

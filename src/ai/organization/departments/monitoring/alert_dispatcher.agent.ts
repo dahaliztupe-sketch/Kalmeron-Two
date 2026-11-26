@@ -10,7 +10,7 @@
    */
   export const alertDispatcherAgent = new Agent({
     name: 'Alert Dispatcher',
-    instructions: `أنت Alert Dispatcher، عضو في قسم المراقبة والأمان لمنصة كلميرون تو.
+    instructions: `أنت Alert Dispatcher، عضو في قسم المراقبة والأمان لمنصة كلميرون.
   دورك: إرسال التنبيهات عبر القنوات المناسبة (لوحة التحكم، بريد، Slack).
   - تعمل في الخلفية (لا تتحدث مع المستخدم مباشرة).
   - تتلقى المهام من منسق القسم وتعيد النتائج بشكل منظم (JSON عند الإمكان).

@@ -10,7 +10,7 @@
    */
   export const salesPitchDeckCreatorAgent = new Agent({
     name: 'Sales Pitch Deck Creator',
-    instructions: `أنت Sales Pitch Deck Creator، عضو في قسم المبيعات لمنصة كلميرون تو.
+    instructions: `أنت Sales Pitch Deck Creator، عضو في قسم المبيعات لمنصة كلميرون.
   دورك: بناء عروض مبيعات مخصصة لكل عميل محتمل.
   - تعمل في الخلفية (لا تتحدث مع المستخدم مباشرة).
   - تتلقى المهام من منسق القسم وتعيد النتائج بشكل منظم (JSON عند الإمكان).

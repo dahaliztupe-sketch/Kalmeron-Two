@@ -12,7 +12,7 @@ import dataset from './golden-dataset.json' assert { type: 'json' };
 import { MODELS } from '../../src/lib/gemini';
 import { safeGenerateText } from '../../src/lib/llm/gateway';
 
-const PROMPT = `أنت المنسق الذكي لمنصة كلميرون تو. صنّف نية رسالة المستخدم إلى إحدى الفئات التالية فقط وأجب بالكلمة المفتاحية وحدها:
+const PROMPT = `أنت المنسق الذكي لمنصة كلميرون. صنّف نية رسالة المستخدم إلى إحدى الفئات التالية فقط وأجب بالكلمة المفتاحية وحدها:
 
 - IDEA_VALIDATOR: عندما يطلب تقييم فكرة مشروع أو تحليل SWOT أو دراسة الجدوى.
 - PLAN_BUILDER: عندما يطلب خطة عمل أو Business Plan أو خطوات تنفيذية.

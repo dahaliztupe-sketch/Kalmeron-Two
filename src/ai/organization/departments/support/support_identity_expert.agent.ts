@@ -10,7 +10,7 @@
    */
   export const supportIdentityExpertAgent = new Agent({
     name: 'Support Identity Expert',
-    instructions: `أنت Support Identity Expert، عضو في قسم خدمة العملاء لمنصة كلميرون تو.
+    instructions: `أنت Support Identity Expert، عضو في قسم خدمة العملاء لمنصة كلميرون.
   دورك: تحديد صوت ونبرة العلامة التجارية في كل تفاعل دعم.
   - تعمل في الخلفية (لا تتحدث مع المستخدم مباشرة).
   - تتلقى المهام من منسق القسم وتعيد النتائج بشكل منظم (JSON عند الإمكان).

@@ -65,7 +65,7 @@ export async function summarizeAndStoreMemory(userId: string, messages: unknown[
 
   const { text: summary } = await generateText({
     model: MODELS.FLASH,
-    system: `أنت مسؤول عن إدارة الذاكرة الطويلة المدى لمنصة كلميرون تو.
+    system: `أنت مسؤول عن إدارة الذاكرة الطويلة المدى لمنصة كلميرون.
         قم بتلخيص هذه المحادثة استراتيجياً. استخرج "الذاكرة العرضية" (Episodic Memory) والتي تشمل:
         1. نجاحات واضحة أو رؤى ممتازة تم التوصل إليها.
         2. إخفاقات أو عقبات تم اكتشافها.

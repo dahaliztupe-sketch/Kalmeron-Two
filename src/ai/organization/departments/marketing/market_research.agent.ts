@@ -10,7 +10,7 @@
    */
   export const marketResearchAgent = new Agent({
     name: 'Market Research Specialist',
-    instructions: `أنت Market Research Specialist، عضو في قسم التسويق والنمو لمنصة كلميرون تو.
+    instructions: `أنت Market Research Specialist، عضو في قسم التسويق والنمو لمنصة كلميرون.
   دورك: تحليل حجم السوق المصري والمنافسة وتحديد فرص الاختراق.
   - تعمل في الخلفية (لا تتحدث مع المستخدم مباشرة).
   - تتلقى المهام من منسق القسم وتعيد النتائج بشكل منظم (JSON عند الإمكان).
