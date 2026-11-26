@@ -9,10 +9,16 @@ export const metadata: Metadata = {
   alternates: { canonical: "/validate" },
 };
 
-export default function ValidatePage() {
+export default async function ValidatePage({
+  searchParams,
+}: {
+  searchParams?: Promise<{ idea?: string | string[] }>;
+}) {
+  const sp = (await searchParams) ?? {};
+  const raw = Array.isArray(sp.idea) ? sp.idea[0] : sp.idea;
   return (
     <PublicShell>
-      <ValidateClient />
+      <ValidateClient initialIdea={(raw ?? "").slice(0, 5000)} />
     </PublicShell>
   );
 }

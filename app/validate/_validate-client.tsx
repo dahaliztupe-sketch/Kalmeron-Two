@@ -1,15 +1,15 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { Loader2 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import type { ValidatedPlan } from "@/src/lib/plan/validated-plan";
 import { PlanView } from "@/components/plan/PlanView";
 
-export default function ValidateClient() {
+export default function ValidateClient({ initialIdea = "" }: { initialIdea?: string }) {
   const { user } = useAuth();
-  const [idea, setIdea] = useState("");
+  const [idea, setIdea] = useState(initialIdea);
   const [industry, setIndustry] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -18,11 +18,6 @@ export default function ValidateClient() {
   const [shareUrl, setShareUrl] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [saveMsg, setSaveMsg] = useState<string | null>(null);
-
-  useEffect(() => {
-    const q = new URLSearchParams(window.location.search).get("idea");
-    if (q) setIdea(q.slice(0, 5000));
-  }, []);
 
   async function save() {
     if (!plan || !user || saving) return;
