@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useReducer, useRef, useState } from "react";
+import type { CompanyState } from "@/src/lib/company/orchestrator";
 import type { ValidatedPlan } from "@/src/lib/plan/validated-plan";
 import { MarketingView } from "@/components/plan/MarketingView";
 import type { MarketingPlan } from "@/src/lib/company/roles/marketing";
@@ -14,18 +15,57 @@ const STATUS_AR = { idle: "لم يبدأ", running: "جارٍ", done: "جاهز 
 
 type Result = { ok: true; output: unknown; warnings: string[] } | { ok: false; rate: boolean };
 
-export function CompanyDashboard({ plan, getToken, budgetEgp, guest = false }: { plan: ValidatedPlan; getToken: () => Promise<string>; budgetEgp: number | null; guest?: boolean }) {
+export function CompanyDashboard({ plan, getToken, budgetEgp, guest = false, restored }: { plan: ValidatedPlan; getToken: () => Promise<string>; budgetEgp: number | null; guest?: boolean; restored?: { intake: Intake; state: CompanyState } }) {
   const ROLES = guest ? ALL_ROLES.filter((r) => GUEST_ROLES.includes(r)) : ALL_ROLES;
-  const [state, dispatch] = useReducer(reduce, ROLES, initState);
+  const [state, dispatch] = useReducer(reduce, ROLES, (r: string[]) => reduce(initState(r), { type: "load", state: restored?.state ?? {} }));
   const [open, setOpen] = useState<string | null>(null);
   const [note, setNote] = useState<string | null>(null);
-  const [intake, setIntake] = useState<Intake>({});
+  const [intake, setIntake] = useState<Intake>(restored?.intake ?? {});
+  const [saveNote, setSaveNote] = useState<string | null>(null);
+  const touched = useRef(false);
   const ready = intakeComplete(intake);
   const stop = useRef(false);
   const latest = useRef(state);
   useEffect(() => {
     latest.current = state;
   }, [state]);
+
+  // Signed-in users: autosave (debounced) once there is something worth keeping.
+  useEffect(() => {
+    if (guest) return;
+    const meaningful = Object.keys(intake).length > 0 || ROLES.some((r) => state[r]?.output !== undefined);
+    if (!meaningful || ROLES.some((r) => state[r]?.status === "running")) return;
+    if (!touched.current && restored) {
+      touched.current = true; // first render after a restore: nothing new to save
+      return;
+    }
+    touched.current = true;
+    const t = setTimeout(async () => {
+      try {
+        const token = await getToken();
+        const res = await fetch("/api/company/workspace", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+          body: JSON.stringify({ plan, intake, state: Object.fromEntries(ROLES.map((r) => [r, { status: state[r].status === "running" ? "idle" : state[r].status, output: state[r].output, warnings: state[r].warnings, error: state[r].error, stale: state[r].stale }])) }),
+        });
+        setSaveNote(res.ok ? "حُفظ تلقائياً." : "تعذّر الحفظ التلقائي. نزّل الخطة المجمّعة للاحتفاظ بنسخة.");
+      } catch {
+        setSaveNote("تعذّر الحفظ التلقائي. نزّل الخطة المجمّعة للاحتفاظ بنسخة.");
+      }
+    }, 1500);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state, intake]);
+
+  async function removeSaved() {
+    try {
+      const token = await getToken();
+      const res = await fetch("/api/company/workspace", { method: "DELETE", headers: { Authorization: `Bearer ${token}` } });
+      setSaveNote(res.ok ? "حُذفت مساحة العمل المحفوظة. ما في هذه الصفحة باقٍ حتى تغلقها." : "تعذّر الحذف.");
+    } catch {
+      setSaveNote("تعذّر الحذف.");
+    }
+  }
 
   async function call(role: string): Promise<Result> {
     const st = latest.current;
@@ -98,9 +138,11 @@ export function CompanyDashboard({ plan, getToken, budgetEgp, guest = false }: {
       <div className="flex flex-wrap items-center gap-3 mb-4">
         <span className="text-xs text-neutral-500">جاهز {sum.done + sum.approved} من {ROLES.length}، معتمد {sum.approved}</span>
         <button onClick={download} className="text-sm text-cyan-300 underline">نزّل الخطة المجمّعة (Markdown)</button>
+        {!guest && <button onClick={removeSaved} className="text-sm text-rose-300 underline">احذف مساحة العمل المحفوظة</button>}
+        {saveNote && <span className="text-xs text-neutral-400">{saveNote}</span>}
       </div>
       <p className="mb-3 text-xs text-neutral-400">
-        المراحل بالترتيب. لا يُفتح الدور التالي قبل أن تراجع الدور الحالي وتعتمده. إن أعدت توليد دور سابق صارت الأدوار اللاحقة قديمة وتحتاج إعادة توليد واعتماد.
+        المراحل بالترتيب. تُحفظ مساحة عمل واحدة لحسابك تلقائياً (البدء بخطة جديدة يستبدلها). لا يُفتح الدور التالي قبل أن تراجع الدور الحالي وتعتمده. إن أعدت توليد دور سابق صارت الأدوار اللاحقة قديمة وتحتاج إعادة توليد واعتماد.
         {plan.verdict === "stop" && " حكم التحقق كان «توقف»: راجع أسباب الحكم قبل المتابعة."}
       </p>
       {note && <p className="mb-3 text-sm text-amber-300">{note}</p>}

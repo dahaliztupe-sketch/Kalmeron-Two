@@ -1,5 +1,5 @@
 import { db } from "@/src/lib/firebase";
-import { adminAuth } from "@/src/lib/firebase-admin";
+import { adminAuth, adminDb } from "@/src/lib/firebase-admin";
 import { doc, collection, getDocs, writeBatch } from "firebase/firestore";
 import { NextRequest, NextResponse } from "next/server";
 import { rateLimit, rateLimitResponse } from "@/src/lib/security/rate-limit";
@@ -31,6 +31,17 @@ export async function POST(req: NextRequest) {
     userId = decoded.uid;
   } catch {
     return NextResponse.json({ error: "Invalid token" }, { status: 401 });
+  }
+
+  // Server-only collections (Admin SDK): saved company workspace and saved/shared plans.
+  try {
+    await adminDb.collection("company_workspaces").doc(userId).delete();
+    const plans = await adminDb.collection("validated_plans").where("userId", "==", userId).limit(500).get();
+    await Promise.all(plans.docs.map((d) => d.ref.delete()));
+  } catch (error: unknown) {
+    const { logger } = await import("@/src/lib/logger");
+    logger.error({ err: error, userId }, "Server-only data deletion error");
+    return NextResponse.json({ error: "حدث خطأ أثناء حذف البيانات" }, { status: 500 });
   }
 
   try {

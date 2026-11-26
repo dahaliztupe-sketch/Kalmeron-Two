@@ -68,9 +68,11 @@ export type Action =
   | { type: "done"; role: string; output: unknown; warnings: string[] }
   | { type: "fail"; role: string; error: string }
   | { type: "approve"; role: string }
-  | { type: "unapprove"; role: string };
+  | { type: "unapprove"; role: string }
+  | { type: "load"; state: CompanyState };
 
 export function reduce(s: CompanyState, a: Action): CompanyState {
+  if (a.type === "load") return { ...s, ...Object.fromEntries(Object.entries(a.state).filter(([r]) => r in s)) };
   const cur = s[a.role];
   if (!cur) return s;
   switch (a.type) {

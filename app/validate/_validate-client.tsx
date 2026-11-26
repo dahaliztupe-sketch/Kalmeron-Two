@@ -1,6 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import type { Intake } from "@/src/lib/company/intake";
+import type { CompanyState } from "@/src/lib/company/orchestrator";
 import Link from "next/link";
 import { Loader2 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
@@ -22,6 +24,27 @@ export default function ValidateClient({ initialIdea = "" }: { initialIdea?: str
   const [savedId, setSavedId] = useState<string | null>(null);
   const [fb, setFb] = useState<"up" | "down" | null>(null);
   const [budget, setBudget] = useState("");
+  type Saved = { plan: ValidatedPlan; intake: Intake; state: CompanyState };
+  const [saved, setSaved] = useState<Saved | null>(null);
+  const [restored, setRestored] = useState<Saved | null>(null);
+  useEffect(() => {
+    if (!user) return;
+    let off = false;
+    (async () => {
+      try {
+        const token = await user.getIdToken();
+        const res = await fetch("/api/company/workspace", { headers: { Authorization: `Bearer ${token}` } });
+        if (!res.ok) return;
+        const j = await res.json();
+        if (!off && j.workspace) setSaved(j.workspace as Saved);
+      } catch {
+        /* optional */
+      }
+    })();
+    return () => {
+      off = true;
+    };
+  }, [user]);
   async function sendFeedback(rating: "up" | "down") {
     if (!plan || fb) return;
     setFb(rating);
@@ -82,6 +105,7 @@ export default function ValidateClient({ initialIdea = "" }: { initialIdea?: str
     setLoading(true);
     setError(null);
     setPlan(null);
+    setRestored(null);
     setFallbackText(null);
     setShareUrl(null);
     setSavedId(null);
@@ -148,6 +172,12 @@ export default function ValidateClient({ initialIdea = "" }: { initialIdea?: str
           {loading ? "جارٍ التحليل..." : "حلّل فكرتي"}
         </button>
       </div>
+      {saved && !plan && (
+        <div className="mb-6 rounded-xl border border-white/10 bg-white/[0.03] p-4 text-sm text-neutral-200">
+          لديك مساحة عمل محفوظة: «{saved.plan.idea}».{" "}
+          <button onClick={() => { setPlan(saved.plan); setRestored(saved); }} className="underline text-cyan-300">تابع من حيث توقفت</button>
+        </div>
+      )}
       {error && <div role="alert" className="mb-6 rounded-xl border border-rose-500/30 bg-rose-500/10 p-4 text-rose-200 text-sm">{error}</div>}
       {plan && (
         <>
@@ -190,7 +220,7 @@ export default function ValidateClient({ initialIdea = "" }: { initialIdea?: str
                   aria-label="الميزانية بالجنيه"
                 />
               </div>
-              <CompanyDashboard plan={plan} getToken={() => user.getIdToken()} budgetEgp={budget.trim() !== "" && Number.isFinite(Number(budget)) ? Number(budget) : null} />
+              <CompanyDashboard key={restored ? "restored" : "new"} restored={restored ?? undefined} plan={plan} getToken={() => user.getIdToken()} budgetEgp={budget.trim() !== "" && Number.isFinite(Number(budget)) ? Number(budget) : null} />
             </>
           ) : (
             <>
