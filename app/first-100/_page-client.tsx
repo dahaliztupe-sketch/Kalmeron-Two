@@ -108,7 +108,7 @@ export default function First100Page() {
             className="inline-flex items-center gap-2 rounded-full border border-amber-500/30 bg-amber-500/10 px-4 py-1.5 text-amber-300 text-xs font-semibold mb-6"
           >
             <Trophy className="w-3.5 h-3.5" />
-            عرض محدود — ينتهي ببيع المقعد الـ100
+            عرض أوّل 100 شركة — يبدأ عند تفعيل الدفع
           </motion.div>
           <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4 leading-tight">
             <span className="bg-gradient-to-l from-cyan-300 via-indigo-300 to-violet-300 bg-clip-text text-transparent">
