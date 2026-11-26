@@ -13,7 +13,7 @@ export default function BillingPortalPage() {
   useEffect(() => {
     if (user === null) {
       // Not authenticated — send to login rather than infinite spinner
-      router.push("/login?next=/billing/portal");
+      router.push("/auth/login?next=/billing/portal");
       return;
     }
     if (!user) return; // Still loading (undefined)
@@ -52,7 +52,7 @@ export default function BillingPortalPage() {
           <h2 className="text-white font-bold text-lg mb-2">تعذّر الوصول</h2>
           <p className="text-neutral-400 text-sm mb-6">{error}</p>
           <a
-            href="/account/billing"
+            href="/settings?tab=billing"
             className="inline-block px-6 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-700 text-white text-sm font-bold transition-colors"
           >
             العودة للفوترة
