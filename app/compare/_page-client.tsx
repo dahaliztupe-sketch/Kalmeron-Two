@@ -7,11 +7,10 @@ import {
   CheckCircle2, XCircle, Minus, ArrowLeft, BarChart3, Target, Sparkles,
 } from "lucide-react";
 import { BrandLogo } from "@/components/brand/BrandLogo";
-import { RoiCalculator } from "@/components/marketing/RoiCalculator";
 import { TrustBadges } from "@/components/marketing/TrustBadges";
 
 const tools = [
-  { id: "kalmeron", name: "كلميرون", badge: "الأفضل قيمة", isKalmeron: true },
+  { id: "kalmeron", name: "كلميرون", badge: null, isKalmeron: true },
   { id: "consultants", name: "مستشارون", badge: null, isKalmeron: false },
   { id: "chatgpt", name: "ChatGPT", badge: null, isKalmeron: false },
   { id: "notion", name: "Notion + Sheets", badge: null, isKalmeron: false },
@@ -41,29 +40,12 @@ const ROWS: ComparisonRow[] = [
   { category: "الأعمال", feature: "مختبر سوق افتراضي (focus group AI)", kalmeron: true, consultants: false, chatgpt: false, notion: false, note: "حصري في كلميرون" },
   { category: "الأعمال", feature: "رادار الفرص والتمويل", kalmeron: true, consultants: false, chatgpt: false, notion: false, note: "تنبيهات فورية بالفرص المناسبة لك" },
   { category: "القانون والامتثال", feature: "عقود قانونية جاهزة للتخصيص", kalmeron: true, consultants: true, chatgpt: false, notion: false },
-  { category: "القانون والامتثال", feature: "متوافق مع قانون 151 المصري", kalmeron: true, consultants: true, chatgpt: false, notion: false },
   { category: "القانون والامتثال", feature: "إرشادات التأسيس والامتثال القانوني", kalmeron: true, consultants: true, chatgpt: "partial", notion: false },
   { category: "الحماية والمخاطر", feature: "حارس الأخطاء الاستباقي", kalmeron: true, consultants: "partial", chatgpt: false, notion: false, note: "يحذرك من الأخطاء قبل وقوعها" },
   { category: "الحماية والمخاطر", feature: "تحليل المخاطر القانونية والمالية", kalmeron: true, consultants: true, chatgpt: "partial", notion: false },
   { category: "الإنتاجية", feature: "متاح 24/7 بدون انتظار", kalmeron: true, consultants: false, chatgpt: true, notion: true },
   { category: "الإنتاجية", feature: "تقارير PDF جاهزة للمستثمر", kalmeron: true, consultants: true, chatgpt: false, notion: "partial" },
   { category: "الإنتاجية", feature: "تكامل مع الوثائق والملفات", kalmeron: true, consultants: false, chatgpt: "partial", notion: true },
-];
-
-const COST_COMPARISON = [
-  { item: "كلميرون (Pro)", monthly: "جزء بسيط من التكلفة", isKalmeron: true },
-  { item: "مستشار مالي", monthly: "$500 – $2,000 / شهر", isKalmeron: false },
-  { item: "محامي شركات", monthly: "$300 – $1,200 / شهر", isKalmeron: false },
-  { item: "محلل سوق", monthly: "$300 – $900 / شهر", isKalmeron: false },
-  { item: "الإجمالي (مستشارون)", monthly: "+$2,500 / شهر", isKalmeron: false },
-];
-
-const TIME_COMPARISON = [
-  { task: "تحليل فكرة واقتراح SWOT", kalmeron: "5 دقائق", traditional: "2-5 أيام" },
-  { task: "خطة عمل كاملة", kalmeron: "30 دقيقة", traditional: "2-4 أسابيع" },
-  { task: "نمذجة مالية أولية", kalmeron: "10 دقائق", traditional: "1-2 أسبوع" },
-  { task: "عقد شراكة مع بنود خاصة", kalmeron: "15 دقيقة", traditional: "3-7 أيام" },
-  { task: "بحث عن فرص تمويل مناسبة", kalmeron: "فوري", traditional: "أيام أو أسابيع" },
 ];
 
 function CellIcon({ value, isKalmeron }: { value: CellValue; isKalmeron?: boolean }) {
@@ -125,66 +107,10 @@ export default function ComparePage() {
         </motion.div>
       </section>
 
-      {/* Cost Comparison */}
-      <section className="px-4 py-10">
-        <div className="max-w-4xl mx-auto">
-          <h2 className="font-display text-2xl font-bold text-white text-center mb-2">مقارنة التكلفة الشهرية</h2>
-          <p className="text-neutral-500 text-sm text-center mb-6">توفير يصل إلى 97% مقارنة بالمستشارين التقليديين</p>
-          <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-5 gap-3">
-            {COST_COMPARISON.map((c, i) => (
-              <motion.div key={c.item}
-                initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.08 }}
-                className={`rounded-2xl border p-4 text-center ${c.isKalmeron ? "border-emerald-500/30 bg-emerald-500/5" : "border-white/10 bg-white/[0.02]"}`}
-              >
-                {c.isKalmeron && (
-                  <div className="text-[10px] text-emerald-400 font-medium mb-2 bg-emerald-400/10 px-2 py-0.5 rounded-full inline-block">الأفضل قيمة</div>
-                )}
-                <div className={`font-display text-lg font-extrabold mb-1 ${c.isKalmeron ? "text-emerald-400" : "text-rose-400"}`}>{c.monthly}</div>
-                <div className="text-xs text-neutral-400">{c.item}</div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ROI Calculator */}
-      <section className="px-4 py-10">
-        <div className="max-w-4xl mx-auto">
-          <h2 className="font-display text-2xl font-bold text-white text-center mb-2">
-            ROI شخصي حسب استخدامك
-          </h2>
-          <p className="text-neutral-500 text-sm text-center mb-6">
-            حرّك المؤشرات بالأرقام الحقيقية لمصاريفك وشوف توفيرك السنوي.
-          </p>
-          <RoiCalculator variant="full" />
-        </div>
-      </section>
-
       {/* Trust Badges */}
       <section className="px-4 py-6">
         <div className="max-w-4xl mx-auto">
           <TrustBadges />
-        </div>
-      </section>
-
-      {/* Time Comparison */}
-      <section className="px-4 py-10">
-        <div className="max-w-4xl mx-auto">
-          <h2 className="font-display text-2xl font-bold text-white text-center mb-6">مقارنة السرعة والوقت</h2>
-          <div className="rounded-3xl border border-white/10 overflow-hidden">
-            <div className="grid grid-cols-3 bg-white/[0.04] border-b border-white/10 p-4">
-              <div className="text-sm font-medium text-neutral-400">المهمة</div>
-              <div className="text-sm font-bold text-cyan-400 text-center">كلميرون ⚡</div>
-              <div className="text-sm text-neutral-400 text-center">الطريقة التقليدية</div>
-            </div>
-            {TIME_COMPARISON.map((row, i) => (
-              <div key={i} className={`grid grid-cols-3 p-4 border-b border-white/[0.04] last:border-0 ${i % 2 === 0 ? "" : "bg-white/[0.015]"}`}>
-                <div className="text-sm text-neutral-300">{row.task}</div>
-                <div className="text-sm font-bold text-emerald-400 text-center">{row.kalmeron}</div>
-                <div className="text-sm text-rose-400/80 text-center">{row.traditional}</div>
-              </div>
-            ))}
-          </div>
         </div>
       </section>
 
@@ -193,6 +119,7 @@ export default function ComparePage() {
         <div className="max-w-6xl mx-auto">
           <h2 className="font-display text-3xl font-bold text-white text-center mb-3">مقارنة شاملة بالميزات</h2>
           <p className="text-neutral-400 text-center mb-8 text-sm">اضغط على فئة لتصفية النتائج</p>
+          <p className="text-amber-300 text-center mb-6 text-xs">تنبيه: هذه مقارنة عامة أعدّها فريق كلميرون بلا اختبار مستقل، وبعض الميزات قيد التطوير أو لم تُراجَع جودتها. تحقق بنفسك قبل أي قرار.</p>
 
           {/* Category Filter */}
           <div className="flex flex-wrap items-center justify-center gap-2 mb-8">
