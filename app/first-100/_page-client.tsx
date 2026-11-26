@@ -195,6 +195,11 @@ export default function First100Page() {
           </div>
         </section>
 
+        {/* Payments status — honest activation notice (P1: no live payment rails yet) */}
+        <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 text-amber-200 text-sm px-4 py-3 mb-8 text-center max-w-2xl mx-auto">
+          بوّابات الدفع قيد التفعيل حالياً، لذا لا يمكن حجز المقاعد المدفوعة بعد. يمكنك إنشاء حسابك المجاني الآن، وسيُتاح العرض فور تفعيل الدفع.
+        </div>
+
         {/* CTA */}
         <div className="flex flex-col sm:flex-row gap-4 items-center justify-center mb-16">
           {closed ? (
@@ -206,7 +211,7 @@ export default function First100Page() {
               href="/auth/signup?plan=first100"
               className="rounded-full bg-gradient-to-l from-cyan-500 to-violet-500 px-8 py-4 text-white font-semibold hover:opacity-90 transition shadow-lg shadow-cyan-500/20"
             >
-              احجز مقعدك الآن — 9$/شهر
+              أنشئ حسابك المجاني
             </Link>
           )}
           <Link
