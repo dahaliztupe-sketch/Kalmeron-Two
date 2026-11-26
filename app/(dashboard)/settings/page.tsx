@@ -216,7 +216,7 @@ function SettingsPageInner() {
         body: JSON.stringify({}),
       });
       if (res.ok) {
-        toast.success("تم حذف حسابك بنجاح.");
+        toast.success("تم حذف بياناتك المحفوظة. حساب الدخول نفسه لا يُحذف بهذا الإجراء.");
         await signOut();
         router.push("/");
       } else {
