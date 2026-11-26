@@ -5,6 +5,9 @@
  */
 export const ROLE_ORDER = ["marketing", "sales", "finance", "product", "legal", "ops"] as const;
 
+/** Roles a signed-out visitor may try: one role, cheaper model, global daily cap (see /api/company/role). */
+export const GUEST_ROLES: string[] = ["marketing"];
+
 export const ROLE_LABELS_AR: Record<string, string> = {
   marketing: "التسويق",
   sales: "المبيعات",

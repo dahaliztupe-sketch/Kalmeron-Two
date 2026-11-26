@@ -7,6 +7,8 @@ vi.mock("@/src/lib/gemini", () => ({ ai: { models: { generateContent: (a: unknow
 vi.mock("@/src/lib/firebase-admin", () => ({ adminAuth: { verifyIdToken: (t: string) => verify(t) } }));
 vi.mock("@/src/lib/security/rate-limit", () => ({ rateLimit: () => ({ success: true }), rateLimitResponse: () => new Response("rl", { status: 429 }) }));
 vi.mock("@/src/lib/logger", () => ({ logger: { warn: vi.fn(), error: vi.fn(), info: vi.fn() } }));
+let guestAllowed = true;
+vi.mock("@/src/lib/plan/guest-cap", () => ({ consumeGuestQuota: async () => guestAllowed }));
 import { POST } from "@/app/api/company/role/route";
 
 const plan = {
@@ -26,9 +28,34 @@ const req = (body: unknown, auth = "Bearer t") =>
 
 describe("/api/company/role", () => {
   beforeEach(() => { generate.mockReset(); verify.mockReset(); verify.mockResolvedValue({ uid: "u" }); });
-  it("requires sign-in", async () => {
-    expect((await POST(req({ role: "marketing", plan }, ""))).status).toBe(401);
+  it("guests cannot run roles other than marketing", async () => {
+    expect((await POST(req({ role: "finance", plan }, ""))).status).toBe(401);
     expect(generate).not.toHaveBeenCalled();
+  });
+  it("a bad token is refused, not downgraded to guest", async () => {
+    verify.mockRejectedValueOnce(new Error("bad"));
+    expect((await POST(req({ role: "marketing", plan }))).status).toBe(401);
+    expect(generate).not.toHaveBeenCalled();
+  });
+  it("guest marketing works on the flash model; context is ignored", async () => {
+    guestAllowed = true;
+    generate.mockResolvedValueOnce({ text: JSON.stringify(out) });
+    const res = await POST(req({ role: "marketing", plan, context: { sales: { x: 1 } } }, ""));
+    expect(res.status).toBe(200);
+    expect(generate.mock.calls[0][0].model).toBe("gemini-2.5-flash");
+  });
+  it("guest over the daily cap gets 429 before any model call", async () => {
+    guestAllowed = false;
+    const res = await POST(req({ role: "marketing", plan }, ""));
+    expect(res.status).toBe(429);
+    expect((await res.json()).error).toBe("guest_cap");
+    expect(generate).not.toHaveBeenCalled();
+    guestAllowed = true;
+  });
+  it("signed-in users use the pro model", async () => {
+    generate.mockResolvedValueOnce({ text: JSON.stringify(out) });
+    await POST(req({ role: "marketing", plan }));
+    expect(generate.mock.calls[0][0].model).toBe("gemini-2.5-pro");
   });
   it("rejects unknown roles and bad plans", async () => {
     expect((await POST(req({ role: "ceo", plan }))).status).toBe(400);

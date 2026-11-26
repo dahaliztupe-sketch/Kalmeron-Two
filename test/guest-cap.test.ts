@@ -15,7 +15,7 @@ vi.mock("@/src/lib/firebase-admin", () => ({
   },
 }));
 
-import { consumeGuestQuota, GUEST_DAILY_CAP, dayKey } from "@/src/lib/plan/guest-cap";
+import { consumeGuestQuota, GUEST_DAILY_CAP, GUEST_ROLE_DAILY_CAP, dayKey } from "@/src/lib/plan/guest-cap";
 
 describe("guest quota", () => {
   beforeEach(() => { docData = undefined; fail = false; });
@@ -23,6 +23,11 @@ describe("guest quota", () => {
     docData = { count: GUEST_DAILY_CAP - 1 };
     expect(await consumeGuestQuota()).toBe(true);
     expect(await consumeGuestQuota()).toBe(false);
+  });
+  it("role quota has its own cap", async () => {
+    docData = { count: GUEST_ROLE_DAILY_CAP - 1 };
+    expect(await consumeGuestQuota(new Date(), "roles")).toBe(true);
+    expect(await consumeGuestQuota(new Date(), "roles")).toBe(false);
   });
   it("fails closed when the counter is unavailable", async () => {
     fail = true;

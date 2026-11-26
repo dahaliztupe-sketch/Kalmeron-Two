@@ -8,6 +8,8 @@ import { ValidatedPlanSchema } from "@/src/lib/plan/validated-plan";
 import { briefFromPlan, ConstraintsSchema } from "@/src/lib/company/brief";
 import { runRole, type Generate } from "@/src/lib/company/run-role";
 import { ROLES, isRoleId } from "@/src/lib/company/roles/registry";
+import { GUEST_ROLES } from "@/src/lib/company/orchestrator";
+import { consumeGuestQuota } from "@/src/lib/plan/guest-cap";
 import { buildContextBlock } from "@/src/lib/company/context";
 
 export const runtime = "nodejs";
@@ -20,17 +22,21 @@ const Body = z.object({
   context: z.record(z.string(), z.unknown()).optional(),
 });
 
-/** POST /api/company/role — run one role agent on a validated plan. Signed-in only (model cost). */
+/** POST /api/company/role — run one role agent on a validated plan. Signed-in users: all roles. Guests: GUEST_ROLES, capped. */
 export async function POST(req: NextRequest) {
   const auth = req.headers.get("Authorization");
-  if (!auth?.startsWith("Bearer ")) return NextResponse.json({ error: "auth_required" }, { status: 401 });
-  let uid: string;
-  try {
-    uid = (await adminAuth.verifyIdToken(auth.slice(7).trim())).uid;
-  } catch {
-    return NextResponse.json({ error: "auth_required" }, { status: 401 });
+  let uid: string | null = null;
+  if (auth?.startsWith("Bearer ")) {
+    try {
+      uid = (await adminAuth.verifyIdToken(auth.slice(7).trim())).uid;
+    } catch {
+      return NextResponse.json({ error: "auth_required" }, { status: 401 });
+    }
   }
-  const rl = rateLimit(req, { limit: 5, windowMs: 60_000, userId: uid, scope: "user" });
+  const isGuest = uid === null;
+  const rl = isGuest
+    ? rateLimit(req, { limit: 2, windowMs: 60_000, scope: "guest" })
+    : rateLimit(req, { limit: 5, windowMs: 60_000, userId: uid!, scope: "user" });
   if (!rl.success) return rateLimitResponse();
 
   let json: unknown;
@@ -42,11 +48,18 @@ export async function POST(req: NextRequest) {
   const parsed = Body.safeParse(json);
   if (!parsed.success) return NextResponse.json({ error: "invalid_request" }, { status: 400 });
   if (!isRoleId(parsed.data.role)) return NextResponse.json({ error: "unknown_role" }, { status: 400 });
+  if (isGuest) {
+    if (!GUEST_ROLES.includes(parsed.data.role)) return NextResponse.json({ error: "auth_required" }, { status: 401 });
+    // Cap before the model call: spend is bounded even if the counter store is down (fails closed).
+    if (!(await consumeGuestQuota(new Date(), "roles"))) {
+      return NextResponse.json({ error: "guest_cap", message: "Daily free limit reached. Sign in to continue." }, { status: 429 });
+    }
+  }
 
   const brief = briefFromPlan(parsed.data.plan, parsed.data.constraints ?? {});
   const generate: Generate = async (system, prompt) => {
     const r = await ai.models.generateContent({
-      model: "gemini-2.5-pro",
+      model: isGuest ? "gemini-2.5-flash" : "gemini-2.5-pro",
       contents: prompt,
       config: { systemInstruction: system, responseMimeType: "application/json" },
     });
@@ -54,7 +67,7 @@ export async function POST(req: NextRequest) {
   };
   try {
     const spec = ROLES[parsed.data.role];
-    const ctx = buildContextBlock(parsed.data.role, parsed.data.context);
+    const ctx = buildContextBlock(parsed.data.role, isGuest ? undefined : parsed.data.context);
     const run = await runRole(spec as never, brief, generate, 2, ctx.block);
     if (!run.ok) {
       logger.warn({ event: "company_role_failed", role: parsed.data.role, error: run.error }, "company_role_failed");
