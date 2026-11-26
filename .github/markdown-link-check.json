@@ -6,7 +6,9 @@
     { "pattern": "^https://127.0.0.1" },
     { "pattern": "^https://example.com" },
     { "pattern": "^https://your-" },
-    { "pattern": "^mailto:" }
+    { "pattern": "^mailto:" },
+    { "pattern": "^https://console.cloud.google.com" },
+    { "pattern": "^https://vercel.com/dashboard" }
   ],
   "replacementPatterns": [],
   "httpHeaders": [
