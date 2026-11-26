@@ -1,9 +1,10 @@
 "use client";
-import { useReducer, useRef, useState } from "react";
+import { useEffect, useReducer, useRef, useState } from "react";
 import type { ValidatedPlan } from "@/src/lib/plan/validated-plan";
 import { MarketingView } from "@/components/plan/MarketingView";
 import type { MarketingPlan } from "@/src/lib/company/roles/marketing";
 import { RoleOutputView } from "./RoleOutputView";
+import { DEPENDS_ON } from "@/src/lib/company/context";
 import { ROLE_LABELS_AR, initState, nextPending, orderedRoles, reduce, summary } from "@/src/lib/company/orchestrator";
 
 const ROLES = orderedRoles(["marketing", "sales", "finance", "product", "legal", "ops"]);
@@ -17,14 +18,24 @@ export function CompanyDashboard({ plan, getToken, budgetEgp }: { plan: Validate
   const [note, setNote] = useState<string | null>(null);
   const [busyAll, setBusyAll] = useState(false);
   const stop = useRef(false);
+  const latest = useRef(state);
+  useEffect(() => {
+    latest.current = state;
+  }, [state]);
 
   async function call(role: string): Promise<Result> {
+    const st = latest.current;
     try {
+      const context: Record<string, unknown> = {};
+      for (const dep of DEPENDS_ON[role] ?? []) {
+        const d = st[dep];
+        if (d && (d.status === "done" || d.status === "approved") && d.output != null) context[dep] = d.output;
+      }
       const token = await getToken();
       const res = await fetch("/api/company/role", {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ role, plan, constraints: { budgetEgp, days: 30 } }),
+        body: JSON.stringify({ role, plan, constraints: { budgetEgp, days: 30 }, context }),
       });
       if (res.status === 429) return { ok: false, rate: true };
       if (!res.ok) return { ok: false, rate: false };
@@ -63,8 +74,7 @@ export function CompanyDashboard({ plan, getToken, budgetEgp }: { plan: Validate
     while (cur && !stop.current && !seen.has(cur)) {
       seen.add(cur);
       await runRole(cur);
-      // state in this closure is stale: pick the next idle role not yet attempted in this run
-      cur = ROLES.find((r) => !seen.has(r) && state[r].status !== "done" && state[r].status !== "approved") ?? null;
+      cur = ROLES.find((r) => !seen.has(r) && latest.current[r].status !== "done" && latest.current[r].status !== "approved") ?? null;
     }
     setNote(null);
     setBusyAll(false);

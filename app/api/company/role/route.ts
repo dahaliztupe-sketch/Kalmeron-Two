@@ -8,6 +8,7 @@ import { ValidatedPlanSchema } from "@/src/lib/plan/validated-plan";
 import { briefFromPlan, ConstraintsSchema } from "@/src/lib/company/brief";
 import { runRole, type Generate } from "@/src/lib/company/run-role";
 import { ROLES, isRoleId } from "@/src/lib/company/roles/registry";
+import { buildContextBlock } from "@/src/lib/company/context";
 
 export const runtime = "nodejs";
 
@@ -15,6 +16,8 @@ const Body = z.object({
   role: z.string(),
   plan: ValidatedPlanSchema,
   constraints: ConstraintsSchema.partial().optional(),
+  /** Earlier role outputs, keyed by role id. Re-validated server-side; invalid ones are dropped. */
+  context: z.record(z.string(), z.unknown()).optional(),
 });
 
 /** POST /api/company/role — run one role agent on a validated plan. Signed-in only (model cost). */
@@ -51,7 +54,8 @@ export async function POST(req: NextRequest) {
   };
   try {
     const spec = ROLES[parsed.data.role];
-    const run = await runRole(spec as never, brief, generate);
+    const ctx = buildContextBlock(parsed.data.role, parsed.data.context);
+    const run = await runRole(spec as never, brief, generate, 2, ctx.block);
     if (!run.ok) {
       logger.warn({ event: "company_role_failed", role: parsed.data.role, error: run.error }, "company_role_failed");
       return NextResponse.json({ error: run.error, issues: run.issues }, { status: 502 });

@@ -40,3 +40,43 @@ describe("orchestrator", () => {
     expect(s.marketing.warnings).toEqual([]);
   });
 });
+
+import { buildContextBlock, DEPENDS_ON } from "@/src/lib/company/context";
+import { SalesPlanSchema } from "@/src/lib/company/roles/sales";
+
+const goodSales = {
+  idealCustomer: "صاحب صيدلية",
+  prospectGroups: [{ name: "أ", howToReach: "ب", consentBasis: "referral", basis: "assumption" }],
+  discoveryQuestions: ["a1", "a2", "a3", "a4", "a5"],
+  outreachDrafts: [{ group: "أ", text: "مرحباً" }],
+  stages: [{ name: "1", exitCriteria: "x" }, { name: "2", exitCriteria: "x" }, { name: "3", exitCriteria: "x" }],
+  followUp: ["f"],
+  objections: [],
+  metrics: [{ name: "m", target: "1", basis: "assumption" }, { name: "n", target: "2", basis: "assumption" }],
+  handoff: [],
+};
+
+describe("role-to-role context", () => {
+  it("every dependency is a registered role and goes earlier in the roadmap", () => {
+    const order = orderedRoles(Object.keys(ROLES));
+    for (const [role, deps] of Object.entries(DEPENDS_ON)) {
+      for (const d of deps) expect(order.indexOf(d)).toBeLessThan(order.indexOf(role));
+    }
+  });
+  it("passes only schema-valid prior outputs and labels them as data", () => {
+    expect(SalesPlanSchema.safeParse(goodSales).success).toBe(true);
+    const ok = buildContextBlock("product", { sales: goodSales });
+    expect(ok.used).toEqual(["sales"]);
+    expect(ok.block).toContain("بيانات");
+  });
+  it("drops invalid, unrelated or missing prior outputs", () => {
+    expect(buildContextBlock("product", { sales: { junk: 1 } }).used).toEqual([]);
+    expect(buildContextBlock("product", { marketing: goodSales }).used).toEqual([]);
+    expect(buildContextBlock("product", undefined).block).toBe("");
+    expect(buildContextBlock("marketing", { sales: goodSales }).used).toEqual([]);
+  });
+  it("caps each prior output length", () => {
+    const long = { ...goodSales, idealCustomer: "ك".repeat(390), followUp: ["ف".repeat(190), "ف".repeat(190), "ف".repeat(190), "ف".repeat(190), "ف".repeat(190)] };
+    expect(buildContextBlock("product", { sales: long }).block.length).toBeLessThan(2900);
+  });
+});

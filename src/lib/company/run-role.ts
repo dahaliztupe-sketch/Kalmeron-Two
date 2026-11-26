@@ -14,8 +14,8 @@ export type Generate = (system: string, prompt: string) => Promise<string>;
  * stays "unverified": automated checks are not a substitute for a human
  * reading real outputs.
  */
-export async function runRole<T>(spec: RoleSpec<T>, brief: CompanyBrief, generate: Generate, maxAttempts = 2): Promise<RoleRun<T>> {
-  const base = `ملخص الشركة:\n${briefToPromptBlock(brief)}\n\nأعد كائن JSON بهذا الشكل بالضبط:\n${spec.outputShape}`;
+export async function runRole<T>(spec: RoleSpec<T>, brief: CompanyBrief, generate: Generate, maxAttempts = 2, extraContext = ""): Promise<RoleRun<T>> {
+  const base = `ملخص الشركة:\n${briefToPromptBlock(brief)}${extraContext}\n\nأعد كائن JSON بهذا الشكل بالضبط:\n${spec.outputShape}`;
   let feedback = "";
   let lastIssues: Issue[] = [];
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
