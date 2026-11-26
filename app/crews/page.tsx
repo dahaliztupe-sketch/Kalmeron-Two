@@ -15,7 +15,7 @@ const CREWS = [
     href: "/crews/finance",
     title: "Finance Crew",
     titleAr: "الفريق المالي",
-    price: "499$ / شهرياً",
+    price: "السعر لم يُحدد بعد",
     blurb:
       "خمسة مساعدين ماليين متخصصين (CFO، FP&A، ضرائب، Cap Table، حزمة المستثمر) يعملون كفريقك المالي الافتراضي.",
     available: true,
