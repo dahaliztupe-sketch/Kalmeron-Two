@@ -51,6 +51,15 @@ export const MARKETING_KNOWLEDGE: RoleKnowledge = {
       status: "secondary",
     },
     {
+      id: "eg-fb-reach",
+      ruleAr: "فيسبوك ما زال القناة الأوسع وصولاً في مصر: نحو 51 مليون وصول إعلاني محتمل في أواخر 2026 (أرقام أدوات ميتا الإعلانية، وهي وصول محتمل لا أشخاص فعليون، وانخفض قليلاً خلال 2026). لا تستخدم الرقم كحجم سوق.",
+      sourceUrl: "https://datareportal.com/reports/digital-2027-egypt",
+      sourceTitle: "DataReportal: Digital 2027 Egypt",
+      sourceDate: "2026-11-05",
+      reviewedOn: "2026-11-26",
+      status: "secondary",
+    },
+    {
       id: "gtm-first-customers",
       ruleAr: "خطط الوصول لأول العملاء تبدأ بتحديد عميل محدد ورسالة واحدة وقناة أو اثنتين، ثم قياس أسبوعي. (مصدر ثانوي، لم يُتحقق من أرقامه)",
       sourceUrl: "https://www.figue.ai/en/blog/saas-go-to-market-plan",
