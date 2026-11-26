@@ -42,6 +42,12 @@ describe("legal (Egypt) role", () => {
     expect(codes({ ...good, steps: [{ ...step(1), title: "سأقدم الطلب" }, step(2), step(3)] })).toContain("acts_outside_role");
     expect(codes({ ...good, steps: [{ ...step(1), title: "رأي قانوني: مناسب" }, step(2), step(3)] })).toContain("claims_legal_advice");
   });
+  it("warns when commercial registry or tax registration steps are missing", () => {
+    const noTax = { ...good, steps: [{ ...step(1), authority: "GAFI", title: "تأسيس" }, { ...step(2), authority: "GAFI", title: "عقد" }, { ...step(3), authority: "GAFI", title: "إيداع" }] };
+    const c = codes(noTax);
+    expect(c).toContain("missing_commercial_registry");
+    expect(c).toContain("missing_tax_registration");
+  });
   it("flags step order and fees over budget", () => {
     expect(codes({ ...good, steps: [step(2), step(1), step(3)] })).toContain("step_order");
     const fee = { ...good, steps: [{ ...step(1), feeEgp: 5000 }, step(2), step(3)] };
@@ -74,6 +80,8 @@ describe("legal golden cases", () => {
         { ...step(1), title: "حجز اسم الشركة وشهادة عدم التشابه", sourceNote: "دليل GAFI الإنجليزي (ترجمة، النص العربي يسود)" },
         { ...step(2), title: "خطاب البنك بإيداع رأس المال", authority: "بنك", documents: ["صورة البطاقة"] },
         { ...step(3), title: "تصديق عقد التأسيس عبر مركز خدمة المستثمرين", authority: "GAFI", feeEgp: null },
+        { ...step(4), title: "القيد في السجل التجاري", authority: "السجل التجاري", sourceStatus: "primary_read", sourceNote: "الهيئة: دليل السجل التجاري ITDA (gov.eg)" },
+        { ...step(5), title: "التسجيل الضريبي", authority: "مصلحة الضرائب", sourceStatus: "secondary", sourceNote: "موقع مصلحة الضرائب" },
       ],
       needsLicenceCheck: ["هل النشاط يحتاج موافقة جهة مختصة"],
       consultProfessional: DISCLAIMER_AR,

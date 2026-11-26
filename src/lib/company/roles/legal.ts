@@ -62,6 +62,9 @@ export function legalChecks(out: LegalPlan, brief: { constraints: { budgetEgp: n
   if (out.steps.some((s) => s.sourceStatus === "primary_read" && !/^https:\/\//.test(s.sourceNote) && !/(GAFI|الهيئة|gov\.eg|قانون)/i.test(s.sourceNote))) {
     issues.push({ level: "warn", code: "primary_claim_unnamed", message: "مصدر رسمي مذكور بلا اسم جهة أو قانون." });
   }
+  const stepText = out.steps.map((x) => `${x.title} ${x.authority}`).join(" ");
+  if (!/(السجل التجاري|Commercial Regist)/i.test(stepText)) issues.push({ level: "warn", code: "missing_commercial_registry", message: "لا توجد خطوة للقيد في السجل التجاري." });
+  if (!/(ضريب|Tax)/i.test(stepText)) issues.push({ level: "warn", code: "missing_tax_registration", message: "لا توجد خطوة للتسجيل الضريبي (مصلحة الضرائب). النشاط قد يحتاج بطاقة ضريبية أو تسجيل قيمة مضافة: needs_check." });
   const orders = out.steps.map((s) => s.order);
   if (orders.some((o, i) => i > 0 && o <= orders[i - 1])) issues.push({ level: "error", code: "step_order", message: "ترتيب الخطوات غير تصاعدي." });
   const prose = [...out.entityOptions.map((e) => e.fitReason), ...out.steps.flatMap((s) => [s.title, s.sourceNote, ...s.documents])];
@@ -87,6 +90,7 @@ ${knowledgePrompt(LEGAL_KNOWLEDGE, new Date())}
 - ابدأ بحقل disclaimer يذكر أن المحتوى ليس استشارة قانونية.
 - 1 إلى 4 خيارات للشكل القانوني مع سبب الملاءمة؛ إن لم تكفِ المعلومات فاكتب needs_check.
 - 3 إلى 20 خطوة مرتبة، لكل خطوة الجهة والمستندات والمصدر. كل رسم أو شرط أو حد أدنى basis: needs_check، وsourceStatus: primary_read فقط لما ورد في المعرفة أعلاه من مصدر رسمي قُرئ، وإلا secondary أو unverified.
+- أدرج خطوة القيد في السجل التجاري وخطوة التسجيل الضريبي (مصلحة الضرائب)، وكل ما يخص الحدود والنسب needs_check.
 - لا تخترع رسوماً أو مواعيد. إن لم تعرف الرقم اجعل feeEgp فارغاً (null).
 - اذكر الأنشطة التي قد تحتاج ترخيصاً خاصاً في needsLicenceCheck دون تخمين.
 - أنهِ بحقل consultProfessional يوصي باستشارة محامٍ أو محاسب مرخص.
