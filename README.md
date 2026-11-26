@@ -29,6 +29,8 @@
 
 </div>
 
+> **Project status (Nov 2026):** early-stage and built with AI-assisted tooling. Chat and Google sign-in work in production; payments, email, scheduled jobs, monitoring and the Python services (PDF, tax calculator) require configuration and are not all live. Feature lists below describe what the code contains, not what is verified live. **حالة المشروع:** مرحلة مبكرة، بُني بمساعدة أدوات الذكاء الاصطناعي. الدردشة وتسجيل الدخول يعملان؛ الدفع والبريد والمهام المجدولة والمراقبة والخدمات الجانبية تحتاج ضبطاً ولم تُفعَّل كلها.
+
 ---
 
 ## 🇪🇬 بالعربية
@@ -46,14 +48,14 @@
 | 📄 **معالجة PDF عربي** | استخراج، تلخيص، توقيع رقمي، تقارير بالعربية |
 | 🔍 **بحث دلالي متعدد اللغات** | embeddings محلية سريعة بدون اتصال خارجي |
 | 💳 **مدفوعات مدمجة** | Fawry للسوق المصري + Stripe للسوق العالمي (الكود جاهز ويعمل بعد ضبط مفاتيح التاجر) |
-| 🛡️ **أمان من الدرجة الأولى** | CodeQL، Semgrep، Trivy، OSV، Scorecard، Gitleaks |
-| 📊 **رصد إنتاجي كامل** | Sentry + Langfuse + OpenTelemetry |
+| 🛡️ **فحوص أمان في CI** | CodeQL، Semgrep، Trivy، OSV، Scorecard، Gitleaks |
+| 📊 **مراقبة (تحتاج ضبط مفاتيح)** | Sentry + Langfuse + OpenTelemetry |
 
 ---
 
 ## 🌍 English
 
-**Kalmeron** is a production-grade AI operations hub purpose-built for Arabic-speaking founders. Instead of paying thousands per month for separate advisors, you get **57 specialized AI agents** working as one cohesive founding team — in fluent Modern Standard Arabic and Egyptian dialect, 24/7.
+**Kalmeron** is an early-stage AI operations hub purpose-built for Arabic-speaking founders. Instead of paying thousands per month for separate advisors, you get **57 AI agent definitions** (the number in the code; quality per agent is not independently evaluated) — in fluent Modern Standard Arabic and Egyptian dialect, 24/7.
 
 ### Core Features
 
@@ -64,8 +66,8 @@
 - **Arabic PDF pipeline** — extract, summarize, sign, and generate reports natively in Arabic
 - **Multilingual semantic search** — local embeddings with no external round-trips
 - **Integrated payments** — Fawry (Egypt) + Stripe (global), code-complete and gated behind merchant keys
-- **Production security** — CodeQL, Semgrep, Trivy, OSV-Scanner, Gitleaks, OpenSSF Scorecard
-- **Full observability** — Sentry error tracking, Langfuse LLM tracing, OpenTelemetry metrics
+- **Security scanning in CI** — CodeQL, Semgrep, Trivy, OSV-Scanner, Gitleaks, OpenSSF Scorecard
+- **Observability (needs keys configured)** — Sentry error tracking, Langfuse LLM tracing, OpenTelemetry metrics
 
 ---
 

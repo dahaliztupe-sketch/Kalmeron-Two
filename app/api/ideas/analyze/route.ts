@@ -4,6 +4,14 @@ import { rateLimit, rateLimitResponse } from '@/src/lib/security/rate-limit';
 import { adminAuth } from '@/src/lib/firebase-admin';
 import { logger } from '@/src/lib/logger';
 import xss from 'xss';
+import { parseValidatedPlan, planToMarkdown } from '@/src/lib/plan/validated-plan';
+
+const PLAN_PROMPT = (idea: string, industry: string, stage: string) => `You are validating a startup idea for the Egyptian market. Be critical, not flattering.
+Idea: "${idea}"
+Industry: ${industry || 'unspecified'}. Stage: ${stage || 'unspecified'}.
+Return ONLY one JSON object, no prose, with exactly these keys:
+{"idea":string,"verdict":"proceed"|"refine"|"stop","verdictReason":string,"swot":{"strengths":[{"text":string,"basis":"assumption"|"user_fact"|"needs_check"}],"weaknesses":[...],"opportunities":[...],"threats":[...]},"targetCustomer":string,"competitors":[{"name":string,"note":string}],"risks":[{"text":string,"basis":...}],"nextSteps":[{"action":string,"costEgp":number|null,"days":integer}]}
+Rules: all text in Arabic. Use basis "user_fact" only for things stated in the idea text, otherwise "assumption" or "needs_check". Do not invent statistics, market sizes or competitor revenue. 1 to 7 next steps, each doable in under 30 days.`;
 
 /**
  * Soft auth: same pattern as /api/council. Guests get a stricter rate
@@ -43,6 +51,24 @@ export async function POST(request: NextRequest) {
 
     if (!ideaDesc || typeof ideaDesc !== 'string' || !ideaDesc.trim()) {
       return NextResponse.json({ error: 'ideaDesc is required' }, { status: 400 });
+    }
+
+    if (body.format === 'plan') {
+      try {
+        const planResp = await ai.models.generateContent({
+          model: 'gemini-2.5-pro',
+          contents: PLAN_PROMPT(ideaDesc, industry, startup_stage),
+          config: { responseMimeType: 'application/json' },
+        });
+        const parsed = parseValidatedPlan(planResp.text || '');
+        if (parsed.ok) {
+          return NextResponse.json({ result: planToMarkdown(parsed.plan), plan: parsed.plan });
+        }
+        logger.warn({ event: 'ideas_plan_parse_failed', reason: parsed.error }, 'ideas_plan_parse_failed');
+      } catch (err) {
+        logger.warn({ err, event: 'ideas_plan_call_failed' }, 'ideas_plan_call_failed');
+      }
+      // Fall through to the free-form markdown analysis below.
     }
 
     const response = await ai.models.generateContent({
