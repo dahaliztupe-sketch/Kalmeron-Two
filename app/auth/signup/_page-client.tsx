@@ -3,6 +3,7 @@
 import { Suspense, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
+import { readSafeNextPath, withNextParam } from "@/src/lib/auth/next-path";
 import { motion, useReducedMotion } from "motion/react";
 import { Loader2, Globe, Check, ArrowLeft } from "lucide-react";
 import Link from "next/link";
@@ -19,6 +20,13 @@ const PERKS = [
 export default function SignUpPage() {
   const { user, dbUser, loading, dbUserLoading, signInWithGoogle } = useAuth();
   const router = useRouter();
+  // Suffix for the login cross-link: carries the `next` target so the
+  // intended destination survives switching between signup and login.
+  const [nextSuffix, setNextSuffix] = useState("");
+  useEffect(() => {
+    const n = readSafeNextPath();
+    if (n) setNextSuffix(`?next=${encodeURIComponent(n)}`);
+  }, []);
   const reduce = useReducedMotion();
   const [signingIn, setSigningIn] = useState(false);
 
@@ -45,16 +53,18 @@ export default function SignUpPage() {
   useEffect(() => {
     if (loading || !user) return;
     if (navigated.current) return;
+    const next = readSafeNextPath();
     if (!dbUserLoading && dbUser && dbUser.profile_completed) {
-      // Existing user signed in via signup page — send straight to dashboard.
+      // Existing user signed in via signup page — send to their intended
+      // destination (e.g. /chat?q=... from the landing hero) or dashboard.
       navigated.current = true;
-      router.replace("/dashboard");
+      router.replace(next ?? "/dashboard");
     } else if (!dbUserLoading) {
       // New user (profile_completed=false) or fetch failed (dbUser=null).
       // Default to /onboarding — the onboarding page will bounce an
-      // already-onboarded user to /dashboard if needed.
+      // already-onboarded user onward if needed. `next` rides along.
       navigated.current = true;
-      router.replace("/onboarding");
+      router.replace(next ? withNextParam("/onboarding", next) : "/onboarding");
     }
     // Still waiting for Firestore fetch → wait for next fire
   }, [user, dbUser, loading, dbUserLoading, router]);
@@ -140,7 +150,7 @@ export default function SignUpPage() {
 
           <p className="text-neutral-400 text-sm">
             لديك حساب بالفعل؟{" "}
-            <Link href="/auth/login" className="text-cyan-300 hover:text-cyan-200 hover:underline font-bold">
+            <Link href={`/auth/login${nextSuffix}`} className="text-cyan-300 hover:text-cyan-200 hover:underline font-bold">
               سجّل دخولك
             </Link>
           </p>
