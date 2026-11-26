@@ -20,13 +20,7 @@ const PERKS = [
 export default function SignUpPage() {
   const { user, dbUser, loading, dbUserLoading, signInWithGoogle } = useAuth();
   const router = useRouter();
-  // Suffix for the login cross-link: carries the `next` target so the
-  // intended destination survives switching between signup and login.
-  const [nextSuffix, setNextSuffix] = useState("");
-  useEffect(() => {
-    const n = readSafeNextPath();
-    if (n) setNextSuffix(`?next=${encodeURIComponent(n)}`);
-  }, []);
+
   const reduce = useReducedMotion();
   const [signingIn, setSigningIn] = useState(false);
 
@@ -150,7 +144,18 @@ export default function SignUpPage() {
 
           <p className="text-neutral-400 text-sm">
             لديك حساب بالفعل؟{" "}
-            <Link href={`/auth/login${nextSuffix}`} className="text-cyan-300 hover:text-cyan-200 hover:underline font-bold">
+            <Link
+              href="/auth/login"
+              onClick={(e) => {
+                // Carry the intended destination across to login, if any.
+                const n = readSafeNextPath();
+                if (n) {
+                  e.preventDefault();
+                  router.push(withNextParam("/auth/login", n));
+                }
+              }}
+              className="text-cyan-300 hover:text-cyan-200 hover:underline font-bold"
+            >
               سجّل دخولك
             </Link>
           </p>
