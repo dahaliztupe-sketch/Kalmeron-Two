@@ -5,7 +5,7 @@
  *
  * تجربة من خطوتين:
  * 1. شاشة ترحيب أنيقة مع تحية شخصية (إن سُجِّل المستخدم) و suggested prompts
- * 2. عند الكتابة أو اختيار اقتراح → ينتقل بسلاسة إلى /dashboard/chat?initial=...
+ * 2. عند الكتابة أو اختيار اقتراح → ينتقل بسلاسة إلى /chat?q=...
  *
  * استخدام animate presence من motion/react لانتقال smooth fade + slide.
  */
@@ -82,7 +82,7 @@ export default function StartClient() {
     if (!text) return;
     setIsLeaving(true);
     startTransition(() => {
-      const url = `/dashboard/chat?q=${encodeURIComponent(text)}`;
+      const url = `/chat?q=${encodeURIComponent(text)}`;
       // delay a frame so exit animation can play
       setTimeout(() => router.push(url), 350);
     });
