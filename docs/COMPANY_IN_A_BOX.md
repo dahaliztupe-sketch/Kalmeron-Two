@@ -1,6 +1,6 @@
 # Company in a box (status 2026-11-26, local branch)
 
-Six role agents (marketing, sales, finance, product, legal/admin Egypt, ops/HR) run in that order on one Company Brief built from a validated plan. A dashboard on /validate runs them, shows each draft, lets the user regenerate and mark a draft reviewed. The mark is local and not saved.
+Ten role agents (marketing, sales, finance, product, engineering, legal/admin Egypt, ops/HR, data/analytics, customer support, strategy/fundraising) run in that order on one Company Brief built from a validated plan. A dashboard on /validate runs them, shows each draft, lets the user regenerate and mark a draft reviewed. The mark is local and not saved. Strategy is non-binding: no amounts or investor names. Support writes drafts only.
 
 What this is: AI-drafted plans and message drafts with a quality gate (schema, number and wording checks) and a small sourced knowledge base per role (source URL, source date, review date, status, stale flag).
 
