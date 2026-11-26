@@ -1,3 +1,4 @@
+import { CONTACT_EMAIL } from "@/src/lib/site";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Mail, MessageCircle, Phone, Building2, ArrowLeft, Sparkles } from "lucide-react";
@@ -90,7 +91,7 @@ export default function ContactPage({
             حالة قنوات التواصل
           </h3>
           <p className="text-sm text-neutral-300 leading-relaxed">
-            لا توجد قناة تواصل مباشرة منشورة حالياً. سنعلن عنوان البريد الرسمي ووقت الاستجابة هنا بعد تفعيله.
+            للتواصل راسلنا على: <a href={`mailto:${CONTACT_EMAIL}`} className="underline text-emerald-300" dir="ltr">{CONTACT_EMAIL}</a>. لا نلتزم بوقت استجابة محدد حالياً.
           </p>
         </section>
       </div>

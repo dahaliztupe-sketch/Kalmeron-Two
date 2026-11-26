@@ -1,3 +1,4 @@
+import { CONTACT_EMAIL } from "@/src/lib/site";
 import { PublicShell } from "@/components/layout/PublicShell";
 import type { Metadata } from "next";
 
@@ -174,7 +175,7 @@ export default function TermsPage() {
           <section className="glass p-8 rounded-3xl bg-cyan-500/[0.03]">
             <h2 className="text-xl font-bold text-white mb-3">التواصل بشأن الشروط</h2>
             <p className="text-sm">
-              لأي استفسار قانوني يتعلق بهذه الشروط، قناة التواصل القانونية الرسمية قيد التجهيز وستُعلن في صفحة التواصل.
+              لأي استفسار قانوني يتعلق بهذه الشروط، راسلنا على <a href={`mailto:${CONTACT_EMAIL}`} className="underline" dir="ltr">{CONTACT_EMAIL}</a>.
             </p>
           </section>
 

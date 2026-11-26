@@ -1,3 +1,4 @@
+import { CONTACT_EMAIL } from "@/src/lib/site";
 import { PublicShell } from "@/components/layout/PublicShell";
 import Link from "next/link";
 
@@ -71,7 +72,7 @@ export default function PrivacyPage() {
                 . يتم تنفيذ الحذف فوراً.
               </li>
               <li>
-                <strong>عبر البريد الإلكتروني:</strong> قناة البريد الرسمية لطلبات الخصوصية قيد التجهيز وستُعلن في صفحة التواصل.
+                <strong>عبر البريد الإلكتروني:</strong> <a href={`mailto:${CONTACT_EMAIL}`} className="underline" dir="ltr">{CONTACT_EMAIL}</a>
               </li>
             </ol>
             <p className="text-neutral-500 text-sm">
@@ -92,7 +93,7 @@ export default function PrivacyPage() {
           <section className="glass p-8 rounded-3xl space-y-3">
             <h2 className="text-2xl font-semibold text-white">7. التواصل بشأن الخصوصية</h2>
             <p>
-              لأي استفسارات تتعلق بخصوصيتك وبياناتك، قناة التواصل الرسمية بشأن الخصوصية قيد التجهيز وستُعلن في صفحة التواصل.
+              لأي استفسارات تتعلق بخصوصيتك وبياناتك، راسلنا على <a href={`mailto:${CONTACT_EMAIL}`} className="underline" dir="ltr">{CONTACT_EMAIL}</a>.
             </p>
           </section>
 
