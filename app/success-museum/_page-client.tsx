@@ -194,6 +194,7 @@ export default function SuccessMuseumPage() {
               <p className="text-text-secondary max-w-xl">
                 قصص شركات مصرية غيّرت قواعد اللعبة. تحليل معمق لكل نجاح وأهم الدروس التي يمكنك تطبيقها اليوم.
               </p>
+              <p className="mt-2 text-xs text-amber-300 max-w-xl">تنبيه: القصص والأرقام والتقييمات هنا ملخصات عامة غير موثقة بمصادر في الصفحة، وقد تكون قديمة أو غير دقيقة. تحقق منها من مصادر منشورة قبل الاعتماد عليها.</p>
             </div>
             <Link href="/chat?q=حلل استراتيجية نجاح شركة مثل Swvl وكيف أطبقها في مشروعي"
               className="btn-primary flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold shrink-0"

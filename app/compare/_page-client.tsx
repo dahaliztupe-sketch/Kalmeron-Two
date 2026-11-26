@@ -112,8 +112,7 @@ export default function ComparePage() {
             <span className="brand-gradient-text">كل البدائل</span>
           </h1>
           <p className="text-neutral-400 text-lg leading-relaxed mb-8">
-            مقارنة موضوعية وشفافة. اكتشف لماذا +1000 رائد أعمال اختاروا كلميرون
-            على مستشارين وأدوات تكلّف أضعافاً.
+            مقارنة وصفية عامة. الأسعار والميزات تتغير، فراجع موقع كل بديل مباشرة قبل أي قرار.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-3">
             <Link href="/auth/signup" className="btn-primary flex items-center gap-2 px-6 py-3 rounded-full font-bold">
