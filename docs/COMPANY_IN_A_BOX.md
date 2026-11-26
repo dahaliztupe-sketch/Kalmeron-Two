@@ -12,3 +12,13 @@ What this is not:
 - Orchestrator does not yet feed one role's output into the next; every role reads the same brief.
 
 Refresh process: re-open each source, update reviewedOn, edit or drop changed claims, keep status honest. Rules: docs/CONTRACT.md. Overlap map with older agents: docs/CONSOLIDATION_2026-11.md.
+
+## Workflow (added 2026-11-26)
+
+Flow on /validate: validated plan -> intake questions -> marketing -> sales -> finance -> product -> legal -> ops -> consolidated export.
+
+- **Intake** (src/lib/company/intake.ts): six fixed questions, no model call. Stage and team size are required. Answers go into every role prompt as founder-provided data. Unanswered questions are marked so roles write assumptions, not guesses.
+- **Stage gates** (orchestrator `blockedBy`): a role runs only after every earlier role is approved and not stale. Approval is a local review mark in the browser. It is a review habit, **not** a security control: the server does not enforce order, and nothing is saved between visits.
+- **Staleness**: regenerating a role marks its readers (transitively) stale, drops their approval, and blocks later stages until they are regenerated and re-approved. A stale draft cannot be approved.
+- **Export** (src/lib/company/export.ts): one Markdown file with the plan summary, intake answers, and each role section labelled approved / unreviewed draft / stale / not run, plus the disclaimer. Export is a download only; nothing is sent.
+- **Limits**: outputs are AI drafts; "approved" means the founder read it. Legal/tax/finance sections still need a professional. No real-user run of this flow yet.

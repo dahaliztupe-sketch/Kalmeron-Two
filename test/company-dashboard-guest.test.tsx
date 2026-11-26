@@ -20,4 +20,10 @@ describe("CompanyDashboard guest mode", () => {
     expect((html.match(/<li /g) ?? []).length).toBe(6);
     expect(html).not.toContain("تجربة بدون تسجيل");
   });
+  it("asks intake questions and locks every run button until they are answered", () => {
+    const html = renderToStaticMarkup(createElement(CompanyDashboard, { plan, getToken: async () => "t", budgetEgp: null }));
+    expect(html).toContain("أسئلة قبل البدء");
+    const runs = html.match(/<button[^>]*disabled[^>]*>شغّل<\/button>/g) ?? [];
+    expect(runs.length).toBe(6);
+  });
 });
