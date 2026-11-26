@@ -14,7 +14,7 @@ const rawUrl = process.env.NEXT_PUBLIC_APP_URL;
 // not a security trust check. Substitutes the dev URL with the canonical
 // production domain for the sitemap — no access-control decision is made here.
 const siteUrl = (!rawUrl || rawUrl.includes('replit.dev') || rawUrl.includes('localhost'))
-  ? 'https://kalmeron.app'
+  ? 'https://kalmeron-two.vercel.app'
   : rawUrl;
 
 export default function sitemap(): MetadataRoute.Sitemap {

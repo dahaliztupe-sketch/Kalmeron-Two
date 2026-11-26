@@ -10,6 +10,7 @@ import { SeoLandingShell } from "@/components/seo/SeoLandingShell";
 import { howToSchema, breadcrumbSchema } from "@/src/lib/seo/schema";
 import { Clock, Award, FileText, Download, ArrowLeft } from "lucide-react";
 import { sanitizeJsonLd } from "@/src/lib/security/safe-json-ld";
+import { SITE_URL } from "@/src/lib/site";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -57,9 +58,9 @@ export default async function TemplatePage({ params }: PageProps) {
       steps: t.sections,
     }),
     breadcrumbSchema([
-      { name: "الرئيسية", url: "https://kalmeron.com/" },
-      { name: "القوالب", url: "https://kalmeron.com/templates" },
-      { name: t.titleAr, url: `https://kalmeron.com/templates/${slug}` },
+      { name: "الرئيسية", url: `${SITE_URL}/` },
+      { name: "القوالب", url: `${SITE_URL}/templates` },
+      { name: t.titleAr, url: `${SITE_URL}/templates/${slug}` },
     ]),
   ];
 

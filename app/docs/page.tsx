@@ -35,7 +35,7 @@ const ENDPOINTS: Array<{
     method: "POST",
     path: "/api/chat",
     description: "محادثة كاملة عبر منسّق الوكلاء (متعدد الوكلاء).",
-    example: `curl -X POST https://kalmeron.ai/api/chat \\\n  -H "Authorization: Bearer $TOKEN" \\\n  -H "Content-Type: application/json" \\\n  -d '{"message":"حلل فكرة مشروع صيدلية"}'`,
+    example: `curl -X POST https://kalmeron-two.vercel.app/api/chat \\\n  -H "Authorization: Bearer $TOKEN" \\\n  -H "Content-Type: application/json" \\\n  -d '{"message":"حلل فكرة مشروع صيدلية"}'`,
   },
   {
     method: "POST",

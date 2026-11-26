@@ -174,10 +174,7 @@ export default function TermsPage() {
           <section className="glass p-8 rounded-3xl bg-cyan-500/[0.03]">
             <h2 className="text-xl font-bold text-white mb-3">التواصل بشأن الشروط</h2>
             <p className="text-sm">
-              لأي استفسار قانوني يتعلق بهذه الشروط، يرجى التواصل على:{" "}
-              <a href="mailto:legal@kalmeron.ai" className="text-cyan-400 underline hover:text-white transition-colors" dir="ltr">
-                legal@kalmeron.ai
-              </a>
+              لأي استفسار قانوني يتعلق بهذه الشروط، قناة التواصل القانونية الرسمية قيد التجهيز وستُعلن في صفحة التواصل.
             </p>
           </section>
 

@@ -66,7 +66,7 @@ export function formatRunwayEmail(p: RunwayEmailPayload): {
     ...recs.map((r, i) => `${i + 1}. ${r.title} — ${r.rationale}`),
     "",
     "افتح لوحة كلميرون لتعديل الأرقام أو إسكات التنبيه:",
-    "https://kalmeron.app/cash-runway",
+    "https://kalmeron-two.vercel.app/cash-runway",
   ].join("\n");
 
   const html = [
@@ -82,10 +82,10 @@ export function formatRunwayEmail(p: RunwayEmailPayload): {
     ),
     "</ol>",
     '<div style="margin:24px 0">',
-    '<a href="https://kalmeron.app/cash-runway" style="display:inline-block;background:#4F46E5;color:white;padding:12px 24px;text-decoration:none;border-radius:8px;font-weight:bold">افتح لوحة كلميرون</a>',
+    '<a href="https://kalmeron-two.vercel.app/cash-runway" style="display:inline-block;background:#4F46E5;color:white;padding:12px 24px;text-decoration:none;border-radius:8px;font-weight:bold">افتح لوحة كلميرون</a>',
     "</div>",
     "<hr/>",
-    '<p style="font-size:12px;color:#888">كلميرون · <a href="https://kalmeron.app/cash-runway" style="color:#4F46E5">إدارة التنبيه</a></p>',
+    '<p style="font-size:12px;color:#888">كلميرون · <a href="https://kalmeron-two.vercel.app/cash-runway" style="color:#4F46E5">إدارة التنبيه</a></p>',
     "</div>",
   ].join("\n");
 

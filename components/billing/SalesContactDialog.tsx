@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, AnimatePresence } from "motion/react";
-import { X, Mail, Phone, ArrowUpRight } from "lucide-react";
+import { X, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { PlanId } from "@/src/lib/billing/plans";
 import { PLANS } from "@/src/lib/billing/plans";
@@ -46,42 +46,18 @@ export function SalesContactDialog({ open, onClose, planId }: Props) {
                 <Mail className="h-5 w-5 text-brand-cyan" />
               </div>
               <h2 className="font-display text-xl font-extrabold text-white mb-1">
-                تواصل مع فريق المبيعات
+                الاشتراك غير متاح بعد
               </h2>
               <p className="text-sm text-text-secondary leading-relaxed">
                 خطة{" "}
                 <span className="text-white font-semibold">{plan?.nameAr}</span>{" "}
-                غير متاحة للشراء المباشر حالياً — فريقنا يسعدهم مساعدتك في الاشتراك وتخصيص العرض المناسب.
+                غير متاحة للشراء المباشر حالياً.
               </p>
             </div>
 
-            <div className="space-y-3 mb-6">
-              <a
-                href="mailto:sales@kalmeron.com?subject=طلب اشتراك كلميرون"
-                className="flex items-center gap-3 rounded-xl border border-white/[0.08] bg-white/[0.03] px-4 py-3 hover:border-brand-cyan/30 hover:bg-brand-cyan/5 transition group"
-              >
-                <Mail className="h-4 w-4 text-brand-cyan shrink-0" />
-                <div className="flex-1 min-w-0">
-                  <p className="text-xs text-text-secondary">البريد الإلكتروني</p>
-                  <p className="text-sm font-medium text-white truncate">sales@kalmeron.com</p>
-                </div>
-                <ArrowUpRight className="h-4 w-4 text-text-secondary group-hover:text-brand-cyan transition shrink-0" />
-              </a>
-
-              <a
-                href="https://wa.me/201000000000?text=مرحباً، أريد الاشتراك في كلميرون"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-3 rounded-xl border border-white/[0.08] bg-white/[0.03] px-4 py-3 hover:border-emerald-400/30 hover:bg-emerald-400/5 transition group"
-              >
-                <Phone className="h-4 w-4 text-emerald-400 shrink-0" />
-                <div className="flex-1 min-w-0">
-                  <p className="text-xs text-text-secondary">واتساب</p>
-                  <p className="text-sm font-medium text-white">تواصل عبر واتساب</p>
-                </div>
-                <ArrowUpRight className="h-4 w-4 text-text-secondary group-hover:text-emerald-400 transition shrink-0" />
-              </a>
-            </div>
+            <p className="text-sm text-text-secondary leading-relaxed mb-6">
+              قناة الاشتراك الرسمية قيد التجهيز. ستُعلن في صفحة التواصل فور تفعيلها.
+            </p>
 
             <Button
               onClick={onClose}

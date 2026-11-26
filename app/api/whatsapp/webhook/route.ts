@@ -204,7 +204,7 @@ export async function POST(request: NextRequest) {
   const userId = await lookupUserIdByPhone(from);
 
   if (!userId) {
-    return twimlReply('هذا الرقم غير مسجَّل أو لم يُفعَّل في منصة كلميرون. سجّل في kalmeron.com ثم أرسل رمز التحقق هنا.');
+    return twimlReply('هذا الرقم غير مسجَّل أو لم يُفعَّل في منصة كلميرون. سجّل في kalmeron-two.vercel.app ثم أرسل رمز التحقق هنا.');
   }
 
   // Detect which agent should handle this message

@@ -173,7 +173,7 @@ export async function getReferralStats(uid: string, baseUrl?: string): Promise<R
     logger.warn({ err: e, uid, msg: 'Failed to load referral stats' });
   }
 
-  const root = baseUrl || process.env.NEXT_PUBLIC_APP_URL || 'https://kalmeron.app';
+  const root = baseUrl || process.env.NEXT_PUBLIC_APP_URL || 'https://kalmeron-two.vercel.app';
   const shareUrl = `${root}/auth/signup?ref=${encodeURIComponent(code)}`;
 
   return {

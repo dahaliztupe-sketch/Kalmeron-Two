@@ -281,8 +281,8 @@ export function formatBriefForChannel(brief: DailyBrief, channel: 'whatsapp' | '
   }).join(sep);
 
   const footer = channel === 'whatsapp'
-    ? '\n\n— كلميرون | https://kalmeron.app/daily-brief'
-    : '\n\nافتح الإيجاز كاملاً: https://kalmeron.app/daily-brief';
+    ? '\n\n— كلميرون | https://kalmeron-two.vercel.app/daily-brief'
+    : '\n\nافتح الإيجاز كاملاً: https://kalmeron-two.vercel.app/daily-brief';
 
   return `${header}${sigLines}${sep}${body}${footer}`;
 }

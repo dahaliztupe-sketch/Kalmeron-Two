@@ -6,7 +6,7 @@ const rawUrl = process.env.NEXT_PUBLIC_APP_URL;
 // the configured URL is a local/dev domain so we can substitute the
 // production domain — there is no security decision based on this substring.
 const siteUrl = (!rawUrl || rawUrl.includes('replit.dev') || rawUrl.includes('localhost'))
-  ? 'https://kalmeron.app'
+  ? 'https://kalmeron-two.vercel.app'
   : rawUrl;
 
 export default function robots(): MetadataRoute.Robots {

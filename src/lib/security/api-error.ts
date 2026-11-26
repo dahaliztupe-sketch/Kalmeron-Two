@@ -44,7 +44,7 @@ export class HTTPError extends Error {
     this.code = code;
     this.detail = options.detail;
     this.errors = options.errors;
-    this.type = options.type ?? `https://kalmeron.com/errors/${code}`;
+    this.type = options.type ?? `https://kalmeron-two.vercel.app/errors/${code}`;
     if (options.cause !== undefined) {
       (this as { cause?: unknown }).cause = options.cause;
     }

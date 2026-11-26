@@ -43,7 +43,7 @@ export const viewport: Viewport = {
   colorScheme: "dark light",
 };
 
-const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://kalmeron.app';
+const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://kalmeron-two.vercel.app';
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
@@ -170,17 +170,7 @@ const jsonLd = {
         "address": { "@type": "PostalAddress", "addressCountry": "EG", "addressLocality": "Cairo" },
       },
       "areaServed": ["EG", "SA", "AE", "KW", "QA", "BH", "OM", "JO", "LB", "MA", "TN", "LY"],
-      "sameAs": [
-        "https://twitter.com/kalmeronai",
-        "https://linkedin.com/company/kalmeron",
-      ],
-      "contactPoint": {
-        "@type": "ContactPoint",
-        "contactType": "customer support",
-        "availableLanguage": ["Arabic", "English"],
-        "email": "support@kalmeron.app",
-      },
-    },
+          },
     {
       "@type": "WebSite",
       "@id": `${siteUrl}/#website`,

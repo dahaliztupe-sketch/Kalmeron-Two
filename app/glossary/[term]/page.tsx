@@ -9,6 +9,7 @@ import {
 import { SeoLandingShell } from "@/components/seo/SeoLandingShell";
 import { definedTermSchema, breadcrumbSchema } from "@/src/lib/seo/schema";
 import { sanitizeJsonLd } from "@/src/lib/security/safe-json-ld";
+import { SITE_URL } from "@/src/lib/site";
 
 interface PageProps {
   params: Promise<{ term: string }>;
@@ -43,12 +44,12 @@ export default async function GlossaryTermPage({ params }: PageProps) {
     definedTermSchema({
       name: t.termAr,
       description: t.fullDefinitionAr,
-      url: `https://kalmeron.com/glossary/${term}`,
+      url: `${SITE_URL}/glossary/${term}`,
     }),
     breadcrumbSchema([
-      { name: "الرئيسية", url: "https://kalmeron.com/" },
-      { name: "القاموس", url: "https://kalmeron.com/glossary" },
-      { name: t.termAr, url: `https://kalmeron.com/glossary/${term}` },
+      { name: "الرئيسية", url: `${SITE_URL}/` },
+      { name: "القاموس", url: `${SITE_URL}/glossary` },
+      { name: t.termAr, url: `${SITE_URL}/glossary/${term}` },
     ]),
   ];
 

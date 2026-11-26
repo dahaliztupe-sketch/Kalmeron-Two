@@ -46,7 +46,7 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://kalmeron.app';
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://kalmeron-two.vercel.app';
   const session = await stripe.billingPortal.sessions.create({
     customer: customerId,
     return_url: `${baseUrl}/account/billing`,

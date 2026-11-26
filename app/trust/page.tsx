@@ -81,7 +81,6 @@ export default function TrustCenter() {
 
         <div className="flex flex-wrap gap-3 mb-12">
           <Link href="/status" className="px-4 py-2 rounded-lg bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 hover:bg-emerald-500/25 transition">حالة المنصّة الآن →</Link>
-          <a href="mailto:security@kalmeron.com" className="px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-white hover:bg-white/10 transition">الإبلاغ عن ثغرة</a>
           <a href="/api-docs" className="px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-white hover:bg-white/10 transition">وثائق الـ API</a>
         </div>
 
@@ -93,9 +92,7 @@ export default function TrustCenter() {
         <section className="rounded-2xl border border-white/10 bg-white/5 p-6 mt-8">
           <h2 className="text-xl font-bold mb-3">إفصاح المسؤول للثغرات</h2>
           <p className="text-neutral-300 text-sm leading-7">
-            نُرحّب بأي بلاغات أمنية على{' '}
-            <a className="underline" href="mailto:security@kalmeron.com">security@kalmeron.com</a>.
-            نلتزم بالردّ خلال 48 ساعة عمل، وبتقديم خطة معالجة خلال 7 أيام للثغرات الحرجة.
+            قناة استقبال البلاغات الأمنية الرسمية قيد التجهيز وستُعلن في صفحة التواصل. 
             نمتنع عن الملاحقة القانونية لأي باحث أمني يلتزم بسياسة الإفصاح المسؤول.
           </p>
         </section>

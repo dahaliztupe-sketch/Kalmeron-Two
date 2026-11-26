@@ -145,7 +145,7 @@ function buildOg(title: string, subtitle: string, label: string) {
           fontSize: '20px',
         }}
       >
-        <span>kalmeron.app</span>
+        <span>kalmeron-two.vercel.app</span>
         <span>{label === 'كلميرون' || label === 'DEFAULT' ? '' : ''}</span>
       </div>
     </div>

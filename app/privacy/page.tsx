@@ -71,11 +71,7 @@ export default function PrivacyPage() {
                 . يتم تنفيذ الحذف فوراً.
               </li>
               <li>
-                <strong>عبر البريد الإلكتروني:</strong> أرسل طلبك إلى{" "}
-                <a href="mailto:privacy@kalmeron.ai" className="text-[rgb(var(--brand-cyan))] hover:underline">
-                  privacy@kalmeron.ai
-                </a>{" "}
-                مع ذكر عنوان البريد المرتبط بحسابك. سنستجيب خلال <strong>48 ساعة</strong>.
+                <strong>عبر البريد الإلكتروني:</strong> قناة البريد الرسمية لطلبات الخصوصية قيد التجهيز وستُعلن في صفحة التواصل.
               </li>
             </ol>
             <p className="text-neutral-500 text-sm">
@@ -96,11 +92,7 @@ export default function PrivacyPage() {
           <section className="glass p-8 rounded-3xl space-y-3">
             <h2 className="text-2xl font-semibold text-white">7. التواصل بشأن الخصوصية</h2>
             <p>
-              لأي استفسارات تتعلق بخصوصيتك وبياناتك، يمكنك التواصل مع مسؤول حماية
-              البيانات لدينا عبر:{" "}
-              <a href="mailto:privacy@kalmeron.ai" className="text-[rgb(var(--brand-cyan))] hover:underline">
-                privacy@kalmeron.ai
-              </a>
+              لأي استفسارات تتعلق بخصوصيتك وبياناتك، قناة التواصل الرسمية بشأن الخصوصية قيد التجهيز وستُعلن في صفحة التواصل.
             </p>
           </section>
 

@@ -10,6 +10,7 @@ import { SeoLandingShell } from "@/components/seo/SeoLandingShell";
 import { localBusinessSchema, breadcrumbSchema } from "@/src/lib/seo/schema";
 import {TrendingUp, Building2, Trophy } from "lucide-react";
 import { sanitizeJsonLd } from "@/src/lib/security/safe-json-ld";
+import { SITE_URL } from "@/src/lib/site";
 
 interface PageProps {
   params: Promise<{ city: string }>;
@@ -51,9 +52,9 @@ export default async function CityPage({ params }: PageProps) {
       description: c.metaDescriptionAr,
     }),
     breadcrumbSchema([
-      { name: "الرئيسية", url: "https://kalmeron.com/" },
-      { name: "المدن", url: "https://kalmeron.com/cities" },
-      { name: c.cityAr, url: `https://kalmeron.com/cities/${city}` },
+      { name: "الرئيسية", url: `${SITE_URL}/` },
+      { name: "المدن", url: `${SITE_URL}/cities` },
+      { name: c.cityAr, url: `${SITE_URL}/cities/${city}` },
     ]),
   ];
 
