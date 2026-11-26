@@ -47,7 +47,7 @@ const VALUES = [
 
 const STATS = [
   { value: "مجاناً", label: "ابدأ بدون بطاقة ائتمان", icon: Users },
-  { value: "١٦", label: "مساعداً ذكياً", icon: Bot },
+  { value: "٥٧", label: "مساعداً ذكياً", icon: Bot },
   { value: "٧", label: "أقسام تشغيلية", icon: Target },
   { value: "٢٤/٧", label: "متاح دائماً", icon: Zap },
 ];
