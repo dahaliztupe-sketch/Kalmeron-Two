@@ -134,6 +134,15 @@ export function CompanyDashboard({ plan, getToken, budgetEgp, guest = false, res
         {guest && <strong className="block mb-1 text-amber-300">تجربة بدون تسجيل: دور التسويق فقط، بنموذج أخف وبحد يومي عام. التسجيل يفتح بقية الأدوار.</strong>}
         كل دور يُعدّ خطة ومسودات فقط، ولا ينفّذ شيئاً خارج هذه الصفحة. المخرجات مولَّدة بالذكاء الاصطناعي وغير مراجَعة؛ الاعتماد هنا علامة مراجعة محلية ولا يُحفظ.
       </p>
+      <details className="mb-4 rounded-xl border border-white/10 bg-white/[0.03] p-3 text-xs text-zinc-300">
+        <summary className="cursor-pointer text-zinc-200">كيف أتحقق من هذه المسودات؟</summary>
+        <ul className="mt-2 list-disc pr-5 space-y-1">
+          <li>كل رقم أو سعر أو رسم أو تاريخ: هل جاء منك، أم هو افتراض، أم يحتاج تحققاً؟ غير ذلك لا تعتمد عليه.</li>
+          <li>افتح أي مصدر مذكور وتأكد أنه يقول ما كُتب وأن تاريخه حديث.</li>
+          <li>القانوني والضريبي والمالي: راجع محامياً أو محاسباً مرخصاً قبل أي تنفيذ. إن كنت دون 18 سنة فاسأل عن دور ولي الأمر أو شريك بالغ في التعاقد والدفع والتسجيل.</li>
+          <li>لم يقيّم إنسان جودة المخرجات بعد. تفحص الاختبارات الشكل والصياغة فقط.</li>
+        </ul>
+      </details>
       <IntakeForm value={intake} onChange={setIntake} />
       <div className="flex flex-wrap items-center gap-3 mb-4">
         <span className="text-xs text-neutral-500">جاهز {sum.done + sum.approved} من {ROLES.length}، معتمد {sum.approved}</span>
