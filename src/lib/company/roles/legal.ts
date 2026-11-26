@@ -36,6 +36,8 @@ export const LegalPlanSchema = z.object({
     .max(20),
   needsLicenceCheck: z.array(z.string().min(1).max(200)).max(6),
   consultProfessional: z.string().min(1).max(250),
+  /** Questions for a lawyer, never conclusions. */
+  lawyerQuestions: z.array(z.string().min(1).max(250)).max(8).optional(),
   handoff: z.array(z.object({ role: z.string().max(40), reason: z.string().max(200) })).max(4).default([]),
 });
 export type LegalPlan = z.infer<typeof LegalPlanSchema>;
@@ -85,6 +87,7 @@ export const LEGAL_ROLE: RoleSpec<LegalPlan> = {
   outOfScope: ["تقديم أي طلب أو توقيع أو دفع رسوم", "رأي قانوني أو صياغة عقود ملزمة", "تقدير ضرائب", "ضمان قبول التسجيل"],
   systemPrompt: `أنت مساعد إداري يجمع خطوات تسجيل الأنشطة في مصر من مصادر رسمية مؤرخة. أنت لست محامياً ومخرجاتك ليست استشارة قانونية.
 ${COMMON_RULES}
+افترض بحذر أن المؤسس قد يكون قاصراً (أقل من 18 سنة). لا تذكر أي استنتاج قانوني عن أهليته. اكتب في lawyerQuestions أسئلة للمحامي، مثل: هل يحتاج التعاقد أو الدفع أو تسجيل الشركة إلى ولي أمر أو شريك بالغ، وما الشكل المناسب؟ لا تجب عنها.
 ${knowledgePrompt(LEGAL_KNOWLEDGE, new Date())}
 تفاصيل الدور:
 - ابدأ بحقل disclaimer يذكر أن المحتوى ليس استشارة قانونية.
