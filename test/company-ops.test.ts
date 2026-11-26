@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { OpsPlanSchema, opsChecks, OPS_ROLE, type OpsPlan } from "@/src/lib/company/roles/ops";
-import { ROLES, isRoleId } from "@/src/lib/company/roles/registry";
+import { ROLES } from "@/src/lib/company/roles/registry";
 
 const brief = { constraints: { budgetEgp: null as number | null, days: null as number | null } };
 const role = { title: "مطوّر", why: "بناء المنتج", engagement: "freelancer" as const, startWeek: 2, monthlyCostEgp: 10000, basis: "assumption" as const };
@@ -39,7 +39,7 @@ describe("ops/hr role", () => {
   it("prompt carries sources", () => {
     expect(OPS_ROLE.systemPrompt).toContain("المصدر:");
   });
-  it.skipIf(!isRoleId("ops"))("is registered", () => {
+  it("is registered", () => {
     expect((ROLES as Record<string, unknown>).ops).toBeDefined();
   });
 });

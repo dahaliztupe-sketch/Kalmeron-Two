@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { LegalPlanSchema, legalChecks, LEGAL_ROLE, DISCLAIMER_AR, type LegalPlan } from "@/src/lib/company/roles/legal";
 import { LEGAL_KNOWLEDGE } from "@/src/lib/company/knowledge/legal";
-import { ROLES, isRoleId } from "@/src/lib/company/roles/registry";
+import { ROLES } from "@/src/lib/company/roles/registry";
 
 const brief = { constraints: { budgetEgp: null as number | null } };
 const step = (order: number) => ({
@@ -57,7 +57,7 @@ describe("legal (Egypt) role", () => {
     expect(LEGAL_ROLE.systemPrompt).toContain("المصدر:");
     expect(LEGAL_ROLE.systemPrompt).toContain("ليست استشارة قانونية");
   });
-  it.skipIf(!isRoleId("legal"))("is registered", () => {
+  it("is registered", () => {
     expect((ROLES as Record<string, unknown>).legal).toBeDefined();
   });
 });

@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { ProductPlanSchema, productChecks, PRODUCT_ROLE, type ProductPlan } from "@/src/lib/company/roles/product";
-import { ROLES, isRoleId } from "@/src/lib/company/roles/registry";
+import { ROLES } from "@/src/lib/company/roles/registry";
 
 const brief = { constraints: { days: 56 as number | null, budgetEgp: null as number | null } };
 const f = (feature: string) => ({ feature, reason: "سبب", basis: "assumption" as const });
@@ -46,7 +46,7 @@ describe("product role", () => {
   it("prompt carries sources", () => {
     expect(PRODUCT_ROLE.systemPrompt).toContain("المصدر:");
   });
-  it.skipIf(!isRoleId("product"))("is registered", () => {
+  it("is registered", () => {
     expect((ROLES as Record<string, unknown>).product).toBeDefined();
   });
 });
