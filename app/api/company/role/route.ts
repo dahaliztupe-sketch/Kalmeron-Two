@@ -14,6 +14,8 @@ import { consumeGuestQuota } from "@/src/lib/plan/guest-cap";
 import { buildContextBlock } from "@/src/lib/company/context";
 
 export const runtime = "nodejs";
+/** Role runs take 20-60 s with the model; the platform default can cut them off. */
+export const maxDuration = 60;
 
 const Body = z.object({
   role: z.string(),
@@ -60,12 +62,21 @@ export async function POST(req: NextRequest) {
 
   const brief = briefFromPlan(parsed.data.plan, parsed.data.constraints ?? {}, parsed.data.intake ?? {});
   const generate: Generate = async (system, prompt) => {
-    const r = await ai.models.generateContent({
-      model: isGuest ? "gemini-2.5-flash" : "gemini-2.5-pro",
-      contents: prompt,
-      config: { systemInstruction: system, responseMimeType: "application/json" },
-    });
-    return r.text || "";
+    try {
+      const r = await ai.models.generateContent({
+        model: isGuest ? "gemini-2.5-flash" : "gemini-2.5-pro",
+        contents: prompt,
+        config: { systemInstruction: system, responseMimeType: "application/json" },
+      });
+      return r.text || "";
+    } catch (err) {
+      // Log the cause (no keys or prompts) so a failing model call can be diagnosed from runtime logs.
+      logger.warn(
+        { event: "company_role_model_call_failed", role: parsed.data.role, name: (err as Error)?.name, message: String((err as Error)?.message ?? "").slice(0, 300) },
+        "company_role_model_call_failed",
+      );
+      throw err;
+    }
   };
   try {
     const spec = ROLES[parsed.data.role];
