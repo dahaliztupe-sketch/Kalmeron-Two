@@ -35,7 +35,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${siteUrl}/market-pulse`, lastModified: now, changeFrequency: 'weekly', priority: 0.85 },
     { url: `${siteUrl}/investor-deck`, lastModified: now, changeFrequency: 'monthly', priority: 0.85 },
     { url: `${siteUrl}/api-docs`, lastModified: now, changeFrequency: 'monthly', priority: 0.7 },
-    { url: `${siteUrl}/mcp-server`, lastModified: now, changeFrequency: 'monthly', priority: 0.7 },
     { url: `${siteUrl}/workflows`, lastModified: now, changeFrequency: 'monthly', priority: 0.8 },
     { url: `${siteUrl}/chat`, lastModified: now, changeFrequency: 'weekly', priority: 0.8 },
     { url: `${siteUrl}/ideas/analyze`, lastModified: now, changeFrequency: 'weekly', priority: 0.8 },
