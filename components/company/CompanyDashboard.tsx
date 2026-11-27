@@ -129,14 +129,14 @@ export function CompanyDashboard({ plan, getToken, budgetEgp, guest = false, res
   const sum = summary(state, ROLES);
   return (
     <section className="mt-8 rounded-2xl border border-white/10 bg-white/[0.02] p-5 print:hidden" aria-label="لوحة الشركة">
-      <h3 className="font-bold text-white mb-1">لوحة الشركة: فريق من الأدوار الآلية</h3>
+      <h2 className="font-bold text-white mb-1">لوحة الشركة: فريق من الأدوار الآلية</h2>
       <p className="text-sm text-neutral-400 mb-3">
         {guest && <strong className="block mb-1 text-amber-300">تجربة بدون تسجيل: دور التسويق فقط، بنموذج أخف وبحد يومي عام. التسجيل يفتح بقية الأدوار.</strong>}
         كل دور يُعدّ خطة ومسودات فقط، ولا ينفّذ شيئاً خارج هذه الصفحة. المخرجات مولَّدة بالذكاء الاصطناعي وغير مراجَعة؛ الاعتماد هنا علامة مراجعة محلية ولا يُحفظ.
       </p>
       <details className="mb-4 rounded-xl border border-white/10 bg-white/[0.03] p-3 text-xs text-zinc-300">
         <summary className="cursor-pointer text-zinc-200">كيف أتحقق من هذه المسودات؟</summary>
-        <ul className="mt-2 list-disc pr-5 space-y-1">
+        <ul className="mt-2 list-disc ps-5 space-y-1">
           <li>كل رقم أو سعر أو رسم أو تاريخ: هل جاء منك، أم هو افتراض، أم يحتاج تحققاً؟ غير ذلك لا تعتمد عليه.</li>
           <li>افتح أي مصدر مذكور وتأكد أنه يقول ما كُتب وأن تاريخه حديث.</li>
           <li>القانوني والضريبي والمالي: راجع محامياً أو محاسباً مرخصاً قبل أي تنفيذ. إن كنت دون 18 سنة فاسأل عن دور ولي الأمر أو شريك بالغ في التعاقد والدفع والتسجيل.</li>
@@ -145,16 +145,16 @@ export function CompanyDashboard({ plan, getToken, budgetEgp, guest = false, res
       </details>
       <IntakeForm value={intake} onChange={setIntake} />
       <div className="flex flex-wrap items-center gap-3 mb-4">
-        <span className="text-xs text-neutral-500">جاهز {sum.done + sum.approved} من {ROLES.length}، معتمد {sum.approved}</span>
-        <button onClick={download} className="text-sm text-cyan-300 underline">نزّل الخطة المجمّعة (Markdown)</button>
-        {!guest && <button onClick={removeSaved} className="text-sm text-rose-300 underline">احذف مساحة العمل المحفوظة</button>}
+        <span className="text-xs text-neutral-400" role="status">جاهز {sum.done + sum.approved} من {ROLES.length}، معتمد {sum.approved}</span>
+        <button onClick={download} className="min-h-[44px] px-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-300 text-sm text-cyan-300 underline">نزّل الخطة المجمّعة (Markdown)</button>
+        {!guest && <button onClick={removeSaved} className="min-h-[44px] px-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-300 text-sm text-rose-300 underline">احذف مساحة العمل المحفوظة</button>}
         {saveNote && <span className="text-xs text-neutral-400">{saveNote}</span>}
       </div>
       <p className="mb-3 text-xs text-neutral-400">
         المراحل بالترتيب. تُحفظ مساحة عمل واحدة لحسابك تلقائياً (البدء بخطة جديدة يستبدلها). لا يُفتح الدور التالي قبل أن تراجع الدور الحالي وتعتمده. إن أعدت توليد دور سابق صارت الأدوار اللاحقة قديمة وتحتاج إعادة توليد واعتماد.
         {plan.verdict === "stop" && " حكم التحقق كان «توقف»: راجع أسباب الحكم قبل المتابعة."}
       </p>
-      {note && <p className="mb-3 text-sm text-amber-300">{note}</p>}
+      {note && <p role="status" className="mb-3 text-sm text-amber-300">{note}</p>}
       <ul className="space-y-2">
         {ROLES.map((r) => {
           const st = state[r];
@@ -163,15 +163,15 @@ export function CompanyDashboard({ plan, getToken, budgetEgp, guest = false, res
           return (
             <li key={r} className="rounded-xl border border-white/10 p-3">
               <div className="flex flex-wrap items-center gap-3">
-                <span className="font-semibold text-white">{ROLE_LABELS_AR[r] ?? r}{stage === r ? " (المرحلة الحالية)" : ""}</span>
-                <span className="text-xs text-neutral-400">{STATUS_AR[st.status]}</span>
+                <h3 className="font-semibold text-white">{ROLE_LABELS_AR[r] ?? r}{stage === r ? " (المرحلة الحالية)" : ""}</h3>
+                <span className="text-xs text-neutral-400" aria-live="polite">{STATUS_AR[st.status]}</span>
                 {st.stale && <span className="text-xs text-amber-300">قديم: تغيّر دور سابق بعد إعداده، أعد التوليد</span>}
                 <span className="flex-1" />
                 {(st.status === "done" || st.status === "approved") && (
-                  <button onClick={() => setOpen(open === r ? null : r)} className="text-sm text-cyan-300 underline">{open === r ? "أخفِ" : "اعرض"}</button>
+                  <button onClick={() => setOpen(open === r ? null : r)} aria-expanded={open === r} aria-label={`${open === r ? "أخفِ" : "اعرض"} ${ROLE_LABELS_AR[r] ?? r}`} className="text-sm text-cyan-300 underline">{open === r ? "أخفِ" : "اعرض"}</button>
                 )}
                 {st.status === "done" && !st.stale && (
-                  <button onClick={() => dispatch({ type: "approve", role: r })} className="text-sm text-emerald-300 underline">اعتمد</button>
+                  <button onClick={() => dispatch({ type: "approve", role: r })} aria-label={`اعتمد ${ROLE_LABELS_AR[r] ?? r}`} className="text-sm text-emerald-300 underline">اعتمد</button>
                 )}
                 {st.status === "approved" && (
                   <button onClick={() => dispatch({ type: "unapprove", role: r })} className="text-sm text-neutral-400 underline">ألغِ الاعتماد</button>
@@ -182,11 +182,11 @@ export function CompanyDashboard({ plan, getToken, budgetEgp, guest = false, res
                   </button>
                 )}
               </div>
-              {st.error && <p className="mt-2 text-sm text-rose-300">{st.error}</p>}
+              {st.error && <p role="alert" className="mt-2 text-sm text-rose-300">{st.error}</p>}
               {open === r && st.output != null && (
                 <div className="mt-3">
                   {st.warnings.length > 0 && (
-                    <ul className="mb-3 list-disc pr-5 text-sm text-amber-300">
+                    <ul className="mb-3 list-disc ps-5 text-sm text-amber-300">
                       {st.warnings.map((w, i) => (
                         <li key={i}>{w}</li>
                       ))}

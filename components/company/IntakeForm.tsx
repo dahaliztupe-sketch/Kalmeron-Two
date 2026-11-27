@@ -15,14 +15,14 @@ export function IntakeForm({ value, onChange }: { value: Intake; onChange: (v: I
             <label key={q.key} className="block text-sm text-neutral-200">
               <span className="mb-1 block">{q.labelAr}{q.required ? " *" : ""}</span>
               {q.kind === "choice" ? (
-                <select value={v} onChange={(e) => set(q.key, e.target.value)} className="w-full rounded-lg border border-white/10 bg-black/40 px-3 py-2 text-sm text-white">
+                <select value={v} onChange={(e) => set(q.key, e.target.value)} className="w-full rounded-lg border border-white/10 bg-black/40 px-3 py-2 min-h-[44px] text-sm text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-300">
                   <option value="">اختر</option>
                   {q.options.map(([val, label]) => (
                     <option key={val} value={val}>{label}</option>
                   ))}
                 </select>
               ) : (
-                <input value={v} maxLength={q.key === "market" ? 200 : 300} onChange={(e) => set(q.key, e.target.value)} className="w-full rounded-lg border border-white/10 bg-black/40 px-3 py-2 text-sm text-white" />
+                <input value={v} maxLength={q.key === "market" ? 200 : 300} onChange={(e) => set(q.key, e.target.value)} className="w-full rounded-lg border border-white/10 bg-black/40 px-3 py-2 min-h-[44px] text-sm text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-300" />
               )}
             </label>
           );

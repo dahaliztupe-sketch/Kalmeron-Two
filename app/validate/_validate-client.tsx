@@ -152,7 +152,7 @@ export default function ValidateClient({ initialIdea = "" }: { initialIdea?: str
           maxLength={5000}
           rows={6}
           placeholder="مثال: تطبيق يوصّل أدوية الأمراض المزمنة لكبار السن في القاهرة باشتراك شهري..."
-          className="w-full rounded-2xl border border-white/10 bg-white/[0.03] p-4 text-white placeholder:text-neutral-600 focus:outline-none focus:border-cyan-400/50"
+          className="w-full rounded-2xl border border-white/10 bg-white/[0.03] p-4 text-white placeholder:text-neutral-400 focus:outline-none focus:border-cyan-400/50"
           aria-label="وصف الفكرة"
         />
         <input
@@ -160,13 +160,13 @@ export default function ValidateClient({ initialIdea = "" }: { initialIdea?: str
           onChange={(e) => setIndustry(e.target.value)}
           maxLength={200}
           placeholder="المجال (اختياري)"
-          className="w-full rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-white placeholder:text-neutral-600 focus:outline-none focus:border-cyan-400/50"
+          className="w-full rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-white placeholder:text-neutral-400 focus:outline-none focus:border-cyan-400/50"
           aria-label="المجال"
         />
         <button
           onClick={submit}
           disabled={loading || !idea.trim()}
-          className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-l from-cyan-500 to-violet-500 px-8 py-3 font-bold text-white disabled:opacity-50"
+          className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-l from-cyan-500 to-violet-500 px-8 py-3 font-bold text-white disabled:opacity-50 min-h-[44px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-300"
         >
           {loading && <Loader2 className="h-4 w-4 animate-spin" />}
           {loading ? "جارٍ التحليل..." : "حلّل فكرتي"}
@@ -198,7 +198,7 @@ export default function ValidateClient({ initialIdea = "" }: { initialIdea?: str
             <button onClick={() => window.print()} className="rounded-xl border border-white/15 bg-white/5 px-4 py-2 text-sm font-semibold text-white">
               طباعة / حفظ PDF
             </button>
-            {saveMsg && <span className="text-sm text-rose-300">{saveMsg}</span>}
+            {saveMsg && <span role="alert" className="text-sm text-rose-300">{saveMsg}</span>}
           </div>
           {shareUrl && (
             <div className="mb-5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-sm text-emerald-200 print:hidden">
@@ -216,7 +216,7 @@ export default function ValidateClient({ initialIdea = "" }: { initialIdea?: str
                   onChange={(e) => setBudget(e.target.value.replace(/[^0-9]/g, ""))}
                   inputMode="numeric"
                   placeholder="الميزانية بالجنيه (اختياري)"
-                  className="rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2 text-sm text-white placeholder:text-neutral-600"
+                  className="rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2 text-sm text-white placeholder:text-neutral-400"
                   aria-label="الميزانية بالجنيه"
                 />
               </div>
