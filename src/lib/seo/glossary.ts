@@ -460,7 +460,7 @@ export const GLOSSARY: GlossaryTerm[] = [
     slug: 'free-zone',
     termAr: 'Free Zone (المنطقة الحرة)',
     termEn: 'Free Zone',
-    shortDefinitionAr: 'مناطق إماراتية تُعفي الشركات من ضرائب وتسمح بـ 100% ownership.',
+    shortDefinitionAr: 'مناطق حرة إماراتية لها قواعد ضريبية وملكية خاصة بها، وتتغير؛ راجع الجهة الرسمية.',
     fullDefinitionAr: 'مناطق حرة في الإمارات (مثل DIFC وDMCC وIFZA) لها قواعد ضريبية وملكية خاصة بها وتتغير؛ راجع الجهة الرسمية قبل أي قرار.',
     category: 'legal',
     relatedTerms: ['mainland', 'incorporation'],
