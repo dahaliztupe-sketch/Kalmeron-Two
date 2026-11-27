@@ -46,9 +46,9 @@ export default function UseCasesIndexPage() {
                 {uc.estimatedTimeMinutes} دقيقة
               </span>
             </div>
-            <h3 className="text-lg font-semibold text-white mb-2 group-hover:text-cyan-300 transition">
+            <h2 className="text-lg font-semibold text-white mb-2 group-hover:text-cyan-300 transition">
               {uc.titleAr}
-            </h3>
+            </h2>
             <p className="text-sm text-zinc-400 leading-relaxed mb-4 line-clamp-3">
               {uc.metaDescriptionAr}
             </p>
