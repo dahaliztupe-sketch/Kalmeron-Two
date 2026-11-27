@@ -16,6 +16,8 @@ import { buildContextBlock } from "@/src/lib/company/context";
 export const runtime = "nodejs";
 /** Role runs take 20-60 s with the model; the platform default can cut them off. */
 export const maxDuration = 60;
+/** Leave headroom under maxDuration so a slow first attempt does not start a repair attempt that cannot finish. */
+const ROLE_TIME_BUDGET_MS = 52_000;
 
 const Body = z.object({
   role: z.string(),
@@ -81,10 +83,10 @@ export async function POST(req: NextRequest) {
   try {
     const spec = ROLES[parsed.data.role];
     const ctx = buildContextBlock(parsed.data.role, isGuest ? undefined : parsed.data.context);
-    const run = await runRole(spec as never, brief, generate, 2, ctx.block);
+    const run = await runRole(spec as never, brief, generate, 2, ctx.block, ROLE_TIME_BUDGET_MS);
     if (!run.ok) {
       logger.warn({ event: "company_role_failed", role: parsed.data.role, error: run.error }, "company_role_failed");
-      return NextResponse.json({ error: run.error, issues: run.issues }, { status: 502 });
+      return NextResponse.json({ error: run.error, issues: run.issues }, { status: run.error === "time_budget" ? 504 : 502 });
     }
     return NextResponse.json({ role: spec.id, titleAr: spec.titleAr, output: run.output, issues: run.issues, quality: run.quality, outOfScope: spec.outOfScope });
   } catch (err) {

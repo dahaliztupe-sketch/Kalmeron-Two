@@ -14,17 +14,26 @@ export type Generate = (system: string, prompt: string) => Promise<string>;
  * stays "unverified": automated checks are not a substitute for a human
  * reading real outputs.
  */
-export async function runRole<T>(spec: RoleSpec<T>, brief: CompanyBrief, generate: Generate, maxAttempts = 2, extraContext = ""): Promise<RoleRun<T>> {
+export async function runRole<T>(spec: RoleSpec<T>, brief: CompanyBrief, generate: Generate, maxAttempts = 2, extraContext = "", totalBudgetMs?: number, now: () => number = Date.now): Promise<RoleRun<T>> {
+  const startedAt = now();
+  let firstAttemptMs = 0;
   const base = `ملخص الشركة:\n${briefToPromptBlock(brief)}${extraContext}\n\nأعد كائن JSON بهذا الشكل بالضبط:\n${spec.outputShape}`;
   let feedback = "";
   let lastIssues: Issue[] = [];
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    // A repair attempt takes about as long as the first one. If it cannot finish inside the budget,
+    // stop with a clear error instead of being killed by the platform timeout with no response.
+    if (attempt > 1 && totalBudgetMs !== undefined && now() - startedAt + firstAttemptMs * 1.2 > totalBudgetMs) {
+      return { ok: false, error: "time_budget", issues: lastIssues, attempts: attempt - 1 };
+    }
+    const attemptStart = now();
     let text: string;
     try {
       text = await generate(spec.systemPrompt, base + feedback);
     } catch {
       return { ok: false, error: "model_error", issues: lastIssues, attempts: attempt };
     }
+    if (attempt === 1) firstAttemptMs = now() - attemptStart;
     let parsed;
     try {
       parsed = spec.outputSchema.safeParse(extractJson(text));

@@ -76,6 +76,20 @@ describe("runRole", () => {
     expect(r.ok && r.attempts).toBe(2);
     expect(gen.mock.calls[1][1]).toContain("فشلت في فحوص الجودة");
   });
+  it("skips the repair attempt when it cannot finish inside the time budget", async () => {
+    let t = 0;
+    const gen = vi.fn().mockImplementation(async () => { t += 30_000; return JSON.stringify({ ...good, totalBudgetEgp: 5000 }); });
+    const r = await runRole(MARKETING_ROLE, brief, gen, 2, "", 52_000, () => t);
+    expect(gen).toHaveBeenCalledTimes(1);
+    expect(r.ok).toBe(false);
+    if (!r.ok) expect(r.error).toBe("time_budget");
+  });
+  it("still repairs when the first attempt was fast enough", async () => {
+    let t = 0;
+    const gen = vi.fn().mockImplementation(async () => { t += 10_000; return JSON.stringify(gen.mock.calls.length === 1 ? { ...good, totalBudgetEgp: 5000 } : good); });
+    const r = await runRole(MARKETING_ROLE, brief, gen, 2, "", 52_000, () => t);
+    expect(r.ok && r.attempts).toBe(2);
+  });
   it("fails honestly after the attempts are used up", async () => {
     const gen = vi.fn().mockResolvedValue("not json");
     const r = await runRole(MARKETING_ROLE, brief, gen);
