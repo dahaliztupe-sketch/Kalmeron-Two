@@ -1,3 +1,4 @@
+import { founderModel } from '@/src/lib/company/models';
 import { NextRequest, NextResponse } from 'next/server';
 import { ai } from '@/src/lib/gemini';
 import { rateLimit, rateLimitResponse } from '@/src/lib/security/rate-limit';
@@ -48,7 +49,7 @@ export async function POST(request: NextRequest) {
   if (isGuest && !(await consumeGuestQuota())) {
     return NextResponse.json({ error: 'guest_cap', message: 'Daily free limit reached. Sign in to continue.' }, { status: 429 });
   }
-  const model = isGuest ? 'gemini-2.5-flash' : 'gemini-2.5-pro';
+  const model = founderModel(isGuest);
 
   try {
     const body = await request.json();
