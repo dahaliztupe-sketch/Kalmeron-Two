@@ -31,12 +31,12 @@ export function CookieBanner() {
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 120, opacity: 0 }}
           transition={{ type: "spring", stiffness: 280, damping: 28 }}
-          className="fixed bottom-4 left-4 right-4 md:left-auto md:right-6 md:max-w-md z-[9999]"
+          className="fixed bottom-2 left-2 right-2 md:bottom-4 md:left-auto md:right-6 md:max-w-md z-[9999]"
           dir="rtl"
           role="dialog"
           aria-label="إشعار الكوكيز"
         >
-          <div className="rounded-2xl border border-white/[0.10] bg-[#0C0F1A]/95 backdrop-blur-xl shadow-[0_20px_60px_-10px_rgba(0,0,0,0.8)] p-5">
+          <div className="rounded-2xl border border-white/[0.10] bg-[#0C0F1A]/95 backdrop-blur-xl shadow-[0_20px_60px_-10px_rgba(0,0,0,0.8)] p-3 md:p-5">
             <div className="flex items-start justify-between gap-3 mb-3">
               <div className="flex items-center gap-2">
                 <Cookie className="h-4 w-4 text-brand-cyan shrink-0" />
@@ -50,7 +50,7 @@ export function CookieBanner() {
                 <X className="h-4 w-4" />
               </button>
             </div>
-            <p className="text-xs text-neutral-400 leading-relaxed mb-4">
+            <p className="text-xs text-neutral-400 leading-relaxed mb-3 md:mb-4">
               نستخدم ملفات الكوكيز لتحسين تجربتك وتحليل حركة المرور وفق{" "}
               <Link href="/privacy" className="text-brand-cyan underline hover:text-white transition-colors">
                 سياسة الخصوصية

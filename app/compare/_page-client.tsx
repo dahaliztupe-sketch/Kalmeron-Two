@@ -37,13 +37,12 @@ const ROWS: ComparisonRow[] = [
   { category: "الأعمال", feature: "تحليل الأفكار والسوق", kalmeron: true, consultants: true, chatgpt: "partial", notion: false },
   { category: "الأعمال", feature: "خطة عمل كاملة للمستثمر", kalmeron: true, consultants: true, chatgpt: "partial", notion: false },
   { category: "الأعمال", feature: "نمذجة مالية واختبار السيناريوهات", kalmeron: true, consultants: true, chatgpt: false, notion: "partial" },
-  { category: "الأعمال", feature: "مختبر سوق افتراضي (focus group AI)", kalmeron: true, consultants: false, chatgpt: false, notion: false, note: "حصري في كلميرون" },
+  { category: "الأعمال", feature: "مختبر سوق افتراضي (focus group AI)", kalmeron: true, consultants: false, chatgpt: false, notion: false },
   { category: "الأعمال", feature: "رادار الفرص والتمويل", kalmeron: true, consultants: false, chatgpt: false, notion: false, note: "تنبيهات فورية بالفرص المناسبة لك" },
   { category: "القانون والامتثال", feature: "عقود قانونية جاهزة للتخصيص", kalmeron: true, consultants: true, chatgpt: false, notion: false },
   { category: "القانون والامتثال", feature: "إرشادات التأسيس والامتثال القانوني", kalmeron: true, consultants: true, chatgpt: "partial", notion: false },
   { category: "الحماية والمخاطر", feature: "حارس الأخطاء الاستباقي", kalmeron: true, consultants: "partial", chatgpt: false, notion: false, note: "يحذرك من الأخطاء قبل وقوعها" },
   { category: "الحماية والمخاطر", feature: "تحليل المخاطر القانونية والمالية", kalmeron: true, consultants: true, chatgpt: "partial", notion: false },
-  { category: "الإنتاجية", feature: "متاح 24/7 بدون انتظار", kalmeron: true, consultants: false, chatgpt: true, notion: true },
   { category: "الإنتاجية", feature: "تقارير PDF جاهزة للمستثمر", kalmeron: true, consultants: true, chatgpt: false, notion: "partial" },
   { category: "الإنتاجية", feature: "تكامل مع الوثائق والملفات", kalmeron: true, consultants: false, chatgpt: "partial", notion: true },
 ];
@@ -136,6 +135,10 @@ export default function ComparePage() {
               </button>
             ))}
           </div>
+
+          <p className="mb-4 rounded-xl border border-amber-400/30 bg-amber-400/[0.06] px-4 py-3 text-sm text-amber-100 leading-relaxed">
+            مقارنة تقريبية غير موثّقة بمصادر، ولم تُختبر ضد المنتجات الأخرى. ميزات كلميرون هنا تجريبية ومخرجاتها مسودات غير مراجعة بشرياً.
+          </p>
 
           {/* Table */}
           <div className="rounded-3xl border border-white/10 overflow-hidden overflow-x-auto">
