@@ -62,19 +62,25 @@ export async function POST(request: NextRequest) {
     }
 
     if (body.format === 'plan') {
-      try {
-        const planResp = await ai.models.generateContent({
-          model,
-          contents: PLAN_PROMPT(ideaDesc, industry, startup_stage),
-          config: { responseMimeType: 'application/json' },
-        });
-        const parsed = parseValidatedPlan(planResp.text || '');
-        if (parsed.ok) {
-          return NextResponse.json({ result: planToMarkdown(parsed.plan), plan: parsed.plan });
+      // Up to 2 attempts: if the first answer is not a valid plan, retry once with the failure reason.
+      let feedback = '';
+      for (let attempt = 1; attempt <= 2; attempt++) {
+        try {
+          const planResp = await ai.models.generateContent({
+            model,
+            contents: PLAN_PROMPT(ideaDesc, industry, startup_stage) + feedback,
+            config: { responseMimeType: 'application/json' },
+          });
+          const parsed = parseValidatedPlan(planResp.text || '');
+          if (parsed.ok) {
+            return NextResponse.json({ result: planToMarkdown(parsed.plan), plan: parsed.plan });
+          }
+          logger.warn({ event: 'ideas_plan_parse_failed', attempt, reason: parsed.error }, 'ideas_plan_parse_failed');
+          feedback = `\n\nThe previous answer was not valid. Reason: ${String(parsed.error).slice(0, 200)}. Return only one valid JSON object that follows the required shape exactly, with double-quoted keys and no text outside it.`;
+        } catch (err) {
+          logger.warn({ err, event: 'ideas_plan_call_failed', attempt }, 'ideas_plan_call_failed');
+          break;
         }
-        logger.warn({ event: 'ideas_plan_parse_failed', reason: parsed.error }, 'ideas_plan_parse_failed');
-      } catch (err) {
-        logger.warn({ err, event: 'ideas_plan_call_failed' }, 'ideas_plan_call_failed');
       }
       // Fall through to the free-form markdown analysis below.
     }
