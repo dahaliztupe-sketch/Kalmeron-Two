@@ -13,3 +13,15 @@ describe("geminiModel", () => {
     expect(geminiModel("flash", { KALMERON_MODEL_FLASH: "bad value;" })).toBe(DEFAULT_MODEL_IDS.flash);
   });
 });
+
+import { liveModel, DEFAULT_LIVE_MODEL } from "@/src/lib/model-ids";
+describe("liveModel", () => {
+  it("defaults to the current live id, not the removed 2.5 ids", () => {
+    expect(liveModel({})).toBe(DEFAULT_LIVE_MODEL);
+    expect(DEFAULT_LIVE_MODEL).not.toMatch(/2\.5/);
+  });
+  it("env override and malformed value", () => {
+    expect(liveModel({ KALMERON_MODEL_LIVE: "gemini-z-live" })).toBe("gemini-z-live");
+    expect(liveModel({ KALMERON_MODEL_LIVE: "bad;id" })).toBe(DEFAULT_LIVE_MODEL);
+  });
+});

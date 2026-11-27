@@ -27,3 +27,14 @@ const valid = (v: string | undefined): string | null => {
 export function geminiModel(tier: ModelTier, env: Record<string, string | undefined> = process.env): string {
   return valid(env[ENV_KEYS[tier]]) ?? DEFAULT_MODEL_IDS[tier];
 }
+
+/**
+ * Live (voice) model. Per Google's models and pricing pages the current Live API id is
+ * gemini-3.1-flash-live-preview (a preview model). The old ids gemini-2.5-flash-live and
+ * gemini-2.5-flash-live-preview are not in Google's list. Override with KALMERON_MODEL_LIVE.
+ */
+export const DEFAULT_LIVE_MODEL = "gemini-3.1-flash-live-preview";
+
+export function liveModel(env: Record<string, string | undefined> = process.env): string {
+  return valid(env.KALMERON_MODEL_LIVE) ?? DEFAULT_LIVE_MODEL;
+}
