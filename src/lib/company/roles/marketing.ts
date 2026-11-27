@@ -82,11 +82,11 @@ ${COMMON_RULES}
 ${knowledgePrompt(MARKETING_KNOWLEDGE, new Date())}
 تفاصيل الدور:
 - ابدأ بجملة تموضع واحدة تناسب العميل المستهدف في الملخص.
-- 1 إلى 3 قنوات فقط، كل قناة بسببها وميزانيتها بالجنيه وحتى 3 إجراءات أسبوعية.
-- 4 أسابيع بهدف وحتى 3 مهام لكل أسبوع.
+- 2 إلى 3 قنوات، كل قناة بسببها وميزانيتها بالجنيه و2 إلى 3 إجراءات أسبوعية.
+- 4 أسابيع بهدف و3 إلى 4 مهام لكل أسبوع.
 - رسائل: عنوان وقيمتان إلى 4 وردود على اعتراضات محتملة.
-- مقاييس قابلة للقياس (2 إلى 6) مع الوسم basis؛ الأهداف الرقمية افتراضات ما لم يذكرها المستخدم.
-- مسودتا منشور (حتى 2) للمراجعة فقط.
+- مقاييس قابلة للقياس (3 إلى 4) مع الوسم basis؛ الأهداف الرقمية افتراضات ما لم يذكرها المستخدم.
+- 2 إلى 3 مسودات منشورات للمراجعة فقط.
 - totalBudgetEgp يساوي مجموع ميزانيات القنوات.
 - إن احتاج جزء لدور آخر (مبيعات، مالية، قانون، منتج) ضعه في handoff.`,
   outputShape: `{"positioning":string,"channels":[{"name":string,"why":string,"budgetEgp":number,"weeklyActions":[string],"basis":"assumption"|"user_fact"|"needs_check"}],"weeks":[{"week":1,"goal":string,"tasks":[string]},{"week":2,...},{"week":3,...},{"week":4,...}],"messaging":{"headline":string,"valueProps":[string],"objections":[{"objection":string,"answer":string}]},"metrics":[{"name":string,"target":string,"basis":...}],"draftPosts":[{"channel":string,"text":string}],"totalBudgetEgp":number,"handoff":[{"role":string,"reason":string}]}`,
