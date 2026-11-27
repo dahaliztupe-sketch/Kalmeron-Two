@@ -62,7 +62,7 @@ export async function generateMetadata(): Promise<Metadata> {
     ],
     manifest: "/manifest.json",
     openGraph: {
-      title: "كلميرون — ٥٧ مساعداً ذكياً للمؤسّس العربي",
+      title: "كلميرون — مساعدون بالذكاء الاصطناعي للمؤسّس العربي (تجريبي)",
       description: "سبعة أقسام تشغيلية مترابطة في منصة واحدة — من الفكرة إلى خطة العمل والنمو.",
       images: [
         {
@@ -80,7 +80,7 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     twitter: {
       card: "summary_large_image",
-      title: "كلميرون — ٥٧ مساعداً ذكياً للمؤسّس العربي",
+      title: "كلميرون — مساعدون بالذكاء الاصطناعي للمؤسّس العربي (تجريبي)",
       description: "نظام تشغيل المؤسسين — سبعة أقسام تشغيلية مترابطة في منصة واحدة.",
       images: [`/api/og?title=${encodeURIComponent("نظام تشغيل المؤسّس العربي")}&type=default`],
       creator: "@kalmeronai",
@@ -132,7 +132,7 @@ const jsonLd = {
       "inLanguage": ["ar", "en"],
       "availableOnDevice": "Web Browser",
       "featureList": [
-        "57 Specialised AI Assistants",
+        "AI role assistants (experimental, drafts only)",
         "Arabic-native AI (no machine translation)",
         "Egyptian market analysis and legal compliance",
         "Financial modelling and cash runway calculator",
@@ -142,13 +142,6 @@ const jsonLd = {
         "Multi-agent council for strategic decisions",
         "Workflows automation engine",
         "Company builder with org chart",
-      ],
-      "offers": [
-        { "@type": "Offer", "name": "Free", "price": "0", "priceCurrency": "EGP" },
-        { "@type": "Offer", "name": "Starter", "price": "199", "priceCurrency": "EGP" },
-        { "@type": "Offer", "name": "Pro", "price": "499", "priceCurrency": "EGP" },
-        // lexicon-allow
-        { "@type": "Offer", "name": "Founder", "price": "999", "priceCurrency": "EGP" },
       ],
       "author": { "@type": "Organization", "@id": `${siteUrl}/#org`, "name": "Kalmeron AI" },
     },
