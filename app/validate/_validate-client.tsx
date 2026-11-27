@@ -154,7 +154,13 @@ export default function ValidateClient({ initialIdea = "" }: { initialIdea?: str
           placeholder="مثال: تطبيق يوصّل أدوية الأمراض المزمنة لكبار السن في القاهرة باشتراك شهري..."
           className="w-full rounded-2xl border border-white/10 bg-white/[0.03] p-4 text-white placeholder:text-neutral-400 focus:outline-none focus:border-cyan-400/50"
           aria-label="وصف الفكرة"
+          aria-describedby="idea-hint"
         />
+        <p id="idea-hint" className="text-xs text-neutral-400">
+          {idea.trim().length < 30
+            ? "اكتب جملتين على الأقل: من العميل، وما المشكلة، وكيف تحلها. التفاصيل تحسّن التحليل."
+            : `${idea.length} / 5000`}
+        </p>
         <input
           value={industry}
           onChange={(e) => setIndustry(e.target.value)}
@@ -165,7 +171,7 @@ export default function ValidateClient({ initialIdea = "" }: { initialIdea?: str
         />
         <button
           onClick={submit}
-          disabled={loading || !idea.trim()}
+          disabled={loading || idea.trim().length < 15}
           className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-l from-cyan-500 to-violet-500 px-8 py-3 font-bold text-white disabled:opacity-50 min-h-[44px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-300"
         >
           {loading && <Loader2 className="h-4 w-4 animate-spin" />}
