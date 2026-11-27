@@ -1,3 +1,4 @@
+import { geminiModel } from '@/src/lib/model-ids';
 import { Agent } from '@mastra/core/agent';
 import { google } from '@ai-sdk/google';
 import { z } from 'zod';
@@ -8,7 +9,7 @@ export const realEstateAnalyzerAgent = new Agent({
   id: 'real-estate-analyzer-agent',
   name: 'Real Estate Deal Analyzer',
   instructions: REAL_ESTATE_PROMPT,
-  model: google('gemini-2.5-flash'),
+  model: google(geminiModel('flash')),
   tools: {
     search_properties: {
       description: 'البحث عن عقارات استثمارية بناءً على معايير محددة',
@@ -59,5 +60,5 @@ export async function realEstateAnalyzerRun(prompt: string) {
   return instrumentAgent('real_estate_analyzer', async () => {
     const res = await realEstateAnalyzerAgent.generate(prompt) as { text?: string };
     return res?.text ?? res;
-  }, { model: 'gemini-2.5-flash', input: { prompt }, toolsUsed: ['analyze_deal', 'search_properties'] });
+  }, { model: geminiModel('flash'), input: { prompt }, toolsUsed: ['analyze_deal', 'search_properties'] });
 }

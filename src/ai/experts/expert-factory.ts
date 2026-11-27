@@ -1,6 +1,7 @@
 /**
  * Expert Factory — يولّد خبراء متخصصين من وصف باللغة الطبيعية.
  */
+import { geminiModel } from '@/src/lib/model-ids';
 import { generateText } from 'ai';
 import { MODELS } from '@/src/lib/gemini';
 import { adminDb } from '@/src/lib/firebase-admin';
@@ -83,7 +84,7 @@ export async function createExpertFromDescription(
     description,
     systemPrompt: String(parsed.systemPrompt || description).slice(0, 8000),
     tools: sanitizeTools(parsed.tools ?? []),
-    model: 'gemini-2.5-flash',
+    model: geminiModel('flash'),
     temperature: typeof parsed.temperature === 'number' ? Math.max(0, Math.min(1, parsed.temperature)) : 0.4,
     examples: Array.isArray(parsed.examples) ? (parsed.examples as Array<{ q: string; a: string }>).slice(0, 10) : [],
   };

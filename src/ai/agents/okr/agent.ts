@@ -1,6 +1,7 @@
 /**
  * OKR Agent — توليد الأهداف الأسبوعية، تتبع التقدم، تقرير ذاتي.
  */
+import { geminiModel } from '@/src/lib/model-ids';
 import { generateText } from 'ai';
 import { google } from '@ai-sdk/google';
 import { instrumentAgent } from '@/src/lib/observability/agent-instrumentation';
@@ -9,7 +10,7 @@ import { OKR_PROMPT } from './prompt';
 
 const DEPARTMENTS = ['marketing', 'sales', 'product', 'finance', 'hr', 'legal', 'operations', 'strategy'];
 
-const MODEL = google('gemini-2.5-flash');
+const MODEL = google(geminiModel('flash'));
 
 export async function generateWeeklyGoals(userId: string) {
   return instrumentAgent('okr_agent', async () => {
@@ -51,7 +52,7 @@ ${context}
       created.push(okr);
     }
     return { count: created.length, okrs: created };
-  }, { model: 'gemini-2.5-flash', input: { userId }, toolsUsed: ['okr.generate'] });
+  }, { model: geminiModel('flash'), input: { userId }, toolsUsed: ['okr.generate'] });
 }
 
 export async function trackOKRProgress(okrId: string, krIndex: number, current: number) {

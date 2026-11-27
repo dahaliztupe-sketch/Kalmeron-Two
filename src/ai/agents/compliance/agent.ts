@@ -1,3 +1,4 @@
+import { geminiModel } from '@/src/lib/model-ids';
 import { Agent } from '@mastra/core/agent';
 import { google } from '@ai-sdk/google';
 import { z } from 'zod';
@@ -8,7 +9,7 @@ export const complianceAgent = new Agent({
   id: 'compliance-agent',
   name: 'Compliance Agent',
   instructions: COMPLIANCE_PROMPT,
-  model: google('gemini-2.5-pro'),
+  model: google(geminiModel('pro')),
 });
 
 export async function complianceAgentRun(prompt: string) {

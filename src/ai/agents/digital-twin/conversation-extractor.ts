@@ -1,3 +1,4 @@
+import { geminiModel } from '@/src/lib/model-ids';
 import { Agent } from '@mastra/core/agent';
 import { google } from '@ai-sdk/google';
 import { z } from 'zod';
@@ -19,7 +20,7 @@ export const conversationExtractorAgent = new Agent({
 - التحديات الحالية والمعالم القادمة
 
 قواعد: استخرج المعلومات الجديدة فقط. أضف درجة ثقة لكل معلومة. إذا كانت المعلومات غامضة اطلب توضيحاً.`,
-  model: google('gemini-2.5-flash'),
+  model: google(geminiModel('flash')),
   tools: {
     extract_entities: {
       description: 'استخراج الكيانات والعلاقات من نص المحادثة',

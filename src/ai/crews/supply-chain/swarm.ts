@@ -1,5 +1,6 @@
 // ts-nocheck: reason=complex agent/crew patterns; scheduled for typed refactor
 // @ts-nocheck
+import { geminiModel } from '@/src/lib/model-ids';
 import { Agent, Workflow } from '@mastra/core';
 import { z } from 'zod';
 import { instrumentAgent } from '@/src/lib/observability/agent-instrumentation';
@@ -12,7 +13,7 @@ export const demandAgent = new Agent({
   استخدم TimeCopilot وNixtla لتوليد توقعات دقيقة.
   قدم تقريرًا يتضمن: توقعات الطلب للأشهر 3-6-12 القادمة، فترات الذروة المتوقعة، وتوصيات لمستويات المخزون المثلى.`,
   // Cost optimization: Complex task
-  model: { provider: 'google', name: 'gemini-2.5-pro' },
+  model: { provider: 'google', name: geminiModel('pro') },
   tools: {
     timecopilot_forecast: {
       description: 'تشغيل تنبؤات السلاسل الزمنية باستخدام TimeCopilot',
@@ -34,7 +35,7 @@ export const inventoryAgent = new Agent({
   instructions: `أنت خبير في تحسين المخزون وموازنة مستويات الخدمة مع التكاليف.
   مهمتك: مراقبة مستويات المخزون في الوقت الفعلي، وتحديد حالات نقص المخزون أو الفائض، واقتراح عمليات نقل المخزون بين المستودعات.
   استخدم مبادئ "سرب الوكلاء" (Agent Swarm) للتفاوض مع وكلاء آخرين (الطلب، اللوجستيات) لتحقيق التوازن الأمثل.`,
-  model: { provider: 'google', name: 'gemini-2.5-flash' },
+  model: { provider: 'google', name: geminiModel('flash') },
 });
 
 // 3. Logistics & Tracking Agent
@@ -43,7 +44,7 @@ export const logisticsAgent = new Agent({
   instructions: `أنت خبير في إدارة الشحنات واللوجستيات.
   مهمتك: تتبع الشحنات في الوقت الفعلي، واكتشاف الاضطرابات (مثل ازدحام الموانئ، التأخيرات الجوية)، واقتراح مسارات بديلة.
   استلهم من project44's Disruption Management Agent الذي يفحص الأحداث العالمية في الوقت الفعلي ويبدأ إجراءات استجابة منسقة قبل تفاقم الاستثناءات.`,
-  model: { provider: 'google', name: 'gemini-2.5-flash' },
+  model: { provider: 'google', name: geminiModel('flash') },
 });
 
 // Supply Chain Swarm Workflow
@@ -76,5 +77,5 @@ export const executeSupplyChainCrew = async (storeId: string) => {
   return instrumentAgent('supply_chain_swarm', async () => {
     const run = await supplyChainSwarm.execute({ storeId });
     return run.results;
-  }, { model: 'gemini-2.5-pro', input: { storeId }, toolsUsed: ['demand', 'inventory', 'logistics'] });
+  }, { model: geminiModel('pro'), input: { storeId }, toolsUsed: ['demand', 'inventory', 'logistics'] });
 };
