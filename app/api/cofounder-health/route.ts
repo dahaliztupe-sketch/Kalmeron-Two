@@ -1,3 +1,4 @@
+import { geminiModel } from '@/src/lib/model-ids';
 import { NextRequest, NextResponse } from 'next/server';
 import { cofounderHealthCheckAction } from '@/src/ai/agents/cofounder-coach/agent';
 import { rateLimit, rateLimitResponse } from '@/src/lib/security/rate-limit';
@@ -35,7 +36,7 @@ export async function POST(request: NextRequest) {
     if (mode === 'agreement') {
       const { generateText } = await import('ai');
       const { google } = await import('@/src/lib/gemini');
-      const MODEL = google('gemini-2.5-pro');
+      const MODEL = google(geminiModel('pro'));
       const companyName = xss(String(body.companyName ?? 'الشركة').slice(0, 200));
       const companyType = xss(String(body.companyType ?? 'LLC').slice(0, 50));
       const terms = body.terms ?? {};

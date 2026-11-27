@@ -1,6 +1,7 @@
 /**
  * POST /api/real-estate — AI-powered Egyptian real estate deal analyzer
  */
+import { geminiModel } from '@/src/lib/model-ids';
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { adminAuth } from '@/src/lib/firebase-admin';
@@ -12,7 +13,7 @@ import { google } from '@/src/lib/gemini';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-const MODEL = google('gemini-2.5-flash');
+const MODEL = google(geminiModel('flash'));
 
 const AnalyzeSchema = z.object({
   location: z.string().min(3).max(500),

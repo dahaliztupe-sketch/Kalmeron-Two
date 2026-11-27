@@ -13,6 +13,7 @@
  * OpenRouter → Groq → Anthropic → OpenAI) so the best available model
  * is always used. A log line is emitted when a non-primary provider is used.
  */
+import { geminiModel } from '@/src/lib/model-ids';
 import { NextRequest, NextResponse } from 'next/server';
 import { streamText, convertToModelMessages, type UIMessage } from 'ai';
 import { requireAuth } from '@/src/lib/security/require-admin';
@@ -51,7 +52,7 @@ export async function POST(req: NextRequest) {
   } catch {
     // Last resort: fall back to Gemini directly
     const { google } = await import('@ai-sdk/google');
-    model = google('gemini-2.5-flash');
+    model = google(geminiModel('flash'));
   }
 
   const result = streamText({

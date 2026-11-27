@@ -1,3 +1,4 @@
+import { geminiModel } from '@/src/lib/model-ids';
 import { NextRequest, NextResponse } from 'next/server';
 import { generateText } from 'ai';
 import { google } from '@/src/lib/gemini';
@@ -11,7 +12,7 @@ import { sanitizeLogValue } from '@/src/lib/security/sanitize-log';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-const MODEL = google('gemini-2.5-flash');
+const MODEL = google(geminiModel('flash'));
 
 const WHATSAPP_SUFFIX = `
 قدّم ردّاً مختصراً ومباشراً يناسب WhatsApp: 3-4 جمل فقط، بالعربية.`;

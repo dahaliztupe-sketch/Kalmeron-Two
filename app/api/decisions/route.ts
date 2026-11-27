@@ -3,6 +3,7 @@
  * POST /api/decisions — create entry
  * PATCH /api/decisions — update/delete entry
  */
+import { geminiModel } from '@/src/lib/model-ids';
 import { NextRequest, NextResponse } from 'next/server';
 import { adminAuth, adminDb } from '@/src/lib/firebase-admin';
 import { rateLimit, rateLimitResponse } from '@/src/lib/security/rate-limit';
@@ -63,7 +64,7 @@ ${options ? `الخيارات المتاحة: ${options}` : ''}
 
 أجب بالعربية الرسمية الموجزة في 200 كلمة كحد أقصى.`;
 
-    const response = await ai.models.generateContent({ model: 'gemini-2.5-flash', contents: prompt });
+    const response = await ai.models.generateContent({ model: geminiModel('flash'), contents: prompt });
     return NextResponse.json({ analysis: response.text || '' });
   }
 

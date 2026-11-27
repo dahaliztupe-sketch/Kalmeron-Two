@@ -1,3 +1,4 @@
+import { geminiModel } from '@/src/lib/model-ids';
 import { NextRequest, after } from 'next/server';
 import xss from 'xss';
 import { intelligentOrchestrator } from '@/src/ai/orchestrator/supervisor';
@@ -114,7 +115,7 @@ export async function POST(req: NextRequest) {
 
   if (userId !== 'guest-system') {
     const creditManager = new CreditManager(userId);
-    const creditResult = await creditManager.consumeCredits(5, 'Supervisor', 'gemini-2.5-flash');
+    const creditResult = await creditManager.consumeCredits(5, 'Supervisor', geminiModel('flash'));
     if (!creditResult.success) {
       return new Response(
         JSON.stringify({
@@ -286,7 +287,7 @@ export async function POST(req: NextRequest) {
           after(async () => {
             // 1) فوترة الاستخدام
             try {
-              await trackAgentUsage(userId, 'Supervisor', 'gemini-2.5-flash', 1000);
+              await trackAgentUsage(userId, 'Supervisor', geminiModel('flash'), 1000);
             } catch (e) {
               log.warn({ msg: 'after_track_usage_failed', err: (e as Error)?.message });
             }
