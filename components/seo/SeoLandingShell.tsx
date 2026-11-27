@@ -141,8 +141,7 @@ export function SeoLandingShell({
             ابنِ قسمك الأوّل خلال 5 دقائق
           </h2>
           <p className="text-zinc-300 mb-8 max-w-2xl mx-auto leading-relaxed">
-            انضمّ لمئات المؤسّسين الذين يبنون شركاتهم مع كلميرون.
-            مجاناً، بدون بطاقة ائتمان، وبخصوصية كاملة لبياناتك.
+            جرّب مشروعاً تجريبياً مجانياً، بدون بطاقة ائتمان. المخرجات مسودات غير مراجعة بشرياً.
           </p>
           <PrimaryCTA href={ctaHref} size="lg">
             {ctaLabel}

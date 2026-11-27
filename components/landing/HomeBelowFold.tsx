@@ -158,7 +158,7 @@ const FEATURES_BENTO = [
   {
     icon: Scale,
     title: "عقود قانونية جاهزة",
-    desc: "عقود مؤسسين، NDA، عقود خدمات — محررة باحترافية وجاهزة للتخصيص.",
+    desc: "عقود مؤسسين، NDA، عقود خدمات — مسودات للتخصيص، وتحتاج مراجعة محامٍ قبل أي استخدام.",
     span: "",
     gradient: "from-amber-500/10 to-orange-500/5",
     border: "border-amber-500/15",
@@ -180,13 +180,9 @@ const FEATURES_BENTO = [
 // ─── COMPARISON DATA ─────────────────────────────────────────────────────────
 
 const COMPARISON = [
-  { feature: "متاح على مدار الساعة", kalmeron: true,   consultant: false,       tools: "جزئياً" },
   { feature: "يفهم سياق أعمالك وسوقك",  kalmeron: true,   consultant: "أحياناً", tools: false },
-  { feature: "نمذجة مالية احترافية", kalmeron: true, consultant: true,  tools: false },
   { feature: "عقود قانونية جاهزة",  kalmeron: true,   consultant: true,      tools: false },
   { feature: "ذاكرة مؤسسية مشتركة", kalmeron: true,   consultant: false,      tools: false },
-  { feature: "يتعلم من بياناتك",    kalmeron: true,   consultant: false,      tools: false },
-  { feature: "أسعار واضحة وثابتة",  kalmeron: true,   consultant: false,      tools: "بعضها" },
 ];
 
 // ─── COMPARISON CELL ─────────────────────────────────────────────────────────
@@ -474,11 +470,11 @@ function ComparisonSection() {
             <Trophy className="w-3 h-3" /> لماذا كلميرون؟
           </div>
           <h2 className="font-display text-2xl sm:text-3xl md:text-4xl font-extrabold text-white mb-4">
-            بدل ما تدفع للجميع —
-            <span className="brand-gradient-text"> كلميرون يكفيك</span>
+            جرّب قبل أن تدفع —
+            <span className="brand-gradient-text"> مسودات بالذكاء الاصطناعي</span>
           </h2>
           <p className="text-neutral-400 max-w-lg mx-auto text-sm md:text-base">
-            المؤسسون يدفعون آلافاً شهرياً لمستشارين متفرقين. كلميرون يعمل كلهم بكسر التكلفة.
+            مقارنة تقريبية غير موثّقة بمصادر. المساعدون يجهّزون مسودات تراجعها بنفسك ولا يغنون عن مستشار مهني.
           </p>
         </motion.div>
 
