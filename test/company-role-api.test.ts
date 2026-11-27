@@ -9,7 +9,8 @@ vi.mock("@/src/lib/security/rate-limit", () => ({ rateLimit: () => ({ success: t
 vi.mock("@/src/lib/logger", () => ({ logger: { warn: vi.fn(), error: vi.fn(), info: vi.fn() } }));
 let guestAllowed = true;
 vi.mock("@/src/lib/plan/guest-cap", () => ({ consumeGuestQuota: async () => guestAllowed }));
-import { POST } from "@/app/api/company/role/route";
+import { POST, maxDuration } from "@/app/api/company/role/route";
+import { logger } from "@/src/lib/logger";
 
 const plan = {
   idea: "x", verdict: "proceed", verdictReason: "r",
@@ -74,5 +75,21 @@ describe("/api/company/role", () => {
     generate.mockResolvedValue({ text: "nope" });
     const res = await POST(req({ role: "marketing", plan }));
     expect(res.status).toBe(502);
+  });
+  it("model call failure gives 502 model_error and logs the cause without prompt or key", async () => {
+    vi.mocked(logger.warn).mockClear();
+    generate.mockRejectedValue(new Error("quota exceeded"));
+    const res = await POST(req({ role: "marketing", plan }));
+    expect(res.status).toBe(502);
+    expect((await res.json()).error).toBe("model_error");
+    const logged = vi.mocked(logger.warn).mock.calls.find((c) => (c[0] as { event?: string }).event === "company_role_model_call_failed");
+    expect(logged).toBeTruthy();
+    expect(JSON.stringify(logged![0])).toContain("quota exceeded");
+    expect(JSON.stringify(logged![0])).not.toContain(plan.idea + "\n");
+  });
+  it("invalid JSON body gives 400 and the route allows a 60 s run", async () => {
+    const bad = new NextRequest("http://x/api/company/role", { method: "POST", headers: { Authorization: "Bearer t" }, body: "{nope" });
+    expect((await POST(bad)).status).toBe(400);
+    expect(maxDuration).toBe(60);
   });
 });
