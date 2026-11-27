@@ -1,3 +1,4 @@
+import { geminiModel } from '@/src/lib/model-ids';
 import { generateText } from 'ai';
 import { google } from '@ai-sdk/google';
 import { quarantineCorpus } from '@/src/lib/security/context-quarantine';
@@ -35,7 +36,7 @@ export async function evaluateRetrievalRelevance(query: string, documents: strin
   درجة الصلة (0-1):`;
   
   const result = await generateText({
-    model: google('gemini-2.5-flash-lite'), // نموذج خفيف وسريع للتقييم
+    model: google(geminiModel('lite')), // نموذج خفيف وسريع للتقييم
     prompt,
     maxOutputTokens: 10,
     temperature: 0,
@@ -58,7 +59,7 @@ export async function rewriteQuery(originalQuery: string, feedback?: string): Pr
   الاستعلام المعاد صياغته:`;
   
   const result = await generateText({
-    model: google('gemini-2.5-flash'),
+    model: google(geminiModel('flash')),
     prompt,
     maxOutputTokens: 200,
     temperature: 0.4,

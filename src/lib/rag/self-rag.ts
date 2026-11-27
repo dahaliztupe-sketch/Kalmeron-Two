@@ -1,3 +1,4 @@
+import { geminiModel } from '@/src/lib/model-ids';
 import { generateText } from 'ai';
 import { google } from '@ai-sdk/google';
 import { quarantineCorpus } from '@/src/lib/security/context-quarantine';
@@ -39,7 +40,7 @@ export async function reflectOnRetrieval(query: string, documents: string[]): Pr
   تقييم JSON:`;
   
   const result = await generateText({
-    model: google('gemini-2.5-flash'),
+    model: google(geminiModel('flash')),
     prompt,
     maxOutputTokens: 300,
     temperature: 0,
@@ -70,7 +71,7 @@ export async function generateHonestDontKnow(query: string): Promise<string> {
   الرد:`;
   
   const result = await generateText({
-    model: google('gemini-2.5-flash'),
+    model: google(geminiModel('flash')),
     prompt,
     maxOutputTokens: 200,
     temperature: 0.3,
@@ -107,7 +108,7 @@ export async function selfRAGRetrieve(
       الاستعلام المحسن:`;
       
       const refineResult = await generateText({
-        model: google('gemini-2.5-flash'),
+        model: google(geminiModel('flash')),
         prompt: refinePrompt,
         maxOutputTokens: 200,
         temperature: 0.4,

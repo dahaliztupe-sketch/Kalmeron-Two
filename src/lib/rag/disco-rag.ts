@@ -1,3 +1,4 @@
+import { geminiModel } from '@/src/lib/model-ids';
 import { generateText } from 'ai';
 import { google } from '@ai-sdk/google';
 import { quarantineCorpus } from '@/src/lib/security/context-quarantine';
@@ -52,7 +53,7 @@ export async function analyzeDiscourse(documents: string[]): Promise<DiscourseAn
   تحليل JSON:`;
   
   const result = await generateText({
-    model: google('gemini-2.5-pro'), // نموذج أقوى للتحليل العميق
+    model: google(geminiModel('pro')), // نموذج أقوى للتحليل العميق
     prompt,
     maxOutputTokens: 1000,
     temperature: 0.1,
@@ -140,7 +141,7 @@ export async function discoGenerateAnswer(
   الإجابة:`;
   
   const result = await generateText({
-    model: google('gemini-2.5-pro'),
+    model: google(geminiModel('pro')),
     prompt,
     maxOutputTokens: 1000,
     temperature: 0.3,

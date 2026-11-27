@@ -1,15 +1,16 @@
+import { geminiModel } from '@/src/lib/model-ids';
 // ts-nocheck: reason=complex integration patterns; scheduled for typed refactor
 // @ts-nocheck
 
 // Gemini Flex Tier 
 export function selectModel(complexity: 'simple' | 'medium' | 'complex', isLatencySensitive: boolean) {
   if (complexity === 'simple' && !isLatencySensitive) {
-    return { model: 'gemini-2.5-flash-lite', tier: 'flex' }; // مستوى الخصم (أرخص)
+    return { model: geminiModel('lite'), tier: 'flex' }; // مستوى الخصم (أرخص)
   }
   if (complexity === 'medium') {
-    return { model: 'gemini-2.5-flash', tier: 'priority' };
+    return { model: geminiModel('flash'), tier: 'priority' };
   }
-  return { model: 'gemini-2.5-pro', tier: 'priority' };
+  return { model: geminiModel('pro'), tier: 'priority' };
 }
 
 // vLLM Semantic Router Simulation
@@ -20,7 +21,7 @@ export class SemanticRouter {
 
 export const router = new SemanticRouter({
   primary: { model: 'qwen3-coder-next', quantized: true },
-  fallback: { model: 'gemini-2.5-pro' },
+  fallback: { model: geminiModel('pro') },
   threshold: 0.85, // استخدام النموذج الأساسي المجاني إذا كانت الثقة > 85%
 });
 
@@ -32,8 +33,8 @@ export class MorphGateway {
 
 export const gateway = new MorphGateway({
   routes: [
-    { condition: { taskType: 'simple' }, model: 'gemini-2.5-flash-lite' },
-    { condition: { taskType: 'complex' }, model: 'gemini-2.5-pro' },
+    { condition: { taskType: 'simple' }, model: geminiModel('lite') },
+    { condition: { taskType: 'complex' }, model: geminiModel('pro') },
   ],
   failover: true,
   rateLimit: { maxRequests: 100, window: '1m' },

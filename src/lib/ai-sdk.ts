@@ -5,8 +5,9 @@
  * We export a configured LanguageModel instance instead, which is the
  * correct type for use with `generateText`, `streamText`, etc.
  */
+import { geminiModel } from '@/src/lib/model-ids';
 import { google } from '@ai-sdk/google';
 import type { LanguageModel } from 'ai';
 
 // gemini-2.5-flash-lite not supported via Replit AI proxy — use gemini-2.5-flash
-export const ai: LanguageModel = google('gemini-2.5-flash');
+export const ai: LanguageModel = google(geminiModel('flash'));

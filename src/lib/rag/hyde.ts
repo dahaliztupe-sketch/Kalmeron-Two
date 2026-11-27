@@ -1,3 +1,4 @@
+import { geminiModel } from '@/src/lib/model-ids';
 import { generateText } from 'ai';
 import { google } from '@ai-sdk/google';
 
@@ -15,7 +16,7 @@ export async function generateHypotheticalAnswer(query: string): Promise<string>
   الإجابة الافتراضية:`;
   
   const result = await generateText({
-    model: google('gemini-2.5-flash'), // نموذج سريع ومناسب
+    model: google(geminiModel('flash')), // نموذج سريع ومناسب
     prompt,
     maxOutputTokens: 150,
     temperature: 0.3, // إبداع منخفض للحصول على إجابات متسقة
