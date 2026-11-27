@@ -5,6 +5,7 @@
  * Fallback 2: Serper.dev API if SERPER_API_KEY is set.
  * Last-resort: simple DuckDuckGo HTML scrape (no key needed) — best-effort.
  */
+import { geminiModel } from '@/src/lib/model-ids';
 import { GoogleGenAI } from '@google/genai';
 
 export interface WebSearchResult {
@@ -37,7 +38,7 @@ export async function webSearch(query: string, opts: WebSearchOpts = {}): Promis
     try {
       const ai = new GoogleGenAI({ apiKey: geminiKey });
       const r = await ai.models.generateContent({
-        model: 'gemini-2.5-flash',
+        model: geminiModel('flash'),
         contents: query,
         config: {
           tools: [{ googleSearch: {} }],

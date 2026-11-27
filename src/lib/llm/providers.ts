@@ -17,6 +17,7 @@
  * Anthropic & OpenAI adapters are intentionally lazy: we don't import
  * their SDKs until the env keys are present, so build size stays flat.
  */
+import { geminiModel } from '@/src/lib/model-ids';
 import type { TaskTier } from '@/src/lib/model-router';
 
 export type ProviderId = 'gemini' | 'openrouter' | 'groq' | 'anthropic' | 'openai';
@@ -56,11 +57,11 @@ const TEXT_STREAM_ONLY: ProviderCapabilities = { vision: false, json: false, too
  */
 const PROVIDER_TIERS: Record<ProviderId, Record<TaskTier, ProviderModel>> = {
   gemini: {
-    trivial:  { provider: 'gemini', id: 'gemini-2.5-flash', approxCostPerMTokens: { input: 0.15, output: 0.60 }, capabilities: FULL },
-    simple:   { provider: 'gemini', id: 'gemini-2.5-flash', approxCostPerMTokens: { input: 0.15, output: 0.60 }, capabilities: FULL },
-    medium:   { provider: 'gemini', id: 'gemini-2.5-flash',      approxCostPerMTokens: { input: 0.30, output: 2.50 },  capabilities: FULL },
-    complex:  { provider: 'gemini', id: 'gemini-2.5-flash',      approxCostPerMTokens: { input: 0.30, output: 2.50 },  capabilities: FULL },
-    critical: { provider: 'gemini', id: 'gemini-2.5-pro',        approxCostPerMTokens: { input: 1.25, output: 10.00 }, capabilities: FULL },
+    trivial:  { provider: 'gemini', id: geminiModel('flash'), approxCostPerMTokens: { input: 0.15, output: 0.60 }, capabilities: FULL },
+    simple:   { provider: 'gemini', id: geminiModel('flash'), approxCostPerMTokens: { input: 0.15, output: 0.60 }, capabilities: FULL },
+    medium:   { provider: 'gemini', id: geminiModel('flash'),      approxCostPerMTokens: { input: 0.30, output: 2.50 },  capabilities: FULL },
+    complex:  { provider: 'gemini', id: geminiModel('flash'),      approxCostPerMTokens: { input: 0.30, output: 2.50 },  capabilities: FULL },
+    critical: { provider: 'gemini', id: geminiModel('pro'),        approxCostPerMTokens: { input: 1.25, output: 10.00 }, capabilities: FULL },
   },
   openrouter: {
     // FREE tier — DeepSeek + Llama on OpenRouter cost $0 with rate limits.

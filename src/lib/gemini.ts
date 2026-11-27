@@ -1,3 +1,4 @@
+import { geminiModel } from '@/src/lib/model-ids';
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { generateText } from "ai";
 
@@ -27,11 +28,11 @@ export const google = createGoogleGenerativeAI({ apiKey, ...(baseURL ? { baseURL
 // We default to gemini-2.5-flash for all tiers that would use unsupported models.
 const _usingReplitProxy = !!process.env.AI_INTEGRATIONS_GEMINI_BASE_URL;
 export const MODEL_IDS = {
-    LITE: process.env.MODEL_LITE || "gemini-2.5-flash",
-    FLASH: process.env.MODEL_FLASH || "gemini-2.5-flash",
-    PRO: process.env.MODEL_PRO || "gemini-2.5-pro",
+    LITE: process.env.MODEL_LITE || geminiModel('flash'),
+    FLASH: process.env.MODEL_FLASH || geminiModel('flash'),
+    PRO: process.env.MODEL_PRO || geminiModel('pro'),
     // gemini-embedding-001 NOT supported via Replit AI proxy — use embeddings-worker sidecar
-    EMBEDDING: process.env.MODEL_EMBEDDING || (_usingReplitProxy ? "gemini-2.5-flash" : "gemini-embedding-001"),
+    EMBEDDING: process.env.MODEL_EMBEDDING || (_usingReplitProxy ? geminiModel('flash') : "gemini-embedding-001"),
 } as const;
 
 export const MODELS = {

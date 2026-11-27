@@ -6,6 +6,7 @@
  * النماذج المنخفضة التكلفة (Gemma 4 / DeepSeek V4 / GLM-5.1) كنقاط
  * نهاية، يكفي تغيير القيمة هنا دون لمس باقي الكود.
  */
+import { geminiModel } from '@/src/lib/model-ids';
 import { google } from '@ai-sdk/google';
 
 export type TaskTier =
@@ -27,11 +28,11 @@ export interface RoutedModel {
 // نسمّي كل مستوى بشكل مستقل حتى نستبدله بسهولة لاحقاً.
 // gemini-2.5-flash-lite not supported via Replit AI proxy — use flash for all tiers
 const MODEL_ALIASES: Record<TaskTier, string> = {
-  trivial:  'gemini-2.5-flash',
-  simple:   'gemini-2.5-flash',
-  medium:   'gemini-2.5-flash',
-  complex:  'gemini-2.5-flash',
-  critical: 'gemini-2.5-pro',
+  trivial:  geminiModel('flash'),
+  simple:   geminiModel('flash'),
+  medium:   geminiModel('flash'),
+  complex:  geminiModel('flash'),
+  critical: geminiModel('pro'),
 };
 
 const COST_TABLE: Record<TaskTier, { input: number; output: number }> = {
@@ -189,11 +190,11 @@ export type OrchestratorWorkload = 'chat' | 'reasoning' | 'fast';
 export function getOrchestratorModel(workload: OrchestratorWorkload = 'chat') {
   switch (workload) {
     case 'reasoning':
-      return google('gemini-2.5-pro');
+      return google(geminiModel('pro'));
     case 'fast':
-      return google('gemini-2.5-flash-lite');
+      return google(geminiModel('lite'));
     case 'chat':
     default:
-      return google('gemini-2.5-flash');
+      return google(geminiModel('flash'));
   }
 }

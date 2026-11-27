@@ -1,3 +1,4 @@
+import { geminiModel } from '@/src/lib/model-ids';
 import { Mem0 } from 'mem0ai';
 import { doc, getDoc, setDoc, collection, addDoc, query, orderBy, limit, getDocs, serverTimestamp } from 'firebase/firestore';
 import { db } from './firebase';
@@ -12,7 +13,7 @@ export const mem0 = new Mem0({
     },
     llm: {
       provider: 'google',
-      model: 'gemini-2.5-flash-lite',
+      model: geminiModel('lite'),
     },
   },
 });
