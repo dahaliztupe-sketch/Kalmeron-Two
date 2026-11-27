@@ -3,7 +3,7 @@ import PageClient from "./_page-client";
 
 export const metadata: Metadata = {
   title: "متحف النجاحات — Kalmeron AI",
-  description: "قصص نجاح حقيقية ملهمة من رواد الأعمال العرب الذين بنوا شركاتهم بمساعدة Kalmeron AI. تعرّف على رحلاتهم ودروسهم المستفادة.",
+  description: "ملخصات عامة عن شركات مصرية معروفة ودروس منها. الأرقام غير موثقة بمصادر في الصفحة، ولا علاقة لهذه الشركات بكلميرون.",
 };
 
 export default function Page() {
