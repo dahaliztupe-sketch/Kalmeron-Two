@@ -9,10 +9,10 @@ import {
 export const metadata: Metadata = {
   title: "من نحن | كلميرون AI Studio",
   description:
-    "كلميرون AI — مقرّ عمليات كل شركة ناشئة عربية. تعرّف على قصتنا، مهمّتنا، ورؤيتنا لمستقبل ريادة الأعمال في المنطقة.",
+    "كلميرون مشروع تجريبي بُني بمساعدة الذكاء الاصطناعي، يقدّم مساعدين لأدوار الشركة للمؤسس العربي. حالته الآن: تجريبي، متوقف مؤقتاً.",
   openGraph: {
     title: "من نحن | كلميرون AI Studio",
-    description: "نبني نظام التشغيل الذكي للشركات الناشئة العربية.",
+    description: "مشروع تجريبي: مساعدون بالذكاء الاصطناعي لأدوار الشركة. المخرجات مسودات غير مراجعة بشرياً.",
     locale: "ar_EG",
     type: "website",
   },
@@ -22,7 +22,7 @@ const VALUES = [
   {
     icon: Globe2,
     title: "عمق السياق",
-    desc: "نفهم السوق المصري والخليجي في عمقه — التشريعات والفرص والديناميكيات المحلية، لا مجرد ترجمة.",
+    desc: "نكتب بالعربية ونوجّه المساعدين لسياق السوق المصري. لم يراجع خبير بشري المخرجات بعد، وتحتاج التشريعات والأرقام إلى تحقق.",
     gradient: "from-cyan-500 to-indigo-500",
   },
   {
@@ -34,13 +34,13 @@ const VALUES = [
   {
     icon: Heart,
     title: "الشفافية الكاملة",
-    desc: "سجل تحديثات علني، وأسعار واضحة بدون رسوم خفية أو مفاجآت.",
+    desc: "نقول ما هو تجريبي وما لم يُتحقق منه. لم تُحدَّد أسعار بعد، ولن يُطلب منك أي مبلغ قبل إعلانها.",
     gradient: "from-rose-500 to-pink-500",
   },
   {
     icon: Zap,
-    title: "الفعالية المالية",
-    desc: "سعر لا يتجاوز 5% مما يدفعه رائد الأعمال للمستشارين التقليديين.",
+    title: "التكلفة",
+    desc: "السعر لم يُحدَّد بعد. المساعدون لا يغنون عن مستشار مهني عند القرارات المهمة.",
     gradient: "from-amber-500 to-orange-500",
   },
 ];
@@ -49,7 +49,7 @@ const STATS = [
   { value: "مجاناً", label: "ابدأ بدون بطاقة ائتمان", icon: Users },
   { value: "١٠", label: "أدوار تشغيلية (تجريبي)", icon: Bot },
   { value: "٧", label: "أقسام تشغيلية", icon: Target },
-  { value: "٢٤/٧", label: "متاح دائماً", icon: Zap },
+  { value: "مسودات", label: "غير مراجعة بشرياً", icon: Zap },
 ];
 
 export default function AboutPage() {
@@ -60,13 +60,13 @@ export default function AboutPage() {
         {/* ── Hero ── */}
         <div className="text-center mb-20">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-white/[0.08] bg-white/[0.04] text-[11px] text-cyan-200 mb-6">
-            <MapPin className="w-3 h-3" /> صُنع في مصر 🇪🇬 — للعالم العربي
+            <MapPin className="w-3 h-3" /> صُنع في مصر 🇪🇬 — مشروع تجريبي
           </div>
           <h1 className="font-display text-4xl md:text-6xl font-black text-white mb-6 leading-tight">
             من نحن
           </h1>
           <p className="text-xl text-neutral-400 max-w-2xl mx-auto leading-relaxed">
-            نبني <span className="text-white font-semibold">مقرّ العمليات الذكي</span> لكل مؤسس عربي يريد أن يبني شركة عالمية من أرض عربية.
+            نجرّب <span className="text-white font-semibold">مساعدين بالذكاء الاصطناعي</span> يجهّزون مسودات لأدوار الشركة للمؤسس العربي الجديد.
           </p>
         </div>
 
@@ -98,7 +98,7 @@ export default function AboutPage() {
             </div>
             <h2 className="font-display text-xl font-bold text-white mb-4">قصتنا</h2>
             <p className="text-neutral-400 leading-relaxed text-sm md:text-base">
-              بدأت كلميرون من ملاحظة بسيطة: رائد الأعمال المصري يُنفق من 5,000 إلى 50,000 جنيه شهرياً على مستشارين متفرقين — ومع ذلك يبقى وحيداً أمام أصعب القرارات. قرّرنا أن نبني بديلاً يفهم السياق المحلي، يحترم القانون المصري، ويتاح دائماً.
+              بدأت كلميرون كمشروع تجريبي بمساعدة الذكاء الاصطناعي: فكرة أن المؤسس الجديد يحتاج مسودات منظّمة لأدوار الشركة (تسويق، مبيعات، مالية، وغيرها) يراجعها بنفسه قبل أي قرار. المشروع متوقف مؤقتاً، ولا شيء هنا يغني عن مستشار مهني.
             </p>
           </div>
 
@@ -111,7 +111,7 @@ export default function AboutPage() {
             </div>
             <h2 className="font-display text-xl font-bold text-white mb-4">رؤيتنا</h2>
             <p className="text-neutral-400 leading-relaxed text-sm md:text-base">
-              أن نصبح <strong className="text-white">مقرّ العمليات</strong> لكل شركة ناشئة عربية — منصة واحدة تُغني عن عشرات الأدوات والمستشارين، وتمنح المؤسس وقتاً أطول لما يهم: المنتج والعميل.
+              أن تساعد <strong className="text-white">مسودات واضحة وموثّقة بمصادرها</strong> المؤسس العربي الجديد على اتخاذ قراراته بنفسه، مع بقاء المراجعة والقرار له. هذا هدف لم يتحقق بعد.
             </p>
           </div>
         </div>
@@ -128,7 +128,7 @@ export default function AboutPage() {
             </div>
             <h2 className="font-display text-xl font-bold text-white mb-4">مهمّتنا</h2>
             <p className="text-neutral-300 leading-relaxed text-base md:text-lg max-w-3xl">
-              تمكين كل مؤسس من اتخاذ قرارات أفضل وأسرع — عبر منصة موحّدة تجمع المالية، القانون، التسويق، المبيعات، الموارد البشرية، والعمليات في مكان واحد.
+              مساعدة المؤسس الجديد على تنظيم فكرته وخطواته الأولى بمسودات يراجعها بنفسه. لا نعد بقرارات أفضل أو أسرع قبل أن نقيس ذلك.
             </p>
           </div>
         </div>
@@ -165,7 +165,7 @@ export default function AboutPage() {
         >
           <h2 className="font-display text-xl font-bold text-white mb-4">الفريق</h2>
           <p className="text-neutral-400 leading-relaxed">
-            فريق من المهندسين والمصممين ورواد الأعمال المصريين والخليجيين، مدعوم بشبكة من المستشارين القانونيين والماليين في القاهرة والرياض ودبي. نعمل من قلب المنطقة، لرواد المنطقة.
+            مشروع تجريبي بُني بمساعدة أدوات الذكاء الاصطناعي. لا يوجد فريق أو شبكة مستشارين خلفه حالياً.
           </p>
         </div>
 
