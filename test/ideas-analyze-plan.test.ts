@@ -36,12 +36,20 @@ describe("/api/ideas/analyze format=plan", () => {
     expect(generate).toHaveBeenCalledTimes(1);
   });
 
-  it("falls back to markdown analysis when JSON is invalid", async () => {
-    generate.mockResolvedValueOnce({ text: "not json" }).mockResolvedValueOnce({ text: "تحليل نصي" });
+  it("retries once with the failure reason and returns the plan when the retry is valid", async () => {
+    generate.mockResolvedValueOnce({ text: "not json" }).mockResolvedValueOnce({ text: JSON.stringify(plan) });
+    const j = await (await POST(req({ ideaDesc: "فكرة", format: "plan" }))).json();
+    expect(j.plan.verdict).toBe("stop");
+    expect(generate).toHaveBeenCalledTimes(2);
+    expect(generate.mock.calls[1][0].contents).toContain("The previous answer was not valid");
+  });
+
+  it("falls back to markdown analysis when JSON is invalid twice", async () => {
+    generate.mockResolvedValueOnce({ text: "not json" }).mockResolvedValueOnce({ text: "still not" }).mockResolvedValueOnce({ text: "تحليل نصي" });
     const j = await (await POST(req({ ideaDesc: "فكرة", format: "plan" }))).json();
     expect(j.plan).toBeUndefined();
     expect(j.result).toBe("تحليل نصي");
-    expect(generate).toHaveBeenCalledTimes(2);
+    expect(generate).toHaveBeenCalledTimes(3);
   });
 
   it("falls back when the plan model call throws", async () => {
