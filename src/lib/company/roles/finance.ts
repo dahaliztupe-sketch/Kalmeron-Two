@@ -41,6 +41,13 @@ export const FinancePlanSchema = z.object({
 export type FinancePlan = z.infer<typeof FinancePlanSchema>;
 
 const OVERPROMISE = /(مضمون|ضمان|نضمن|100\s*%|ارباح مؤكدة|أرباح مؤكدة|بدون مخاطر|حتماً|حتما ستربح)/;
+const promiseHit = (ts: string[]): string | null => {
+  for (const t of ts) {
+    const m = t.match(OVERPROMISE);
+    if (m) return m[0];
+  }
+  return null;
+};
 const STAT = /(\d+(\.\d+)?\s*(%|٪)|\d+\s*(مليون|مليار|ألف عميل))/;
 const TOL = 1;
 const near = (a: number, b: number) => Math.abs(a - b) <= TOL;
@@ -51,7 +58,7 @@ export function financeChecks(out: FinancePlan, brief?: { constraints?: { budget
   const warn = (code: string, message: string) => issues.push({ level: "warn", code, message });
 
   const prose = [out.assumptionsSummary, out.collectionNote, out.breakEven.note, ...out.risks.map((r) => r.text), ...out.taxNotes.map((t) => t.text)];
-  if (prose.some((t) => OVERPROMISE.test(t))) err("overpromise", "نص يحتوي وعداً أو ضماناً بربح أو نتيجة.");
+  if (promiseHit(prose)) err("overpromise", `نص يحتوي وعداً أو ضماناً بربح أو نتيجة. (الكلمة: "${promiseHit(prose)}")`);
   if (prose.some((t) => STAT.test(t))) warn("unsupported_statistic", "نسبة أو رقم داخل النص بلا وسم basis. راجعه.");
 
   const fixed = out.fixedCosts.reduce((s, c) => s + c.monthlyEgp, 0);

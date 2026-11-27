@@ -204,7 +204,7 @@ function StatsStrip() {
     { value: "مجاناً",  label: "ابدأ بدون بطاقة ائتمان",        gradient: "from-cyan-400 to-sky-300",      border: "border-cyan-500/12",    glow: "rgba(56,189,248,0.08)"  },
     { value: "٧",       label: "أقسام تشغيلية",    gradient: "from-indigo-400 to-violet-400", border: "border-indigo-500/12",  glow: "rgba(99,102,241,0.08)"  },
     { value: "١٠",      label: "أدوار تشغيلية (تجريبي)",    gradient: "from-fuchsia-400 to-pink-400",  border: "border-fuchsia-500/12", glow: "rgba(217,70,239,0.08)"  },
-    { value: "٢٤/٧",    label: "متاح بلا انقطاع",  gradient: "from-emerald-400 to-teal-300",  border: "border-emerald-500/12", glow: "rgba(16,185,129,0.08)"  },
+    { value: "تجريبي", label: "مسودات غير مراجعة بشرياً",  gradient: "from-emerald-400 to-teal-300",  border: "border-emerald-500/12", glow: "rgba(16,185,129,0.08)"  },
   ];
 
   return (
