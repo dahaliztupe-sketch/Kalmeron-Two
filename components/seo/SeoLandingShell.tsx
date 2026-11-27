@@ -87,7 +87,7 @@ export function SeoLandingShell({
       {breadcrumbs.length > 0 && (
         <nav
           aria-label="مسار التنقل"
-          className="max-w-6xl mx-auto px-4 pt-4 text-xs text-zinc-500"
+          className="max-w-6xl mx-auto px-4 pt-4 text-xs text-zinc-400"
         >
           <ol className="flex items-center gap-2 flex-wrap">
             <li>
@@ -160,14 +160,14 @@ export function SeoLandingShell({
         <div className="max-w-6xl mx-auto px-4 grid md:grid-cols-4 gap-8 text-sm">
           <div className="md:col-span-1">
             <BrandLogo size={28} showWordmark href={null} />
-            <p className="text-zinc-500 mt-3 text-xs leading-relaxed">
+            <p className="text-zinc-400 mt-3 text-xs leading-relaxed">
               مقرّ عمليات شركتك الذكي. سبعة أقسام، خمسون مساعداً، فريق
               متكامل لرائد الأعمال العربي.
             </p>
           </div>
           <div>
             <div className="text-zinc-300 font-medium mb-3">المنتج</div>
-            <ul className="space-y-2 text-zinc-500">
+            <ul className="space-y-2 text-zinc-400">
               <li>
                 <Link href="/pricing" className="hover:text-zinc-300">
                   الأسعار
@@ -192,7 +192,7 @@ export function SeoLandingShell({
           </div>
           <div>
             <div className="text-zinc-300 font-medium mb-3">المعرفة</div>
-            <ul className="space-y-2 text-zinc-500">
+            <ul className="space-y-2 text-zinc-400">
               <li>
                 <Link href="/blog" className="hover:text-zinc-300">
                   المدوّنة
@@ -217,7 +217,7 @@ export function SeoLandingShell({
           </div>
           <div>
             <div className="text-zinc-300 font-medium mb-3">القانوني</div>
-            <ul className="space-y-2 text-zinc-500">
+            <ul className="space-y-2 text-zinc-400">
               <li>
                 <Link href="/privacy" className="hover:text-zinc-300">
                   الخصوصية
@@ -236,7 +236,7 @@ export function SeoLandingShell({
             </ul>
           </div>
         </div>
-        <div className="max-w-6xl mx-auto px-4 mt-8 pt-6 border-t border-white/5 text-xs text-zinc-600 text-center">
+        <div className="max-w-6xl mx-auto px-4 mt-8 pt-6 border-t border-white/5 text-xs text-zinc-400 text-center">
           © {new Date().getFullYear()} Kalmeron AI. جميع الحقوق محفوظة.
         </div>
       </footer>

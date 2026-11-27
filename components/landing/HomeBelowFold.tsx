@@ -230,7 +230,7 @@ function StatsStrip() {
             <div className={`font-display font-black text-3xl md:text-4xl bg-gradient-to-b ${s.gradient} bg-clip-text text-transparent stat-number leading-none`}>
               {s.value}
             </div>
-            <div className="text-[11px] text-neutral-500 font-medium tracking-wide mt-0.5">{s.label}</div>
+            <div className="text-[11px] text-neutral-400 font-medium tracking-wide mt-0.5">{s.label}</div>
           </motion.div>
         ))}
       </div>
@@ -295,7 +295,7 @@ function HowItWorks() {
                     </div>
                   </div>
                   <h3 className="font-bold text-white text-[15px] mb-2 leading-snug">{step.title}</h3>
-                  <p className="text-xs text-neutral-500 leading-relaxed">{step.desc}</p>
+                  <p className="text-xs text-neutral-400 leading-relaxed">{step.desc}</p>
                 </motion.div>
               );
             })}
@@ -431,7 +431,7 @@ function DepartmentsSection() {
                   </div>
                   <div className="mb-1.5">
                     <span className="font-display font-bold text-[15px] text-white">{dept.title}</span>
-                    <span className="text-[10px] text-neutral-600 mr-2 font-mono">{dept.subtitle}</span>
+                    <span className="text-[10px] text-neutral-400 mr-2 font-mono">{dept.subtitle}</span>
                   </div>
                   <p className="text-[13px] text-neutral-400 leading-relaxed">{dept.desc}</p>
                 </div>
@@ -493,7 +493,7 @@ function ComparisonSection() {
             className="grid grid-cols-4 border-b border-white/[0.07]"
             style={{ background: "rgba(255,255,255,0.03)" }}
           >
-            <div className="col-span-1 p-4 text-xs font-medium text-neutral-500">الميزة</div>
+            <div className="col-span-1 p-4 text-xs font-medium text-neutral-400">الميزة</div>
             <div className="p-4 text-center">
               <div className="inline-flex items-center gap-1.5 text-xs font-bold text-white bg-indigo-500/20 border border-indigo-500/30 rounded-full px-2.5 py-1">
                 <Bot className="w-3 h-3" /> كلميرون
@@ -578,7 +578,7 @@ function FinalCTA() {
             </div>
           </form>
 
-          <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-neutral-500">
+          <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-neutral-400">
             <span className="flex items-center gap-1.5"><Check className="w-3.5 h-3.5 text-emerald-400" /> مجاني للبداية</span>
             <span className="flex items-center gap-1.5"><Check className="w-3.5 h-3.5 text-emerald-400" /> بدون بطاقة ائتمان</span>
             <span className="flex items-center gap-1.5"><Check className="w-3.5 h-3.5 text-emerald-400" /> بياناتك تحت تحكمك</span>
@@ -636,7 +636,7 @@ function SiteFooter() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
           <div className="col-span-2 md:col-span-1">
             <BrandLogo size={36} iconOnly showWordmark={false} />
-            <p className="mt-4 text-sm text-neutral-500 leading-relaxed max-w-[200px]">
+            <p className="mt-4 text-sm text-neutral-400 leading-relaxed max-w-[200px]">
               مقرّ عمليات شركتك.
             </p>
             <div className="mt-4 flex items-center gap-1.5">
@@ -647,11 +647,11 @@ function SiteFooter() {
 
           {cols.map((col) => (
             <div key={col.title}>
-              <h4 className="text-[11px] font-bold uppercase tracking-[0.18em] text-neutral-600 mb-4">{col.title}</h4>
+              <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-neutral-400 mb-4">{col.title}</p>
               <ul className="space-y-2.5">
                 {col.links.map((l) => (
                   <li key={l.href}>
-                    <a href={l.href} className="text-sm text-neutral-500 hover:text-white transition-colors">
+                    <a href={l.href} className="text-sm text-neutral-400 hover:text-white transition-colors">
                       {l.label}
                     </a>
                   </li>
@@ -665,10 +665,10 @@ function SiteFooter() {
           className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-6"
           style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}
         >
-          <p className="text-xs text-neutral-700">
+          <p className="text-xs text-neutral-400">
             © {year} Kalmeron AI Studio · جميع الحقوق محفوظة
           </p>
-          <p className="text-xs text-neutral-700">
+          <p className="text-xs text-neutral-400">
             صُنع بـ ♥ في مصر 🇪🇬
           </p>
         </div>
