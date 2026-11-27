@@ -153,7 +153,7 @@ export default function InvestorGuidePage() {
           <div className="text-sm text-amber-100/90">
             <p className="font-semibold mb-1">قاعدة ذهبية للعرض</p>
             <p>
-              لا تشرح كل الـ ٥٧ مساعدًا — اعرض المسار الموصى به (6 مساعدين) من{" "}
+              لا تشرح كل المساعدين — اعرض المسار الموصى به (6 مساعدين) من{" "}
               <Link href="/investor" className="underline hover:text-white">
                 نبضة المنصّة
               </Link>
