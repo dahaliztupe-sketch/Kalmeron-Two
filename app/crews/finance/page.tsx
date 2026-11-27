@@ -4,7 +4,7 @@
  * P2-1 from Virtual Boardroom 201 (Reid Hoffman + Tobi Lütke seats).
  *
  * Markets the existing Finance department in `src/ai/organization/departments/finance/`
- * as a standalone $499/mo SKU: "Finance Crew on demand".
+ * as a (price not set) product page: "Finance Crew on demand".
  * Includes: CFO, FP&A, Tax/Accounting, Cap Table, Investor Pack agents.
  */
 import type { Metadata } from "next";
@@ -15,7 +15,7 @@ import { BrandLogo } from "@/components/brand/BrandLogo";
 export const metadata: Metadata = {
   title: "Finance Crew — فريق مالي ذكي تحت الطلب | كلميرون",
   description:
-    "خمسة وكلاء ماليين متخصصين (CFO، FP&A، ضرائب، Cap Table، حزمة المستثمر) يعملون كفريقك المالي الافتراضي مقابل 499$/شهر — أرخص من راتب محاسب واحد.",
+    "خمسة وكلاء ماليين متخصصين (CFO، FP&A، ضرائب، Cap Table، حزمة المستثمر) مسودات وخطط مالية بمساعدة الذكاء الاصطناعي. السعر لم يُحدد بعد، والمخرجات غير موثقة وتحتاج مراجعة محاسب.",
   alternates: { canonical: "/crews/finance" },
 };
 
@@ -95,12 +95,11 @@ export default function FinanceCrewPage() {
               Finance Crew
             </span>
             <br />
-            خمسة عقول مالية تشتغل لك ٢٤/٧
+            خمسة مساعدين ماليين يعدّون مسودات
           </h1>
           <p className="text-neutral-400 max-w-2xl mx-auto text-lg">
             مدير مالي + محلل تخطيط + ضرائب + Cap Table + حزمة مستثمر — كل ده بـ
-            <span className="text-white font-semibold"> 499$/شهر</span>
-            {" "}بدلاً من +5,000$ لمحاسب واحد بدوام كامل.
+            السعر لم يُحدد بعد، وكلها مسودات بمساعدة الذكاء الاصطناعي تحتاج مراجعة محاسب.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 items-center justify-center mt-8">
             <Link
@@ -146,32 +145,10 @@ export default function FinanceCrewPage() {
           </div>
         </section>
 
-        {/* ROI */}
-        <section className="mb-14">
-          <h2 className="text-2xl font-bold mb-6 text-center">حسبة بسيطة</h2>
-          <div className="grid md:grid-cols-3 gap-4">
-            <div className="rounded-2xl border border-red-500/20 bg-red-500/5 p-6 text-center">
-              <TrendingUp className="w-6 h-6 text-rose-400 mx-auto mb-3" />
-              <div className="text-3xl font-bold text-rose-300">5,000$+</div>
-              <div className="text-neutral-400 text-sm mt-2">راتب محاسب واحد بدوام كامل</div>
-            </div>
-            <div className="rounded-2xl border border-amber-500/20 bg-amber-500/5 p-6 text-center">
-              <Shield className="w-6 h-6 text-amber-400 mx-auto mb-3" />
-              <div className="text-3xl font-bold text-amber-300">2,000$+</div>
-              <div className="text-neutral-400 text-sm mt-2">جلسة استشارية مع CFO خارجي</div>
-            </div>
-            <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-6 text-center">
-              <Briefcase className="w-6 h-6 text-emerald-400 mx-auto mb-3" />
-              <div className="text-3xl font-bold text-emerald-300">499$</div>
-              <div className="text-neutral-400 text-sm mt-2">Finance Crew كاملاً — كل شهر</div>
-            </div>
-          </div>
-        </section>
-
         {/* CTA */}
         <section className="text-center rounded-3xl border border-emerald-500/20 bg-gradient-to-br from-emerald-500/5 to-cyan-500/5 p-10">
           <h2 className="text-3xl font-bold mb-3">جاهز تستأجر فريقك المالي؟</h2>
-          <p className="text-neutral-400 mb-6">14 يوم تجربة. لا بطاقة ائتمان. ألغ في أي وقت.</p>
+          <p className="text-neutral-400 mb-6">مشروع تجريبي متوقف حالياً. لا يوجد سعر أو اشتراك.</p>
           <Link
             href="/auth/signup?plan=finance-crew"
             className="inline-flex rounded-full bg-gradient-to-l from-emerald-500 to-cyan-500 px-10 py-4 text-white font-semibold hover:opacity-90 transition shadow-xl shadow-emerald-500/20"
