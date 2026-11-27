@@ -1,11 +1,10 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Billing & quotas', () => {
-  test('pricing page renders 3 tiers', async ({ page }) => {
+  test('pricing page is honest: no price decided', async ({ page }) => {
     await page.goto('/pricing');
-    await expect(page.locator('body')).toContainText(/مجاني|Free/i);
-    await expect(page.locator('body')).toContainText(/Pro|محترف/i);
-    await expect(page.locator('body')).toContainText(/شركات|Enterprise/i);
+    await expect(page.locator('body')).toContainText('الأسعار لم تُحدَّد بعد');
+    await expect(page.locator('body')).not.toContainText(/399|\$15/);
   });
 
   test('Stripe webhook endpoint rejects unsigned payload', async ({ request }) => {
