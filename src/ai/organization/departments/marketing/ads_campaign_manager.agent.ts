@@ -1,5 +1,6 @@
 // ts-nocheck: reason=complex agent/crew patterns; scheduled for typed refactor
 // @ts-nocheck
+import { geminiModel } from '@/src/lib/model-ids';
 import { Agent } from '@mastra/core';
 import { z } from 'zod';
 import { requestAction } from '@/src/ai/actions/registry';
@@ -56,7 +57,7 @@ export const adsCampaignManagerAgent = new Agent({
 - ابدأ كل حملة بحالة PAUSED حتى يفعّلها المؤسّس بنفسه.
 - استخدم meta_get_campaign_insights لقراءة الأداء بدون موافقة (قراءة فقط).
 - استخدم meta_pause_campaign فوراً عند رصد تجاوز تكلفة أو مشكلة امتثال (دفاعي بدون موافقة).`,
-  model: { provider: 'google', name: 'gemini-2.5-flash' },
+  model: { provider: 'google', name: geminiModel('flash') },
   tools: {
     request_create_meta_campaign: {
       description:

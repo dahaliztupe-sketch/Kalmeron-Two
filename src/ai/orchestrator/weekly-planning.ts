@@ -2,6 +2,7 @@
  * Weekly Planning Loop — لكل قسم: استدعاء وكيله ليصوغ خطة أسبوعية لتحقيق هدفه،
  * ثم يبحث "المنسق العام" عن فرص تعاون ويسجل الخطة في Firestore.
  */
+import { geminiModel } from '@/src/lib/model-ids';
 import { generateText } from 'ai';
 import { google } from '@ai-sdk/google';
 import { adminDb } from '@/src/lib/firebase-admin';
@@ -9,7 +10,7 @@ import { listCurrentWeekOKRs } from '@/src/lib/okr/okr-store';
 import { instrumentAgent } from '@/src/lib/observability/agent-instrumentation';
 import { publishEvent } from './event-mesh';
 
-const MODEL = google('gemini-2.5-flash');
+const MODEL = google(geminiModel('flash'));
 
 interface KeyResult {
   description: string;
@@ -67,7 +68,7 @@ export async function runWeeklyPlanning(userId: string) {
     await publishEvent({ topic: 'weekly_plan.created', userId, source: 'weekly_planner', payload: { planId: ref.id } });
 
     return { planId: ref.id, ...planDoc };
-  }, { model: 'gemini-2.5-flash', input: { userId }, toolsUsed: ['planner.coordinate'] });
+  }, { model: geminiModel('flash'), input: { userId }, toolsUsed: ['planner.coordinate'] });
 }
 
 function weekKey() {

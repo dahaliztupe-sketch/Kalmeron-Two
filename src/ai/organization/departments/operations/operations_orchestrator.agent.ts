@@ -1,5 +1,6 @@
 // ts-nocheck: reason=complex agent/crew patterns; scheduled for typed refactor
 // @ts-nocheck
+import { geminiModel } from '@/src/lib/model-ids';
 import { globalGraphTools } from '@/src/lib/memory/graph-tools';
 import { Agent } from '@mastra/core';
 import { z } from 'zod';
@@ -28,7 +29,7 @@ export const operationsOrchestratorAgent = new Agent({
 - كل ما يتعلّق بالمال (أوامر شراء، فواتير) يمرّ بصندوق موافقات المؤسّس.
 - المهام والمخزون تُنفَّذ مباشرة لأنها داخلية.
 - اشرح في الـ rationale ليه طلبت كل خطوة.`,
-  model: { provider: 'google', name: 'gemini-2.5-flash' },
+  model: { provider: 'google', name: geminiModel('flash') },
   tools: {
     ...globalGraphTools,
     ...smartTools(),

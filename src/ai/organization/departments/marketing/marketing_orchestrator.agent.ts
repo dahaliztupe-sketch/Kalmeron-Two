@@ -1,5 +1,6 @@
 // ts-nocheck: reason=complex agent/crew patterns; scheduled for typed refactor
 // @ts-nocheck
+import { geminiModel } from '@/src/lib/model-ids';
 import { globalGraphTools } from '@/src/lib/memory/graph-tools';
   import { Agent } from '@mastra/core';
 import { executorTools } from '@/src/ai/actions/executor-tools';
@@ -32,7 +33,7 @@ import { smartTools, SMART_AGENT_GUIDELINES } from '@/src/ai/reasoning/smart-too
   - تُسجّل التكلفة وزمن الاستجابة في طبقة المراقبة.
 
 ${SMART_AGENT_GUIDELINES}`,
-    model: { provider: 'google', name: 'gemini-2.5-flash' },
+    model: { provider: 'google', name: geminiModel('flash') },
     tools: {
       ...globalGraphTools,
       ...smartTools(),
@@ -67,6 +68,6 @@ ${SMART_AGENT_GUIDELINES}`,
     return instrumentAgent('marketing_crew', async () => {
       const res: unknown = await marketingOrchestratorAgent.generate(prompt);
       return res?.text ?? res;
-    }, { model: 'gemini-2.5-flash', input: { prompt }, toolsUsed: ['delegate_task', 'aggregate_results'] });
+    }, { model: geminiModel('flash'), input: { prompt }, toolsUsed: ['delegate_task', 'aggregate_results'] });
   }
   

@@ -1,5 +1,6 @@
 // ts-nocheck: reason=complex agent/crew patterns; scheduled for typed refactor
 // @ts-nocheck
+import { geminiModel } from '@/src/lib/model-ids';
 import { Agent, Workflow } from '@mastra/core';
 import { z } from 'zod';
 import { generateText } from 'ai';
@@ -10,7 +11,7 @@ export const jdAgent = new Agent({
   name: 'Job Description Agent',
   instructions: `أنت خبير في كتابة الإعلانات الوظيفية الجذابة والدقيقة.
   مهمتك: بناءً على المسمى الوظيفي والمتطلبات التي يقدمها المستخدم، قم بإنشاء وصف وظيفي احترافي يتضمن: ملخص الدور، المسؤوليات الرئيسية، المؤهلات المطلوبة، والمزايا.`,
-  model: { provider: 'google', name: 'gemini-2.5-flash' },
+  model: { provider: 'google', name: geminiModel('flash') },
 });
 
 // 2. Resume Screening Agent — real Gemini CV analysis (no mocks)
@@ -19,7 +20,7 @@ export const screeningAgent = new Agent({
   instructions: `أنت خبير في فحص وتقييم السير الذاتية.
   مهمتك: تحليل السير الذاتية للمتقدمين، ومطابقتها مع متطلبات الوظيفة، وتصنيف المرشحين حسب ملاءمتهم.
   استخدم معايير موضوعية مثل المهارات، الخبرة، والتعليم. قدم قائمة مختصرة بأفضل المرشحين مع تبرير لكل اختيار.`,
-  model: { provider: 'google', name: 'gemini-2.5-pro' },
+  model: { provider: 'google', name: geminiModel('pro') },
   tools: {
     parse_resume: {
       description: 'استخراج المعلومات الرئيسية من السيرة الذاتية بواسطة Gemini',
@@ -58,7 +59,7 @@ export const schedulerAgent = new Agent({
   instructions: `أنت منسق مقابلات محترف.
   مهمتك: التواصل مع المرشحين المختارين، واقتراح مواعيد متاحة للمقابلات، وتأكيد الحجوزات.
   استلهم من Paradox (Olivia) التي تحجز المقابلات تلقائيًا.`,
-  model: { provider: 'google', name: 'gemini-2.5-flash' },
+  model: { provider: 'google', name: geminiModel('flash') },
 });
 
 // 4. Interview Companion Agent
@@ -67,7 +68,7 @@ export const interviewCompanionAgent = new Agent({
   instructions: `أنت رفيق مقابلة ذكي، مصمم لمساعدة مديري التوظيف أثناء المقابلات الحية.
   مهمتك: تقديم إرشادات في الوقت الفعلي، اقتراح أسئلة متابعة بناءً على إجابات المرشح، وتوثيق الملاحظات الرئيسية.
   استلهم من Eightfold AI Interview Companion الذي يعزز المقابلات التي يقودها البشر بإرشادات منظمة ورؤى في الوقت الفعلي.`,
-  model: { provider: 'google', name: 'gemini-2.5-flash' },
+  model: { provider: 'google', name: geminiModel('flash') },
 });
 
 // HR Recruitment Workflow

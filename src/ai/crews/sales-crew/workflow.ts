@@ -1,5 +1,6 @@
 // ts-nocheck: reason=complex agent/crew patterns; scheduled for typed refactor
 // @ts-nocheck
+import { geminiModel } from '@/src/lib/model-ids';
 import { Mastra, Agent, Workflow } from '@mastra/core';
 import { z } from 'zod';
 
@@ -7,21 +8,21 @@ import { z } from 'zod';
 export const prospectingAgent = new Agent({
   name: 'Prospecting Agent',
   instructions: 'أنت خبير مبيعات (SDR). مهمتك البحث عن العملاء المحتملين وتأهيلهم بناءً على معايير محددة.',
-  model: { provider: 'google', name: 'gemini-2.5-flash' } // Cost optimization via Gateway
+  model: { provider: 'google', name: geminiModel('flash') } // Cost optimization via Gateway
 });
 
 // 2. Content Writer Agent
 export const contentWriterAgent = new Agent({
   name: 'Content Writer Agent',
   instructions: 'أنت كاتب محتوى تسويقي. مهمتك كتابة رسائل تواصل باردة (Cold Emails, LinkedIn DMs) مقنعة وعالية التحويل.',
-  model: { provider: 'google', name: 'gemini-2.5-flash' } 
+  model: { provider: 'google', name: geminiModel('flash') } 
 });
 
 // 3. Campaign Analyst Agent
 export const campaignAnalystAgent = new Agent({
   name: 'Campaign Analyst Agent',
   instructions: 'أنت محلل بيانات حملات تسويقية. هدفك تحليل معدلات الفتح والنقر واقتراح تحسينات للرسائل.',
-  model: { provider: 'google', name: 'gemini-2.5-pro' } // Deep analysis
+  model: { provider: 'google', name: geminiModel('pro') } // Deep analysis
 });
 
 // Mastra Workflow Setup

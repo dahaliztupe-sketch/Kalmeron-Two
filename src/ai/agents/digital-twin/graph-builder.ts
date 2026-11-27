@@ -1,3 +1,4 @@
+import { geminiModel } from '@/src/lib/model-ids';
 import { Agent } from '@mastra/core/agent';
 import { google } from '@ai-sdk/google';
 import { z } from 'zod';
@@ -17,7 +18,7 @@ export const graphBuilderAgent = new Agent({
 - حافظ على سلامة العلاقات (تأكد من وجود العقد قبل إنشاء العلاقات)
 - أضف طوابع زمنية ودرجات ثقة لكل تحديث
 - نوع العلاقة يجب أن يعكس طبيعتها: HAS_PRODUCT, COMPETES_WITH, TARGETS_SEGMENT, ACHIEVES_METRIC`,
-  model: google('gemini-2.5-flash'),
+  model: google(geminiModel('flash')),
   tools: {
     build_graph: {
       description: 'بناء أو تحديث الرسم البياني المعرفي',

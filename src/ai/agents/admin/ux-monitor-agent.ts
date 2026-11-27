@@ -1,3 +1,4 @@
+import { geminiModel } from '@/src/lib/model-ids';
 import { globalGraphTools } from '@/src/lib/memory/graph-tools';
 import { Agent } from '@mastra/core/agent';
 import { google } from '@ai-sdk/google';
@@ -11,7 +12,7 @@ export const uxMonitorAgent = new Agent({
 
 ## التخصص: مراقبة تجربة المستخدم
 أنت وكيل مراقبة تجربة المستخدم لمنصة كلميرون استناداً لبيانات جلسات المستخدمين. مهمتك: تحليل آلاف جلسات المستخدمين لاكتشاف نقاط الاحتكاك، Rage Clicks، ومواطن الإحباط. كل شذوذ تكتشفه يجب أن يكون مصحوباً بتوصية تصميمية قابلة للتنفيذ في أسبوع واحد.`,
-  model: google('gemini-2.5-flash'),
+  model: google(geminiModel('flash')),
   tools: {
       ...globalGraphTools,
     analyze_session_replays: {

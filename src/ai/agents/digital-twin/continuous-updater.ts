@@ -1,3 +1,4 @@
+import { geminiModel } from '@/src/lib/model-ids';
 import { Agent } from '@mastra/core/agent';
 import { google } from '@ai-sdk/google';
 import { z } from 'zod';
@@ -128,7 +129,7 @@ export const continuousUpdaterAgent = new Agent({
   - المعلومات الأحدث لها أولوية أعلى.
   - إذا كانت درجة الثقة منخفضة، احتفظ بالمعلومات القديمة.
   - سجل جميع التحديثات في سجل التدقيق.`,
-  model: google('gemini-2.5-flash'),
+  model: google(geminiModel('flash')),
   tools: {
     trigger_update: {
       description: 'تشغيل تحديث التوأم الرقمي من محادثة',

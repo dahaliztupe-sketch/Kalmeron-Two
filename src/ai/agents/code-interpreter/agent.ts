@@ -1,3 +1,4 @@
+import { geminiModel } from '@/src/lib/model-ids';
 import { google } from '@ai-sdk/google';
 import { generateText } from 'ai';
 import { z } from 'zod';
@@ -29,11 +30,11 @@ export const codeInterpreterAgent = {
   async run(prompt: string) {
     return instrumentAgent('code_interpreter', async () => {
       const result = await generateText({
-        model: google('gemini-2.5-flash'),
+        model: google(geminiModel('flash')),
         system: CODE_INTERPRETER_PROMPT,
         prompt,
       });
       return result.text;
-    }, { model: 'gemini-2.5-flash', input: { prompt }, toolsUsed: ['execute_python'] });
+    }, { model: geminiModel('flash'), input: { prompt }, toolsUsed: ['execute_python'] });
   },
 };

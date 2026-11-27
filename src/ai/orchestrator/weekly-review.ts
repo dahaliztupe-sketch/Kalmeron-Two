@@ -2,6 +2,7 @@
  * Weekly Review Loop — لكل قسم: تقرير الإنجاز مقابل الخطة،
  * ثم تحليل استراتيجي للدروس المستفادة، وتخزين التقرير + إرسال ملخص للمستخدم.
  */
+import { geminiModel } from '@/src/lib/model-ids';
 import { generateText } from 'ai';
 import { google } from '@ai-sdk/google';
 import { adminDb } from '@/src/lib/firebase-admin';
@@ -9,7 +10,7 @@ import { listCurrentWeekOKRs } from '@/src/lib/okr/okr-store';
 import { instrumentAgent } from '@/src/lib/observability/agent-instrumentation';
 import { publishEvent } from './event-mesh';
 
-const MODEL = google('gemini-2.5-flash');
+const MODEL = google(geminiModel('flash'));
 
 interface KeyResult {
   description: string;
@@ -59,7 +60,7 @@ ${progress}
     await publishEvent({ topic: 'weekly_review.created', userId, source: 'weekly_reviewer', payload: { reviewId: ref.id } });
 
     return { reviewId: ref.id, ...reviewDoc };
-  }, { model: 'gemini-2.5-flash', input: { userId }, toolsUsed: ['reviewer.synthesize'] });
+  }, { model: geminiModel('flash'), input: { userId }, toolsUsed: ['reviewer.synthesize'] });
 }
 
 function weekKey() {

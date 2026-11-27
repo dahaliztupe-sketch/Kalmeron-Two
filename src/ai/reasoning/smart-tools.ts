@@ -14,6 +14,7 @@
  *   - suggest_followups: اقتراح خطوات تالية استباقية
  *   - ask_founder      : طلب توضيح من المؤسّس عند عدم اليقين
  */
+import { geminiModel } from '@/src/lib/model-ids';
 import { z } from 'zod';
 import { GoogleGenAI } from '@google/genai';
 import { webSearch } from '@/src/lib/integrations/web-search';
@@ -130,7 +131,7 @@ export function smartTools() {
           const mime = imgRes.headers.get('content-type') || 'image/jpeg';
           const ai = new GoogleGenAI({ apiKey: key });
           const r = await ai.models.generateContent({
-            model: 'gemini-2.5-flash',
+            model: geminiModel('flash'),
             contents: [
               { role: 'user', parts: [
                 { inlineData: { mimeType: mime, data: buf.toString('base64') } },

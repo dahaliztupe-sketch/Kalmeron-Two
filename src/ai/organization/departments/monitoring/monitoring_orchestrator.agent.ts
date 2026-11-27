@@ -1,5 +1,6 @@
 // ts-nocheck: reason=complex agent/crew patterns; scheduled for typed refactor
 // @ts-nocheck
+import { geminiModel } from '@/src/lib/model-ids';
 import { globalGraphTools } from '@/src/lib/memory/graph-tools';
   import { Agent } from '@mastra/core';
   import { z } from 'zod';
@@ -27,7 +28,7 @@ import { globalGraphTools } from '@/src/lib/memory/graph-tools';
   - تحلّل المهمة وتقرّر: تنفيذ متوازٍ (للمهام المستقلة) أم متسلسل (للمهام التابعة).
   - تجمّع نتائج الوكلاء في استجابة واحدة متماسكة.
   - تُسجّل التكلفة وزمن الاستجابة في طبقة المراقبة.`,
-    model: { provider: 'google', name: 'gemini-2.5-flash' },
+    model: { provider: 'google', name: geminiModel('flash') },
     tools: {
       ...globalGraphTools,
       delegate_task: {

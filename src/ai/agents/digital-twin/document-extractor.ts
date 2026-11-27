@@ -1,3 +1,4 @@
+import { geminiModel } from '@/src/lib/model-ids';
 import { Agent } from '@mastra/core/agent';
 import { google } from '@ai-sdk/google';
 import { DIGITAL_TWIN_PROMPT } from './prompt';
@@ -17,5 +18,5 @@ export const documentExtractorAgent = new Agent({
 - نظّم المعلومات المستخرجة وفقاً لهيكل الأنطولوجيا
 - كل رقم مالي يجب أن يأتي مع وحدة ومصدر وتاريخ
 - قيّم مصداقية كل مصدر: خطة عمل رسمية > محادثة > تخمين`,
-  model: google('gemini-2.5-pro'),
+  model: google(geminiModel('pro')),
 });
