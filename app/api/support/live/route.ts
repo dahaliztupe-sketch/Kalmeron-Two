@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'node:crypto';
 import { adminAuth } from '@/src/lib/firebase-admin';
+import { liveModel } from '@/src/lib/model-ids';
 import { rateLimit, rateLimitAgent, rateLimitResponse } from '@/src/lib/security/rate-limit';
 
 export const runtime = 'nodejs'; // For WebSockets, Node.js runtime is often required on Vercel over pure edge
@@ -64,13 +65,16 @@ export async function GET(req: NextRequest) {
   if (!userRl.allowed) return rateLimitResponse();
 
   try {
+    // No default gateway URL: the old hard-coded one was never verified to exist.
+    const gatewayUrl = process.env.LIVE_SUPPORT_GATEWAY_URL;
+    if (!gatewayUrl) {
+      return NextResponse.json({ error: 'live_support_not_configured' }, { status: 503 });
+    }
     const { token, expiresAt } = signEphemeralToken(userId);
-    const gatewayUrl =
-      process.env.LIVE_SUPPORT_GATEWAY_URL ||
-      'wss://gateway.ai.vercel.com/v1/live/kalmeron/gemini-2.5-flash-live';
 
     return NextResponse.json({
       url: gatewayUrl,
+      model: liveModel(),
       token,
       expiresAt,
       instructions:
