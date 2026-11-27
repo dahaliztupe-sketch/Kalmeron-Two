@@ -1,6 +1,7 @@
 /**
  * POST /api/hr — HR & hiring strategy generator for Egyptian startups
  */
+import { geminiModel } from '@/src/lib/model-ids';
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { adminAuth } from '@/src/lib/firebase-admin';
@@ -11,7 +12,7 @@ import { google } from '@/src/lib/gemini';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-const MODEL = google('gemini-2.5-flash');
+const MODEL = google(geminiModel('flash'));
 
 const HRSchema = z.object({
   jobTitle: z.string().min(2).max(200),

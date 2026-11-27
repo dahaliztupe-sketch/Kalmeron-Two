@@ -1,3 +1,4 @@
+import { geminiModel } from '@/src/lib/model-ids';
 import { NextRequest, NextResponse } from 'next/server';
 import { generateText } from 'ai';
 import { google } from '@/src/lib/gemini';
@@ -8,7 +9,7 @@ import xss from 'xss';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-const MODEL = google('gemini-2.5-flash');
+const MODEL = google(geminiModel('flash'));
 
 async function softAuth(req: NextRequest): Promise<{ userId: string; isGuest: boolean }> {
   const auth = req.headers.get('Authorization');

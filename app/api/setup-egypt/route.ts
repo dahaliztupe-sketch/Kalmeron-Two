@@ -1,3 +1,4 @@
+import { geminiModel } from '@/src/lib/model-ids';
 import { NextRequest, NextResponse } from 'next/server';
 import { generateText } from 'ai';
 import { google } from '@/src/lib/gemini';
@@ -7,7 +8,7 @@ import { rateLimit, rateLimitResponse } from '@/src/lib/security/rate-limit';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-const MODEL = google('gemini-2.5-flash');
+const MODEL = google(geminiModel('flash'));
 
 async function requireAuth(req: NextRequest): Promise<string | null> {
   const h = req.headers.get('Authorization');

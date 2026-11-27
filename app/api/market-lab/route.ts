@@ -3,6 +3,7 @@
  * POST /api/market-lab          — create a new experiment (triggers analysis)
  * GET  /api/market-lab?id=XYZ   — get single experiment details
  */
+import { geminiModel } from '@/src/lib/model-ids';
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { adminAuth, adminDb } from '@/src/lib/firebase-admin';
@@ -13,7 +14,7 @@ import { google } from '@/src/lib/gemini';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-const MODEL = google('gemini-2.5-flash');
+const MODEL = google(geminiModel('flash'));
 
 async function requireAuth(req: NextRequest): Promise<string | null> {
   const h = req.headers.get('Authorization');

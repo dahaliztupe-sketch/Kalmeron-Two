@@ -4,6 +4,7 @@
  * for Arab/Egyptian entrepreneurs. Reads from Firestore `opportunities`
  * collection (seeded by cron/opportunity-alerts) with fallback to built-in data.
  */
+import { geminiModel } from '@/src/lib/model-ids';
 import { NextRequest, NextResponse } from 'next/server';
 import { adminAuth, adminDb } from '@/src/lib/firebase-admin';
 import { rateLimit, rateLimitResponse } from '@/src/lib/security/rate-limit';
@@ -117,7 +118,7 @@ export async function POST(req: NextRequest) {
   try {
     const { generateText } = await import('ai');
     const { google } = await import('@/src/lib/gemini');
-    const MODEL = google('gemini-2.5-flash');
+    const MODEL = google(geminiModel('flash'));
 
     const system = `أنت "رادار الفرص" في منصة كلميرون — خبير في مصادر التمويل والدعم للشركات الناشئة المصرية والعربية.
 
