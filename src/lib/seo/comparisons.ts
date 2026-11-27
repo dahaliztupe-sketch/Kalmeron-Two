@@ -31,7 +31,7 @@ export const COMPARISONS: Comparison[] = [
     slug: 'chatgpt',
     competitorName: 'ChatGPT',
     competitorTagline: 'مساعد AI عام من OpenAI',
-    metaDescriptionAr: 'كلميرون vs ChatGPT: أيهما أفضل لرواد الأعمال في مصر والمنطقة العربية؟ مقارنة تفصيلية في 12 محور.',
+    metaDescriptionAr: 'كلميرون vs ChatGPT: أيهما أفضل لرواد الأعمال في مصر والمنطقة العربية؟ مقارنة عامة.',
     metaDescriptionEn: 'Kalmeron vs ChatGPT: which is better for Arab entrepreneurs? Detailed 12-dimension comparison.',
     heroIntroAr: 'ChatGPT مساعد ممتاز للأسئلة العامة. كلميرون مشروع تجريبي يقدّم مساعدين بالذكاء الاصطناعي لأدوار الشركة. أيهما أنسب لك؟',
     bestForKalmeron: [
@@ -62,7 +62,7 @@ export const COMPARISONS: Comparison[] = [
       { feature: 'API للمطورين', kalmeron: 'yes', competitor: 'yes' },
     ],
     pricingComparison: [
-      { plan: 'مجاني', kalmeron: '200 رسالة/يوم', competitor: 'محدود' },
+      { plan: 'مجاني', kalmeron: 'حد يومي (لم يُحدد بعد)', competitor: 'محدود' },
       { plan: 'فردي', kalmeron: 'لم يُحدد بعد', competitor: '$20/شهر (Plus)' },
       { plan: 'فريق', kalmeron: 'لم يُحدد بعد', competitor: '$25/user/شهر' },
       { plan: 'مؤسسات', kalmeron: 'لم يُحدد بعد', competitor: 'اتصل بنا' },
@@ -80,8 +80,8 @@ export const COMPARISONS: Comparison[] = [
     bestForKalmeron: [
       'العمل بالسوق العربي',
       'وكلاء متعددون متخصصون',
-      'الفوترة بالجنيه/الريال',
-      'دعم محلي 24/7 بالعربية',
+      'تسعير محلي (لم يُحدد بعد)',
+      'واجهة ودعم بالعربية',
     ],
     bestForCompetitor: [
       'كتابة طويلة معقدة',
@@ -100,7 +100,7 @@ export const COMPARISONS: Comparison[] = [
       { feature: 'Computer Use', kalmeron: 'no', competitor: 'yes' },
     ],
     pricingComparison: [
-      { plan: 'مجاني', kalmeron: '200 رسالة/يوم', competitor: 'محدود يومياً' },
+      { plan: 'مجاني', kalmeron: 'حد يومي (لم يُحدد بعد)', competitor: 'محدود يومياً' },
       { plan: 'احترافي', kalmeron: 'لم يُحدد بعد', competitor: '$20/شهر (Pro)' },
       { plan: 'فريق', kalmeron: 'لم يُحدد بعد', competitor: '$30/user/شهر (Team)' },
     ],
@@ -164,7 +164,7 @@ export const COMPARISONS: Comparison[] = [
       { feature: 'استشارة قانونية', kalmeron: 'yes', competitor: 'no' },
     ],
     pricingComparison: [
-      { plan: 'مجاني', kalmeron: '200 رسالة/يوم', competitor: 'محدود' },
+      { plan: 'مجاني', kalmeron: 'حد يومي (لم يُحدد بعد)', competitor: 'محدود' },
       { plan: 'احترافي', kalmeron: 'لم يُحدد بعد', competitor: '$20/شهر' },
     ],
     verdictAr: 'استخدمهما معاً. Lovable لبناء MVP في أيام، كلميرون لإدارة كل شيء حول المنتج (التسويق، المالية، القانون، فريق العمل).',
@@ -199,7 +199,7 @@ export const COMPARISONS: Comparison[] = [
       { feature: 'تخصص ريادة الأعمال', kalmeron: 'yes', competitor: 'no' },
     ],
     pricingComparison: [
-      { plan: 'مجاني', kalmeron: '200 رسالة/يوم', competitor: 'محدود' },
+      { plan: 'مجاني', kalmeron: 'حد يومي (لم يُحدد بعد)', competitor: 'محدود' },
       { plan: 'احترافي', kalmeron: 'لم يُحدد بعد', competitor: '$20/شهر (Advanced)' },
       { plan: 'فريق', kalmeron: 'لم يُحدد بعد', competitor: '$30/user (Workspace)' },
     ],
@@ -235,7 +235,7 @@ export const COMPARISONS: Comparison[] = [
       { feature: 'مصادر مع كل إجابة', kalmeron: 'partial', competitor: 'yes' },
     ],
     pricingComparison: [
-      { plan: 'مجاني', kalmeron: '200 رسالة/يوم', competitor: '5 Pro searches' },
+      { plan: 'مجاني', kalmeron: 'حد يومي (لم يُحدد بعد)', competitor: '5 Pro searches' },
       { plan: 'احترافي', kalmeron: 'لم يُحدد بعد', competitor: '$20/شهر (Pro)' },
       { plan: 'فريق', kalmeron: 'لم يُحدد بعد', competitor: '$40/user (Enterprise)' },
     ],
@@ -270,7 +270,7 @@ export const COMPARISONS: Comparison[] = [
       { feature: 'مناسب للستارت أبس', kalmeron: 'yes', competitor: 'no' },
     ],
     pricingComparison: [
-      { plan: 'مجاني', kalmeron: '200 رسالة/يوم', competitor: 'لا يوجد' },
+      { plan: 'مجاني', kalmeron: 'حد يومي (لم يُحدد بعد)', competitor: 'لا يوجد' },
       { plan: 'احترافي', kalmeron: 'لم يُحدد بعد', competitor: '$30/user' },
       { plan: 'فريق', kalmeron: 'لم يُحدد بعد', competitor: '$200/user (Studio)' },
     ],
@@ -295,7 +295,7 @@ export const COMPARISONS: Comparison[] = [
       { feature: 'تخصص ريادة أعمال', kalmeron: 'yes', competitor: 'no' },
     ],
     pricingComparison: [
-      { plan: 'مجاني', kalmeron: '200 رسالة/يوم', competitor: 'محدود' },
+      { plan: 'مجاني', kalmeron: 'حد يومي (لم يُحدد بعد)', competitor: 'محدود' },
       { plan: 'Pro', kalmeron: 'لم يُحدد بعد', competitor: '$39/شهر' },
     ],
     verdictAr: 'لرواد الأعمال العرب، كلميرون اختيار واضح بسبب التخصص والسعر. Manus لـ general research مفيد.',
