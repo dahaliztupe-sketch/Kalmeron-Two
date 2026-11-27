@@ -21,6 +21,13 @@ export const SalesPlanSchema = z.object({
 export type SalesPlan = z.infer<typeof SalesPlanSchema>;
 
 const OVERPROMISE = /(مضمون|ضمان|نضمن|100\s*%|ارباح مؤكدة|أرباح مؤكدة|بدون مخاطر)/;
+const promiseHit = (ts: string[]): string | null => {
+  for (const t of ts) {
+    const m = t.match(OVERPROMISE);
+    if (m) return m[0];
+  }
+  return null;
+};
 const STAT = /(\d+(\.\d+)?\s*(%|٪)|\d+\s*(مليون|مليار|ألف عميل))/;
 const HYPOTHETICAL = /(هل (ستستخدم|ستشتري|ستدفع|تعتقد أن فكرتي)|لو (كان|وفرنا|عملنا)|هل تحب فكرة|هل ترى أن الفكرة)/;
 const COLD_BULK = /(رسائل جماعية|رسائل باردة|cold\s*(dm|message|outreach|email)|إرسال جماعي)/i;
@@ -31,7 +38,7 @@ export function salesChecks(out: SalesPlan): Issue[] {
     issues.push({ level: "error", code: "hypothetical_question", message: "سؤال اكتشاف افتراضي أو يطلب رأياً في الفكرة. اسأل عن سلوك سابق فعلي." });
   }
   const prose = [out.idealCustomer, ...out.outreachDrafts.map((d) => d.text), ...out.objections.map((o) => o.answer), ...out.followUp];
-  if (prose.some((t) => OVERPROMISE.test(t))) issues.push({ level: "error", code: "overpromise", message: "نص يحتوي وعداً أو ضماناً بنتيجة." });
+  if (promiseHit(prose)) issues.push({ level: "error", code: "overpromise", message: `نص يحتوي وعداً أو ضماناً بنتيجة. (الكلمة: "${promiseHit(prose)}")` });
   if (prose.some((t) => STAT.test(t))) issues.push({ level: "warn", code: "unsupported_statistic", message: "رقم أو نسبة داخل النص بلا وسم basis. راجعه." });
   if (out.prospectGroups.some((g) => g.consentBasis === "needs_check") || prose.some((t) => COLD_BULK.test(t))) {
     issues.push({ level: "warn", code: "consent_needs_check", message: "تواصل بلا أساس موافقة واضح أو برسائل باردة: قد يخالف سياسة واتساب وقانون حماية البيانات المصري. راجع قبل التنفيذ." });

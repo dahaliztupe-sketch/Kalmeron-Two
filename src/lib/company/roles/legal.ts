@@ -43,6 +43,13 @@ export const LegalPlanSchema = z.object({
 export type LegalPlan = z.infer<typeof LegalPlanSchema>;
 
 const OVERPROMISE = /(مضمون|ضمان|نضمن|100\s*%|بدون مخاطر|قانوني تماماً|لا مشكلة قانونية|لن تواجه)/;
+const promiseHit = (ts: string[]): string | null => {
+  for (const t of ts) {
+    const m = t.match(OVERPROMISE);
+    if (m) return m[0];
+  }
+  return null;
+};
 const ACTS = /(سأقدم الطلب|سنقدم الطلب|سأوقّع|سنوقع|سأدفع الرسوم|تم التسجيل|تم تقديم)/;
 const STAT = /(\d+(\.\d+)?\s*(%|٪)|\d+\s*(مليون|مليار))/;
 const LEGAL_ADVICE_CLAIM = /(أنصحك قانونياً|رأي قانوني|بصفتي محامي)/;
@@ -70,7 +77,7 @@ export function legalChecks(out: LegalPlan, brief: { constraints: { budgetEgp: n
   const orders = out.steps.map((s) => s.order);
   if (orders.some((o, i) => i > 0 && o <= orders[i - 1])) issues.push({ level: "error", code: "step_order", message: "ترتيب الخطوات غير تصاعدي." });
   const prose = [...out.entityOptions.map((e) => e.fitReason), ...out.steps.flatMap((s) => [s.title, s.sourceNote, ...s.documents])];
-  if (prose.some((t) => OVERPROMISE.test(t))) issues.push({ level: "error", code: "overpromise", message: "نص يحتوي ضماناً أو حكماً قانونياً قاطعاً." });
+  if (promiseHit(prose)) issues.push({ level: "error", code: "overpromise", message: `نص يحتوي ضماناً أو حكماً قانونياً قاطعاً. (الكلمة: "${promiseHit(prose)}")` });
   if (prose.some((t) => ACTS.test(t))) issues.push({ level: "error", code: "acts_outside_role", message: "الدور لا يقدّم طلبات ولا يوقّع ولا يدفع. أعد الصياغة كخطوة للمؤسس." });
   if (prose.some((t) => LEGAL_ADVICE_CLAIM.test(t))) issues.push({ level: "error", code: "claims_legal_advice", message: "لا تقدّم نفسك كمحامٍ أو تُصدر رأياً قانونياً." });
   if (prose.some((t) => STAT.test(t))) issues.push({ level: "warn", code: "unsupported_statistic", message: "رقم أو نسبة داخل النص. تأكد أنها من مصدر رسمي مذكور." });

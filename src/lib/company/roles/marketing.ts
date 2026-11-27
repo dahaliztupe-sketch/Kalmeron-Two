@@ -36,6 +36,13 @@ export const MarketingPlanSchema = z.object({
 export type MarketingPlan = z.infer<typeof MarketingPlanSchema>;
 
 const OVERPROMISE = /(مضمون|ضمان|نضمن|100\s*%|ارباح مؤكدة|أرباح مؤكدة|بدون مخاطر)/;
+const promiseHit = (ts: string[]): string | null => {
+  for (const t of ts) {
+    const m = t.match(OVERPROMISE);
+    if (m) return m[0];
+  }
+  return null;
+};
 const COLD_BULK = /(رسائل جماعية|رسائل باردة|cold\s*(dm|message|outreach)|bulk\s*(whatsapp|sms)|إرسال جماعي)/i;
 const STAT = /(\d+(\.\d+)?\s*(%|٪)|\d+\s*(مليون|مليار|ألف عميل))/;
 
@@ -52,8 +59,8 @@ export function marketingChecks(out: MarketingPlan, brief: { constraints: { budg
   const weeks = out.weeks.map((w) => w.week).sort().join(",");
   if (weeks !== "1,2,3,4") issues.push({ level: "error", code: "weeks_not_1_to_4", message: "يجب أن تغطي الخطة الأسابيع 1 إلى 4 بلا تكرار." });
   const proseFields = [out.positioning, out.messaging.headline, ...out.messaging.valueProps, ...out.channels.map((c) => c.why), ...out.draftPosts.map((d) => d.text)];
-  if (proseFields.some((t) => OVERPROMISE.test(t))) {
-    issues.push({ level: "error", code: "overpromise", message: "نص يحتوي وعداً أو ضماناً بنتيجة." });
+  if (promiseHit(proseFields)) {
+    issues.push({ level: "error", code: "overpromise", message: `نص يحتوي وعداً أو ضماناً بنتيجة. (الكلمة: "${promiseHit(proseFields)}")` });
   }
   if (proseFields.some((t) => STAT.test(t))) {
     issues.push({ level: "warn", code: "unsupported_statistic", message: "رقم أو نسبة داخل النص بلا وسم basis. راجعه." });

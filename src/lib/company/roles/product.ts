@@ -29,6 +29,13 @@ export const ProductPlanSchema = z.object({
 export type ProductPlan = z.infer<typeof ProductPlanSchema>;
 
 const OVERPROMISE = /(مضمون|ضمان|نضمن|100\s*%|ارباح مؤكدة|أرباح مؤكدة|بدون مخاطر|بدون أخطاء)/;
+const promiseHit = (ts: string[]): string | null => {
+  for (const t of ts) {
+    const m = t.match(OVERPROMISE);
+    if (m) return m[0];
+  }
+  return null;
+};
 const STAT = /(\d+(\.\d+)?\s*(%|٪)|\d+\s*(مليون|مليار|ألف عميل))/;
 /** The role plans; it must not claim to write, ship or deploy code for the customer. */
 const ACTS = /(سأنشر|سننشر|سأرفع|سأكتب الكود|سنكتب الكود|سأبرمج|سننفذ النشر|تم النشر|deploy(ed)? (it|for you)|i will (deploy|write the code))/i;
@@ -44,7 +51,7 @@ export function productChecks(out: ProductPlan, brief: { constraints: { days: nu
     ...out.techStack.map((t) => `${t.suggestion} ${t.reason}`),
     ...out.buildChecklist.flatMap((w) => [...w.tasks, w.doneWhen]),
   ];
-  if (prose.some((t) => OVERPROMISE.test(t))) issues.push({ level: "error", code: "overpromise", message: "نص يحتوي وعداً أو ضماناً بنتيجة." });
+  if (promiseHit(prose)) issues.push({ level: "error", code: "overpromise", message: `نص يحتوي وعداً أو ضماناً بنتيجة. (الكلمة: "${promiseHit(prose)}")` });
   if (prose.some((t) => ACTS.test(t))) issues.push({ level: "error", code: "acts_outside_role", message: "الدور يخطط فقط: لا يكتب كوداً ولا ينشر للعميل. أعد الصياغة كخطوة للمؤسس." });
   if (prose.some((t) => STAT.test(t))) issues.push({ level: "warn", code: "unsupported_statistic", message: "رقم أو نسبة داخل النص بلا وسم basis. راجعه." });
   const mustNames = new Set(out.mvpScope.must.map((f) => f.feature.trim()));
