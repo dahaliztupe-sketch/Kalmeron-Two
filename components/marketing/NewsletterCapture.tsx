@@ -73,7 +73,7 @@ export function NewsletterCapture({ source = "footer", variant = "inline" }: Pro
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="بريدك الإلكتروني"
-            className="flex-1 px-4 py-3 rounded-xl bg-black/40 border border-white/10 text-white placeholder:text-zinc-500 focus:outline-none focus:border-cyan-400"
+            className="flex-1 px-4 py-3 rounded-xl bg-black/40 border border-white/10 text-white placeholder:text-zinc-400 focus:outline-none focus:border-cyan-400"
             disabled={state === "loading"}
             dir="ltr"
           />
@@ -107,7 +107,7 @@ export function NewsletterCapture({ source = "footer", variant = "inline" }: Pro
         value={email}
         onChange={(e) => setEmail(e.target.value)}
         placeholder="بريدك الإلكتروني"
-        className="flex-1 px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-white placeholder:text-zinc-600 text-sm focus:outline-none focus:border-cyan-400"
+        className="flex-1 px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-white placeholder:text-zinc-400 text-sm focus:outline-none focus:border-cyan-400"
         disabled={state === "loading"}
         dir="ltr"
       />

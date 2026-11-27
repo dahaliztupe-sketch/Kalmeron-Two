@@ -168,7 +168,7 @@ ${suppliers.filter(s => s.name || s.product).map(s =>
                       placeholder="تكلفة/وحدة" className={cn(inputCls, 'text-xs py-1.5')} />
                     {suppliers.length > 1 ? (
                       <button type="button" onClick={() => removeSupplier(s.id)}
-                        className="text-neutral-600 hover:text-rose-400 transition-colors flex justify-center">
+                        className="text-neutral-400 hover:text-rose-400 transition-colors flex justify-center">
                         <Trash2 className="w-4 h-4" />
                       </button>
                     ) : <div />}

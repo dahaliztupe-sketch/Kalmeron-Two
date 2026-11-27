@@ -135,7 +135,7 @@ export default async function BlogPostPage({ params }: PageProps) {
       >
         <article className="max-w-3xl mx-auto">
           {/* Meta */}
-          <div className="flex flex-wrap items-center gap-4 text-sm text-zinc-500 mb-12 pb-6 border-b border-white/5">
+          <div className="flex flex-wrap items-center gap-4 text-sm text-zinc-400 mb-12 pb-6 border-b border-white/5">
             <span className="inline-flex items-center gap-1">
               <User className="w-4 h-4" />
               {post.authorName}
@@ -171,7 +171,7 @@ export default async function BlogPostPage({ params }: PageProps) {
                   className="rounded-xl bg-white/[0.03] border border-white/10 p-4 hover:border-cyan-500/30 transition"
                 >
                   <h3 className="text-base font-semibold text-white mb-1 line-clamp-2">{r.titleAr}</h3>
-                  <p className="text-xs text-zinc-500 line-clamp-2">{r.excerptAr}</p>
+                  <p className="text-xs text-zinc-400 line-clamp-2">{r.excerptAr}</p>
                 </Link>
               ))}
             </div>

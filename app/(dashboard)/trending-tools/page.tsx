@@ -382,12 +382,12 @@ export default function TrendingToolsPage() {
                     </div>
                     <div className="flex items-center gap-1 mt-0.5">
                       {Array.from({ length: 5 }).map((_, j) => (
-                        <Star key={j} className={cn("w-2.5 h-2.5", j < Math.round(tool.rating) ? "text-amber-400 fill-amber-400" : "text-neutral-600")} />
+                        <Star key={j} className={cn("w-2.5 h-2.5", j < Math.round(tool.rating) ? "text-amber-400 fill-amber-400" : "text-neutral-400")} />
                       ))}
-                      <span className="text-[10px] text-neutral-500 mr-1">{tool.rating}</span>
+                      <span className="text-[10px] text-neutral-400 mr-1">{tool.rating}</span>
                     </div>
                   </div>
-                  <ExternalLink className="w-3.5 h-3.5 text-neutral-600 group-hover:text-white transition-colors flex-shrink-0 mt-1" />
+                  <ExternalLink className="w-3.5 h-3.5 text-neutral-400 group-hover:text-white transition-colors flex-shrink-0 mt-1" />
                 </div>
 
                 <p className="text-neutral-400 text-xs leading-relaxed mb-3 line-clamp-2">
@@ -395,7 +395,7 @@ export default function TrendingToolsPage() {
                 </p>
 
                 <div className="flex items-center gap-1.5 text-[10px]">
-                  <span className="text-neutral-500">استخدمه لـ:</span>
+                  <span className="text-neutral-400">استخدمه لـ:</span>
                   <span className="text-neutral-300 font-medium">{tool.useFor}</span>
                 </div>
 

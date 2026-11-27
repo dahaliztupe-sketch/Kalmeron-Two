@@ -71,16 +71,16 @@ export default async function CostsDashboardPage() {
             <div>
               <h2 className="text-neutral-400 font-medium">إجمالي تكلفة الشهر</h2>
               <div className="text-4xl font-black text-rose-500 mt-2">{fmt(monthTotal)}</div>
-              <div className="text-xs text-neutral-500 mt-1">{month.days} يومًا مُجمَّعًا</div>
+              <div className="text-xs text-neutral-400 mt-1">{month.days} يومًا مُجمَّعًا</div>
             </div>
             <div className="flex gap-6">
               <div className="text-center">
                 <div className="text-xl font-bold text-white">{fmt(dayTotal)}</div>
-                <div className="text-xs text-neutral-500">اليوم</div>
+                <div className="text-xs text-neutral-400">اليوم</div>
               </div>
               <div className="text-center">
                 <div className="text-xl font-bold text-[#D4AF37]">{fmt(weekTotal)}</div>
-                <div className="text-xs text-neutral-500">آخر 7 أيام</div>
+                <div className="text-xs text-neutral-400">آخر 7 أيام</div>
               </div>
             </div>
           </BentoCard>
@@ -118,7 +118,7 @@ export default async function CostsDashboardPage() {
                   />
                 );
               })}
-              {last14.length === 0 && <div className="w-full text-center text-neutral-500 text-sm">لا توجد قياسات</div>}
+              {last14.length === 0 && <div className="w-full text-center text-neutral-400 text-sm">لا توجد قياسات</div>}
             </div>
           </BentoCard>
 
@@ -128,7 +128,7 @@ export default async function CostsDashboardPage() {
               <h3 className="text-sm text-neutral-400">أعلى المساعدين استهلاكًا (الشهر)</h3>
             </div>
             <ul className="space-y-2 text-sm">
-              {topAgents.length === 0 && <li className="text-neutral-500">لا توجد بيانات</li>}
+              {topAgents.length === 0 && <li className="text-neutral-400">لا توجد بيانات</li>}
               {topAgents.map(([name, cost]) => (
                 <li key={name} className="flex justify-between text-white">
                   <span className="truncate ml-2">{name}</span>
@@ -144,7 +144,7 @@ export default async function CostsDashboardPage() {
               <h3 className="text-sm text-neutral-400">أعلى المساحات استهلاكًا (اليوم)</h3>
             </div>
             <ul className="space-y-2 text-sm">
-              {topWorkspaces.length === 0 && <li className="text-neutral-500">لا توجد بيانات</li>}
+              {topWorkspaces.length === 0 && <li className="text-neutral-400">لا توجد بيانات</li>}
               {topWorkspaces.map(([id, cost]) => (
                 <li key={id} className="flex justify-between text-white">
                   <span className="truncate ml-2 font-mono text-xs text-neutral-300">{id}</span>

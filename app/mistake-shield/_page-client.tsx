@@ -213,13 +213,13 @@ export default function MistakeShieldPage() {
                         <span className={cn("text-[9px] font-bold uppercase px-2 py-0.5 rounded-full border", sev.color)}>
                           {sev.label}
                         </span>
-                        <span className="text-[9px] bg-white/5 text-neutral-500 border border-white/10 px-2 py-0.5 rounded-full">
+                        <span className="text-[9px] bg-white/5 text-neutral-400 border border-white/10 px-2 py-0.5 rounded-full">
                           {mistake.category}
                         </span>
                       </div>
                       <p className="text-xs text-text-secondary line-clamp-1">{mistake.description}</p>
                     </div>
-                    {isOpen ? <ChevronUp className="w-4 h-4 text-neutral-500 shrink-0" /> : <ChevronDown className="w-4 h-4 text-neutral-500 shrink-0" />}
+                    {isOpen ? <ChevronUp className="w-4 h-4 text-neutral-400 shrink-0" /> : <ChevronDown className="w-4 h-4 text-neutral-400 shrink-0" />}
                   </button>
 
                   <AnimatePresence>

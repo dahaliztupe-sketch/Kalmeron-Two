@@ -28,7 +28,7 @@ export default function CitiesIndexPage() {
           >
             <div className="flex items-center gap-2 mb-3">
               <MapPin className="w-4 h-4 text-cyan-400" />
-              <span className="text-xs text-zinc-500">{c.countryAr}</span>
+              <span className="text-xs text-zinc-400">{c.countryAr}</span>
             </div>
             <h3 className="text-xl font-bold text-white mb-2">{c.cityAr}</h3>
           </Link>

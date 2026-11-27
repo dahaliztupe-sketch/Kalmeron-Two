@@ -211,7 +211,7 @@ export default function HRDashboard() {
             <button key={id} onClick={() => setTab(id)}
               className={cn(
                 'flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 transition-all -mb-px',
-                tab === id ? 'border-blue-500 text-blue-400' : 'border-transparent text-neutral-500 hover:text-neutral-300',
+                tab === id ? 'border-blue-500 text-blue-400' : 'border-transparent text-neutral-400 hover:text-neutral-300',
               )}>
               <Icon className="w-4 h-4" />{t(`tabs.${labelKey}`)}
             </button>
@@ -262,14 +262,14 @@ export default function HRDashboard() {
                           <div className={cn('w-6 h-6 rounded-full flex items-center justify-center shrink-0',
                             step.status === 'done' ? 'bg-emerald-500/20 text-emerald-400' :
                             step.status === 'running' ? 'bg-blue-500/20 text-blue-400' :
-                            step.status === 'error' ? 'bg-rose-500/20 text-rose-400' : 'bg-neutral-800 text-neutral-600')}>
+                            step.status === 'error' ? 'bg-rose-500/20 text-rose-400' : 'bg-neutral-800 text-neutral-400')}>
                             {step.status === 'done' ? <CheckCircle2 className="w-3.5 h-3.5" /> :
                              step.status === 'running' ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> :
                              <span className="w-1.5 h-1.5 rounded-full bg-current" />}
                           </div>
                           <span className={cn('text-sm',
                             step.status === 'done' ? 'text-white' :
-                            step.status === 'running' ? 'text-blue-300' : 'text-neutral-500')}>
+                            step.status === 'running' ? 'text-blue-300' : 'text-neutral-400')}>
                             {step.label}
                           </span>
                         </div>
@@ -344,7 +344,7 @@ export default function HRDashboard() {
                   onDrop={e => { e.preventDefault(); Array.from(e.dataTransfer.files).slice(0, 10 - cvEntries.length).forEach(f => uploadCv(f)); }}
                   onDragOver={e => e.preventDefault()}
                   className="border-2 border-dashed border-neutral-700 hover:border-blue-500/50 rounded-xl p-6 text-center cursor-pointer transition-all group">
-                  <Plus className="w-6 h-6 text-neutral-500 group-hover:text-blue-400 transition-colors mx-auto mb-2" />
+                  <Plus className="w-6 h-6 text-neutral-400 group-hover:text-blue-400 transition-colors mx-auto mb-2" />
                   <p className="text-sm text-neutral-400 group-hover:text-neutral-300">{t("cvScreen.dropZoneText")}</p>
                 </div>
 
@@ -360,17 +360,17 @@ export default function HRDashboard() {
                         ) : (
                           <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
                         )}
-                        <FileText className="w-4 h-4 text-neutral-500 shrink-0" />
+                        <FileText className="w-4 h-4 text-neutral-400 shrink-0" />
                         <div className="flex-1 min-w-0">
                           <p className="text-sm text-white truncate">{t("cvScreen.candidateLabel", { num: idx + 1 })}: {entry.file.name}</p>
-                          <p className="text-xs text-neutral-500">
+                          <p className="text-xs text-neutral-400">
                             {entry.loading ? t("cvScreen.extracting") :
                              entry.error ? entry.error :
                              t("cvScreen.charsExtracted", { count: entry.text.length.toLocaleString() })}
                           </p>
                         </div>
                         <button onClick={() => removeCv(entry.id)}
-                          className="text-neutral-600 hover:text-rose-400 transition-colors shrink-0">
+                          className="text-neutral-400 hover:text-rose-400 transition-colors shrink-0">
                           <Trash2 className="w-4 h-4" />
                         </button>
                       </div>

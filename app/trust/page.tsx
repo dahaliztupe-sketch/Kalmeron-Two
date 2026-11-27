@@ -96,7 +96,7 @@ export default function TrustCenter() {
           </p>
         </section>
 
-        <div className="mt-12 text-sm text-neutral-500">
+        <div className="mt-12 text-sm text-neutral-400">
           آخر مراجعة لهذه الصفحة: 26 نوفمبر 2026
         </div>
       </div>

@@ -65,7 +65,7 @@ export function NotificationPermissionBanner({ userId, className }: Props) {
           </button>
           <button
             onClick={() => setDismissed(true)}
-            className="text-neutral-500 hover:text-neutral-300 transition-colors p-1"
+            className="text-neutral-400 hover:text-neutral-300 transition-colors p-1"
           >
             <X className="w-3.5 h-3.5" />
           </button>
@@ -101,7 +101,7 @@ export function NotificationToggleButton({ userId, className }: InlineButtonProp
 
   if (permission === "denied") {
     return (
-      <div className={cn("flex items-center gap-1.5 text-xs text-neutral-500", className)}>
+      <div className={cn("flex items-center gap-1.5 text-xs text-neutral-400", className)}>
         <BellOff className="w-3.5 h-3.5" />
         <span>التنبيهات معطّلة من المتصفح</span>
       </div>

@@ -29,7 +29,7 @@ export default function DashboardError({
             واجهنا مشكلة في تحميل هذه الصفحة. يمكنك المحاولة مرة أخرى أو العودة للرئيسية.
           </p>
           {error.digest && (
-            <p className="text-neutral-600 text-xs font-mono">كود الخطأ: {error.digest}</p>
+            <p className="text-neutral-400 text-xs font-mono">كود الخطأ: {error.digest}</p>
           )}
         </div>
         <div className="flex gap-3 justify-center">

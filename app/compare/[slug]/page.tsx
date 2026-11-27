@@ -77,7 +77,7 @@ export default async function ComparePage({ params }: PageProps) {
           <ul className="space-y-2">
             {c.bestForCompetitor.map((b, i) => (
               <li key={i} className="flex gap-2 text-zinc-300">
-                <Check className="w-5 h-5 text-zinc-500 flex-shrink-0 mt-0.5" />
+                <Check className="w-5 h-5 text-zinc-400 flex-shrink-0 mt-0.5" />
                 {b}
               </li>
             ))}

@@ -83,22 +83,22 @@ export default async function TemplatePage({ params }: PageProps) {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
           <div className="rounded-xl bg-white/[0.03] border border-white/10 p-4">
             <Clock className="w-5 h-5 text-cyan-400 mb-2" />
-            <div className="text-xs text-zinc-500">المدة</div>
+            <div className="text-xs text-zinc-400">المدة</div>
             <div className="text-lg font-semibold text-white">{t.estimatedTimeMinutes} دقيقة</div>
           </div>
           <div className="rounded-xl bg-white/[0.03] border border-white/10 p-4">
             <FileText className="w-5 h-5 text-indigo-400 mb-2" />
-            <div className="text-xs text-zinc-500">الصيغة</div>
+            <div className="text-xs text-zinc-400">الصيغة</div>
             <div className="text-lg font-semibold text-white">{t.format.toUpperCase()}</div>
           </div>
           <div className="rounded-xl bg-white/[0.03] border border-white/10 p-4">
             <Award className="w-5 h-5 text-amber-400 mb-2" />
-            <div className="text-xs text-zinc-500">المستوى</div>
+            <div className="text-xs text-zinc-400">المستوى</div>
             <div className="text-lg font-semibold text-white">{DIFFICULTY_AR[t.difficulty]}</div>
           </div>
           <div className="rounded-xl bg-white/[0.03] border border-white/10 p-4">
             <Download className="w-5 h-5 text-emerald-400 mb-2" />
-            <div className="text-xs text-zinc-500">الأقسام</div>
+            <div className="text-xs text-zinc-400">الأقسام</div>
             <div className="text-lg font-semibold text-white">{t.sections.length}</div>
           </div>
         </div>
@@ -157,7 +157,7 @@ export default async function TemplatePage({ params }: PageProps) {
                   className="rounded-xl bg-white/[0.03] border border-white/10 p-5 hover:border-cyan-500/30 transition"
                 >
                   <div className="text-sm font-semibold text-white mb-2">{r.titleAr}</div>
-                  <div className="text-xs text-zinc-500">{r.estimatedTimeMinutes} دقيقة · {r.format}</div>
+                  <div className="text-xs text-zinc-400">{r.estimatedTimeMinutes} دقيقة · {r.format}</div>
                 </Link>
               ))}
             </div>

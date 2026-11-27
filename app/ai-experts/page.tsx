@@ -36,7 +36,7 @@ export default function ExpertsIndexPage() {
                   <h3 className="text-lg font-bold text-white mb-1 group-hover:text-cyan-300 transition">
                     {e.nameAr}
                   </h3>
-                  <div className="text-xs text-zinc-500 mb-3">{e.roleAr}</div>
+                  <div className="text-xs text-zinc-400 mb-3">{e.roleAr}</div>
                   <p className="text-sm text-zinc-400 leading-relaxed mb-4 line-clamp-3">
                     {e.taglineAr}
                   </p>

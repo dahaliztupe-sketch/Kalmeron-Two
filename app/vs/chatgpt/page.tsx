@@ -50,7 +50,7 @@ export default function VsChatgptPage() {
                   <span>{row.kalmeron}</span>
                 </div>
                 <div className="col-span-4 text-neutral-400 leading-relaxed flex items-start gap-2">
-                  <Minus className="w-4 h-4 text-neutral-600 shrink-0 mt-0.5" />
+                  <Minus className="w-4 h-4 text-neutral-400 shrink-0 mt-0.5" />
                   <span>{row.chatgpt}</span>
                 </div>
               </li>

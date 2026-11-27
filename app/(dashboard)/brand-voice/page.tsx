@@ -207,7 +207,7 @@ export default function BrandVoicePage() {
                   placeholder="مثال: كلميرون، تك مصر، نوفا للخدمات..."
                   className={cn(
                     "w-full bg-white/[0.04] border border-white/[0.08] rounded-xl",
-                    "px-4 py-3 text-sm text-white placeholder:text-neutral-500",
+                    "px-4 py-3 text-sm text-white placeholder:text-neutral-400",
                     "focus:outline-none focus:border-indigo-500/50 transition-all"
                   )}
                 />
@@ -220,7 +220,7 @@ export default function BrandVoicePage() {
                   placeholder="مثال: حوّل فكرتك إلى شركة ناجحة"
                   className={cn(
                     "w-full bg-white/[0.04] border border-white/[0.08] rounded-xl",
-                    "px-4 py-3 text-sm text-white placeholder:text-neutral-500",
+                    "px-4 py-3 text-sm text-white placeholder:text-neutral-400",
                     "focus:outline-none focus:border-indigo-500/50 transition-all"
                   )}
                 />
@@ -233,7 +233,7 @@ export default function BrandVoicePage() {
             <h2 className="text-sm font-bold text-white mb-1 flex items-center gap-2">
               <Volume2 className="w-4 h-4 text-pink-400" /> نبرة العلامة التجارية
             </h2>
-            <p className="text-xs text-neutral-500 mb-4">اختر من 2 إلى 4 نبرات تناسب شخصية شركتك</p>
+            <p className="text-xs text-neutral-400 mb-4">اختر من 2 إلى 4 نبرات تناسب شخصية شركتك</p>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
               {TONE_OPTIONS.map(opt => {
                 const active = data.tone.includes(opt.id);
@@ -249,7 +249,7 @@ export default function BrandVoicePage() {
                     )}
                   >
                     <div className="text-xs font-bold mb-0.5">{opt.label}</div>
-                    <div className="text-[10px] text-neutral-500">{opt.desc}</div>
+                    <div className="text-[10px] text-neutral-400">{opt.desc}</div>
                   </button>
                 );
               })}
@@ -270,7 +270,7 @@ export default function BrandVoicePage() {
                   placeholder="مثال: رواد أعمال مصريون 25-40 سنة، أصحاب مشاريع ناشئة في مرحلة التأسيس"
                   className={cn(
                     "w-full bg-white/[0.04] border border-white/[0.08] rounded-xl",
-                    "px-4 py-3 text-sm text-white placeholder:text-neutral-500",
+                    "px-4 py-3 text-sm text-white placeholder:text-neutral-400",
                     "focus:outline-none focus:border-indigo-500/50 transition-all"
                   )}
                 />
@@ -284,7 +284,7 @@ export default function BrandVoicePage() {
                   placeholder="مثال: الشفافية، الابتكار، دعم المجتمع المصري، الجودة قبل السرعة..."
                   className={cn(
                     "w-full bg-white/[0.04] border border-white/[0.08] rounded-xl",
-                    "px-4 py-3 text-sm text-white placeholder:text-neutral-500",
+                    "px-4 py-3 text-sm text-white placeholder:text-neutral-400",
                     "focus:outline-none focus:border-indigo-500/50 transition-all resize-none"
                   )}
                 />
@@ -298,7 +298,7 @@ export default function BrandVoicePage() {
                   placeholder="مثال: الكلمات السلبية، المبالغة، المصطلحات التقنية المعقدة..."
                   className={cn(
                     "w-full bg-white/[0.04] border border-white/[0.08] rounded-xl",
-                    "px-4 py-3 text-sm text-white placeholder:text-neutral-500",
+                    "px-4 py-3 text-sm text-white placeholder:text-neutral-400",
                     "focus:outline-none focus:border-indigo-500/50 transition-all resize-none"
                   )}
                 />
@@ -333,7 +333,7 @@ export default function BrandVoicePage() {
                 {preview}
               </div>
             ) : (
-              <div className="rounded-xl bg-white/[0.02] border border-white/[0.06] p-4 text-xs text-neutral-500 text-center">
+              <div className="rounded-xl bg-white/[0.02] border border-white/[0.06] p-4 text-xs text-neutral-400 text-center">
                 اضغط &quot;اولّد مثالاً&quot; لتجربة كيف سيكتب المساعد بصوت علامتك التجارية
               </div>
             )}

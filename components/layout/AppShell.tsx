@@ -173,8 +173,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               aria-label={language === "ar" ? "افتح لوحة الأوامر" : "Open command palette"}
               aria-keyshortcuts="Meta+K Control+K"
             >
-              <Search className="w-4 h-4 text-neutral-500 group-hover:text-cyan-300 transition-colors" aria-hidden />
-              <span className="flex-1 text-start text-[13px] text-neutral-500 group-hover:text-neutral-400 transition-colors truncate">
+              <Search className="w-4 h-4 text-neutral-400 group-hover:text-cyan-300 transition-colors" aria-hidden />
+              <span className="flex-1 text-start text-[13px] text-neutral-400 group-hover:text-neutral-400 transition-colors truncate">
                 {language === "ar" ? "ابحث في كلميرون…" : "Search Kalmeron…"}
               </span>
               <kbd className="text-[10px] font-mono text-neutral-400 bg-white/[0.04] border border-white/10 rounded-md px-1.5 py-0.5 shadow-[inset_0_-1px_0_rgb(0_0_0/0.3)]">
@@ -324,7 +324,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                             <Icon
                               className={cn(
                                 "w-4 h-4 shrink-0",
-                                active ? "text-cyan-300" : "text-neutral-500"
+                                active ? "text-cyan-300" : "text-neutral-400"
                               )}
                             />
                             <span className="truncate font-semibold">{item.label}</span>

@@ -82,7 +82,7 @@ export function UpgradeBanner() {
           </Link>
           <button
             onClick={dismiss}
-            className="w-6 h-6 rounded-lg flex items-center justify-center text-neutral-500 hover:text-white hover:bg-white/[0.06] transition-colors shrink-0"
+            className="w-6 h-6 rounded-lg flex items-center justify-center text-neutral-400 hover:text-white hover:bg-white/[0.06] transition-colors shrink-0"
           >
             <X className="w-3.5 h-3.5" />
           </button>

@@ -81,7 +81,7 @@ export default function AboutPage() {
               <div key={s.label} className="text-center">
                 <Icon className="w-5 h-5 text-brand-cyan mx-auto mb-2" />
                 <div className="font-display font-black text-2xl md:text-3xl text-white mb-1">{s.value}</div>
-                <div className="text-xs text-neutral-500">{s.label}</div>
+                <div className="text-xs text-neutral-400">{s.label}</div>
               </div>
             );
           })}

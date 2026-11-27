@@ -41,7 +41,7 @@ export default function UseCasesIndexPage() {
               <span className={`text-xs px-2 py-1 rounded-md border ${DIFFICULTY_COLORS[uc.difficulty]}`}>
                 {DIFFICULTY_LABELS[uc.difficulty]}
               </span>
-              <span className="text-xs text-zinc-500 inline-flex items-center gap-1">
+              <span className="text-xs text-zinc-400 inline-flex items-center gap-1">
                 <Clock className="w-3 h-3" />
                 {uc.estimatedTimeMinutes} دقيقة
               </span>
@@ -53,7 +53,7 @@ export default function UseCasesIndexPage() {
               {uc.metaDescriptionAr}
             </p>
             <div className="flex items-center justify-between text-xs">
-              <span className="text-zinc-500 inline-flex items-center gap-1">
+              <span className="text-zinc-400 inline-flex items-center gap-1">
                 <Zap className="w-3 h-3" />
                 {uc.primaryAgents.length} مساعدين
               </span>

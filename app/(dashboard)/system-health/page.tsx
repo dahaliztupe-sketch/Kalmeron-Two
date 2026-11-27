@@ -226,7 +226,7 @@ export default function SystemHealthPage() {
               <div className={`font-bold text-lg ${isHealthy ? "text-emerald-300" : "text-amber-300"}`}>
                 {isHealthy ? "النظام يعمل بكامل طاقته ✓" : "النظام يعمل بشكل متدهور ⚠"}
               </div>
-              <div className="text-xs text-neutral-500 mt-0.5 flex items-center gap-3">
+              <div className="text-xs text-neutral-400 mt-0.5 flex items-center gap-3">
                 <span>الإصدار: {data.version}</span>
                 {lastLoaded && (
                   <span className="flex items-center gap-1">
@@ -295,21 +295,21 @@ export default function SystemHealthPage() {
                   <li key={w.key} className="rounded-xl border border-white/[0.04] bg-white/[0.02] overflow-hidden">
                     <div className="flex items-center gap-3 px-3 py-2.5 text-sm">
                       <span className={`inline-block w-2 h-2 rounded-full shrink-0 ${cfg.dot}`} aria-hidden />
-                      <Icon className="w-3.5 h-3.5 text-neutral-500 shrink-0" />
+                      <Icon className="w-3.5 h-3.5 text-neutral-400 shrink-0" />
                       <span className="text-neutral-200 text-xs font-medium flex-1">{w.name}</span>
 
                       {w.uptime_seconds != null && (
-                        <span className="text-[10px] text-neutral-600 tabular-nums">
+                        <span className="text-[10px] text-neutral-400 tabular-nums">
                           ↑ {fmt(w.uptime_seconds)}
                         </span>
                       )}
                       {w.latency_ms != null && (
-                        <span className="text-[10px] text-neutral-600 tabular-nums">
+                        <span className="text-[10px] text-neutral-400 tabular-nums">
                           {w.latency_ms}ms
                         </span>
                       )}
                       {w.version && (
-                        <span className="text-[10px] text-neutral-600 font-mono">{w.version}</span>
+                        <span className="text-[10px] text-neutral-400 font-mono">{w.version}</span>
                       )}
                       <span className={`text-[10px] px-2 py-0.5 rounded border ${cfg.badge}`}>
                         {cfg.label}

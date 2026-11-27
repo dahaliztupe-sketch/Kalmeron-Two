@@ -251,7 +251,7 @@ export function BillingTab() {
                 </div>
               ) : txns.length === 0 ? (
                 <div className="text-center py-8">
-                  <p className="text-neutral-500 text-sm">لا توجد معاملات بعد</p>
+                  <p className="text-neutral-400 text-sm">لا توجد معاملات بعد</p>
                 </div>
               ) : (
                 <div className="space-y-2">
@@ -268,7 +268,7 @@ export function BillingTab() {
                         )} />
                         <div className="min-w-0">
                           <p className="text-white text-sm font-medium truncate">{t.description}</p>
-                          <p className="text-neutral-500 text-xs">
+                          <p className="text-neutral-400 text-xs">
                             {new Date(t.createdAt).toLocaleDateString("ar-EG")}
                           </p>
                         </div>
@@ -323,7 +323,7 @@ function BalanceCard({
       <p className={cn("text-2xl font-extrabold", textColor)}>
         {fmt(value)}
         {!hideRatio && (
-          <span className="text-sm text-neutral-500 font-normal"> / {fmt(limit)}</span>
+          <span className="text-sm text-neutral-400 font-normal"> / {fmt(limit)}</span>
         )}
       </p>
       {!hideRatio && (

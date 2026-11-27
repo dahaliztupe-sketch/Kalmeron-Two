@@ -45,7 +45,7 @@ export default function OfflinePage() {
           </Link>
         </div>
 
-        <p className="text-[11px] text-neutral-600 mt-8">
+        <p className="text-[11px] text-neutral-400 mt-8">
           الجلسة الحالية محفوظة محلياً، وأي إجراء جديد سيُحاول الإرسال تلقائياً عند الاتصال.
         </p>
       </div>

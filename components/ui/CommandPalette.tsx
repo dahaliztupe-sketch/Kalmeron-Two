@@ -138,7 +138,7 @@ export function CommandPalette({ open, onOpenChange, locale = "ar" }: CommandPal
 
           {/* Search bar */}
           <div className="flex items-center gap-3 px-4 py-3.5 border-b border-white/5">
-            <Search className="w-4 h-4 text-neutral-500 shrink-0" aria-hidden />
+            <Search className="w-4 h-4 text-neutral-400 shrink-0" aria-hidden />
             <input
               ref={inputRef}
               type="text"
@@ -149,10 +149,10 @@ export function CommandPalette({ open, onOpenChange, locale = "ar" }: CommandPal
               }}
               onKeyDown={onKeyDown}
               placeholder={placeholder}
-              className="flex-1 bg-transparent text-[15px] text-white placeholder:text-neutral-500 outline-none"
+              className="flex-1 bg-transparent text-[15px] text-white placeholder:text-neutral-400 outline-none"
               aria-label={placeholder}
             />
-            <kbd className="text-[10px] font-mono text-neutral-500 bg-white/[0.04] border border-white/10 rounded-md px-1.5 py-0.5">
+            <kbd className="text-[10px] font-mono text-neutral-400 bg-white/[0.04] border border-white/10 rounded-md px-1.5 py-0.5">
               Esc
             </kbd>
           </div>
@@ -160,7 +160,7 @@ export function CommandPalette({ open, onOpenChange, locale = "ar" }: CommandPal
           {/* Results */}
           <div role="listbox" className="max-h-[50vh] overflow-y-auto scrollbar-hide py-2">
             {results.length === 0 ? (
-              <div className="px-4 py-8 text-center text-sm text-neutral-500">{noResults}</div>
+              <div className="px-4 py-8 text-center text-sm text-neutral-400">{noResults}</div>
             ) : (
               <ul className="space-y-0.5">
                 {results.map((item, i) => {
@@ -182,11 +182,11 @@ export function CommandPalette({ open, onOpenChange, locale = "ar" }: CommandPal
                         )}
                       >
                         <Icon
-                          className={cn("w-4 h-4 shrink-0", active ? "text-cyan-300" : "text-neutral-500")}
+                          className={cn("w-4 h-4 shrink-0", active ? "text-cyan-300" : "text-neutral-400")}
                           aria-hidden
                         />
                         <span className="flex-1 text-sm font-medium truncate">{item.label}</span>
-                        <span className="text-[10px] text-neutral-500 uppercase tracking-wider shrink-0">
+                        <span className="text-[10px] text-neutral-400 uppercase tracking-wider shrink-0">
                           {item.section}
                         </span>
                       </button>
@@ -198,7 +198,7 @@ export function CommandPalette({ open, onOpenChange, locale = "ar" }: CommandPal
           </div>
 
           {/* Footer hints */}
-          <div className="flex items-center justify-between gap-3 px-4 py-2.5 border-t border-white/5 text-[11px] text-neutral-500">
+          <div className="flex items-center justify-between gap-3 px-4 py-2.5 border-t border-white/5 text-[11px] text-neutral-400">
             <div className="flex items-center gap-3">
               <span className="flex items-center gap-1">
                 <kbd className="font-mono bg-white/[0.04] border border-white/10 rounded px-1 py-0.5">

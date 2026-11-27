@@ -406,7 +406,7 @@ export default function DashboardPage() {
                         <Icon className="w-4 h-4 md:w-5 md:h-5 text-white" />
                       </div>
                       <div className="font-bold text-white text-xs md:text-sm leading-tight">{label}</div>
-                      <div className="text-[10px] text-neutral-500 mt-0.5 leading-tight hidden md:block">{desc}</div>
+                      <div className="text-[10px] text-neutral-400 mt-0.5 leading-tight hidden md:block">{desc}</div>
                     </Link>
                   );
                 })}
@@ -466,7 +466,7 @@ export default function DashboardPage() {
                           )}
                         </Link>
                         {conv.updatedAt && (
-                          <span className="text-[10px] text-neutral-500 shrink-0 mt-0.5">
+                          <span className="text-[10px] text-neutral-400 shrink-0 mt-0.5">
                             {new Date(conv.updatedAt).toLocaleDateString("ar-EG", { month: "short", day: "numeric" })}
                           </span>
                         )}
@@ -485,7 +485,7 @@ export default function DashboardPage() {
                       <Sun className="w-4 h-4 text-amber-400" />
                       <h3 className="text-sm font-bold text-white">{t("dailyBrief")}</h3>
                     </div>
-                    <ArrowLeft className="w-3.5 h-3.5 text-neutral-500 group-hover:text-amber-400 group-hover:-translate-x-1 transition-all" />
+                    <ArrowLeft className="w-3.5 h-3.5 text-neutral-400 group-hover:text-amber-400 group-hover:-translate-x-1 transition-all" />
                   </div>
                   <p className="text-xs text-text-secondary leading-relaxed">
                     {t("dailyBriefDesc")}
@@ -665,9 +665,9 @@ export default function DashboardPage() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="text-sm font-bold text-white">{tDiscover("templates.title")}</div>
-                    <div className="text-xs text-neutral-500 mt-0.5">{tDiscover("templates.desc")}</div>
+                    <div className="text-xs text-neutral-400 mt-0.5">{tDiscover("templates.desc")}</div>
                   </div>
-                  <ArrowLeft className="w-4 h-4 text-neutral-600 group-hover:text-white transition-colors flex-shrink-0" />
+                  <ArrowLeft className="w-4 h-4 text-neutral-400 group-hover:text-white transition-colors flex-shrink-0" />
                 </Link>
                 <Link href="/ideas/analyze" className="group glass-panel rounded-2xl p-5 hover:border-rose-500/30 transition-all flex items-center gap-4">
                   <div className="w-10 h-10 rounded-xl bg-rose-500/10 border border-rose-500/25 flex items-center justify-center flex-shrink-0">
@@ -675,9 +675,9 @@ export default function DashboardPage() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="text-sm font-bold text-white">{tDiscover("trendingTools.title")}</div>
-                    <div className="text-xs text-neutral-500 mt-0.5">{tDiscover("trendingTools.desc")}</div>
+                    <div className="text-xs text-neutral-400 mt-0.5">{tDiscover("trendingTools.desc")}</div>
                   </div>
-                  <ArrowLeft className="w-4 h-4 text-neutral-600 group-hover:text-white transition-colors flex-shrink-0" />
+                  <ArrowLeft className="w-4 h-4 text-neutral-400 group-hover:text-white transition-colors flex-shrink-0" />
                 </Link>
                 <Link href="/brand-voice" className="group glass-panel rounded-2xl p-5 hover:border-pink-500/30 transition-all flex items-center gap-4">
                   <div className="w-10 h-10 rounded-xl bg-pink-500/10 border border-pink-500/25 flex items-center justify-center flex-shrink-0">
@@ -685,9 +685,9 @@ export default function DashboardPage() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="text-sm font-bold text-white">{tDiscover("brandVoice.title")}</div>
-                    <div className="text-xs text-neutral-500 mt-0.5">{tDiscover("brandVoice.desc")}</div>
+                    <div className="text-xs text-neutral-400 mt-0.5">{tDiscover("brandVoice.desc")}</div>
                   </div>
-                  <ArrowLeft className="w-4 h-4 text-neutral-600 group-hover:text-white transition-colors flex-shrink-0" />
+                  <ArrowLeft className="w-4 h-4 text-neutral-400 group-hover:text-white transition-colors flex-shrink-0" />
                 </Link>
               </div>
               </ErrorBoundary>

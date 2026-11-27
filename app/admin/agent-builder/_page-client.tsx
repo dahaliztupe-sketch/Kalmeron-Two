@@ -63,9 +63,9 @@ export default function AgentBuilderPage() {
           {/* Infinite Canvas */}
           <div className="flex-1 bg-[#0a0a0a] relative" style={{ backgroundImage: 'radial-gradient(#333 1px, transparent 1px)', backgroundSize: '24px 24px' }}>
             {/* Visual placeholder for the drag-and-drop workspace */}
-            <div className="absolute inset-0 flex items-center justify-center text-neutral-600 font-medium">
+            <div className="absolute inset-0 flex items-center justify-center text-neutral-400 font-medium">
               <div className="text-center">
-                 <div className="inline-block p-4 border-2 border-dashed border-neutral-700 rounded-xl mb-4 text-neutral-500">
+                 <div className="inline-block p-4 border-2 border-dashed border-neutral-700 rounded-xl mb-4 text-neutral-400">
                     اسحب الكتل من القائمة هنا (React Flow Canvas)
                  </div>
                  <p className="text-sm">سيتم تحويل هذه الكتل تلقائياً إلى رسم بياني في LangGraph عند الحفظ.</p>

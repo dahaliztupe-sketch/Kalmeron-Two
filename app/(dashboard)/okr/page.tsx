@@ -97,7 +97,7 @@ function OKRCard({ okr }: { okr: OKR }) {
           </div>
           <button
             onClick={() => setOpen((v) => !v)}
-            className="p-1 rounded-lg hover:bg-white/10 text-neutral-500 transition-colors"
+            className="p-1 rounded-lg hover:bg-white/10 text-neutral-400 transition-colors"
           >
             {open ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
           </button>
@@ -259,7 +259,7 @@ export default function OKRPage() {
               <div key={label} className="glass-panel rounded-2xl p-4 flex items-center gap-3">
                 <Icon className={cn("w-5 h-5 shrink-0", color)} />
                 <div>
-                  <div className="text-xs text-neutral-500">{label}</div>
+                  <div className="text-xs text-neutral-400">{label}</div>
                   <div className={cn("text-lg font-black", color)}>{value}</div>
                 </div>
               </div>

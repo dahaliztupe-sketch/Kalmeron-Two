@@ -130,7 +130,7 @@ export default function FinanceCrewPage() {
                 >
                   <Icon className="w-7 h-7 text-emerald-300 mb-4" />
                   <h3 className="font-bold text-lg text-white">{a.name}</h3>
-                  <p className="text-neutral-500 text-xs mt-1 mb-3">{a.role}</p>
+                  <p className="text-neutral-400 text-xs mt-1 mb-3">{a.role}</p>
                   <ul className="space-y-2">
                     {a.bullets.map((b) => (
                       <li key={b} className="flex items-start gap-2 text-neutral-300 text-sm">

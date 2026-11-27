@@ -110,7 +110,7 @@ export default async function AiLogsDashboard() {
             <CardTitle className="text-white flex items-center gap-2">
               <AlertTriangle className="w-4 h-4 text-amber-400" />
               تفاصيل أحداث الاستهلاك
-              <span className="text-xs text-neutral-500 font-normal mr-2">
+              <span className="text-xs text-neutral-400 font-normal mr-2">
                 ({logs.length} حدث)
               </span>
             </CardTitle>
@@ -131,14 +131,14 @@ export default async function AiLogsDashboard() {
                 <TableBody>
                   {logs.length === 0 && (
                     <TableRow>
-                      <TableCell colSpan={6} className="text-center text-neutral-500 py-12">
+                      <TableCell colSpan={6} className="text-center text-neutral-400 py-12">
                         لا توجد أحداث مسجّلة بعد
                       </TableCell>
                     </TableRow>
                   )}
                   {logs.map((log) => (
                     <TableRow key={log.id} className="border-neutral-800 hover:bg-neutral-800/50">
-                      <TableCell className="text-neutral-500 text-xs whitespace-nowrap">
+                      <TableCell className="text-neutral-400 text-xs whitespace-nowrap">
                         {fmtDate(log.occurredAt)}
                       </TableCell>
                       <TableCell className="text-neutral-200 font-medium text-sm">

@@ -120,7 +120,7 @@ export default function RealEstateAnalyzer() {
                       key={ex}
                       type="button"
                       onClick={() => setLocation(ex)}
-                      className="text-xs text-neutral-500 hover:text-neutral-300 border border-neutral-700/50 hover:border-neutral-600 rounded-lg px-2.5 py-1 transition-colors"
+                      className="text-xs text-neutral-400 hover:text-neutral-300 border border-neutral-700/50 hover:border-neutral-600 rounded-lg px-2.5 py-1 transition-colors"
                     >
                       {ex}
                     </button>
@@ -139,7 +139,7 @@ export default function RealEstateAnalyzer() {
                       placeholder="مثال: 4,500,000"
                       className="w-full bg-neutral-800 border border-neutral-700 rounded-xl px-3 py-2.5 text-white text-sm outline-none focus:border-blue-500 transition-colors"
                     />
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-neutral-500">EGP</span>
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-neutral-400">EGP</span>
                   </div>
                 </div>
                 <div>
@@ -152,7 +152,7 @@ export default function RealEstateAnalyzer() {
                       placeholder="120"
                       className="w-full bg-neutral-800 border border-neutral-700 rounded-xl px-3 py-2.5 text-white text-sm outline-none focus:border-blue-500 transition-colors"
                     />
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-neutral-500">م²</span>
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-neutral-400">م²</span>
                   </div>
                 </div>
               </div>
@@ -217,7 +217,7 @@ export default function RealEstateAnalyzer() {
                 <div key={i} className={cn("bg-neutral-900/40 border border-neutral-700/30 rounded-2xl p-5")}>
                   <Icon className={cn("w-5 h-5 mb-3", card.color)} />
                   <h3 className="text-sm font-bold text-white mb-1">{card.title}</h3>
-                  <p className="text-xs text-neutral-500">{card.desc}</p>
+                  <p className="text-xs text-neutral-400">{card.desc}</p>
                 </div>
               );
             })}

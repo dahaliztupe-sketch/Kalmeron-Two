@@ -121,16 +121,16 @@ export default function NotificationsPage() {
         ) : items.length === 0 ? (
           <div className="glass-panel rounded-3xl p-16 text-center">
             <div className="w-16 h-16 rounded-2xl bg-white/[0.03] border border-white/[0.06] flex items-center justify-center mx-auto mb-4">
-              <CheckCircle2 className="w-8 h-8 text-neutral-600" />
+              <CheckCircle2 className="w-8 h-8 text-neutral-400" />
             </div>
             <p className="text-white font-bold text-lg mb-2">لا توجد إشعارات</p>
-            <p className="text-neutral-500 text-sm">ستظهر هنا كل تحديثاتك وتنبيهاتك</p>
+            <p className="text-neutral-400 text-sm">ستظهر هنا كل تحديثاتك وتنبيهاتك</p>
           </div>
         ) : (
           <div className="space-y-6">
             {unreadItems.length > 0 && (
               <div>
-                <p className="text-[11px] font-bold uppercase tracking-widest text-neutral-500 mb-3 flex items-center gap-2">
+                <p className="text-[11px] font-bold uppercase tracking-widest text-neutral-400 mb-3 flex items-center gap-2">
                   <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 inline-block" />
                   غير مقروء ({unreadItems.length})
                 </p>
@@ -149,10 +149,10 @@ export default function NotificationsPage() {
                             <Link href={item.href || "#"} onClick={() => markOne(item.id)} className="block">
                               <p className="text-sm font-bold text-white mb-0.5">{item.title}</p>
                               <p className="text-xs text-neutral-400 leading-relaxed">{item.body}</p>
-                              {date && <p className="text-[10px] text-neutral-600 mt-1.5">{formatDistanceToNow(date, { addSuffix: true, locale: ar })}</p>}
+                              {date && <p className="text-[10px] text-neutral-400 mt-1.5">{formatDistanceToNow(date, { addSuffix: true, locale: ar })}</p>}
                             </Link>
                           </div>
-                          <button onClick={() => markOne(item.id)} className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg hover:bg-white/10 text-neutral-600 hover:text-emerald-400 transition-all shrink-0" title="تحديد كمقروء">
+                          <button onClick={() => markOne(item.id)} className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg hover:bg-white/10 text-neutral-400 hover:text-emerald-400 transition-all shrink-0" title="تحديد كمقروء">
                             <CheckCheck className="w-3.5 h-3.5" />
                           </button>
                         </motion.div>
@@ -165,7 +165,7 @@ export default function NotificationsPage() {
 
             {readItems.length > 0 && (
               <div>
-                <p className="text-[11px] font-bold uppercase tracking-widest text-neutral-600 mb-3">مقروء ({readItems.length})</p>
+                <p className="text-[11px] font-bold uppercase tracking-widest text-neutral-400 mb-3">مقروء ({readItems.length})</p>
                 <div className="space-y-2">
                   {readItems.map((item) => {
                     const cfg = TYPE_CONFIG[item.type] ?? DEFAULT_CFG;
@@ -174,13 +174,13 @@ export default function NotificationsPage() {
                     return (
                       <div key={item.id} className="glass-panel rounded-2xl p-4 flex gap-3 opacity-60 hover:opacity-80 transition-opacity">
                         <div className="w-9 h-9 rounded-xl bg-white/[0.04] flex items-center justify-center shrink-0">
-                          <Icon className="w-4 h-4 text-neutral-500" />
+                          <Icon className="w-4 h-4 text-neutral-400" />
                         </div>
                         <div className="flex-1 min-w-0">
                           <Link href={item.href || "#"} className="block">
                             <p className="text-sm font-semibold text-neutral-300 mb-0.5">{item.title}</p>
-                            <p className="text-xs text-neutral-500 leading-relaxed">{item.body}</p>
-                            {date && <p className="text-[10px] text-neutral-600 mt-1.5">{formatDistanceToNow(date, { addSuffix: true, locale: ar })}</p>}
+                            <p className="text-xs text-neutral-400 leading-relaxed">{item.body}</p>
+                            {date && <p className="text-[10px] text-neutral-400 mt-1.5">{formatDistanceToNow(date, { addSuffix: true, locale: ar })}</p>}
                           </Link>
                         </div>
                       </div>

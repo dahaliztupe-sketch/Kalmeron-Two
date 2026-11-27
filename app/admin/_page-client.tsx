@@ -248,7 +248,7 @@ export default function AdminCommandCenter() {
           </CardHeader>
           <CardContent className="overflow-x-auto">
             {agentEntries.length === 0 ? (
-              <div className="flex flex-col items-center py-8 text-neutral-500">
+              <div className="flex flex-col items-center py-8 text-neutral-400">
                 <Bot className="w-8 h-8 mb-2 opacity-30" />
                 <p className="text-sm">لا توجد بيانات تشغيل بعد. ابدأ محادثة لتفعيل المساعدين.</p>
               </div>
@@ -334,7 +334,7 @@ export default function AdminCommandCenter() {
               <span className="text-text-secondary text-xs font-normal">({filteredUsers.length} مستخدم)</span>
             </CardTitle>
             <div className="relative w-48">
-              <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-neutral-500" />
+              <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-neutral-400" />
               <Input
                 value={userSearch}
                 onChange={e => setUserSearch(e.target.value)}
@@ -358,7 +358,7 @@ export default function AdminCommandCenter() {
                 </p>
               </div>
             ) : filteredUsers.length === 0 ? (
-              <div className="text-center py-8 text-neutral-500">
+              <div className="text-center py-8 text-neutral-400">
                 <Users className="w-8 h-8 mx-auto mb-2 opacity-30" />
                 <p className="text-sm">{userSearch ? "لا توجد نتائج للبحث" : "لا يوجد مستخدمون بعد."}</p>
               </div>

@@ -130,11 +130,11 @@ export function FawryDialog({ open, onClose, planId, cycle, authToken }: Props) 
                           }`}
                         >
                           <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 ${method === m.id ? "bg-amber-500/20" : "bg-white/[0.04]"}`}>
-                            <Icon className={`w-4 h-4 ${method === m.id ? "text-amber-300" : "text-neutral-500"}`} />
+                            <Icon className={`w-4 h-4 ${method === m.id ? "text-amber-300" : "text-neutral-400"}`} />
                           </div>
                           <div className="flex-1 min-w-0">
                             <p className={`text-sm font-semibold ${method === m.id ? "text-amber-200" : "text-neutral-300"}`}>{m.label}</p>
-                            <p className="text-xs text-neutral-500 leading-relaxed">{m.desc}</p>
+                            <p className="text-xs text-neutral-400 leading-relaxed">{m.desc}</p>
                           </div>
                           <div className={`w-4 h-4 rounded-full border-2 shrink-0 ${method === m.id ? "border-amber-400 bg-amber-400" : "border-neutral-600"}`} />
                         </button>
@@ -153,7 +153,7 @@ export function FawryDialog({ open, onClose, planId, cycle, authToken }: Props) 
               {/* Step: mobile */}
               {step === "mobile" && (
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-                  <button onClick={() => setStep("method")} className="text-xs text-neutral-500 hover:text-white mb-4 flex items-center gap-1 transition-colors">
+                  <button onClick={() => setStep("method")} className="text-xs text-neutral-400 hover:text-white mb-4 flex items-center gap-1 transition-colors">
                     ← رجوع
                   </button>
                   <div className="mb-5">
@@ -198,7 +198,7 @@ export function FawryDialog({ open, onClose, planId, cycle, authToken }: Props) 
                   <p className="text-sm text-neutral-400 mb-5">احفظ الكود التالي وادفع في أي فرع فوري</p>
 
                   <div className="mb-5 p-4 rounded-2xl bg-white/[0.04] border border-white/[0.08]">
-                    <p className="text-[11px] text-neutral-500 mb-2">الكود المرجعي</p>
+                    <p className="text-[11px] text-neutral-400 mb-2">الكود المرجعي</p>
                     <div className="flex items-center justify-center gap-3">
                       <span className="font-mono text-2xl font-black text-white tracking-widest">{result.referenceNumber}</span>
                       <button onClick={copyRef} className="w-8 h-8 rounded-lg bg-white/[0.05] border border-white/[0.08] flex items-center justify-center hover:bg-white/[0.1] transition-colors">

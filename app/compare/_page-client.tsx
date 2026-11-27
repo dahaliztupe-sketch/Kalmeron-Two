@@ -182,7 +182,7 @@ export default function ComparePage() {
           </div>
 
           {/* Legend */}
-          <div className="flex flex-wrap items-center justify-center gap-6 mt-6 text-xs text-neutral-500">
+          <div className="flex flex-wrap items-center justify-center gap-6 mt-6 text-xs text-neutral-400">
             <span className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-400" /> مدعوم بالكامل</span>
             <span className="flex items-center gap-2"><Minus className="w-4 h-4 text-amber-400" /> دعم جزئي</span>
             <span className="flex items-center gap-2"><XCircle className="w-4 h-4 text-rose-400/50" /> غير مدعوم</span>
@@ -206,7 +206,7 @@ export default function ComparePage() {
                 شاهد الأسعار <Sparkles className="w-4 h-4" />
               </Link>
             </div>
-            <div className="flex flex-wrap items-center justify-center gap-4 mt-6 text-xs text-neutral-600">
+            <div className="flex flex-wrap items-center justify-center gap-4 mt-6 text-xs text-neutral-400">
               <span className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> مجاني للبداية</span>
               <span className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> ألغ في أي وقت</span>
               <span className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> دعم فوري</span>
@@ -217,7 +217,7 @@ export default function ComparePage() {
 
       {/* Footer */}
       <footer className="border-t border-white/[0.06] px-4 py-6">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3 text-xs text-neutral-600">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3 text-xs text-neutral-400">
           <span>© {new Date().getFullYear()} Kalmeron AI. جميع الحقوق محفوظة.</span>
           <div className="flex items-center gap-4">
             <Link href="/privacy" className="hover:text-neutral-400 transition-colors">الخصوصية</Link>

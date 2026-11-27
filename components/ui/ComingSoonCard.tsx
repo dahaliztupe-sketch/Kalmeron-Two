@@ -76,7 +76,7 @@ export function ComingSoonCard({ feature, description, action = "/api/waitlist" 
               onChange={(e) => setEmail(e.target.value)}
               placeholder="email@company.com"
               dir="ltr"
-              className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-sm text-white placeholder:text-neutral-500 outline-none focus:border-cyan-400/40 transition-colors"
+              className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-sm text-white placeholder:text-neutral-400 outline-none focus:border-cyan-400/40 transition-colors"
             />
             <input
               type="text"
@@ -84,14 +84,14 @@ export function ComingSoonCard({ feature, description, action = "/api/waitlist" 
               value={company}
               onChange={(e) => setCompany(e.target.value)}
               placeholder={t("companyName")}
-              className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-sm text-white placeholder:text-neutral-500 outline-none focus:border-cyan-400/40 transition-colors"
+              className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-sm text-white placeholder:text-neutral-400 outline-none focus:border-cyan-400/40 transition-colors"
             />
             <textarea
               value={useCase}
               onChange={(e) => setUseCase(e.target.value)}
               placeholder={t("useCase")}
               rows={2}
-              className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-sm text-white placeholder:text-neutral-500 outline-none focus:border-cyan-400/40 transition-colors resize-none"
+              className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-sm text-white placeholder:text-neutral-400 outline-none focus:border-cyan-400/40 transition-colors resize-none"
             />
             <button
               type="submit"

@@ -43,7 +43,7 @@ export function GoalsProgress() {
           <CheckCircle2 className="w-4 h-4 text-indigo-400" />
           أهدافك التأسيسية
         </h3>
-        <p className="text-xs text-neutral-500 mb-3">لم تحدد أهدافاً بعد</p>
+        <p className="text-xs text-neutral-400 mb-3">لم تحدد أهدافاً بعد</p>
         <Link href="/settings"
           className="inline-flex items-center gap-2 text-xs text-brand-cyan hover:text-white transition-colors"
         >
@@ -60,7 +60,7 @@ export function GoalsProgress() {
           <CheckCircle2 className="w-4 h-4 text-indigo-400" />
           أهدافك التأسيسية
         </h3>
-        <span className="text-xs text-neutral-500">{goals.length} هدف</span>
+        <span className="text-xs text-neutral-400">{goals.length} هدف</span>
       </div>
 
       <div className="space-y-2">
@@ -89,7 +89,7 @@ export function GoalsProgress() {
               )}>
                 {meta.cta}
               </span>
-              <Circle className="w-3.5 h-3.5 text-neutral-600 flex-shrink-0 group-hover:hidden" />
+              <Circle className="w-3.5 h-3.5 text-neutral-400 flex-shrink-0 group-hover:hidden" />
               <ArrowLeft className="w-3.5 h-3.5 text-neutral-400 flex-shrink-0 hidden group-hover:block" />
             </Link>
           );
@@ -98,7 +98,7 @@ export function GoalsProgress() {
 
       <div className="mt-4 pt-3 border-t border-white/[0.05]">
         <Link href="/roadmap"
-          className="flex items-center justify-between text-xs text-neutral-500 hover:text-white transition-colors"
+          className="flex items-center justify-between text-xs text-neutral-400 hover:text-white transition-colors"
         >
           <span>عرض خارطة الطريق الكاملة</span>
           <ArrowLeft className="w-3.5 h-3.5" />
