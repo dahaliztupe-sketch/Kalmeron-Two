@@ -1,3 +1,4 @@
+import { DEFAULT_GUEST_MODEL, DEFAULT_USER_MODEL } from "@/src/lib/company/models";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { NextRequest } from "next/server";
 
@@ -65,6 +66,6 @@ describe("/api/ideas/analyze format=plan", () => {
   it("uses the cheaper model for guests", async () => {
     generate.mockResolvedValueOnce({ text: JSON.stringify(plan) });
     await POST(req({ ideaDesc: "فكرة", format: "plan" }));
-    expect(generate.mock.calls[0][0].model).toBe("gemini-2.5-flash");
+    expect(generate.mock.calls[0][0].model).toBe(DEFAULT_GUEST_MODEL);
   });
 });

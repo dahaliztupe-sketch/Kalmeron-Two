@@ -1,3 +1,4 @@
+import { DEFAULT_GUEST_MODEL, DEFAULT_USER_MODEL } from "@/src/lib/company/models";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { NextRequest } from "next/server";
 
@@ -43,7 +44,7 @@ describe("/api/company/role", () => {
     generate.mockResolvedValueOnce({ text: JSON.stringify(out) });
     const res = await POST(req({ role: "marketing", plan, context: { sales: { x: 1 } } }, ""));
     expect(res.status).toBe(200);
-    expect(generate.mock.calls[0][0].model).toBe("gemini-2.5-flash");
+    expect(generate.mock.calls[0][0].model).toBe(DEFAULT_GUEST_MODEL);
   });
   it("guest over the daily cap gets 429 before any model call", async () => {
     guestAllowed = false;
@@ -56,7 +57,7 @@ describe("/api/company/role", () => {
   it("signed-in users use the pro model", async () => {
     generate.mockResolvedValueOnce({ text: JSON.stringify(out) });
     await POST(req({ role: "marketing", plan }));
-    expect(generate.mock.calls[0][0].model).toBe("gemini-2.5-pro");
+    expect(generate.mock.calls[0][0].model).toBe(DEFAULT_USER_MODEL);
   });
   it("rejects unknown roles and bad plans", async () => {
     expect((await POST(req({ role: "ceo", plan }))).status).toBe(400);

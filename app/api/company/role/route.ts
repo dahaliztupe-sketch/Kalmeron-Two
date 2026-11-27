@@ -10,6 +10,7 @@ import { runRole, type Generate } from "@/src/lib/company/run-role";
 import { ROLES, isRoleId } from "@/src/lib/company/roles/registry";
 import { GUEST_ROLES } from "@/src/lib/company/orchestrator";
 import { IntakeSchema } from "@/src/lib/company/intake";
+import { founderModel } from "@/src/lib/company/models";
 import { consumeGuestQuota } from "@/src/lib/plan/guest-cap";
 import { buildContextBlock } from "@/src/lib/company/context";
 
@@ -66,7 +67,7 @@ export async function POST(req: NextRequest) {
   const generate: Generate = async (system, prompt) => {
     try {
       const r = await ai.models.generateContent({
-        model: isGuest ? "gemini-2.5-flash" : "gemini-2.5-pro",
+        model: founderModel(isGuest),
         contents: prompt,
         config: { systemInstruction: system, responseMimeType: "application/json" },
       });
