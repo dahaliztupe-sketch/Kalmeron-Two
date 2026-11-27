@@ -4,6 +4,8 @@ import Link from "next/link";
 import { BrandLogo } from "@/components/brand/BrandLogo";
 import { CONTACT_EMAIL } from "@/src/lib/site";
 
+export type BillingCycle = "monthly" | "annual";
+
 /**
  * Honest pricing page. No price, plan or payment method has been decided.
  * The billing code (src/lib/billing) is kept for later but is not exposed here.
