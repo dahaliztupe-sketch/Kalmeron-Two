@@ -105,7 +105,7 @@ export default function MarketplacePage() {
       <div className="min-h-screen bg-[#0A0A0B] text-white p-6 md:p-12 font-sans" dir="rtl">
 
         <header className="mb-10">
-          <Link href="/dashboard" className="inline-flex items-center gap-1.5 text-neutral-500 hover:text-white text-sm mb-6 transition-colors">
+          <Link href="/dashboard" className="inline-flex items-center gap-1.5 text-neutral-400 hover:text-white text-sm mb-6 transition-colors">
             <ArrowLeft className="w-4 h-4" />
             لوحة التحكم
           </Link>
@@ -142,7 +142,7 @@ export default function MarketplacePage() {
                 <h3 className={`text-base font-bold mb-1 group-hover:opacity-90 transition-opacity ${agent.color}`}>
                   {agent.title}
                 </h3>
-                <p className="text-neutral-500 text-xs flex-1 mb-5">{agent.role}</p>
+                <p className="text-neutral-400 text-xs flex-1 mb-5">{agent.role}</p>
 
                 <Link
                   href={`/chat?q=${encodeURIComponent(agent.q)}`}
@@ -157,7 +157,7 @@ export default function MarketplacePage() {
         </div>
 
         <div className="mt-12 text-center">
-          <p className="text-neutral-500 text-sm mb-4">لا تجد الوكيل الذي تحتاجه؟</p>
+          <p className="text-neutral-400 text-sm mb-4">لا تجد الوكيل الذي تحتاجه؟</p>
           <Link
             // lexicon-allow
             href="/chat?q=أنصحني بأفضل وكيل ذكي يناسب مشروعي وأحتاجه الآن"

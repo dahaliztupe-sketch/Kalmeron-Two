@@ -50,7 +50,7 @@ export default function GlossaryIndexPage() {
                 className="rounded-xl bg-white/[0.03] border border-white/10 p-4 hover:border-cyan-500/30 transition"
               >
                 <div className="text-base font-semibold text-white mb-1">{t.termAr}</div>
-                <div className="text-xs text-zinc-500 mb-2">{t.termEn}</div>
+                <div className="text-xs text-zinc-400 mb-2">{t.termEn}</div>
                 <p className="text-sm text-zinc-400 line-clamp-2">{t.shortDefinitionAr}</p>
               </Link>
             ))}

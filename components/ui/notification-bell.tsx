@@ -168,7 +168,7 @@ export function NotificationBell() {
                 )}
               </div>
               <div className="flex items-center gap-1">
-                {loading && <RefreshCw className="w-3 h-3 text-neutral-500 animate-spin" />}
+                {loading && <RefreshCw className="w-3 h-3 text-neutral-400 animate-spin" />}
                 {unread > 0 && (
                   <button
                     onClick={markAll}
@@ -179,7 +179,7 @@ export function NotificationBell() {
                 )}
                 <button
                   onClick={() => setOpen(false)}
-                  className="p-1 rounded-lg text-neutral-500 hover:text-white hover:bg-white/[0.05] transition-colors"
+                  className="p-1 rounded-lg text-neutral-400 hover:text-white hover:bg-white/[0.05] transition-colors"
                 >
                   <X className="w-3.5 h-3.5" />
                 </button>
@@ -191,10 +191,10 @@ export function NotificationBell() {
               {items.length === 0 ? (
                 <li className="flex flex-col items-center justify-center py-12 text-center">
                   <div className="w-10 h-10 rounded-2xl bg-white/[0.04] border border-white/[0.06] flex items-center justify-center mb-3">
-                    <Bell className="w-4 h-4 text-neutral-600" />
+                    <Bell className="w-4 h-4 text-neutral-400" />
                   </div>
-                  <p className="text-sm font-semibold text-neutral-500">لا توجد إشعارات</p>
-                  <p className="text-xs text-neutral-600 mt-1">ستظهر هنا كل التحديثات والتنبيهات</p>
+                  <p className="text-sm font-semibold text-neutral-400">لا توجد إشعارات</p>
+                  <p className="text-xs text-neutral-400 mt-1">ستظهر هنا كل التحديثات والتنبيهات</p>
                 </li>
               ) : (
                 items.map((it) => {
@@ -216,11 +216,11 @@ export function NotificationBell() {
                             <p className={cn("text-[13px] font-semibold leading-snug truncate", it.read ? "text-neutral-300" : "text-white")}>
                               {it.title}
                             </p>
-                            <p className="text-[11px] text-neutral-500 mt-0.5 line-clamp-2 leading-relaxed">
+                            <p className="text-[11px] text-neutral-400 mt-0.5 line-clamp-2 leading-relaxed">
                               {it.body}
                             </p>
                             {date && (
-                              <p className="text-[10px] text-neutral-600 mt-1">
+                              <p className="text-[10px] text-neutral-400 mt-1">
                                 {formatDistanceToNow(date, { addSuffix: true, locale: ar })}
                               </p>
                             )}
@@ -230,7 +230,7 @@ export function NotificationBell() {
                           {!it.read && (
                             <button
                               onClick={() => markOne(it.id)}
-                              className="p-1 rounded-lg hover:bg-white/10 text-neutral-600 hover:text-emerald-400 transition-colors"
+                              className="p-1 rounded-lg hover:bg-white/10 text-neutral-400 hover:text-emerald-400 transition-colors"
                               title="تحديد كمقروء"
                             >
                               <CheckCheck className="w-3.5 h-3.5" />
@@ -252,7 +252,7 @@ export function NotificationBell() {
               <Link
                 href="/notifications"
                 onClick={() => setOpen(false)}
-                className="block text-center text-[11px] font-semibold text-neutral-500 hover:text-cyan-300 transition-colors py-1"
+                className="block text-center text-[11px] font-semibold text-neutral-400 hover:text-cyan-300 transition-colors py-1"
               >
                 عرض كل الإشعارات ←
               </Link>

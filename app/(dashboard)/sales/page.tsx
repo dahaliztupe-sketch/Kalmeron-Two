@@ -199,7 +199,7 @@ export default function SalesMarketingPage() {
                       step.status === 'done'    ? 'bg-emerald-500/20 text-emerald-400' :
                       step.status === 'running' ? 'bg-blue-500/20 text-blue-400' :
                       step.status === 'error'   ? 'bg-rose-500/20 text-rose-400' :
-                      'bg-neutral-800 text-neutral-600'
+                      'bg-neutral-800 text-neutral-400'
                     )}>
                       {step.status === 'done'    ? <CheckCircle2 className="w-3.5 h-3.5" /> :
                        step.status === 'running' ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> :
@@ -209,7 +209,7 @@ export default function SalesMarketingPage() {
                       "text-sm",
                       step.status === 'done'    ? 'text-white' :
                       step.status === 'running' ? 'text-blue-300' :
-                      'text-neutral-500'
+                      'text-neutral-400'
                     )}>
                       {step.label}
                     </span>
@@ -228,7 +228,7 @@ export default function SalesMarketingPage() {
               <div key={i} className="bg-neutral-900/60 border border-neutral-700/50 rounded-2xl p-5">
                 <Icon className={cn("w-5 h-5 mb-3", a.color)} />
                 <h3 className="font-bold text-sm mb-1">{a.title}</h3>
-                <p className="text-xs text-neutral-500">{a.desc}</p>
+                <p className="text-xs text-neutral-400">{a.desc}</p>
               </div>
             );
           })}

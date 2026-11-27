@@ -83,7 +83,7 @@ export function MarketingView({ plan, warnings = [] }: { plan: MarketingPlan; wa
           <div className="space-y-3 text-sm text-neutral-300">
             {plan.draftPosts.map((d, i) => (
               <div key={i} className="rounded-xl border border-white/10 p-3">
-                <div className="text-xs text-neutral-500 mb-1">{d.channel}</div>
+                <div className="text-xs text-neutral-400 mb-1">{d.channel}</div>
                 <p className="whitespace-pre-wrap leading-7">{d.text}</p>
               </div>
             ))}
@@ -91,7 +91,7 @@ export function MarketingView({ plan, warnings = [] }: { plan: MarketingPlan; wa
         </section>
       )}
       {plan.handoff.length > 0 && (
-        <p className="text-xs text-neutral-500">يحتاج دوراً آخر: {plan.handoff.map((h) => `${h.role} (${h.reason})`).join("، ")}</p>
+        <p className="text-xs text-neutral-400">يحتاج دوراً آخر: {plan.handoff.map((h) => `${h.role} (${h.reason})`).join("، ")}</p>
       )}
     </div>
   );

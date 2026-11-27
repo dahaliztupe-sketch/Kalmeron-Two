@@ -105,7 +105,7 @@ export default function LiveWorkers() {
           الحالة المباشرة للخدمات
         </h2>
         {lastFetch && (
-          <span className="text-xs text-neutral-500">
+          <span className="text-xs text-neutral-400">
             تحدّث منذ {Math.round((nowMs - lastFetch.getTime()) / 1000)} ث
           </span>
         )}
@@ -141,7 +141,7 @@ export default function LiveWorkers() {
         ))}
       </div>
 
-      <p className="mt-3 text-xs text-neutral-600 text-left">
+      <p className="mt-3 text-xs text-neutral-400 text-left">
         يتجدد تلقائياً كل 30 ثانية · <a href="/api/status" target="_blank" className="underline hover:text-neutral-400">JSON</a>
       </p>
     </div>

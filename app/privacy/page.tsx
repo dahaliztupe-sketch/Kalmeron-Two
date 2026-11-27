@@ -12,7 +12,7 @@ export default function PrivacyPage() {
     <PublicShell>
       <div className="max-w-4xl mx-auto py-12 px-4" dir="rtl">
         <h1 className="text-4xl font-bold mb-2 text-[rgb(var(--brand-cyan))]">سياسة الخصوصية وحماية البيانات</h1>
-        <p className="text-neutral-500 text-sm mb-10">آخر تحديث: أبريل 2026</p>
+        <p className="text-neutral-400 text-sm mb-10">آخر تحديث: أبريل 2026</p>
 
         <div className="space-y-10 text-neutral-300 leading-relaxed text-sm md:text-base">
 
@@ -74,7 +74,7 @@ export default function PrivacyPage() {
                 <strong>عبر البريد الإلكتروني:</strong> <a href={`mailto:${CONTACT_EMAIL}`} className="underline" dir="ltr">{CONTACT_EMAIL}</a>
               </li>
             </ol>
-            <p className="text-neutral-500 text-sm">
+            <p className="text-neutral-400 text-sm">
               * يشمل الحذف: بيانات الملف الشخصي، سجل المحادثات، الأفكار، خطط الأعمال،
               الذاكرة الريادية، وسجلات الفوترة، مع الاحتفاظ بما يقتضيه القانون لمدة لا تتجاوز 90 يوماً.
             </p>

@@ -262,7 +262,7 @@ export default function SuccessMuseumPage() {
                           <div className="text-[10px] text-text-secondary">{story.metric2.label}</div>
                         </div>
                       </div>
-                      {isOpen ? <ChevronUp className="w-4 h-4 text-neutral-500" /> : <ChevronDown className="w-4 h-4 text-neutral-500" />}
+                      {isOpen ? <ChevronUp className="w-4 h-4 text-neutral-400" /> : <ChevronDown className="w-4 h-4 text-neutral-400" />}
                     </div>
                   </button>
 
@@ -338,7 +338,7 @@ export default function SuccessMuseumPage() {
                               <Brain className="w-3.5 h-3.5" /> طبّق هذه الاستراتيجية
                             </Link>
                             <button onClick={() => setExpanded(null)}
-                              className="text-xs text-neutral-500 hover:text-white transition-colors"
+                              className="text-xs text-neutral-400 hover:text-white transition-colors"
                             >
                               إخفاء
                             </button>

@@ -103,7 +103,7 @@ export default function LegalTemplatesPage() {
           <div className="flex items-center gap-2 mb-4">
             <Sparkles className="w-5 h-5 text-amber-400" />
             <h2 className="text-2xl font-bold text-white">مولِّد NDA فوري</h2>
-            <span className="text-xs text-neutral-500">— استبدل البيانات واضغط توليد</span>
+            <span className="text-xs text-neutral-400">— استبدل البيانات واضغط توليد</span>
           </div>
 
           <div className="grid lg:grid-cols-2 gap-6">
@@ -156,7 +156,7 @@ export default function LegalTemplatesPage() {
                 <Sparkles className="w-4 h-4 ml-2" />
                 توليد النموذج الآن
               </Button>
-              <p className="text-[11px] text-neutral-500 leading-relaxed pt-1">
+              <p className="text-[11px] text-neutral-400 leading-relaxed pt-1">
                 ⚠️ هذا النموذج للاسترشاد فقط ولا يُغني عن استشارة محامٍ مختصّ قبل التوقيع.
               </p>
             </div>
@@ -194,7 +194,7 @@ export default function LegalTemplatesPage() {
                   {output}
                 </pre>
               ) : (
-                <div className="flex flex-col items-center justify-center text-center py-16 text-neutral-500">
+                <div className="flex flex-col items-center justify-center text-center py-16 text-neutral-400">
                   <FileText className="w-10 h-10 mb-3 opacity-40" />
                   <p className="text-sm">املأ الحقول واضغط &quot;توليد النموذج&quot; لرؤية المعاينة هنا.</p>
                 </div>
@@ -243,7 +243,7 @@ export default function LegalTemplatesPage() {
                 <p className="text-neutral-400 text-xs leading-relaxed mb-4 line-clamp-3">
                   {t.metaDescriptionAr}
                 </p>
-                <div className="flex items-center gap-3 text-[11px] text-neutral-500">
+                <div className="flex items-center gap-3 text-[11px] text-neutral-400">
                   <span className="inline-flex items-center gap-1">
                     <Award className="w-3 h-3" />
                     {DIFFICULTY_AR[t.difficulty] || t.difficulty}

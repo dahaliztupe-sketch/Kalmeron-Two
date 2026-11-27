@@ -22,7 +22,7 @@ export function StatBlock({ value, label, note, className }: StatBlockProps) {
         {value}
       </div>
       <div className="text-sm text-zinc-300 font-medium">{label}</div>
-      {note && <div className="text-xs text-zinc-500">{note}</div>}
+      {note && <div className="text-xs text-zinc-400">{note}</div>}
     </div>
   );
 }

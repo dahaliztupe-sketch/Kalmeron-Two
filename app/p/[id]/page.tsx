@@ -21,7 +21,7 @@ export default async function SharedPlanPage({ params }: { params: Promise<{ id:
       <div dir="rtl" className="max-w-3xl mx-auto px-4 md:px-8 py-12 print:py-0">
         <div className="flex items-start justify-between gap-4 mb-6">
           <div>
-            <p className="text-sm text-neutral-500 mb-1">الفكرة</p>
+            <p className="text-sm text-neutral-400 mb-1">الفكرة</p>
             <h1 className="text-2xl font-bold text-white">{plan.idea}</h1>
           </div>
           <PrintButton />

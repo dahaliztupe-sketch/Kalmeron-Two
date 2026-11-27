@@ -129,7 +129,7 @@ export default function VirtualOfficePage() {
                   <CheckSquare className="w-4 h-4 text-cyan-400" />مهامي
                 </h2>
                 {todos.length > 0 && (
-                  <span className="text-xs text-neutral-500">{doneCnt}/{todos.length}</span>
+                  <span className="text-xs text-neutral-400">{doneCnt}/{todos.length}</span>
                 )}
               </div>
               {todos.length > 0 && (
@@ -140,7 +140,7 @@ export default function VirtualOfficePage() {
               )}
               <ul className="space-y-2 flex-1 overflow-y-auto max-h-48">
                 {todos.length === 0 && (
-                  <li className="text-xs text-neutral-600 text-center py-4">أضف مهمتك الأولى أدناه</li>
+                  <li className="text-xs text-neutral-400 text-center py-4">أضف مهمتك الأولى أدناه</li>
                 )}
                 {todos.map(t => (
                   <li key={t.id} className="flex items-start gap-2 group">
@@ -151,7 +151,7 @@ export default function VirtualOfficePage() {
                       )}>
                       {t.done && <CheckCircle2 className="w-3 h-3 text-white" />}
                     </button>
-                    <span className={cn("text-xs leading-relaxed flex-1", t.done ? "line-through text-neutral-600" : "text-neutral-300")}>
+                    <span className={cn("text-xs leading-relaxed flex-1", t.done ? "line-through text-neutral-400" : "text-neutral-300")}>
                       {t.label}
                     </span>
                     <button onClick={() => removeTodo(t.id)}
@@ -190,7 +190,7 @@ export default function VirtualOfficePage() {
                       <Bot className={cn("w-4 h-4", agent.color)} />
                     </div>
                     <div className={cn("text-xs font-bold mb-0.5", agent.color)}>{agent.nameAr}</div>
-                    <div className="text-[11px] text-neutral-500">{agent.role}</div>
+                    <div className="text-[11px] text-neutral-400">{agent.role}</div>
                     <div className="flex items-center gap-1 mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
                       <MessageSquare className="w-3 h-3 text-neutral-400" />
                       <span className="text-[11px] text-neutral-400">ابدأ محادثة</span>
@@ -211,20 +211,20 @@ export default function VirtualOfficePage() {
               <Zap className="w-4 h-4 text-cyan-400" />آخر نشاط وكلاء WhatsApp
             </h2>
             <button onClick={loadConversations} disabled={convLoading}
-              className="text-neutral-600 hover:text-neutral-300 transition-colors">
+              className="text-neutral-400 hover:text-neutral-300 transition-colors">
               {convLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <RefreshCw className="w-3.5 h-3.5" />}
             </button>
           </div>
           {!user ? (
-            <p className="text-xs text-neutral-600 text-center py-4">سجّل الدخول لعرض نشاط الوكلاء</p>
+            <p className="text-xs text-neutral-400 text-center py-4">سجّل الدخول لعرض نشاط الوكلاء</p>
           ) : convLoading && conversations.length === 0 ? (
             <div className="flex justify-center py-4">
-              <Loader2 className="w-5 h-5 animate-spin text-neutral-600" />
+              <Loader2 className="w-5 h-5 animate-spin text-neutral-400" />
             </div>
           ) : conversations.length === 0 ? (
             <div className="text-center py-4">
               <MessageSquare className="w-8 h-8 text-neutral-700 mx-auto mb-2" />
-              <p className="text-xs text-neutral-600">لا يوجد نشاط بعد</p>
+              <p className="text-xs text-neutral-400">لا يوجد نشاط بعد</p>
               <p className="text-xs text-neutral-700 mt-1">
                 {/* lexicon-allow */}
                 <Link href="/whatsapp-agent" className="text-cyan-600 hover:text-cyan-400">فعّل وكيل WhatsApp</Link> وسيظهر نشاطه هنا
@@ -238,7 +238,7 @@ export default function VirtualOfficePage() {
                   <div className="flex-1 min-w-0">
                     <p className="text-xs text-neutral-300 truncate">{conv.userMessage}</p>
                     {conv.aiReply && (
-                      <p className="text-xs text-neutral-500 truncate mt-0.5">↩ {conv.aiReply}</p>
+                      <p className="text-xs text-neutral-400 truncate mt-0.5">↩ {conv.aiReply}</p>
                     )}
                     <div className="flex items-center gap-1 mt-1 text-neutral-700">
                       <Clock className="w-3 h-3" />
@@ -264,7 +264,7 @@ export default function VirtualOfficePage() {
               className="bg-neutral-900/40 border border-neutral-700/30 hover:border-neutral-600/50 rounded-xl p-4 flex items-center gap-3 transition-all group">
               <Icon className={cn("w-5 h-5 shrink-0", color)} />
               <span className="text-sm text-neutral-300 group-hover:text-white transition-colors">{label}</span>
-              <ArrowRight className="w-3 h-3 text-neutral-600 mr-auto group-hover:text-neutral-400 transition-colors" />
+              <ArrowRight className="w-3 h-3 text-neutral-400 mr-auto group-hover:text-neutral-400 transition-colors" />
             </Link>
           ))}
         </motion.div>

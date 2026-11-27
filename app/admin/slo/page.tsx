@@ -134,7 +134,7 @@ export default async function SloDashboardPage() {
           <Link href="/admin" className="flex items-center gap-2 text-neutral-300 hover:text-white text-sm">
             <ArrowLeft className="w-4 h-4" /> لوحة الإدارة
           </Link>
-          <span className="text-xs text-neutral-500">SLO Dashboard · 28d rolling</span>
+          <span className="text-xs text-neutral-400">SLO Dashboard · 28d rolling</span>
         </div>
       </header>
 
@@ -181,7 +181,7 @@ export default async function SloDashboardPage() {
           <Card label="P90 TTFV-warm" value={fmt(ttfv.p90WarmMs)} />
         </div>
 
-        <p className="text-xs text-neutral-500 mt-8">
+        <p className="text-xs text-neutral-400 mt-8">
           سياسة استنفاد الميزانية: تجميد الإصدارات غير الحرجة + 50% من سعة الهندسة للموثوقية في السبرنت التالي.
         </p>
       </main>
@@ -192,7 +192,7 @@ export default async function SloDashboardPage() {
 function Card({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5">
-      <div className="text-neutral-500 text-xs mb-2">{label}</div>
+      <div className="text-neutral-400 text-xs mb-2">{label}</div>
       <div className="text-2xl font-bold text-white tabular-nums">{value}</div>
     </div>
   );

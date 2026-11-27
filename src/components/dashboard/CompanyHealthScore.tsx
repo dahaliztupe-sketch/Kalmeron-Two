@@ -103,7 +103,7 @@ export function CompanyHealthScore() {
               <TrendingUp className="w-4 h-4 text-indigo-400" />
               <span className="text-sm font-bold text-white">صحة الشركة</span>
             </div>
-            <p className="text-xs text-neutral-500">محسوب من بياناتك الفعلية</p>
+            <p className="text-xs text-neutral-400">محسوب من بياناتك الفعلية</p>
           </div>
           {/* Circular score */}
           <div className="flex flex-col items-center">

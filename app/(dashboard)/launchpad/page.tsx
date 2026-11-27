@@ -156,13 +156,13 @@ export default function LaunchpadPage() {
               <div className="flex flex-wrap gap-1.5">
                 {IDEA_EXAMPLES.slice(0, 3).map((ex, i) => (
                   <button key={i} onClick={() => setIdea(ex)}
-                    className="text-[11px] text-neutral-500 hover:text-neutral-200 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.06] px-2.5 py-1 rounded-lg transition-all"
+                    className="text-[11px] text-neutral-400 hover:text-neutral-200 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.06] px-2.5 py-1 rounded-lg transition-all"
                   >
                     مثال {i + 1}
                   </button>
                 ))}
               </div>
-              <span className={cn("text-xs", charCount > 500 ? "text-rose-400" : "text-neutral-600")}>
+              <span className={cn("text-xs", charCount > 500 ? "text-rose-400" : "text-neutral-400")}>
                 {charCount}/500
               </span>
             </div>
@@ -171,7 +171,7 @@ export default function LaunchpadPage() {
               disabled={running || !idea.trim() || charCount > 500}
               className={cn(
                 "w-full flex items-center justify-center gap-3 font-bold py-4 rounded-2xl text-base transition-all",
-                idea.trim() && !running ? "btn-primary" : "bg-white/5 text-neutral-600 border border-white/10 cursor-not-allowed"
+                idea.trim() && !running ? "btn-primary" : "bg-white/5 text-neutral-400 border border-white/10 cursor-not-allowed"
               )}
             >
               {running ? (
@@ -244,7 +244,7 @@ export default function LaunchpadPage() {
                       </div>
                       <p className={cn(
                         "text-xs font-medium leading-tight",
-                        isDone || isActive ? "text-white" : "text-neutral-600"
+                        isDone || isActive ? "text-white" : "text-neutral-400"
                       )}>
                         {stage.label}
                       </p>
@@ -319,10 +319,10 @@ export default function LaunchpadPage() {
                         </div>
                         <div>
                           <p className="font-bold text-white text-sm">{stage?.label || key}</p>
-                          <p className="text-xs text-neutral-500">انقر لعرض التفاصيل</p>
+                          <p className="text-xs text-neutral-400">انقر لعرض التفاصيل</p>
                         </div>
                       </div>
-                      <ArrowLeft className={cn("w-4 h-4 text-neutral-500 transition-transform", isOpen && "-rotate-90")} />
+                      <ArrowLeft className={cn("w-4 h-4 text-neutral-400 transition-transform", isOpen && "-rotate-90")} />
                     </button>
                     <AnimatePresence>
                       {isOpen && (
@@ -364,7 +364,7 @@ export default function LaunchpadPage() {
                       >
                         <ItemIcon className={cn("w-5 h-5", c.icon)} />
                         <span className="text-sm font-semibold text-white">{item.label}</span>
-                        <ArrowLeft className="w-4 h-4 text-neutral-500 mr-auto" />
+                        <ArrowLeft className="w-4 h-4 text-neutral-400 mr-auto" />
                       </Link>
                     );
                   })}
@@ -395,7 +395,7 @@ export default function LaunchpadPage() {
               })}
             </div>
             {/* lexicon-allow */}
-            <p className="text-xs text-neutral-500 text-center mt-4">
+            <p className="text-xs text-neutral-400 text-center mt-4">
               كل وكيل يعمل باستقلالية ثم تُجمَع النتائج في حزمة واحدة قابلة للتنزيل
             </p>
           </div>

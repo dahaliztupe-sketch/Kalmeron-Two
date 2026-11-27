@@ -18,7 +18,7 @@ export function TrustBar({ compact = false }: { compact?: boolean }) {
     <div
       className={
         compact
-          ? "flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-zinc-500"
+          ? "flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-zinc-400"
           : "flex flex-wrap items-center justify-start gap-x-6 gap-y-3 text-sm text-zinc-400"
       }
     >

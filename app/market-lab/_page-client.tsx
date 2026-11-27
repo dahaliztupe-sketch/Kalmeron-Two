@@ -244,7 +244,7 @@ export default function MarketLabPage() {
                           <div className="font-bold text-white text-sm">{exp.title}</div>
                           <div className="text-xs text-text-secondary mt-0.5">{exp.description}</div>
                         </div>
-                        <ArrowLeft className="w-4 h-4 text-neutral-500 group-hover:text-white transition-colors shrink-0" />
+                        <ArrowLeft className="w-4 h-4 text-neutral-400 group-hover:text-white transition-colors shrink-0" />
                       </Link>
                     </motion.div>
                   );

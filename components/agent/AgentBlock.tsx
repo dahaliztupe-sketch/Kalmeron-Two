@@ -184,7 +184,7 @@ function StatRenderer({ data, locale }: { data: StatBlockData; locale: "ar" | "e
   const deltaUp = (data.deltaPct ?? 0) >= 0;
   return (
     <div className="rounded-2xl border border-white/[0.07] bg-white/[0.025] p-4">
-      <div className="text-[11px] uppercase tracking-[0.18em] text-neutral-500 mb-1.5">{data.label}</div>
+      <div className="text-[11px] uppercase tracking-[0.18em] text-neutral-400 mb-1.5">{data.label}</div>
       <div className="flex items-baseline gap-2">
         <span className="text-2xl md:text-3xl font-extrabold text-white tabular">{value}</span>
         {typeof data.deltaPct === "number" && Number.isFinite(data.deltaPct) && (
@@ -197,7 +197,7 @@ function StatRenderer({ data, locale }: { data: StatBlockData; locale: "ar" | "e
           </span>
         )}
       </div>
-      {data.hint && <p className="text-xs text-neutral-500 mt-1.5">{data.hint}</p>}
+      {data.hint && <p className="text-xs text-neutral-400 mt-1.5">{data.hint}</p>}
     </div>
   );
 }
@@ -267,13 +267,13 @@ function MilestoneRenderer({ data }: { data: MilestoneBlockData }) {
           const dotClass =
             step.status === "done" ? "bg-emerald-400" :
             step.status === "active" ? "bg-brand-cyan animate-pulse" : "bg-white/15";
-          const textClass = step.status === "pending" ? "text-neutral-500" : "text-neutral-200";
+          const textClass = step.status === "pending" ? "text-neutral-400" : "text-neutral-200";
           return (
             <li key={i} className="flex items-start gap-3">
               <span className={cn("w-2 h-2 rounded-full mt-1.5 shrink-0", dotClass)} aria-hidden />
               <div className="flex-1 flex items-baseline justify-between gap-3">
                 <span className={cn("text-sm", textClass)}>{step.label}</span>
-                {step.date && <span className="text-[11px] text-neutral-500 tabular shrink-0">{step.date}</span>}
+                {step.date && <span className="text-[11px] text-neutral-400 tabular shrink-0">{step.date}</span>}
               </div>
             </li>
           );
@@ -392,7 +392,7 @@ function ChecklistRenderer({ data, locale }: { data: ChecklistBlockData; locale:
             >
               {it.done && <Check className="w-3 h-3" aria-hidden />}
             </button>
-            <span className={cn("text-sm", it.done ? "text-neutral-500 line-through" : "text-neutral-300")}>
+            <span className={cn("text-sm", it.done ? "text-neutral-400 line-through" : "text-neutral-300")}>
               {it.label}
             </span>
           </li>
@@ -417,7 +417,7 @@ function TimelineRenderer({ data }: { data: TimelineBlockData }) {
           return (
             <li key={i} className="relative">
               <span className={cn("absolute -start-[26px] top-1.5 w-2.5 h-2.5 rounded-full ring-4 ring-[#0B1020]", dotColor)} aria-hidden />
-              <div className="text-[11px] text-neutral-500 mb-0.5 tabular">{e.when}</div>
+              <div className="text-[11px] text-neutral-400 mb-0.5 tabular">{e.when}</div>
               <div className="text-sm text-white">{e.title}</div>
               {e.body && <div className="text-xs text-neutral-400 mt-1 leading-relaxed">{e.body}</div>}
             </li>
@@ -439,7 +439,7 @@ export interface AgentBlockProps {
 export function AgentBlock({ block, locale = "ar", className, onFormSubmit }: AgentBlockProps) {
   if (!isValid(block)) {
     return (
-      <div className={cn("rounded-xl border border-white/5 bg-white/[0.02] p-3 text-xs text-neutral-500", className)}>
+      <div className={cn("rounded-xl border border-white/5 bg-white/[0.02] p-3 text-xs text-neutral-400", className)}>
         {locale === "ar" ? "بلوك غير معروف — تم تجاهله." : "Unknown block — skipped."}
       </div>
     );

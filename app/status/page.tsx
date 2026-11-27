@@ -92,7 +92,7 @@ export default async function StatusPage() {
         <h2 className="text-xl font-semibold mb-4">الخدمات</h2>
         <div className="grid sm:grid-cols-2 gap-3">
           {Object.entries(checks).length === 0 && (
-            <div className="text-neutral-500 text-sm col-span-full">
+            <div className="text-neutral-400 text-sm col-span-full">
               لم يصل أي قياس بعد. سيظهر التفصيل خلال دقائق من تشغيل المهام المجدوَلة.
             </div>
           )}
@@ -106,7 +106,7 @@ export default async function StatusPage() {
 
         <LiveWorkers />
 
-        <div className="mt-10 text-sm text-neutral-500 leading-7">
+        <div className="mt-10 text-sm text-neutral-400 leading-7">
           <p>
             هذه الصفحة تُحدَّث تلقائيًا كل 5 دقائق من مهمّة فحص داخلية.
             للحوادث الكبرى، يرجى مراجعة <a href="/trust" className="underline hover:text-white">مركز الثقة</a>{' '}

@@ -153,7 +153,7 @@ export default async function ExpertPage({ params }: PageProps) {
                 >
                   <div className="text-2xl mb-2">{r.emoji}</div>
                   <h3 className="text-lg font-semibold text-white mb-1">{r.nameAr}</h3>
-                  <p className="text-xs text-zinc-500">{r.roleAr}</p>
+                  <p className="text-xs text-zinc-400">{r.roleAr}</p>
                 </Link>
               ))}
             </div>
@@ -172,7 +172,7 @@ export default async function ExpertPage({ params }: PageProps) {
                   className="rounded-xl bg-white/[0.03] border border-white/10 p-5 hover:border-cyan-500/30 transition"
                 >
                   <h3 className="text-lg font-semibold text-white mb-2">{uc.titleAr}</h3>
-                  <p className="text-sm text-zinc-500 line-clamp-2">{uc.metaDescriptionAr}</p>
+                  <p className="text-sm text-zinc-400 line-clamp-2">{uc.metaDescriptionAr}</p>
                 </Link>
               ))}
             </div>
