@@ -32,7 +32,7 @@ export default function BlogIndexPage() {
               {post.titleAr}
             </h2>
             <p className="text-zinc-400 leading-relaxed mb-4 line-clamp-3">{post.excerptAr}</p>
-            <div className="flex items-center gap-4 text-xs text-zinc-500">
+            <div className="flex items-center gap-4 text-xs text-zinc-400">
               <span className="inline-flex items-center gap-1">
                 <Calendar className="w-3 h-3" />
                 {new Date(post.publishedAt).toLocaleDateString("ar-EG", {

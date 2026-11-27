@@ -129,7 +129,7 @@ export default function ExpertsPage() {
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="صف خبيرك بالتفصيل — مثال: خبير تسويق رقمي متخصص في المتاجر الإلكترونية المصرية مع خبرة في إعلانات Meta وTikTok والتحليل الإحصائي..."
-              className="w-full bg-neutral-800 border border-neutral-700 rounded-xl px-3 py-2.5 text-white text-sm outline-none focus:border-violet-500 transition-colors min-h-[80px] resize-none placeholder:text-neutral-600 mb-3"
+              className="w-full bg-neutral-800 border border-neutral-700 rounded-xl px-3 py-2.5 text-white text-sm outline-none focus:border-violet-500 transition-colors min-h-[80px] resize-none placeholder:text-neutral-400 mb-3"
               maxLength={2000}
             />
             {/* Quick placeholders */}
@@ -138,7 +138,7 @@ export default function ExpertsPage() {
                 <button
                   key={i}
                   onClick={() => setDescription(p.desc)}
-                  className="text-xs text-neutral-500 hover:text-neutral-300 border border-neutral-700/50 hover:border-neutral-600 rounded-lg px-2.5 py-1 transition-colors line-clamp-1 max-w-[200px] text-right"
+                  className="text-xs text-neutral-400 hover:text-neutral-300 border border-neutral-700/50 hover:border-neutral-600 rounded-lg px-2.5 py-1 transition-colors line-clamp-1 max-w-[200px] text-right"
                 >
                   {p.desc.slice(0, 40)}...
                 </button>
@@ -160,7 +160,7 @@ export default function ExpertsPage() {
         {/* Search */}
         {experts.length > 0 && (
           <div className="relative mb-5">
-            <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-500" />
+            <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
             <input
               value={searchQ}
               onChange={(e) => setSearchQ(e.target.value)}
@@ -173,10 +173,10 @@ export default function ExpertsPage() {
         {/* Experts Grid */}
         {loading ? (
           <div className="flex items-center justify-center py-16">
-            <Loader2 className="w-6 h-6 animate-spin text-neutral-500" />
+            <Loader2 className="w-6 h-6 animate-spin text-neutral-400" />
           </div>
         ) : filtered.length === 0 ? (
-          <div className="text-center py-16 text-neutral-500">
+          <div className="text-center py-16 text-neutral-400">
             <Brain className="w-10 h-10 mx-auto mb-3 opacity-30" />
             <p className="text-sm">{experts.length === 0 ? "لا يوجد خبراء بعد. أنشئ أول خبير أعلاه." : "لا نتائج مطابقة."}</p>
           </div>
@@ -207,7 +207,7 @@ export default function ExpertsPage() {
                 <h3 className="text-sm font-bold text-white mb-1">{e.name || "خبير جديد"}</h3>
                 {e.domain && <p className="text-xs text-violet-400 mb-2">{e.domain}</p>}
                 {e.description && (
-                  <p className="text-xs text-neutral-500 line-clamp-2 mb-3">{e.description}</p>
+                  <p className="text-xs text-neutral-400 line-clamp-2 mb-3">{e.description}</p>
                 )}
                 {(e.tools || []).length > 0 && (
                   <div className="flex flex-wrap gap-1 mb-3">
@@ -252,7 +252,7 @@ export default function ExpertsPage() {
                     <h2 className="font-bold text-white text-sm">{active.name || "خبير"}</h2>
                     {active.domain && <p className="text-xs text-violet-400 mt-0.5">{active.domain}</p>}
                   </div>
-                  <button onClick={() => setActive(null)} className="text-neutral-500 hover:text-white transition-colors">
+                  <button onClick={() => setActive(null)} className="text-neutral-400 hover:text-white transition-colors">
                     <X className="w-5 h-5" />
                   </button>
                 </div>
@@ -264,7 +264,7 @@ export default function ExpertsPage() {
                       <ReactMarkdown>{answer}</ReactMarkdown>
                     </div>
                   ) : (
-                    <p className="text-neutral-500 text-sm text-center py-8">
+                    <p className="text-neutral-400 text-sm text-center py-8">
                       {asking ? "جارٍ التفكير..." : "اكتب سؤالك أدناه للبدء"}
                     </p>
                   )}

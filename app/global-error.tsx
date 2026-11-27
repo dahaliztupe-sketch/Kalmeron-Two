@@ -42,7 +42,7 @@ export default function GlobalError({
               حدث خطأ حرج في النظام. فريقنا التقني يعمل على إصلاحه.
             </p>
             {error.digest && (
-              <p className="text-neutral-600 text-sm font-mono">Digest: {error.digest}</p>
+              <p className="text-neutral-400 text-sm font-mono">Digest: {error.digest}</p>
             )}
           </div>
           <Button

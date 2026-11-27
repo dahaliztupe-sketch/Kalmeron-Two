@@ -13,7 +13,7 @@ function Points({ title, items }: { title: string; items: ValidatedPlan["risks"]
     <section className="rounded-2xl border border-white/10 bg-white/[0.02] p-5">
       <h3 className="font-bold text-white mb-3">{title}</h3>
       {items.length === 0 ? (
-        <p className="text-sm text-neutral-500">لا يوجد</p>
+        <p className="text-sm text-neutral-400">لا يوجد</p>
       ) : (
         <ul className="space-y-2 text-sm text-neutral-300">
           {items.map((p, i) => (
@@ -53,7 +53,7 @@ export function PlanView({ plan }: { plan: ValidatedPlan }) {
       <section className="rounded-2xl border border-white/10 bg-white/[0.02] p-5">
         <h3 className="font-bold text-white mb-3">المنافسون</h3>
         {plan.competitors.length === 0 ? (
-          <p className="text-sm text-neutral-500">لم يُحدَّد</p>
+          <p className="text-sm text-neutral-400">لم يُحدَّد</p>
         ) : (
           <ul className="space-y-2 text-sm text-neutral-300">
             {plan.competitors.map((c, i) => (
@@ -71,14 +71,14 @@ export function PlanView({ plan }: { plan: ValidatedPlan }) {
           {plan.nextSteps.map((s, i) => (
             <li key={i}>
               {s.action}{" "}
-              <span className="text-neutral-500">
+              <span className="text-neutral-400">
                 ({s.days} يوم{s.costEgp === null ? "" : `، ${s.costEgp} جنيه`})
               </span>
             </li>
           ))}
         </ol>
       </section>
-      <p className="text-xs text-neutral-500 leading-6">
+      <p className="text-xs text-neutral-400 leading-6">
         هذه نتيجة تحليل آلي مبني على وصفك وافتراضات النموذج، وليست دراسة سوق موثّقة. راجع كل بند مُعلَّم «يحتاج تحقق» قبل اتخاذ قرار.
       </p>
     </div>

@@ -41,19 +41,19 @@ export default function UseCasesIndexPage() {
               <span className={`text-xs px-2 py-1 rounded-md border ${DIFFICULTY_COLORS[uc.difficulty]}`}>
                 {DIFFICULTY_LABELS[uc.difficulty]}
               </span>
-              <span className="text-xs text-zinc-500 inline-flex items-center gap-1">
+              <span className="text-xs text-zinc-400 inline-flex items-center gap-1">
                 <Clock className="w-3 h-3" />
                 {uc.estimatedTimeMinutes} دقيقة
               </span>
             </div>
-            <h3 className="text-lg font-semibold text-white mb-2 group-hover:text-cyan-300 transition">
+            <h2 className="text-lg font-semibold text-white mb-2 group-hover:text-cyan-300 transition">
               {uc.titleAr}
-            </h3>
+            </h2>
             <p className="text-sm text-zinc-400 leading-relaxed mb-4 line-clamp-3">
               {uc.metaDescriptionAr}
             </p>
             <div className="flex items-center justify-between text-xs">
-              <span className="text-zinc-500 inline-flex items-center gap-1">
+              <span className="text-zinc-400 inline-flex items-center gap-1">
                 <Zap className="w-3 h-3" />
                 {uc.primaryAgents.length} مساعدين
               </span>

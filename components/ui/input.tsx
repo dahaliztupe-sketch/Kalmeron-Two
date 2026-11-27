@@ -20,7 +20,7 @@ function Input({ className, type, ...props }: React.ComponentProps<"input">) {
         "bg-white/[0.03] border border-white/[0.08]",
         "text-[14px] text-white",
         // Placeholder (Arabic placeholders need slightly heavier weight to feel balanced)
-        "placeholder:text-neutral-500 placeholder:font-normal",
+        "placeholder:text-neutral-400 placeholder:font-normal",
         // Transitions
         "transition-[border-color,background,box-shadow] duration-200 ease-out",
         // File-input

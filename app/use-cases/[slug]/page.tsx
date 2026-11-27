@@ -92,22 +92,22 @@ export default async function UseCasePage({ params }: PageProps) {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
           <div className="rounded-xl bg-white/[0.03] border border-white/10 p-4">
             <Clock className="w-5 h-5 text-cyan-400 mb-2" />
-            <div className="text-xs text-zinc-500">المدة</div>
+            <div className="text-xs text-zinc-400">المدة</div>
             <div className="text-lg font-semibold text-white">{uc.estimatedTimeMinutes} دقيقة</div>
           </div>
           <div className="rounded-xl bg-white/[0.03] border border-white/10 p-4">
             <Users className="w-5 h-5 text-indigo-400 mb-2" />
-            <div className="text-xs text-zinc-500">المساعدين</div>
+            <div className="text-xs text-zinc-400">المساعدين</div>
             <div className="text-lg font-semibold text-white">{uc.primaryAgents.length}</div>
           </div>
           <div className="rounded-xl bg-white/[0.03] border border-white/10 p-4">
             <Award className="w-5 h-5 text-amber-400 mb-2" />
-            <div className="text-xs text-zinc-500">المستوى</div>
+            <div className="text-xs text-zinc-400">المستوى</div>
             <div className="text-lg font-semibold text-white">{DIFFICULTY_AR[uc.difficulty]}</div>
           </div>
           <div className="rounded-xl bg-white/[0.03] border border-white/10 p-4">
             <Zap className="w-5 h-5 text-emerald-400 mb-2" />
-            <div className="text-xs text-zinc-500">أهداف</div>
+            <div className="text-xs text-zinc-400">أهداف</div>
             <div className="text-lg font-semibold text-white">{uc.outcomes.length}</div>
           </div>
         </div>
@@ -169,7 +169,7 @@ export default async function UseCasePage({ params }: PageProps) {
                   className="rounded-xl bg-white/[0.03] border border-white/10 p-5 hover:border-cyan-500/30 transition"
                 >
                   <h3 className="text-lg font-semibold text-white mb-2">{r.titleAr}</h3>
-                  <p className="text-sm text-zinc-500 line-clamp-2">{r.metaDescriptionAr}</p>
+                  <p className="text-sm text-zinc-400 line-clamp-2">{r.metaDescriptionAr}</p>
                 </Link>
               ))}
             </div>

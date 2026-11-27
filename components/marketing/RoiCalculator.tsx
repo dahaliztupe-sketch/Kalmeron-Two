@@ -97,7 +97,7 @@ export function RoiCalculator({ variant = "compact", className = "", showCta = t
         />
       </div>
 
-      <p className="text-neutral-500 text-xs mt-4 leading-relaxed">
+      <p className="text-neutral-400 text-xs mt-4 leading-relaxed">
         هذه أرقام تقديرية — التوفير الفعلي يعتمد على معدل استخدامك. كلميرون لا يعوّض الاستشارة المتخصصة لقرارات
         فوق 50,000 ج.م، لكنه يقلل حاجتك إليها بنسبة كبيرة.
       </p>
@@ -144,7 +144,7 @@ function Field({
         onChange={(e) => onChange(Number(e.target.value))}
         className="w-full accent-cyan-500"
       />
-      {help && <p className="text-neutral-500 text-[11px] mt-1.5">{help}</p>}
+      {help && <p className="text-neutral-400 text-[11px] mt-1.5">{help}</p>}
     </div>
   );
 }

@@ -91,10 +91,10 @@ export default function WorkflowsRunnerPage() {
                 <option key={w.id} value={w.id}>{w.title}</option>
               ))}
             </select>
-            <ChevronDown className="w-4 h-4 text-neutral-500 absolute end-3 top-1/2 -translate-y-1/2 pointer-events-none" aria-hidden />
+            <ChevronDown className="w-4 h-4 text-neutral-400 absolute end-3 top-1/2 -translate-y-1/2 pointer-events-none" aria-hidden />
           </div>
           {wf?.description && (
-            <p className="text-xs text-neutral-500 mt-2 leading-relaxed">{wf.description}</p>
+            <p className="text-xs text-neutral-400 mt-2 leading-relaxed">{wf.description}</p>
           )}
         </section>
 
@@ -133,7 +133,7 @@ export default function WorkflowsRunnerPage() {
                   <><Play className="w-4 h-4 me-2" aria-hidden /> شغّل المسار</>
                 )}
               </Button>
-              <p className="text-[11px] text-neutral-500 mt-2">
+              <p className="text-[11px] text-neutral-400 mt-2">
                 تُمرّر مدخلاتك عبر منقّح PII تلقائياً قبل الوصول لأيّ نموذج.
               </p>
             </div>
@@ -143,7 +143,7 @@ export default function WorkflowsRunnerPage() {
         {/* Steps preview (before/after run) */}
         {wf && (
           <section className="mb-6">
-            <h2 className="text-xs uppercase tracking-wider text-neutral-500 mb-3">خطوات المسار</h2>
+            <h2 className="text-xs uppercase tracking-wider text-neutral-400 mb-3">خطوات المسار</h2>
             <ol className="space-y-2 text-sm">
               {wf.steps.map((s, i) => {
                 const stepResult = result?.steps.find((r) => r.id === s.id);
@@ -158,11 +158,11 @@ export default function WorkflowsRunnerPage() {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-baseline justify-between gap-3">
                         <span className="text-neutral-200">
-                          <span className="text-neutral-500 me-2">#{i + 1}</span>
+                          <span className="text-neutral-400 me-2">#{i + 1}</span>
                           {s.id} · <span className="text-neutral-400">{s.agent}</span>
                         </span>
                         {stepResult && (
-                          <span className="text-[11px] text-neutral-500 tabular shrink-0">
+                          <span className="text-[11px] text-neutral-400 tabular shrink-0">
                             {stepResult.durationMs} ms
                           </span>
                         )}

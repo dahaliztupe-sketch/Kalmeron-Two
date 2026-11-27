@@ -35,9 +35,9 @@ interface WalletData {
 function StatCard({ label, value, sub, color }: { label: string; value: string | number; sub?: string; color?: string }) {
   return (
     <div className="rounded-2xl border border-white/[0.07] bg-white/[0.03] p-5">
-      <p className="text-xs text-neutral-500 mb-1">{label}</p>
+      <p className="text-xs text-neutral-400 mb-1">{label}</p>
       <p className={`text-2xl font-black tabular-nums ${color ?? "text-white"}`}>{value}</p>
-      {sub && <p className="text-xs text-neutral-600 mt-1">{sub}</p>}
+      {sub && <p className="text-xs text-neutral-400 mt-1">{sub}</p>}
     </div>
   );
 }
@@ -148,7 +148,7 @@ export default function UsagePage() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-xl font-bold text-white">الاستخدام والرصيد</h1>
-            <p className="text-xs text-neutral-500 mt-0.5">آخر 30 يوم · {wallet?.planName ?? "—"}</p>
+            <p className="text-xs text-neutral-400 mt-0.5">آخر 30 يوم · {wallet?.planName ?? "—"}</p>
           </div>
           <button
             onClick={() => void fetchAll()}
@@ -265,7 +265,7 @@ export default function UsagePage() {
                   </AreaChart>
                 </ResponsiveContainer>
               ) : (
-                <div className="flex items-center justify-center h-48 text-neutral-600 text-sm">
+                <div className="flex items-center justify-center h-48 text-neutral-400 text-sm">
                   لا توجد بيانات استخدام بعد
                 </div>
               )}
@@ -282,10 +282,10 @@ export default function UsagePage() {
                   <table className="w-full text-sm">
                     <thead>
                       <tr className="border-b border-white/[0.06]">
-                        <th className="text-right text-xs text-neutral-500 font-medium py-2 pr-0">المساعد</th>
-                        <th className="text-left text-xs text-neutral-500 font-medium py-2">الرصيد المستخدَم</th>
-                        <th className="text-left text-xs text-neutral-500 font-medium py-2">عدد الطلبات</th>
-                        <th className="text-left text-xs text-neutral-500 font-medium py-2">متوسط لكل طلب</th>
+                        <th className="text-right text-xs text-neutral-400 font-medium py-2 pr-0">المساعد</th>
+                        <th className="text-left text-xs text-neutral-400 font-medium py-2">الرصيد المستخدَم</th>
+                        <th className="text-left text-xs text-neutral-400 font-medium py-2">عدد الطلبات</th>
+                        <th className="text-left text-xs text-neutral-400 font-medium py-2">متوسط لكل طلب</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -298,7 +298,7 @@ export default function UsagePage() {
                           <td className="py-2.5 text-left text-neutral-400 tabular-nums">
                             {row.count.toLocaleString("ar-EG-u-nu-latn")}
                           </td>
-                          <td className="py-2.5 text-left text-neutral-500 tabular-nums text-xs">
+                          <td className="py-2.5 text-left text-neutral-400 tabular-nums text-xs">
                             {row.count > 0 ? Math.round(row.credits / row.count).toLocaleString("ar-EG-u-nu-latn") : "—"}
                           </td>
                         </tr>
@@ -307,7 +307,7 @@ export default function UsagePage() {
                   </table>
                 </div>
               ) : (
-                <div className="flex items-center justify-center h-24 text-neutral-600 text-sm">
+                <div className="flex items-center justify-center h-24 text-neutral-400 text-sm">
                   لا توجد معاملات رصيد بعد
                 </div>
               )}
@@ -321,17 +321,17 @@ export default function UsagePage() {
               </h2>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="rounded-xl bg-white/[0.02] border border-white/[0.05] p-4">
-                  <p className="text-xs text-neutral-500 mb-1">الباقة الحالية</p>
+                  <p className="text-xs text-neutral-400 mb-1">الباقة الحالية</p>
                   <p className="text-white font-bold">{wallet?.planName ?? "—"}</p>
                 </div>
                 <div className="rounded-xl bg-white/[0.02] border border-white/[0.05] p-4">
-                  <p className="text-xs text-neutral-500 mb-1">تجديد الرصيد اليومي</p>
+                  <p className="text-xs text-neutral-400 mb-1">تجديد الرصيد اليومي</p>
                   <p className="text-cyan-300 font-semibold text-sm">
                     {formatResetDate(wallet?.dailyResetAt ?? null)}
                   </p>
                 </div>
                 <div className="rounded-xl bg-white/[0.02] border border-white/[0.05] p-4">
-                  <p className="text-xs text-neutral-500 mb-1">تجديد الرصيد الشهري</p>
+                  <p className="text-xs text-neutral-400 mb-1">تجديد الرصيد الشهري</p>
                   <p className="text-emerald-300 font-semibold text-sm">
                     {formatResetDate(wallet?.monthlyResetAt ?? null)}
                   </p>

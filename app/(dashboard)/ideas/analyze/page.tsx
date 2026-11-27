@@ -251,7 +251,7 @@ export default function IdeaValidationPage() {
     ? (tabs.swot || validationResult || "")
     : (tabs[activeTab] || validationResult || "");
 
-  const inputCls = "w-full bg-neutral-800/60 border border-neutral-700 text-white text-sm rounded-xl px-3 py-2.5 outline-none focus:border-[rgb(var(--brand-cyan))] transition-colors placeholder:text-neutral-600";
+  const inputCls = "w-full bg-neutral-800/60 border border-neutral-700 text-white text-sm rounded-xl px-3 py-2.5 outline-none focus:border-[rgb(var(--brand-cyan))] transition-colors placeholder:text-neutral-400";
 
   return (
     <AppShell>
@@ -315,9 +315,9 @@ export default function IdeaValidationPage() {
                 </CardHeader>
                 <CardContent className="px-5 pb-4">
                   {loadingHistory ? (
-                    <div className="flex justify-center py-4"><Loader2 className="w-5 h-5 animate-spin text-neutral-500" /></div>
+                    <div className="flex justify-center py-4"><Loader2 className="w-5 h-5 animate-spin text-neutral-400" /></div>
                   ) : history.length === 0 ? (
-                    <p className="text-neutral-500 text-sm py-2">لا توجد تحليلات سابقة بعد.</p>
+                    <p className="text-neutral-400 text-sm py-2">لا توجد تحليلات سابقة بعد.</p>
                   ) : (
                     <div className="space-y-2">
                       {history.map((item) => (
@@ -327,7 +327,7 @@ export default function IdeaValidationPage() {
                             className="flex-1 text-right"
                           >
                             <p className="text-sm text-white font-medium line-clamp-1">{item.title}</p>
-                            <p className="text-xs text-neutral-500 flex items-center gap-1 mt-0.5">
+                            <p className="text-xs text-neutral-400 flex items-center gap-1 mt-0.5">
                               <Clock className="w-3 h-3" />
                               {item.created_at?.seconds
                                 ? new Date(item.created_at.seconds * 1000).toLocaleDateString("ar-EG")
@@ -368,7 +368,7 @@ export default function IdeaValidationPage() {
                       value={f100Product}
                       onChange={e => setF100Product(e.target.value)}
                       placeholder="مثال: منصة SaaS تساعد المطاعم الصغيرة على إدارة الطلبات والمخزون..."
-                      className="min-h-[90px] resize-none text-sm p-4 rounded-xl bg-neutral-800/60 text-white border-neutral-700 focus-visible:ring-cyan-500 placeholder:text-neutral-600 mt-1.5"
+                      className="min-h-[90px] resize-none text-sm p-4 rounded-xl bg-neutral-800/60 text-white border-neutral-700 focus-visible:ring-cyan-500 placeholder:text-neutral-400 mt-1.5"
                     />
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -454,10 +454,10 @@ export default function IdeaValidationPage() {
                   value={ideaDesc}
                   onChange={(e) => setIdeaDesc(e.target.value)}
                   placeholder="مثال: تطبيق يسهّل توصيل الفواكه الطازجة من المزارعين للمطاعم مباشرةً في 4 ساعات..."
-                  className="min-h-[120px] resize-none text-sm p-4 rounded-xl bg-neutral-800/60 text-white border-neutral-700 focus-visible:ring-[rgb(var(--brand-cyan))] placeholder:text-neutral-600"
+                  className="min-h-[120px] resize-none text-sm p-4 rounded-xl bg-neutral-800/60 text-white border-neutral-700 focus-visible:ring-[rgb(var(--brand-cyan))] placeholder:text-neutral-400"
                   maxLength={3000}
                 />
-                <p className="text-xs text-neutral-600 text-left ltr">{ideaDesc.length}/3000</p>
+                <p className="text-xs text-neutral-400 text-left ltr">{ideaDesc.length}/3000</p>
               </div>
 
               {/* Selectors Row */}

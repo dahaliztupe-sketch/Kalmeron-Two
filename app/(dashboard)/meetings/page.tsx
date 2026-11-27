@@ -109,14 +109,14 @@ export default function MeetingsPage() {
           <div className="bg-neutral-900/60 border border-neutral-700/50 rounded-2xl p-5 mb-6">
             <h2 className="text-sm font-semibold text-neutral-300 mb-4 flex items-center gap-2"><Play className="w-4 h-4 text-indigo-400" /> عقد اجتماع جديد</h2>
             <div className="mb-4">
-              <label className="block text-xs text-neutral-500 mb-1.5">موضوع الاجتماع</label>
+              <label className="block text-xs text-neutral-400 mb-1.5">موضوع الاجتماع</label>
               <input value={topic} onChange={(e) => setTopic(e.target.value)} onKeyDown={(e) => e.key === "Enter" && convene()} placeholder="مثال: مراجعة استراتيجية التسعير للربع القادم..." className="w-full bg-neutral-800 border border-neutral-700 rounded-xl px-3 py-2.5 text-white text-sm outline-none focus:border-indigo-500 transition-colors" />
             </div>
             <div className="mb-4">
-              <label className="block text-xs text-neutral-500 mb-2">الأقسام المشاركة ({selected.length} محدد)</label>
+              <label className="block text-xs text-neutral-400 mb-2">الأقسام المشاركة ({selected.length} محدد)</label>
               <div className="flex flex-wrap gap-2">
                 {DEPARTMENTS.map((d) => (
-                  <button key={d.id} onClick={() => toggle(d.id)} className={cn("text-xs px-3 py-1.5 rounded-xl border font-medium transition-all", selected.includes(d.id) ? d.color : "text-neutral-500 border-neutral-700/50 hover:border-neutral-600")}>{d.label}</button>
+                  <button key={d.id} onClick={() => toggle(d.id)} className={cn("text-xs px-3 py-1.5 rounded-xl border font-medium transition-all", selected.includes(d.id) ? d.color : "text-neutral-400 border-neutral-700/50 hover:border-neutral-600")}>{d.label}</button>
                 ))}
               </div>
             </div>
@@ -143,18 +143,18 @@ export default function MeetingsPage() {
 
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-sm font-semibold text-neutral-300">سجل الاجتماعات</h3>
-          <button onClick={load} className="text-xs text-neutral-500 hover:text-white flex items-center gap-1 transition-colors"><RefreshCw className="w-3 h-3" /> تحديث</button>
+          <button onClick={load} className="text-xs text-neutral-400 hover:text-white flex items-center gap-1 transition-colors"><RefreshCw className="w-3 h-3" /> تحديث</button>
         </div>
 
-        {loading ? <div className="flex items-center justify-center py-12"><Loader2 className="w-5 h-5 animate-spin text-neutral-500" /></div> : meetings.length === 0 ? (
-          <div className="text-center py-12 text-neutral-500"><Users className="w-8 h-8 mx-auto mb-2 opacity-30" /><p className="text-sm">لا توجد اجتماعات بعد. عقد أول اجتماع أعلاه.</p></div>
+        {loading ? <div className="flex items-center justify-center py-12"><Loader2 className="w-5 h-5 animate-spin text-neutral-400" /></div> : meetings.length === 0 ? (
+          <div className="text-center py-12 text-neutral-400"><Users className="w-8 h-8 mx-auto mb-2 opacity-30" /><p className="text-sm">لا توجد اجتماعات بعد. عقد أول اجتماع أعلاه.</p></div>
         ) : (
           <div className="space-y-4">
             {meetings.map((m, i) => (
               <motion.div key={m.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }} className="bg-neutral-900/60 border border-neutral-700/50 rounded-2xl p-5">
                 <div className="flex items-start justify-between mb-3">
                   <h4 className="text-sm font-bold text-white">{m.topic}</h4>
-                  {m.createdAt && <span className="flex items-center gap-1 text-xs text-neutral-500 shrink-0"><Clock className="w-3 h-3" />{formatDate(m.createdAt)}</span>}
+                  {m.createdAt && <span className="flex items-center gap-1 text-xs text-neutral-400 shrink-0"><Clock className="w-3 h-3" />{formatDate(m.createdAt)}</span>}
                 </div>
                 {(m.departmentIds || []).length > 0 && <div className="flex flex-wrap gap-1.5 mb-3">{(m.departmentIds || []).map((d) => <span key={d} className="text-[10px] bg-neutral-800 border border-neutral-700 px-2 py-0.5 rounded-full text-neutral-400">{deptLabel(d)}</span>)}</div>}
                 {m.synthesis && <p className="text-xs text-neutral-400 leading-relaxed mb-3">{m.synthesis}</p>}

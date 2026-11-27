@@ -100,7 +100,7 @@ export default function DailyBriefPage() {
           </div>
         </div>
         {brief?.generatedAt && (
-          <p className="text-neutral-500 text-xs">آخر إيجاز: {new Date(brief.generatedAt).toLocaleString("ar-EG-u-nu-latn")}</p>
+          <p className="text-neutral-400 text-xs">آخر إيجاز: {new Date(brief.generatedAt).toLocaleString("ar-EG-u-nu-latn")}</p>
         )}
       </motion.div>
 
@@ -167,7 +167,7 @@ export default function DailyBriefPage() {
 
       {brief && <DeliveryPanel brief={brief} />}
 
-      <p className="text-center text-neutral-600 text-xs mt-10 inline-flex items-center gap-1.5 w-full justify-center">
+      <p className="text-center text-neutral-400 text-xs mt-10 inline-flex items-center gap-1.5 w-full justify-center">
         <Sparkles className="w-3 h-3" />
         المرآة التشغيلية — تجريبي
       </p>
@@ -332,7 +332,7 @@ function DeliveryPanel({ brief }: { brief: DailyBrief }) {
             <span>(توقيت القاهرة)</span>
             {saving && <Loader2 className="w-3 h-3 animate-spin opacity-60" />}
           </div>
-          <p className="text-[11px] text-neutral-500">
+          <p className="text-[11px] text-neutral-400">
             تحتاج مفاتيح WhatsApp Cloud + SendGrid في إعدادات النظام لتشغيل الإرسال الفعلي. بدونها، يمكنك دائماً
             مشاهدة الإيجاز في هذه الصفحة.
           </p>

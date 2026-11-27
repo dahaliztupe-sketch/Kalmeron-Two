@@ -328,7 +328,7 @@ function Field({
         min={0}
         value={Number.isFinite(value) ? value : 0}
         onChange={(e) => onChange(Math.max(0, parseFloat(e.target.value) || 0))}
-        className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-base text-white placeholder:text-neutral-500 outline-none focus:border-cyan-400/40 transition-colors"
+        className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-base text-white placeholder:text-neutral-400 outline-none focus:border-cyan-400/40 transition-colors"
         placeholder="0"
       />
     </label>

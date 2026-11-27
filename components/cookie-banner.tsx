@@ -45,7 +45,7 @@ export function CookieBanner() {
               <button
                 onClick={decline}
                 aria-label="إغلاق"
-                className="text-neutral-500 hover:text-white transition-colors mt-0.5"
+                className="text-neutral-400 hover:text-white transition-colors mt-0.5"
               >
                 <X className="h-4 w-4" />
               </button>

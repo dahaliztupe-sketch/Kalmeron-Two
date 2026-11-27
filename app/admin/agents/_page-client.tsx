@@ -30,7 +30,7 @@ export default function AdminAgentsHub() {
               </div>
               <div className="bg-neutral-950 p-4 rounded-lg font-mono text-sm text-neutral-300">
                 {`>`} آخر الفحوصات (Amplitude): تم رصد زيادة +12% في النشاط.
-                <br/><span className="text-neutral-500">تم الإرسال لـ Slack...</span>
+                <br/><span className="text-neutral-400">تم الإرسال لـ Slack...</span>
               </div>
            </div>
 
@@ -45,7 +45,7 @@ export default function AdminAgentsHub() {
               </div>
               <div className="bg-neutral-950 p-4 rounded-lg font-mono text-sm text-neutral-300">
                 {`>`} تدقيق تلقائي RAG Pipeline: مكتمل. 
-                <br/><span className="text-neutral-500">تم تأكيد عزل بيانات PII والتوافق مع GDPR.</span>
+                <br/><span className="text-neutral-400">تم تأكيد عزل بيانات PII والتوافق مع GDPR.</span>
               </div>
            </div>
 

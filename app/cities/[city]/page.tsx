@@ -98,7 +98,7 @@ export default async function CityPage({ params }: PageProps) {
                 className="rounded-xl bg-white/[0.03] border border-white/10 p-4 hover:border-cyan-500/30 transition"
               >
                 <div className="text-base font-semibold text-white">{o.cityAr}</div>
-                <div className="text-xs text-zinc-500">{o.countryAr}</div>
+                <div className="text-xs text-zinc-400">{o.countryAr}</div>
               </Link>
             ))}
           </div>

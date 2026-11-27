@@ -71,7 +71,7 @@ function SystemHealthPanel({ health, lastFetch }: { health: HealthSnapshot; last
       <div className="flex items-start justify-between mb-5">
         <div>
           <h2 className="text-xl font-bold">صحة النظام</h2>
-          <p className="text-xs text-neutral-500 mt-0.5">
+          <p className="text-xs text-neutral-400 mt-0.5">
             آخر تحديث: {lastFetch.toLocaleTimeString('ar-EG')} — نسخة {health.version}
           </p>
         </div>
@@ -87,7 +87,7 @@ function SystemHealthPanel({ health, lastFetch }: { health: HealthSnapshot; last
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {SERVICE_GROUPS.map((group) => (
           <div key={group.title} className="space-y-2">
-            <h3 className="text-xs font-semibold text-neutral-500 uppercase tracking-wide mb-2">
+            <h3 className="text-xs font-semibold text-neutral-400 uppercase tracking-wide mb-2">
               {group.title}
             </h3>
             {group.keys.map((key) => {
@@ -113,7 +113,7 @@ function SystemHealthPanel({ health, lastFetch }: { health: HealthSnapshot; last
       </div>
 
       {Array.isArray(health.meta?.llmProviders) && (health.meta.llmProviders as string[]).length > 0 && (
-        <div className="mt-4 text-xs text-neutral-500">
+        <div className="mt-4 text-xs text-neutral-400">
           مزوّدو الذكاء الاصطناعي المتاحون: {(health.meta.llmProviders as string[]).join(', ')}
         </div>
       )}
@@ -230,7 +230,7 @@ export default function MissionControlPage() {
           </div>
         )}
 
-        {!data && !error && <p className="text-neutral-500">جارٍ التحميل...</p>}
+        {!data && !error && <p className="text-neutral-400">جارٍ التحميل...</p>}
 
         {data && (
           <div className="grid md:grid-cols-3 gap-6">
@@ -260,7 +260,7 @@ export default function MissionControlPage() {
                   </div>
                 ))}
                 {Object.keys(data.agents).length === 0 && (
-                  <p className="text-neutral-600 text-sm">لا توجد بيانات بعد. ابدأ محادثة لتفعيل المساعدين.</p>
+                  <p className="text-neutral-400 text-sm">لا توجد بيانات بعد. ابدأ محادثة لتفعيل المساعدين.</p>
                 )}
               </div>
             </div>
@@ -268,7 +268,7 @@ export default function MissionControlPage() {
             <div className="p-6 rounded-2xl bg-neutral-900/60 border border-white/[0.05]">
               <h2 className="text-xl font-bold mb-4">لوحة التكاليف</h2>
               <div className="text-3xl font-extrabold mb-2">${data.dailyCostUsd.toFixed(2)}</div>
-              <div className="text-sm text-neutral-500 mb-4">من ${data.dailyLimit} يوميًا</div>
+              <div className="text-sm text-neutral-400 mb-4">من ${data.dailyLimit} يوميًا</div>
               <div className="h-2 rounded-full bg-neutral-800 overflow-hidden">
                 <div
                   className={`h-full ${data.dailyCostUsd / data.dailyLimit > 0.8 ? 'bg-red-500' : 'bg-emerald-500'}`}
@@ -281,7 +281,7 @@ export default function MissionControlPage() {
               <h2 className="text-xl font-bold mb-4">سجل التنبيهات والامتثال</h2>
               <div className="space-y-2 max-h-72 overflow-y-auto">
                 {data.alertsRecent.length === 0 && (
-                  <p className="text-neutral-600 text-sm">لا توجد تنبيهات.</p>
+                  <p className="text-neutral-400 text-sm">لا توجد تنبيهات.</p>
                 )}
                 {data.alertsRecent.map((a, i) => (
                   <div key={i} className={`p-3 rounded-lg text-sm border ${

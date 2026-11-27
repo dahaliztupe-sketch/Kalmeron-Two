@@ -32,7 +32,7 @@ export default function MarketLabResults() {
         <Card className="glass-panel text-white flex flex-col justify-center items-center py-6 bento-wide">
           <CardHeader className="text-center pb-2"><CardTitle className="text-xl text-neutral-400">درجة ملاءمة السوق (Market Fit)</CardTitle></CardHeader>
           <CardContent className="text-7xl font-black text-[#D4AF37]">
-            78<span className="text-2xl text-neutral-500">/100</span>
+            78<span className="text-2xl text-neutral-400">/100</span>
           </CardContent>
           <p className="text-md text-emerald-400 mt-2 font-medium">فرصة واعدة مع بعض التعديلات المطلوبة</p>
         </Card>

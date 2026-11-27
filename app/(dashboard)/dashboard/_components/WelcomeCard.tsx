@@ -148,7 +148,7 @@ export default function WelcomeCard() {
           {/* Progress bar */}
           <div className="mb-4">
             <div className="flex items-center justify-between mb-1.5">
-              <span className="text-[11px] text-neutral-500">تقدّم الرحلة</span>
+              <span className="text-[11px] text-neutral-400">تقدّم الرحلة</span>
               <span className={`text-[11px] font-bold ${cfg.color}`}>{cfg.progress}%</span>
             </div>
             <div className="h-1.5 rounded-full bg-white/[0.06] overflow-hidden">
@@ -170,10 +170,10 @@ export default function WelcomeCard() {
               <TipIcon className={`w-4 h-4 ${cfg.color}`} />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-[11px] text-neutral-500 mb-0.5">نصيحة اليوم</p>
+              <p className="text-[11px] text-neutral-400 mb-0.5">نصيحة اليوم</p>
               <p className={`text-sm font-semibold ${cfg.color} leading-snug`}>{cfg.tip}</p>
             </div>
-            <ChevronRight className="w-4 h-4 text-neutral-600 group-hover:text-white shrink-0 transition-colors" />
+            <ChevronRight className="w-4 h-4 text-neutral-400 group-hover:text-white shrink-0 transition-colors" />
           </Link>
         </div>
 

@@ -534,7 +534,7 @@ export function OnboardingForm() {
             </div>
           </div>
 
-          <p className="text-center text-xs text-neutral-600 mt-4">
+          <p className="text-center text-xs text-neutral-400 mt-4">
             يمكنك دائماً تغيير أهدافك من <span className="text-neutral-400">الإعدادات</span>
           </p>
         </motion.div>
@@ -565,7 +565,7 @@ export function OnboardingForm() {
         {/* Progress */}
         <div className="mb-6">
           <div className="flex items-center justify-between text-xs mb-2.5">
-            <span className="text-neutral-500">الخطوة {step + 1} من {totalSteps}</span>
+            <span className="text-neutral-400">الخطوة {step + 1} من {totalSteps}</span>
             <span className={cn(
               "font-semibold tabular-nums transition-colors",
               progress >= 70 ? "text-emerald-400" : "text-indigo-400"
@@ -659,7 +659,7 @@ export function OnboardingForm() {
                     placeholder="اكتب اسمك الأول..."
                     className="w-full bg-white/[0.04] border border-white/10 rounded-2xl px-5 py-4 text-white text-xl text-center placeholder-neutral-600 outline-none focus:border-indigo-400/50 focus:bg-white/[0.06] transition-all font-display font-bold"
                   />
-                  <p className="text-center text-xs text-neutral-600">سيناديك كلميرون باسمك في كل محادثة 🤝</p>
+                  <p className="text-center text-xs text-neutral-400">سيناديك كلميرون باسمك في كل محادثة 🤝</p>
                 </div>
               )}
 
@@ -691,7 +691,7 @@ export function OnboardingForm() {
                       </button>
                     ))}
                   </div>
-                  <p className="text-center text-xs text-neutral-600">يمكنك تغيير اسم مشروعك لاحقاً من الإعدادات 🏢</p>
+                  <p className="text-center text-xs text-neutral-400">يمكنك تغيير اسم مشروعك لاحقاً من الإعدادات 🏢</p>
                 </div>
               )}
 
@@ -714,7 +714,7 @@ export function OnboardingForm() {
                         <div className={cn("font-bold text-sm", stage === s.id ? "text-white" : "text-neutral-200")}>
                           {s.label}
                         </div>
-                        <div className="text-xs text-neutral-500 mt-0.5">{s.desc}</div>
+                        <div className="text-xs text-neutral-400 mt-0.5">{s.desc}</div>
                       </div>
                       <div className={cn(
                         "w-5 h-5 rounded-full border-2 shrink-0 flex items-center justify-center transition-all",
@@ -791,7 +791,7 @@ export function OnboardingForm() {
                     {govSearch && (
                       <button
                         onClick={() => setGovSearch("")}
-                        className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-500 hover:text-white"
+                        className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-white"
                       >✕</button>
                     )}
                   </div>
@@ -828,7 +828,7 @@ export function OnboardingForm() {
               {/* Step 6: Goals */}
               {step === 6 && (
                 <div className="space-y-2">
-                  <p className="text-xs text-neutral-500 text-center mb-3">اختر هدفاً واحداً أو أكثر</p>
+                  <p className="text-xs text-neutral-400 text-center mb-3">اختر هدفاً واحداً أو أكثر</p>
                   <div className="grid grid-cols-2 gap-2.5">
                     {GOALS.map((goal) => {
                       const Icon = goal.icon;
@@ -884,7 +884,7 @@ export function OnboardingForm() {
                 "flex-1 flex items-center justify-center gap-2 font-bold py-3.5 rounded-2xl transition-all",
                 canNext
                   ? "btn-primary"
-                  : "bg-white/5 text-neutral-600 cursor-not-allowed border border-white/10"
+                  : "bg-white/5 text-neutral-400 cursor-not-allowed border border-white/10"
               )}
             >
               {step === totalSteps - 1 ? (
@@ -896,7 +896,7 @@ export function OnboardingForm() {
           </div>
         </div>
 
-        <p className="text-center text-xs text-neutral-600 mt-4">
+        <p className="text-center text-xs text-neutral-400 mt-4">
           بمتابعتك، أنت توافق على{" "}
           <a href="/terms" className="text-neutral-400 hover:text-white transition-colors">الشروط</a>
           {" "}و<a href="/privacy" className="text-neutral-400 hover:text-white transition-colors">سياسة الخصوصية</a>
