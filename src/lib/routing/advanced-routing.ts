@@ -1,8 +1,8 @@
-import { geminiModel } from '@/src/lib/model-ids';
 // ts-nocheck: reason=complex integration patterns; scheduled for typed refactor
 // @ts-nocheck
 
 // Gemini Flex Tier 
+import { geminiModel } from '@/src/lib/model-ids';
 export function selectModel(complexity: 'simple' | 'medium' | 'complex', isLatencySensitive: boolean) {
   if (complexity === 'simple' && !isLatencySensitive) {
     return { model: geminiModel('lite'), tier: 'flex' }; // مستوى الخصم (أرخص)
